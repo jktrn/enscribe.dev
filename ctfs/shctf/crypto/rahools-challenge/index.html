@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="Writeup for the Space Heroes CTF crypto challenge [Rahool&#39;s Challenge].">
+<meta property="og:type" content="article">
+<meta property="og:title" content="shctf&#x2F;crypto: Rahool&#39;s Challenge">
+<meta property="og:url" content="https://jktrn.github.io/ctfs/shctf/crypto/rahools-challenge/index.html">
+<meta property="og:site_name" content="Jason&#39;s Space 🐳">
+<meta property="og:description" content="Writeup for the Space Heroes CTF crypto challenge [Rahool&#39;s Challenge].">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Vigen%C3%A8re_square_shading.svg/1024px-Vigen%C3%A8re_square_shading.svg.png">
+<meta property="og:image" content="https://github.com/WhileSEC/shctf/blob/main/images/rahool-dcode.PNG?raw=true">
+<meta property="og:image" content="https://github.com/WhileSEC/shctf/blob/main/images/rahool-vigenere.PNG?raw=true">
+<meta property="article:published_time" content="2022-04-05T04:28:13.000Z">
+<meta property="article:modified_time" content="2022-04-09T04:15:03.369Z">
+<meta property="article:author" content="jktrn">
+<meta property="article:tag" content="ctf">
+<meta property="article:tag" content="crypto">
+<meta property="article:tag" content="shctf">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Vigen%C3%A8re_square_shading.svg/1024px-Vigen%C3%A8re_square_shading.svg.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="https://avatars.githubusercontent.com/u/71956291?v=4">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="https://avatars.githubusercontent.com/u/71956291?v=4" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="https://avatars.githubusercontent.com/u/71956291?v=4">
+        
+      
+    
+    <!-- title -->
+    <title>shctf/crypto: Rahool&#39;s Challenge</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+      <link rel="alternate" href="/true" title="Jason&#39;s Space 🐳" type="application/atom+xml" />
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 6.1.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">~/</a></li><!--
+     --><!--
+       --><li><a href="/articles/">~/articles</a></li><!--
+     --><!--
+       --><li><a href="/ctfs/">~/ctfs</a></li><!--
+     --><!--
+       --><li><a href="/profiles/">~/profiles</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="previous post" href="/ctfs/shctf/web/r2d2/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="share post" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">previous post</span>
+      <span id="i-next" class="info" style="display:none;">next post</span>
+      <span id="i-top" class="info" style="display:none;">back to top</span>
+      <span id="i-share" class="info" style="display:none;">share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://jktrn.github.io/ctfs/shctf/crypto/rahools-challenge/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://jktrn.github.io/ctfs/shctf/crypto/rahools-challenge/&text=shctf/crypto: Rahool&#39;s Challenge"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://jktrn.github.io/ctfs/shctf/crypto/rahools-challenge/&title=shctf/crypto: Rahool&#39;s Challenge"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://jktrn.github.io/ctfs/shctf/crypto/rahools-challenge/&is_video=false&description=shctf/crypto: Rahool&#39;s Challenge"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=shctf/crypto: Rahool&#39;s Challenge&body=Check out this article: https://jktrn.github.io/ctfs/shctf/crypto/rahools-challenge/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://jktrn.github.io/ctfs/shctf/crypto/rahools-challenge/&title=shctf/crypto: Rahool&#39;s Challenge"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://jktrn.github.io/ctfs/shctf/crypto/rahools-challenge/&title=shctf/crypto: Rahool&#39;s Challenge"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://jktrn.github.io/ctfs/shctf/crypto/rahools-challenge/&title=shctf/crypto: Rahool&#39;s Challenge"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://jktrn.github.io/ctfs/shctf/crypto/rahools-challenge/&title=shctf/crypto: Rahool&#39;s Challenge"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://jktrn.github.io/ctfs/shctf/crypto/rahools-challenge/&name=shctf/crypto: Rahool&#39;s Challenge&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://jktrn.github.io/ctfs/shctf/crypto/rahools-challenge/&t=shctf/crypto: Rahool&#39;s Challenge"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%93%9C-Description"><span class="toc-number">1.</span> <span class="toc-text">📜 Description</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%8C%8C-%E2%80%9CReconnaissance%E2%80%9D"><span class="toc-number">2.</span> <span class="toc-text">🌌 “Reconnaissance”</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%94%8D-Actual-Reconnaissance"><span class="toc-number">3.</span> <span class="toc-text">🔍 Actual Reconnaissance</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%91%A9%E2%80%8D%F0%9F%92%BB-The-Vigenere-Cipher"><span class="toc-number">4.</span> <span class="toc-text">👩‍💻 The Vigenère Cipher</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%8F%B4-Cheaters-Never-Win%E2%80%A6"><span class="toc-number">5.</span> <span class="toc-text">🏴 Cheaters Never Win…</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%9A%A9-Or-Do-They"><span class="toc-number">6.</span> <span class="toc-text">🚩 Or Do They?</span></a></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        shctf/crypto: Rahool&#39;s Challenge
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">jktrn</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2022-04-05T04:28:13.000Z" itemprop="datePublished">April 4, 2022</time>
+        
+      
+    </div>
+
+
+      
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link-link" href="/tags/crypto/" rel="tag">crypto</a>, <a class="tag-link-link" href="/tags/ctf/" rel="tag">ctf</a>, <a class="tag-link-link" href="/tags/shctf/" rel="tag">shctf</a>
+    </div>
+
+ <br>
+      <i class="fas fa-clock"></i> 8 min. read
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h2 id="📜-Description"><a href="#📜-Description" class="headerlink" title="📜 Description"></a>📜 Description</h2><p><code>nc 0.cloud.chals.io 10294</code><br><strong>Author</strong>: excaligator </p>
+<hr>
+<p>  Let’s open that <code>netcat</code> link to see what’s going on:<br>  <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line">root@kali:/home/kali/shctf# nc 0.cloud.chals.io 10294</span><br><span class="line">                                   ,/(####((((/**.                                                  </span><br><span class="line">                             *#%%%%%%%%%%%%%%########(#####((((/*,                                  </span><br><span class="line">                          ,&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;%%%%%%%%%%%%%%%%%%%%%%%%#(##((((///*                              </span><br><span class="line">                       .#&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;%%%%%%%%%&amp;&amp;%%%%###((((*,.     ...                          </span><br><span class="line">                     .%&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;%%%%%%%,.,               .                       </span><br><span class="line">                     #&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;%%%%,,,, .. ..             .                    </span><br><span class="line">                    *&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;#,*,*,,,,..,                .                  </span><br><span class="line">                   .%&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;(*****,//,..., ,.  .  .,..                       </span><br><span class="line">                   %&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;,****,***,*.****... .*//((((/,                    </span><br><span class="line">                  (&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;#,***//**,**,*,***,,*((/////(##(*                   </span><br><span class="line">                 *&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;/,****,**,**,,*,*,,/##/////((/(%#/.,                 </span><br><span class="line">                 %&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;,,*********/,,*/*,/%&amp;########%%#(%/..                 </span><br><span class="line">                (&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;#,,,,***,**,**//*,,(&amp;%###%%%%%#((&amp;&amp;%%(.                 </span><br><span class="line">               .&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;****,*/,*,**/***,,,%&amp;####%&amp;%%%%#/*#&amp;&amp;&amp;(/,                </span><br><span class="line">               #&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;,*,,,*/,**///*,**,/&amp;&amp;#(*.,%%%(/(%(#(&amp;&amp;&amp;#(.                </span><br><span class="line">              .&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;(,*,**********/,**/%&amp;&amp;%%%(. .###(/*/(%&amp;&amp;&amp;#*,                </span><br><span class="line">              #&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;@*,**,**,,/*/*,,,,/&amp;@&amp;#%%%##(,  ,,,,.. /&amp;&amp;&amp;/,,                </span><br><span class="line">              %&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;,,,**,,,*,*****,/%@@%#####%%#,.    ..  *&amp;&amp;%(.                 </span><br><span class="line">             ,&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;*,*,**/,*,,***,/#@@%((((%#####(,.      .*&amp;&amp;#(,                 </span><br><span class="line">             (&amp;&amp;&amp;@&amp;&amp;&amp;&amp;&amp;&amp;@@&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;,,**,,*,/****,*(&amp;@&amp;(((##&amp;&amp;&amp;&amp;&amp;&amp;%##(/,. ...(&amp;&amp;#,                  </span><br><span class="line">             ,&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;,**,***,*,**/#@&amp;###(#((#####((/*,,*,.. ...,&amp;%* .                  </span><br><span class="line">             ,&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;@****/**/,,***&amp;@&amp;%######%%&amp;&amp;&amp;&amp;%#######%#,,..#&amp;#, .                  </span><br><span class="line">              %&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;%,****/*,,,(&amp;@&amp;&amp;%%%#####(############(*../,.%%(, .                  </span><br><span class="line">              /&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;/,***,***,/&amp;@&amp;%%%%%#########((/*,,,,,,,...,*&amp;#( ,                   </span><br><span class="line">              ,&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;,***,,,**,%@&amp;&amp;&amp;%%%%#########(/*,.       ...#%(/ .                   </span><br><span class="line">              %&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;@&amp;&amp;#**,**///*/@&amp;&amp;&amp;&amp;&amp;&amp;&amp;%%%%%%%%#####(/**,,...../%#(,.                    </span><br><span class="line">             (&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;@/,*/,/*//**&amp;&amp;&amp;@@@&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;%%%%%%%%%%#%#(*,*####(*,                    </span><br><span class="line">            ,%%&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;*,*/***/**,%&amp;%&amp;@@@@@@@@@@&amp;&amp;&amp;&amp;&amp;%%%%%%##(, ./(##(,,                    </span><br><span class="line">            **,,*(#&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;#*,/***/*/,,(&amp;#(#(((##%&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;%%####/.   ,/(((*.                    </span><br><span class="line">           ******,,**(%&amp;&amp;&amp;&amp;&amp;&amp;&amp;%/***(******.*%#%%%###(#((((##(*.            ,/((,                     </span><br><span class="line">          ,******,**,,***#%&amp;&amp;&amp;%*,,,/*/,*/*..&amp;%########((((##(/*,.            //.                     </span><br><span class="line">          ,***********//*,,**/(****/*//*//, &amp;&amp;&amp;%#%%%%###(((////(**..         ,///*******,.           </span><br><span class="line">           ((,,****/********/*//***///(/**, %&amp;@&amp;&amp;#(######((((/**, .   .       //#%&amp;&amp;&amp;&amp;&amp;%(***/,       </span><br><span class="line">       ,#&amp;&amp;&amp;&amp;&amp;&amp;%*,*//*****,***/(/**/////***.%@@@@&amp;%##(/(/((((#((/,..    .    .//(#%&amp;&amp;&amp;&amp;%(********    </span><br><span class="line"> @%%%%%&amp;&amp;@@@@@@@@@@(*****//**/*///**/((*/**.&amp;@@@@@&amp;&amp;%%%##(/*,,/..... .     . *((#/*####(/***/********</span><br><span class="line"> &amp;@@@@&amp;%##%%&amp;&amp;&amp;@@@@@@@&amp;(**/*/*///(/////(///.@@@@@@@&amp;&amp;&amp;%%&amp;%###((**/....   ,, .#((#//((#(/***//******/*</span><br><span class="line"> &amp;&amp;%%&amp;@@@@&amp;%%%%%%%%%&amp;&amp;@@@&amp;/*//***/(///(///*.&amp;&amp;@@@@@@@@@&amp;%#%%####((,*,,.,,,  (#(##/(##(******/*****///</span><br><span class="line"> %%%%%&amp;@@&amp;&amp;&amp;&amp;&amp;@@@&amp;&amp;&amp;&amp;%%%%&amp;&amp;@@/****/#(//(//,,&amp;&amp;@&amp;&amp;@@@@@@@@&amp;&amp;%#(#%%/#/.,... ,#((/*//**(******/*****////</span><br><span class="line"> %%%%&amp;&amp;%&amp;&amp;&amp;%%%%%%###%%&amp;&amp;&amp;&amp;&amp;%%%&amp;#*///((///* /&amp;&amp;@@@@@@@@@@@@@@@&amp;%(/*,,.. *#%#*****///**/****/*****////*</span><br><span class="line"> &amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;%%%%%%#%######((//////(*(, (&amp;#,(((##(##((##&amp;&amp;&amp;%%#/****//(((%%**//*///((/(/****//(/***</span><br><span class="line"> %%##########((((//(/(///////////(((((///,*////((((((((/(((((#(((((//***///((%%*///////((/(*//(/****/</span><br><span class="line"> &amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;%###((((/////////(((((((#(######(((//////(///((//***//&amp;(*///*////((((/**///*</span><br><span class="line"> &amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;@&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;%####(((((//////(///////((((((///(((((((((((((/////////(&amp;/*/////**/(((/*///*</span><br><span class="line"> &amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;%#((((((((((//////////////////////((((((((((////////////(%/**//*/*///(/////</span><br><span class="line"> &amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;%###(#####(((////////***/*/////*////////////////////////////(#&amp;&amp;(**////***/((#(</span><br><span class="line"> &amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;%&amp;%%%%%%%%#####%%##((((((((/((////////*/*****////////*/*//////////(((####((/##**/****//,</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">ESDK EDS NFIMNGDJTB XEZVZ OWV KOYRTI KT ZCT BOZ CDIY DIK Z PJ K UNMTV DIK J PJ K AKMD NSUN OWV GPXY </span><br><span class="line">TEQSGH PWDFX RXKR UNZ P RC B LJJI KOJ VDXXFX MXXRU GAIVB</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">We&#x27;ve found ourselves an encrypted engram - Can you break the (new and improved) indecipherable cipher?</span><br><span class="line">Message:A + Key:B = 0 + B = O</span><br><span class="line">Enter the answer with no spaces and all upper case:</span><br></pre></td></tr></table></figure></p>
+<h2 id="🌌-“Reconnaissance”"><a href="#🌌-“Reconnaissance”" class="headerlink" title="🌌 “Reconnaissance”"></a>🌌 “Reconnaissance”</h2><p>  For themed CTFs, I find it really fun to figure out the cultural references in the challenge before solving them. In this case, <code>Rahool</code> is a vendor in the <em>Destiny 2</em> Tower that can decrypt legendary engrams (purple) and sell exotic engrams (gold). Uncoincidentally, hat’s what we’ll be doing here.</p>
+<h2 id="🔍-Actual-Reconnaissance"><a href="#🔍-Actual-Reconnaissance" class="headerlink" title="🔍 Actual Reconnaissance"></a>🔍 Actual Reconnaissance</h2><p>  Immediately, we can tell that the ciphertext underneath the giant Rahool ASCII is substitution. This means that the plaintext is simply substituted by a value determined by the algorithm. Throwing it into this <a target="_blank" rel="noopener" href="https://www.boxentriq.com/code-breaking/cipher-identifier">cipher identifier</a>, we find that it is a <strong>Vigenère</strong> cipher.</p>
+<p>  Before moving on, we need to figure out what the h-e-double-hockey-sticks a Vigenère is.</p>
+<h2 id="👩‍💻-The-Vigenere-Cipher"><a href="#👩‍💻-The-Vigenere-Cipher" class="headerlink" title="👩‍💻 The Vigenère Cipher"></a>👩‍💻 The Vigenère Cipher</h2><p>  A Vigenère cipher is a type of encryption that uses both plaintext and a <strong>key</strong>. There are many ways to use this encryption method, but the most common is via <strong>addition</strong> and <strong>table&#x2F;tabula recta</strong>. </p>
+<p>  To encrypt using addition, take the the position in the alphabet of the first letter in the plaintext (make sure it starts at 0, i.e. A &#x3D; 0, B &#x3D; 1, C &#x3D; 2) and add it with the position of your key (if the key was “key”, the position would be 11). Then, take the <strong>modulo</strong> 26 (divide by 26 to get the remainder, symbol <code>%</code>), as some numbers add up to greater than 26.<br>  <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Plaintext: hello</span><br><span class="line">Key: key</span><br><span class="line">h (07) + k (10) = r (17 % 26 = 17)</span><br><span class="line">e (04) + e (04) = i (08 % 26 = 08)</span><br><span class="line">l (11) + y (24) = j (35 % 26 = 09)</span><br><span class="line">l (11) + k (10) = v (21 % 26 = 21) &lt;- Note that the key cycles</span><br><span class="line">o (14) + e (04) = s (18 % 26 = 18)</span><br><span class="line">Ciphertext: rijvs</span><br></pre></td></tr></table></figure><br>  In a formula, where A is the plaintext’s alphabetic position and B is the key’s alphabetic position, in that would be:<br>  <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">C = (A + B) % 26</span><br></pre></td></tr></table></figure></p>
+<p>  It’ll be a more manual process (albeit more fun) for encrypting via table&#x2F;tabula recta. Let’s check out what it looks like (Source: <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Tabula_recta">Wikipedia</a>):</p>
+<p>  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Vigen%C3%A8re_square_shading.svg/1024px-Vigen%C3%A8re_square_shading.svg.png" alt="Wikipedia"></p>
+<p>Each of the 26 rows contains the same alphabet, except shifted to the left by one position. At the top, each <strong>column</strong> is associated with a letter in the alphabet. To the left, each <strong>row</strong> is associated with a letter in the key.</p>
+<p>If I wanted to encrypt <code>HELLO</code> with <code>WORLD</code> as the key, I would find the cell that intersects with column <code>H</code> and row <code>W</code>. In that case, it would be <code>D</code>. Then, I would find the cell that intersects with column <code>E</code> and row <code>O</code>. In that case, it would be <code>S</code>. Rinse and repeat for the entire phrase.</p>
+<h2 id="🏴-Cheaters-Never-Win…"><a href="#🏴-Cheaters-Never-Win…" class="headerlink" title="🏴 Cheaters Never Win…"></a>🏴 Cheaters Never Win…</h2><p>  But how are we supposed to decrypt vigenere without a key? Let’s do some “OSINT” and Google the crap out of it. <a target="_blank" rel="noopener" href="https://www.dcode.fr/vigenere-cipher">DCode</a>, which can keylessly decrypt substitution ciphers, is the first option. Click, clack, <code>Ctrl + Shift + C</code>, <code>Ctrl + V</code> later and we have solved it!!1!1!</p>
+<p><img src="https://github.com/WhileSEC/shctf/blob/main/images/rahool-dcode.PNG?raw=true" alt="Rahool-DCode"></p>
+<p>Or not. Wait… the plaintext is telling me to replace my <code>E</code> with a <code>3</code> and my <code>O</code> with an <code>0</code>. Those aren’t in <code>RKBGVP</code>. What’s going on? Is the website wrong?</p>
+<h2 id="🚩-Or-Do-They"><a href="#🚩-Or-Do-They" class="headerlink" title="🚩 Or Do They?"></a>🚩 Or Do They?</h2><p>Let’s go back to the drawing board and look at the problem again.</p>
+<blockquote>
+<p>We’ve found ourselves an encrypted engram - Can you break the <strong>(new and improved)</strong> indecipherable cipher?<br>Message:A + Key:B &#x3D; 0 + B &#x3D; O</p>
+</blockquote>
+<p>Since this cipher is “new and improved”, we can assume it’s not just your normal Vigenère. However, the <code>A + B = O</code> is the biggest giveaway of what we are meant to do for this challenge. </p>
+<p><strong>Take it literally. The letter A (plaintext) plus the letter B (key) is equal to the letter O (ciphertext).</strong></p>
+<p>I solved this challenge via <strong>known-plaintext-attack</strong>. Yeah, it sounds fancy. But here’s what I actually did:</p>
+<p><img src="https://github.com/WhileSEC/shctf/blob/main/images/rahool-vigenere.PNG?raw=true" alt="Rahool-Vigenere"></p>
+<p>  This is a tabula recta with a modified offset. You see how intersecting column A and row B would return O?</p>
+<p>  Since we know our plaintext, we can use this table “backwards” to find the key. If you go down the column of your letter and find its equivalent ciphertext letter, it would be on the same row as the key for that letter!</p>
+<p>  For example, if <code>C</code> is our plaintext and <code>Q</code> is our ciphertext, the key would be <code>B</code>. </p>
+<p>  Let’s follow this process for the actual plaintext&#x2F;ciphertext:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Ciphertext: ESDK EDS NFIMNGDJTB XEZVZ OWV KOYRTI KT ZCT BOZ CDIY DIK Z PJ K UNMTV DIK J PJ K AKMD NSUN OWV GPXY </span><br><span class="line">TEQSGH PWDFX RXKR UNZ P RC B LJJI KOJ VDXXFX MXXRU GAIVB</span><br><span class="line">Plaintext: NICE JOB DECRYPTING INPUT THE ANSWER AS THE KEY WITH THE E AS A THREE THE O AS A ZERO WITH THE WORD</span><br><span class="line">ENGRAM AFTER WITH THE A AS A FOUR AND AOGNER RIGHT AFTER</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">E + N -&gt; E</span><br><span class="line">S + I -&gt; X</span><br><span class="line">D + C -&gt; O</span><br><span class="line">K + E -&gt; T</span><br><span class="line">E + J -&gt; I</span><br><span class="line">D + O -&gt; C</span><br><span class="line">S + B -&gt; E</span><br><span class="line">N + D -&gt; X</span><br><span class="line">F + E -&gt; O</span><br><span class="line">I + C -&gt; T</span><br><span class="line">M + R -&gt; I</span><br><span class="line">N + Y -&gt; C</span><br><span class="line">G + P -&gt; E</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<p>The key is <code>EXOTIC</code>, as in how Master Rahool sells exotic engrams. Very funny.<br>We can now follow the instructions in the plantext and send it to the server with Python and <code>pwntools</code>:</p>
+<figure class="highlight py"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line">p = remote(<span class="string">&quot;0.cloud.chals.io&quot;</span>, <span class="number">10294</span>)</span><br><span class="line">p.sendline(<span class="string">&quot;3X0TICENGR4MAOGNER&quot;</span>)</span><br><span class="line">log.success(p.recvallS())</span><br><span class="line">p.close()</span><br></pre></td></tr></table></figure>
+<p>Sending the string:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ python3 exp.py</span><br><span class="line">...</span><br><span class="line">[+] Excellent work, you&#x27;ll be a cryptarch yet. Here&#x27;s your flag: shctf&#123;c0Me_baCk_s0on_w3_n33d_the_chAll3nge&#125;</span><br></pre></td></tr></table></figure>
+<p>We just solved <code>Rahool&#39;s Challenge</code> without needing to write any algorithms!</p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">~/</a></li>
+         
+          <li><a href="/articles/">~/articles</a></li>
+         
+          <li><a href="/ctfs/">~/ctfs</a></li>
+         
+          <li><a href="/profiles/">~/profiles</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%93%9C-Description"><span class="toc-number">1.</span> <span class="toc-text">📜 Description</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%8C%8C-%E2%80%9CReconnaissance%E2%80%9D"><span class="toc-number">2.</span> <span class="toc-text">🌌 “Reconnaissance”</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%94%8D-Actual-Reconnaissance"><span class="toc-number">3.</span> <span class="toc-text">🔍 Actual Reconnaissance</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%91%A9%E2%80%8D%F0%9F%92%BB-The-Vigenere-Cipher"><span class="toc-number">4.</span> <span class="toc-text">👩‍💻 The Vigenère Cipher</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%8F%B4-Cheaters-Never-Win%E2%80%A6"><span class="toc-number">5.</span> <span class="toc-text">🏴 Cheaters Never Win…</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%9A%A9-Or-Do-They"><span class="toc-number">6.</span> <span class="toc-text">🚩 Or Do They?</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://jktrn.github.io/ctfs/shctf/crypto/rahools-challenge/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://jktrn.github.io/ctfs/shctf/crypto/rahools-challenge/&text=shctf/crypto: Rahool&#39;s Challenge"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://jktrn.github.io/ctfs/shctf/crypto/rahools-challenge/&title=shctf/crypto: Rahool&#39;s Challenge"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://jktrn.github.io/ctfs/shctf/crypto/rahools-challenge/&is_video=false&description=shctf/crypto: Rahool&#39;s Challenge"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=shctf/crypto: Rahool&#39;s Challenge&body=Check out this article: https://jktrn.github.io/ctfs/shctf/crypto/rahools-challenge/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://jktrn.github.io/ctfs/shctf/crypto/rahools-challenge/&title=shctf/crypto: Rahool&#39;s Challenge"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://jktrn.github.io/ctfs/shctf/crypto/rahools-challenge/&title=shctf/crypto: Rahool&#39;s Challenge"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://jktrn.github.io/ctfs/shctf/crypto/rahools-challenge/&title=shctf/crypto: Rahool&#39;s Challenge"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://jktrn.github.io/ctfs/shctf/crypto/rahools-challenge/&title=shctf/crypto: Rahool&#39;s Challenge"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://jktrn.github.io/ctfs/shctf/crypto/rahools-challenge/&name=shctf/crypto: Rahool&#39;s Challenge&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://jktrn.github.io/ctfs/shctf/crypto/rahools-challenge/&t=shctf/crypto: Rahool&#39;s Challenge"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2022
+    jktrn
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">~/</a></li><!--
+     --><!--
+       --><li><a href="/articles/">~/articles</a></li><!--
+     --><!--
+       --><li><a href="/ctfs/">~/ctfs</a></li><!--
+     --><!--
+       --><li><a href="/profiles/">~/profiles</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"copy to clipboard!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>
