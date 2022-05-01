@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="theme-color" content="#82C4E4">
+    
+    
+
+    <meta name="description" content="📜 InformationPatriotCTF is a beginner-friendly, jeopardy-style capture-the-flag competition hosted by GMU’s cybersecurity club, MasonCC. All are welcome to participate, including students and securit">
+<meta property="og:type" content="article">
+<meta property="og:title" content="🦅 PatriotCTF 2022">
+<meta property="og:url" content="https://enscribe.dev/ctfs/patriot/index.html">
+<meta property="og:site_name" content="enscribe.dev">
+<meta property="og:description" content="📜 InformationPatriotCTF is a beginner-friendly, jeopardy-style capture-the-flag competition hosted by GMU’s cybersecurity club, MasonCC. All are welcome to participate, including students and securit">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://i.imgur.com/xIBG8hK.jpg">
+<meta property="article:published_time" content="2022-05-01T02:32:30.000Z">
+<meta property="article:modified_time" content="2022-05-01T02:39:30.196Z">
+<meta property="article:author" content="jktrn">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://i.imgur.com/xIBG8hK.jpg">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="https://avatars.githubusercontent.com/u/71956291?v=4">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="https://avatars.githubusercontent.com/u/71956291?v=4" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="https://avatars.githubusercontent.com/u/71956291?v=4">
+        
+      
+    
+    <!-- title -->
+    <title>🦅 PatriotCTF 2022</title><meta name="robots" content="noindex">
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+      <link rel="alternate" href="/true" title="Jason&#39;s Space 🐳" type="application/atom+xml" />
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 6.1.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">~/</a></li><!--
+     --><!--
+       --><li><a href="/articles/">~/articles</a></li><!--
+     --><!--
+       --><li><a href="/ctfs/">~/ctfs</a></li><!--
+     --><!--
+       --><li><a href="/profiles/">~/profiles</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" aria-label="back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="share post" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">previous post</span>
+      <span id="i-next" class="info" style="display:none;">next post</span>
+      <span id="i-top" class="info" style="display:none;">back to top</span>
+      <span id="i-share" class="info" style="display:none;">share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://enscribe.dev/ctfs/patriot/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://enscribe.dev/ctfs/patriot/&text=🦅 PatriotCTF 2022"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://enscribe.dev/ctfs/patriot/&title=🦅 PatriotCTF 2022"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://enscribe.dev/ctfs/patriot/&is_video=false&description=🦅 PatriotCTF 2022"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=🦅 PatriotCTF 2022&body=Check out this article: https://enscribe.dev/ctfs/patriot/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://enscribe.dev/ctfs/patriot/&title=🦅 PatriotCTF 2022"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://enscribe.dev/ctfs/patriot/&title=🦅 PatriotCTF 2022"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://enscribe.dev/ctfs/patriot/&title=🦅 PatriotCTF 2022"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://enscribe.dev/ctfs/patriot/&title=🦅 PatriotCTF 2022"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://enscribe.dev/ctfs/patriot/&name=🦅 PatriotCTF 2022&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://enscribe.dev/ctfs/patriot/&t=🦅 PatriotCTF 2022"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%93%9C-Information"><span class="toc-number">1.</span> <span class="toc-text">📜 Information</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%A5%87-Placement"><span class="toc-number">2.</span> <span class="toc-text">🥇 Placement</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%91%A5-Team-Info"><span class="toc-number">3.</span> <span class="toc-text">👥 Team Info</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%8F%86-Challenges"><span class="toc-number">4.</span> <span class="toc-text">🏆 Challenges</span></a></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        🦅 PatriotCTF 2022
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">jktrn</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2022-05-01T02:32:30.000Z" itemprop="datePublished">April 30, 2022</time>
+        
+      
+    </div>
+
+
+      
+
+      
+ <br>
+      <i class="fas fa-clock"></i> 3 min. read
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h2 id="📜-Information"><a href="#📜-Information" class="headerlink" title="📜 Information"></a>📜 Information</h2><p>PatriotCTF is a beginner-friendly, jeopardy-style capture-the-flag competition hosted by GMU’s cybersecurity club, MasonCC. All are welcome to participate, including students and security professionals. Challenges will range from beginner to expert, so there should be something for everyone.</p>
+<p><strong>Start Time</strong>: Fri, 29 April 2022, 14:00 PDT<br><strong>End Time</strong>: Sat, 30 April 2022, 14:00 PDT<br><strong>Discord</strong>: <a target="_blank" rel="noopener" href="https://discord.gg/Z8pA43vQcW">click here!</a><br><strong>CTFTime</strong>: <a target="_blank" rel="noopener" href="https://ctftime.org/event/1616">click here!</a></p>
+<h2 id="🥇-Placement"><a href="#🥇-Placement" class="headerlink" title="🥇 Placement"></a>🥇 Placement</h2><p><strong>Team Name</strong>: <code>View Source</code><br><strong>Place</strong>: 02 of 436 🥈<br><strong>Points</strong>: 21296</p>
+<h2 id="👥-Team-Info"><a href="#👥-Team-Info" class="headerlink" title="👥 Team Info"></a>👥 Team Info</h2><table>
+<thead>
+<tr>
+<th>Username</th>
+<th>Score</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>neil (Captain)</td>
+<td>9672</td>
+</tr>
+<tr>
+<td>jason</td>
+<td>2903</td>
+</tr>
+<tr>
+<td>jayden</td>
+<td>6503</td>
+</tr>
+<tr>
+<td>real sheep</td>
+<td>2218</td>
+</tr>
+</tbody></table>
+<h2 id="🏆-Challenges"><a href="#🏆-Challenges" class="headerlink" title="🏆 Challenges"></a>🏆 Challenges</h2><table>
+<thead>
+<tr>
+<th>Challenge</th>
+<th>Category</th>
+<th>Points</th>
+<th>Time Solved</th>
+<th>Writeup</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Base64 Times 10</td>
+<td>crypto</td>
+<td>10</td>
+<td>April 29th, 2:24:56 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>No Postcode Envy</td>
+<td>crypto</td>
+<td>10</td>
+<td>April 29th, 2:34:28 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>TwoFifty</td>
+<td>crypto</td>
+<td>10</td>
+<td>April 29th, 2:25:56 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Cowsay</td>
+<td>crypto</td>
+<td>53</td>
+<td>April 29th, 3:42:00 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>The Order</td>
+<td>crypto</td>
+<td>123</td>
+<td>April 29th, 8:12:13 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Merkle-Derkle</td>
+<td>crypto</td>
+<td>489</td>
+<td>April 30th, 6:13:16 AM</td>
+<td></td>
+</tr>
+<tr>
+<td>CorruptAAAAd</td>
+<td>crypto</td>
+<td>490</td>
+<td>April 30th, 6:07:31 AM</td>
+<td></td>
+</tr>
+<tr>
+<td>Cryptogod</td>
+<td>crypto</td>
+<td>498</td>
+<td>April 30th, 8:38:25 AM</td>
+<td></td>
+</tr>
+<tr>
+<td>Eetthheerr</td>
+<td>crypto</td>
+<td>499</td>
+<td>April 30th, 6:07:17 AM</td>
+<td></td>
+</tr>
+<tr>
+<td>Magic Smoke</td>
+<td>crypto</td>
+<td>499</td>
+<td>April 30th, 6:16:53 AM</td>
+<td></td>
+</tr>
+<tr>
+<td>Fly</td>
+<td>crypto</td>
+<td>500</td>
+<td>April 30th, 12:52:54 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Fly, Titan, Fly</td>
+<td>crypto</td>
+<td>500</td>
+<td>April 30th, 12:53:30 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Foxi</td>
+<td>forensics</td>
+<td>10</td>
+<td>April 29th, 5:28:55 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Sticky Note</td>
+<td>forensics</td>
+<td>229</td>
+<td>April 29th, 7:20:23 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Bézier</td>
+<td>forensics</td>
+<td>399</td>
+<td>April 29th, 8:24:50 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Metro</td>
+<td>forensics</td>
+<td>431</td>
+<td>April 29th, 8:39:09 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Toast</td>
+<td>forensics</td>
+<td>460</td>
+<td>April 29th, 11:02:13 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Session Spy</td>
+<td>forensics</td>
+<td>471</td>
+<td>April 30th, 1:55:57 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Flexi</td>
+<td>forensics</td>
+<td>476</td>
+<td>April 30th, 11:15:43 AM</td>
+<td></td>
+</tr>
+<tr>
+<td>Exfil</td>
+<td>forensics</td>
+<td>485</td>
+<td>April 30th, 1:56:43 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Vrai Crypt</td>
+<td>forensics</td>
+<td>490</td>
+<td>April 30th, 6:09:48 AM</td>
+<td></td>
+</tr>
+<tr>
+<td>Android 1</td>
+<td>forensics</td>
+<td>494</td>
+<td>April 30th, 11:59:45 AM</td>
+<td></td>
+</tr>
+<tr>
+<td>Android 2</td>
+<td>forensics</td>
+<td>496</td>
+<td>April 30th, 12:02:19 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Android 3</td>
+<td>forensics</td>
+<td>498</td>
+<td>April 30th, 12:02:45 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Android 4</td>
+<td>forensics</td>
+<td>498</td>
+<td>April 30th, 12:32:50 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Android 5</td>
+<td>forensics</td>
+<td>499</td>
+<td>April 30th, 12:43:54 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Banner</td>
+<td>forensics</td>
+<td>500</td>
+<td>April 30th, 1:34:07 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Google Form</td>
+<td>misc</td>
+<td>5</td>
+<td>April 30th, 8:33:05 AM</td>
+<td></td>
+</tr>
+<tr>
+<td>Join the Discord</td>
+<td>misc</td>
+<td>10</td>
+<td>April 29th, 2:27:35 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Apples</td>
+<td>misc</td>
+<td>132</td>
+<td>April 29th, 5:10:06 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>It’s All Greek to Me</td>
+<td>misc</td>
+<td>497</td>
+<td>April 29th, 11:07:32 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Hike</td>
+<td>osint</td>
+<td>10</td>
+<td>April 29th, 3:20:51 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Waffle Cabin</td>
+<td>osint</td>
+<td>123</td>
+<td>April 29th, 3:31:37 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Sunset</td>
+<td>osint</td>
+<td>283</td>
+<td>April 29th, 6:55:25 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Runway to the Danger Zone</td>
+<td>osint</td>
+<td>431</td>
+<td>April 29th, 3:58:29 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Hunter</td>
+<td>osint</td>
+<td>476</td>
+<td>April 29th, 5:04:15 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Snap</td>
+<td>osint</td>
+<td>479</td>
+<td>April 29th, 3:05:12 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Crystal Clear Security - 1</td>
+<td>osint</td>
+<td>492</td>
+<td>April 29th, 6:15:09 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Crystal Clear Security - 2</td>
+<td>osint</td>
+<td>498</td>
+<td>April 30th, 8:50:27 AM</td>
+<td></td>
+</tr>
+<tr>
+<td>Crystal Clear Security - 3</td>
+<td>osint</td>
+<td>500</td>
+<td>April 30th, 9:09:42 AM</td>
+<td></td>
+</tr>
+<tr>
+<td>Golf</td>
+<td>prog</td>
+<td>304</td>
+<td>April 29th, 3:18:37 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>CaptSHA</td>
+<td>prog</td>
+<td>474</td>
+<td>April 29th, 4:33:09 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Big Shaq</td>
+<td>prog</td>
+<td>481</td>
+<td>April 30th, 7:59:41 AM</td>
+<td></td>
+</tr>
+<tr>
+<td>1337 Significant Bit</td>
+<td>prog</td>
+<td>493</td>
+<td>April 30th, 1:27:30 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>BOF Warmup</td>
+<td>pwn</td>
+<td>10</td>
+<td>April 29th, 3:33:16 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Green Shell</td>
+<td>pwn</td>
+<td>245</td>
+<td>April 29th, 3:36:09 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>BOF Harder</td>
+<td>pwn</td>
+<td>446</td>
+<td>April 30th, 12:00:27 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Guess The Pass</td>
+<td>pwn</td>
+<td>460</td>
+<td>April 30th, 10:17:39 AM</td>
+<td></td>
+</tr>
+<tr>
+<td>Red Shell</td>
+<td>pwn</td>
+<td>476</td>
+<td>April 30th, 11:54:36 AM</td>
+<td></td>
+</tr>
+<tr>
+<td>Mine4j</td>
+<td>pwn</td>
+<td>500</td>
+<td>April 30th, 12:23:33 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>String Cheese</td>
+<td>re</td>
+<td>10</td>
+<td>April 29th, 2:46:35 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>PeeWhySea</td>
+<td>re</td>
+<td>275</td>
+<td>April 29th, 10:46:41 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>RoboTron9000</td>
+<td>re</td>
+<td>389</td>
+<td>April 29th, 8:36:28 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>crackme</td>
+<td>re</td>
+<td>453</td>
+<td>April 29th, 10:41:33 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>OverComplicated</td>
+<td>re</td>
+<td>489</td>
+<td>April 30th, 9:00:42 AM</td>
+<td></td>
+</tr>
+<tr>
+<td>Flowing</td>
+<td>re</td>
+<td>496</td>
+<td>April 30th, 1:45:09 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Apocalypse Security - 1</td>
+<td>web</td>
+<td>10</td>
+<td>April 29th, 2:44:58 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Inspector Clouseau</td>
+<td>web</td>
+<td>10</td>
+<td>April 29th, 2:17:14 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Locked</td>
+<td>web</td>
+<td>10</td>
+<td>April 30th, 7:36:50 AM</td>
+<td></td>
+</tr>
+<tr>
+<td>Rock and Roll</td>
+<td>web</td>
+<td>10</td>
+<td>April 29th, 2:16:57 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Spongebob</td>
+<td>web</td>
+<td>10</td>
+<td>April 29th, 2:23:31 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Apocalypse Security - 2</td>
+<td>web</td>
+<td>204</td>
+<td>April 29th, 7:04:12 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Excellent Database</td>
+<td>web</td>
+<td>426</td>
+<td>April 30th, 6:58:54 AM</td>
+<td></td>
+</tr>
+<tr>
+<td>Chewy or Crunchy</td>
+<td>web</td>
+<td>466</td>
+<td>April 29th, 2:43:35 PM</td>
+<td></td>
+</tr>
+</tbody></table>
+<!-- flag of hidden posts -->
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">~/</a></li>
+         
+          <li><a href="/articles/">~/articles</a></li>
+         
+          <li><a href="/ctfs/">~/ctfs</a></li>
+         
+          <li><a href="/profiles/">~/profiles</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%93%9C-Information"><span class="toc-number">1.</span> <span class="toc-text">📜 Information</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%A5%87-Placement"><span class="toc-number">2.</span> <span class="toc-text">🥇 Placement</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%91%A5-Team-Info"><span class="toc-number">3.</span> <span class="toc-text">👥 Team Info</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%8F%86-Challenges"><span class="toc-number">4.</span> <span class="toc-text">🏆 Challenges</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://enscribe.dev/ctfs/patriot/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://enscribe.dev/ctfs/patriot/&text=🦅 PatriotCTF 2022"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://enscribe.dev/ctfs/patriot/&title=🦅 PatriotCTF 2022"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://enscribe.dev/ctfs/patriot/&is_video=false&description=🦅 PatriotCTF 2022"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=🦅 PatriotCTF 2022&body=Check out this article: https://enscribe.dev/ctfs/patriot/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://enscribe.dev/ctfs/patriot/&title=🦅 PatriotCTF 2022"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://enscribe.dev/ctfs/patriot/&title=🦅 PatriotCTF 2022"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://enscribe.dev/ctfs/patriot/&title=🦅 PatriotCTF 2022"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://enscribe.dev/ctfs/patriot/&title=🦅 PatriotCTF 2022"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://enscribe.dev/ctfs/patriot/&name=🦅 PatriotCTF 2022&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://enscribe.dev/ctfs/patriot/&t=🦅 PatriotCTF 2022"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2022
+    jktrn
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">~/</a></li><!--
+     --><!--
+       --><li><a href="/articles/">~/articles</a></li><!--
+     --><!--
+       --><li><a href="/ctfs/">~/ctfs</a></li><!--
+     --><!--
+       --><li><a href="/profiles/">~/profiles</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"copy to clipboard!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>

@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="theme-color" content="#82C4E4">
+    
+    
+
+    <meta name="description" content="📜 InformationFrom the developers of VirSecCon, H@cktivityCon, BsidesBOS, GRIMMCon CTF and more, we bring you NahamCon CTF 2022! Start Time: Thu, 28 April 2022, 12:00 PDTEnd Time: Sat, 30 April 2022,">
+<meta property="og:type" content="article">
+<meta property="og:title" content="🕵️ NahamCon 2022">
+<meta property="og:url" content="https://enscribe.dev/ctfs/naham/index.html">
+<meta property="og:site_name" content="enscribe.dev">
+<meta property="og:description" content="📜 InformationFrom the developers of VirSecCon, H@cktivityCon, BsidesBOS, GRIMMCon CTF and more, we bring you NahamCon CTF 2022! Start Time: Thu, 28 April 2022, 12:00 PDTEnd Time: Sat, 30 April 2022,">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://i.imgur.com/xIBG8hK.jpg">
+<meta property="article:published_time" content="2022-05-01T02:32:30.000Z">
+<meta property="article:modified_time" content="2022-05-01T02:47:03.039Z">
+<meta property="article:author" content="jktrn">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://i.imgur.com/xIBG8hK.jpg">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="https://avatars.githubusercontent.com/u/71956291?v=4">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="https://avatars.githubusercontent.com/u/71956291?v=4" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="https://avatars.githubusercontent.com/u/71956291?v=4">
+        
+      
+    
+    <!-- title -->
+    <title>🕵️ NahamCon 2022</title><meta name="robots" content="noindex">
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+      <link rel="alternate" href="/true" title="Jason&#39;s Space 🐳" type="application/atom+xml" />
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 6.1.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">~/</a></li><!--
+     --><!--
+       --><li><a href="/articles/">~/articles</a></li><!--
+     --><!--
+       --><li><a href="/ctfs/">~/ctfs</a></li><!--
+     --><!--
+       --><li><a href="/profiles/">~/profiles</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" aria-label="back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="share post" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">previous post</span>
+      <span id="i-next" class="info" style="display:none;">next post</span>
+      <span id="i-top" class="info" style="display:none;">back to top</span>
+      <span id="i-share" class="info" style="display:none;">share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://enscribe.dev/ctfs/naham/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://enscribe.dev/ctfs/naham/&text=🕵️ NahamCon 2022"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://enscribe.dev/ctfs/naham/&title=🕵️ NahamCon 2022"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://enscribe.dev/ctfs/naham/&is_video=false&description=🕵️ NahamCon 2022"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=🕵️ NahamCon 2022&body=Check out this article: https://enscribe.dev/ctfs/naham/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://enscribe.dev/ctfs/naham/&title=🕵️ NahamCon 2022"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://enscribe.dev/ctfs/naham/&title=🕵️ NahamCon 2022"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://enscribe.dev/ctfs/naham/&title=🕵️ NahamCon 2022"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://enscribe.dev/ctfs/naham/&title=🕵️ NahamCon 2022"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://enscribe.dev/ctfs/naham/&name=🕵️ NahamCon 2022&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://enscribe.dev/ctfs/naham/&t=🕵️ NahamCon 2022"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%93%9C-Information"><span class="toc-number">1.</span> <span class="toc-text">📜 Information</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%A5%87-Placement"><span class="toc-number">2.</span> <span class="toc-text">🥇 Placement</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%8F%86-Challenges"><span class="toc-number">3.</span> <span class="toc-text">🏆 Challenges</span></a></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        🕵️ NahamCon 2022
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">jktrn</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2022-05-01T02:32:30.000Z" itemprop="datePublished">April 30, 2022</time>
+        
+      
+    </div>
+
+
+      
+
+      
+ <br>
+      <i class="fas fa-clock"></i> 3 min. read
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h2 id="📜-Information"><a href="#📜-Information" class="headerlink" title="📜 Information"></a>📜 Information</h2><p>From the developers of VirSecCon, H@cktivityCon, BsidesBOS, GRIMMCon CTF and more, we bring you NahamCon CTF 2022!</p>
+<p><strong>Start Time</strong>: Thu, 28 April 2022, 12:00 PDT<br><strong>End Time</strong>: Sat, 30 April 2022, 12:00 PDT<br><strong>Discord</strong>: <a target="_blank" rel="noopener" href="https://discord.com/invite/ucCz7uh">click here!</a><br><strong>CTFTime</strong>: <a target="_blank" rel="noopener" href="https://ctftime.org/event/1630">click here!</a></p>
+<h2 id="🥇-Placement"><a href="#🥇-Placement" class="headerlink" title="🥇 Placement"></a>🥇 Placement</h2><p><strong>Team Name</strong>: <code>Project Sekai</code><br><strong>Place</strong>: 06 of 3273<br><strong>Points</strong>: 22001</p>
+<h2 id="🏆-Challenges"><a href="#🏆-Challenges" class="headerlink" title="🏆 Challenges"></a>🏆 Challenges</h2><table>
+<thead>
+<tr>
+<th>Challenge</th>
+<th>Category</th>
+<th>Points</th>
+<th>Time Solved</th>
+<th>Writeup</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Baby RSA Quiz</td>
+<td>crypto</td>
+<td>50</td>
+<td>April 28th, 12:45:52 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Unimod</td>
+<td>crypto</td>
+<td>50</td>
+<td>April 28th, 1:29:11 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>XORROX</td>
+<td>crypto</td>
+<td>50</td>
+<td>April 28th, 12:57:16 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Pee Kay See Ess 7</td>
+<td>crypto</td>
+<td>486</td>
+<td>April 29th, 3:23:05 AM</td>
+<td></td>
+</tr>
+<tr>
+<td>MAC and Cheese</td>
+<td>crypto</td>
+<td>488</td>
+<td>April 29th, 1:12:14 AM</td>
+<td></td>
+</tr>
+<tr>
+<td>Poisoned</td>
+<td>devop</td>
+<td>468</td>
+<td>April 28th, 5:26:28 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Gitops</td>
+<td>devop</td>
+<td>496</td>
+<td>April 30th, 6:53:17 AM</td>
+<td></td>
+</tr>
+<tr>
+<td>A Wild Ride</td>
+<td>forensics</td>
+<td>131</td>
+<td>April 28th, 1:49:43 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>johnks</td>
+<td>forensics</td>
+<td>338</td>
+<td>April 28th, 8:35:13 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Jelly</td>
+<td>forensics</td>
+<td>500</td>
+<td>April 29th, 4:42:22 AM</td>
+<td></td>
+</tr>
+<tr>
+<td>Peanutbutter</td>
+<td>forensics</td>
+<td>500</td>
+<td>April 29th, 4:49:46 AM</td>
+<td></td>
+</tr>
+<tr>
+<td>Cereal</td>
+<td>hardware</td>
+<td>254</td>
+<td>April 28th, 1:42:01 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Dweeno</td>
+<td>hardware</td>
+<td>368</td>
+<td>April 28th, 4:30:55 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Call me Picasso</td>
+<td>hardware</td>
+<td>497</td>
+<td>April 28th, 2:24:13 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Gary’s Sauce</td>
+<td>hardware</td>
+<td>497</td>
+<td>April 28th, 10:35:04 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>USB Drive</td>
+<td>malware</td>
+<td>458</td>
+<td>April 28th, 10:24:37 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Brain Melt</td>
+<td>malware</td>
+<td>485</td>
+<td>April 28th, 10:27:40 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Free Nitro</td>
+<td>malware</td>
+<td>494</td>
+<td>April 28th, 10:26:12 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Otto’s It</td>
+<td>malware</td>
+<td>496</td>
+<td>April 28th, 5:27:29 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Steam Locomotive</td>
+<td>misc</td>
+<td>50</td>
+<td>April 28th, 1:18:42 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>The Balloon</td>
+<td>misc</td>
+<td>133</td>
+<td>April 28th, 12:57:10 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Gossip</td>
+<td>misc</td>
+<td>144</td>
+<td>April 28th, 1:15:02 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>To Be And Not To Be</td>
+<td>misc</td>
+<td>261</td>
+<td>April 28th, 6:01:06 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>One Mantissa Please</td>
+<td>misc</td>
+<td>276</td>
+<td>April 28th, 5:37:57 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>WhenAmI</td>
+<td>misc</td>
+<td>284</td>
+<td>April 28th, 3:42:04 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Degradation</td>
+<td>misc</td>
+<td>498</td>
+<td>April 28th, 6:33:40 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Geezip</td>
+<td>misc</td>
+<td>498</td>
+<td>April 29th, 7:50:20 AM</td>
+<td></td>
+</tr>
+<tr>
+<td>Mobilize</td>
+<td>mobile</td>
+<td>50</td>
+<td>April 28th, 12:46:56 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>OTP Vault</td>
+<td>mobile</td>
+<td>402</td>
+<td>April 28th, 4:45:59 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Click Me!</td>
+<td>mobile</td>
+<td>466</td>
+<td>April 28th, 5:36:45 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Secure Notes</td>
+<td>mobile</td>
+<td>485</td>
+<td>April 28th, 5:08:44 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Keeber 1</td>
+<td>osint</td>
+<td>50</td>
+<td>April 28th, 12:20:13 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Keeber 2</td>
+<td>osint</td>
+<td>50</td>
+<td>April 28th, 12:11:17 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Keeber 3</td>
+<td>osint</td>
+<td>50</td>
+<td>April 28th, 3:35:09 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Keeber 5</td>
+<td>osint</td>
+<td>50</td>
+<td>April 28th, 12:38:37 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Keeber 4</td>
+<td>osint</td>
+<td>318</td>
+<td>April 28th, 1:19:26 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Keeber 6</td>
+<td>osint</td>
+<td>368</td>
+<td>April 28th, 2:49:05 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Keeber 7</td>
+<td>osint</td>
+<td>474</td>
+<td>April 28th, 2:05:11 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Keeber 8</td>
+<td>osint</td>
+<td>482</td>
+<td>April 28th, 9:30:40 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>LOLD</td>
+<td>prog</td>
+<td>383</td>
+<td>April 28th, 9:04:36 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>LOLD2</td>
+<td>prog</td>
+<td>465</td>
+<td>April 28th, 9:54:55 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>LOLD3</td>
+<td>prog</td>
+<td>472</td>
+<td>April 28th, 10:28:33 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Babiersteps</td>
+<td>pwn</td>
+<td>50</td>
+<td>April 28th, 8:36:53 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Babysteps</td>
+<td>pwn</td>
+<td>385</td>
+<td>April 29th, 7:14:11 AM</td>
+<td></td>
+</tr>
+<tr>
+<td>Detour</td>
+<td>pwn</td>
+<td>404</td>
+<td>April 28th, 10:19:38 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Stackless</td>
+<td>pwn</td>
+<td>487</td>
+<td>April 29th, 6:08:19 AM</td>
+<td></td>
+</tr>
+<tr>
+<td>Reading List</td>
+<td>pwn</td>
+<td>489</td>
+<td>April 28th, 3:15:57 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Free Real Estate</td>
+<td>pwn</td>
+<td>497</td>
+<td>April 29th, 9:43:54 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>See the World</td>
+<td>pwn</td>
+<td>500</td>
+<td>April 30th, 2:41:08 AM</td>
+<td></td>
+</tr>
+<tr>
+<td>babyrev</td>
+<td>re</td>
+<td>392</td>
+<td>April 28th, 5:50:48 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Kamikaze</td>
+<td>re</td>
+<td>495</td>
+<td>April 29th, 6:48:10 AM</td>
+<td></td>
+</tr>
+<tr>
+<td>Time Machine</td>
+<td>re</td>
+<td>498</td>
+<td>April 29th, 6:26:07 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Ostrich</td>
+<td>stego</td>
+<td>408</td>
+<td>April 28th, 3:07:55 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>No Space Between Us</td>
+<td>stego</td>
+<td>482</td>
+<td>April 28th, 2:15:55 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>It Killed the Dinos</td>
+<td>stego</td>
+<td>500</td>
+<td>April 28th, 8:04:35 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Crash Override</td>
+<td>warmup</td>
+<td>50</td>
+<td>April 28th, 1:43:04 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Exit Vim</td>
+<td>warmup</td>
+<td>50</td>
+<td>April 28th, 12:05:00 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Flagcat</td>
+<td>warmup</td>
+<td>50</td>
+<td>April 28th, 12:02:54 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Prisoner</td>
+<td>warmup</td>
+<td>50</td>
+<td>April 28th, 12:40:38 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Quirky</td>
+<td>warmup</td>
+<td>50</td>
+<td>April 28th, 12:03:57 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Read The Rules</td>
+<td>warmup</td>
+<td>50</td>
+<td>April 28th, 12:05:47 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Technical Support</td>
+<td>warmup</td>
+<td>50</td>
+<td>April 28th, 12:06:09 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Wizard</td>
+<td>warmup</td>
+<td>50</td>
+<td>April 28th, 1:16:36 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>EXtravagant</td>
+<td>web</td>
+<td>50</td>
+<td>April 28th, 1:10:37 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Jurassic Park</td>
+<td>web</td>
+<td>50</td>
+<td>April 28th, 12:04:40 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Personnel</td>
+<td>web</td>
+<td>50</td>
+<td>April 28th, 1:29:17 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Flaskmetal Alchemist</td>
+<td>web</td>
+<td>168</td>
+<td>April 28th, 2:50:30 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Hacker Ts</td>
+<td>web</td>
+<td>422</td>
+<td>April 28th, 3:14:17 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Two For One</td>
+<td>web</td>
+<td>473</td>
+<td>April 29th, 12:30:29 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Deafcon</td>
+<td>web</td>
+<td>491</td>
+<td>April 28th, 4:46:03 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Poller</td>
+<td>web</td>
+<td>495</td>
+<td>April 29th, 10:15:12 AM</td>
+<td></td>
+</tr>
+</tbody></table>
+<!-- flag of hidden posts -->
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">~/</a></li>
+         
+          <li><a href="/articles/">~/articles</a></li>
+         
+          <li><a href="/ctfs/">~/ctfs</a></li>
+         
+          <li><a href="/profiles/">~/profiles</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%93%9C-Information"><span class="toc-number">1.</span> <span class="toc-text">📜 Information</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%A5%87-Placement"><span class="toc-number">2.</span> <span class="toc-text">🥇 Placement</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%8F%86-Challenges"><span class="toc-number">3.</span> <span class="toc-text">🏆 Challenges</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://enscribe.dev/ctfs/naham/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://enscribe.dev/ctfs/naham/&text=🕵️ NahamCon 2022"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://enscribe.dev/ctfs/naham/&title=🕵️ NahamCon 2022"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://enscribe.dev/ctfs/naham/&is_video=false&description=🕵️ NahamCon 2022"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=🕵️ NahamCon 2022&body=Check out this article: https://enscribe.dev/ctfs/naham/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://enscribe.dev/ctfs/naham/&title=🕵️ NahamCon 2022"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://enscribe.dev/ctfs/naham/&title=🕵️ NahamCon 2022"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://enscribe.dev/ctfs/naham/&title=🕵️ NahamCon 2022"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://enscribe.dev/ctfs/naham/&title=🕵️ NahamCon 2022"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://enscribe.dev/ctfs/naham/&name=🕵️ NahamCon 2022&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://enscribe.dev/ctfs/naham/&t=🕵️ NahamCon 2022"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2022
+    jktrn
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">~/</a></li><!--
+     --><!--
+       --><li><a href="/articles/">~/articles</a></li><!--
+     --><!--
+       --><li><a href="/ctfs/">~/ctfs</a></li><!--
+     --><!--
+       --><li><a href="/profiles/">~/profiles</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"copy to clipboard!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>
