@@ -19,7 +19,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://i.imgur.com/xIBG8hK.jpg">
 <meta property="article:published_time" content="2022-04-05T17:55:00.000Z">
-<meta property="article:modified_time" content="2022-04-05T23:10:31.949Z">
+<meta property="article:modified_time" content="2022-05-04T06:14:21.182Z">
 <meta property="article:author" content="jktrn">
 <meta property="article:tag" content="ctf">
 <meta property="article:tag" content="shctf">
@@ -45,7 +45,7 @@
       
     
     <!-- title -->
-    <title>shctf/web: R2D2</title>
+    <title>shctf/web: R2D2</title><meta name="robots" content="noindex">
     <!-- styles -->
     
 <link rel="stylesheet" href="/css/style.css">
@@ -85,10 +85,6 @@
     <span id="actions">
       <ul>
         
-        <li><a class="icon" aria-label="previous post" href="/ctfs/pico22/pwn/basic-file-exploit/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
-        
-        
-        <li><a class="icon" aria-label="next post" href="/ctfs/shctf/crypto/rahools-challenge/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
         
         <li><a class="icon" aria-label="back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
         <li><a class="icon" aria-label="share post" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
@@ -151,7 +147,7 @@
       
     <div class="article-tag">
         <i class="fas fa-tag"></i>
-        <a class="tag-link-link" href="/tags/ctf/" rel="tag">ctf</a>, <a class="tag-link-link" href="/tags/shctf/" rel="tag">shctf</a>, <a class="tag-link-link" href="/tags/web/" rel="tag">web</a>
+        <a class="tag-link-link" href="/tags/ctf/" rel="tag">ctf</a>, <a class="tag-link-link" href="/tags/shctf/" rel="tag">shctf</a>
     </div>
 
  <br>
@@ -169,7 +165,7 @@
 <p>Let’s take a look at the source code with <code>F12</code>.</p>
 <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">h1</span>&gt;</span>Roger, Roger<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&quot;/static/images/robots.jpeg&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">h4</span>&gt;</span>No, you are the one who is useless.<span class="tag">&lt;/<span class="name">h4</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
 <p>We see that the image on the website is named <code>robots.jpeg</code>. What happens if we visit <code>robots.txt</code>? 🤔</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ curl http://173.230.138.139/robots.txt</span><br><span class="line">shctf&#123;th1s-aster0id-1$-n0t-3ntir3ly-stable&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ curl http://173.230.138.139/robots.txt</span><br><span class="line">shctf&#123;th1s-aster0id-1$-n0t-3ntir3ly-stable&#125;</span><br></pre></td></tr></table></figure><!-- flag of hidden posts -->
   </div>
 </article>
 
