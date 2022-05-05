@@ -19,7 +19,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://i.imgur.com/xIBG8hK.jpg">
 <meta property="article:published_time" content="2022-04-05T23:20:02.000Z">
-<meta property="article:modified_time" content="2022-04-23T19:44:46.627Z">
+<meta property="article:modified_time" content="2022-05-05T06:36:07.877Z">
 <meta property="article:author" content="jktrn">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://i.imgur.com/xIBG8hK.jpg">
@@ -99,22 +99,158 @@
       
           <script src="https://kit.fontawesome.com/129342a70b.js" crossorigin="anonymous"></script>
 
-<h2 id="👤-personal"><a href="#👤-personal" class="headerlink" title="👤 personal"></a>👤 personal</h2><ul>
-<li><i class="fa-brands fa-discord"></i> <a href="https://enscribe.dev/profile/discord">Discord</a></li>
-<li><i class="fa-brands fa-github"></i> <a href="https://enscribe.dev/profile/github">GitHub</a></li>
-<li><i class="fa-brands fa-youtube"></i> <a href="https://enscribe.dev/profile/youtube">YouTube</a></li>
-<li><i class="fa-brands fa-instagram"></i> <a href="https://enscribe.dev/profile/instagram">Instagram</a></li>
-<li><i class="fa-brands fa-reddit"></i> <a href="https://enscribe.dev/profile/reddit">Reddit</a></li>
-<li><i class="fa-brands fa-spotify"></i> <a href="https://enscribe.dev/profile/spotify">Spotify</a></li>
-<li><i class="fa-solid fa-flag"></i> <a href="https://enscribe.dev/profile/ctftime">CTFTime</a></li>
-<li><i class="fa-solid fa-envelope"></i> <a href="https://enscribe.dev/profile/mail">Mail</a></li>
-</ul>
+<style>
+    .pushable {
+        position: relative;
+        border: none;
+        background: transparent;
+        padding: 0;
+        cursor: pointer;
+        outline-offset: 4px;
+        transition: filter 250ms;
+        margin: 12px 12px 12px 12px;
+    }
+
+    .shadow {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border-radius: 12px;
+        background: hsl(0deg 0% 0% / 0.25);
+        will-change: transform;
+        transform: translateY(2px);
+        transition:
+            transform 600ms cubic-bezier(.3, .7, .4, 1);
+    }
+
+    .edge {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border-radius: 12px;
+        background: #111111
+    }
+
+    .front {
+        display: block;
+        position: relative;
+        padding: 20px 42px;
+        border-radius: 12px;
+        font-size: 1.25rem;
+        font-family: "Meslo LG";
+        color: white;
+        background: #2a2a2c;
+        will-change: transform;
+        transform: translateY(-4px);
+        transition:
+            transform 600ms cubic-bezier(.3, .7, .4, 1);
+    }
+
+    .pushable:hover {
+        filter: brightness(110%);
+    }
+
+    .pushable:hover .front {
+        transform: translateY(-6px);
+        transition:
+            transform 250ms cubic-bezier(.3, .7, .4, 1.5);
+    }
+
+    .pushable:active .front {
+        transform: translateY(-2px);
+        transition: transform 34ms;
+    }
+
+    .pushable:hover .shadow {
+        transform: translateY(4px);
+        transition:
+            transform 250ms cubic-bezier(.3, .7, .4, 1.5);
+    }
+
+    .pushable:active .shadow {
+        transform: translateY(1px);
+        transition: transform 34ms;
+    }
+
+    .pushable:focus:not(:focus-visible) {
+        outline: none;
+    }
+</style>
+
+<h2 id="👤-personal"><a href="#👤-personal" class="headerlink" title="👤 personal"></a>👤 personal</h2><button class="pushable">
+    <a href="https://enscribe.dev/profile/discord">
+        <span class="shadow"></span>
+        <span class="edge"></span>
+        <span class="front">
+            <i class="fa-brands fa-discord"></i> discord
+        </span>
+    </a>
+</button>
+
+<button class="pushable">
+    <a href="https://enscribe.dev/profile/github">
+        <span class="shadow"></span>
+        <span class="edge"></span>
+        <span class="front">
+            <i class="fa-brands fa-github"></i> github
+        </span>
+    </a>
+</button>
+
+<button class="pushable">
+    <a href="https://enscribe.dev/profile/youtube">
+        <span class="shadow"></span>
+        <span class="edge"></span>
+        <span class="front">
+            <i class="fa-brands fa-youtube"></i> youtube
+        </span>
+    </a>
+</button>
+
+<button class="pushable">
+    <a href="https://enscribe.dev/profile/ctftime">
+        <span class="shadow"></span>
+        <span class="edge"></span>
+        <span class="front">
+            <i class="fa-solid fa-flag"></i> ctftime
+        </span>
+    </a>
+</button>
+
 <hr>
-<h2 id="🎮-gaming"><a href="#🎮-gaming" class="headerlink" title="🎮 gaming"></a>🎮 gaming</h2><ul>
-<li><i class="fa-solid fa-circle-xmark"></i> <a href="https://enscribe.dev/profile/osu">osu!</a></li>
-<li><i class="fa-brands fa-steam"></i> <a href="https://enscribe.dev/profile/steam">Steam</a></li>
-<li><i class="fa-solid fa-gamepad"></i> <a href="https://enscribe.dev/profile/tetrio">TETR.IO</a></li>
-</ul>
+<h2 id="🎮-gaming"><a href="#🎮-gaming" class="headerlink" title="🎮 gaming"></a>🎮 gaming</h2><button class="pushable">
+    <a href="https://enscribe.dev/profile/osu">
+        <span class="shadow"></span>
+        <span class="edge"></span>
+        <span class="front">
+            <i class="fa-solid fa-circle-xmark"></i> osu!
+        </span>
+    </a>
+</button>
+
+<button class="pushable">
+    <a href="https://enscribe.dev/profile/steam">
+        <span class="shadow"></span>
+        <span class="edge"></span>
+        <span class="front">
+            <i class="fa-brands fa-steam"></i> steam
+        </span>
+    </a>
+</button>
+
+<button class="pushable">
+    <a href="https://enscribe.dev/profile/tetrio">
+        <span class="shadow"></span>
+        <span class="edge"></span>
+        <span class="front">
+            <i class="fa-solid fa-gamepad"></i> tetr.io
+        </span>
+    </a>
+</button>
 
         
   </div>
