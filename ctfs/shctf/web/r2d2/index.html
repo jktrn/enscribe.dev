@@ -19,7 +19,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://i.imgur.com/xIBG8hK.jpg">
 <meta property="article:published_time" content="2022-04-05T17:55:00.000Z">
-<meta property="article:modified_time" content="2022-05-04T06:14:21.182Z">
+<meta property="article:modified_time" content="2022-05-05T04:57:27.931Z">
 <meta property="article:author" content="jktrn">
 <meta property="article:tag" content="ctf">
 <meta property="article:tag" content="shctf">
@@ -164,8 +164,10 @@
 <p><img src="/images/r2d2-website.PNG" alt="r2d2-website"></p>
 <p>Let’s take a look at the source code with <code>F12</code>.</p>
 <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">h1</span>&gt;</span>Roger, Roger<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&quot;/static/images/robots.jpeg&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">h4</span>&gt;</span>No, you are the one who is useless.<span class="tag">&lt;/<span class="name">h4</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
 <p>We see that the image on the website is named <code>robots.jpeg</code>. What happens if we visit <code>robots.txt</code>? 🤔</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ curl http://173.230.138.139/robots.txt</span><br><span class="line">shctf&#123;th1s-aster0id-1$-n0t-3ntir3ly-stable&#125;</span><br></pre></td></tr></table></figure><!-- flag of hidden posts -->
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ curl http://173.230.138.139/robots.txt</span><br><span class="line">shctf&#123;th1s-aster0id-1$-n0t-3ntir3ly-stable&#125;</span><br></pre></td></tr></table></figure>
+<!-- flag of hidden posts -->
   </div>
 </article>
 
