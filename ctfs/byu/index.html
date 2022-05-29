@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="theme-color" content="#82C4E4">
+    
+    
+
+    <meta name="description" content="📜 InformationA CTF hosted by BYU Cyberia - A CTF Team at BYU. Challenges will be geared towards beginners, with topics such as Web, Crypto, OSINT, Forensics, Reverse Engineering and more. Start Time:">
+<meta property="og:type" content="article">
+<meta property="og:title" content="BYUCTF 2022">
+<meta property="og:url" content="https://enscribe.dev/ctfs/byu/index.html">
+<meta property="og:site_name" content="enscribe.dev">
+<meta property="og:description" content="📜 InformationA CTF hosted by BYU Cyberia - A CTF Team at BYU. Challenges will be geared towards beginners, with topics such as Web, Crypto, OSINT, Forensics, Reverse Engineering and more. Start Time:">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://files.catbox.moe/5udwod.png">
+<meta property="article:published_time" content="2022-05-29T16:12:14.000Z">
+<meta property="article:modified_time" content="2022-05-29T16:49:44.466Z">
+<meta property="article:author" content="jktrn">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://files.catbox.moe/5udwod.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="https://avatars.githubusercontent.com/u/71956291?v=4">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="https://avatars.githubusercontent.com/u/71956291?v=4" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="https://avatars.githubusercontent.com/u/71956291?v=4">
+        
+      
+    
+    <!-- title -->
+    <title>BYUCTF 2022</title><meta name="robots" content="noindex">
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+      <link rel="alternate" href="/true" title="Jason&#39;s Space 🐳" type="application/atom+xml" />
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 6.1.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">~/</a></li><!--
+     --><!--
+       --><li><a href="/articles/">~/articles</a></li><!--
+     --><!--
+       --><li><a href="/ctfs/">~/ctfs</a></li><!--
+     --><!--
+       --><li><a href="/profiles/">~/profiles</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" aria-label="back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="share post" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">previous post</span>
+      <span id="i-next" class="info" style="display:none;">next post</span>
+      <span id="i-top" class="info" style="display:none;">back to top</span>
+      <span id="i-share" class="info" style="display:none;">share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://enscribe.dev/ctfs/byu/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://enscribe.dev/ctfs/byu/&text=BYUCTF 2022"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://enscribe.dev/ctfs/byu/&title=BYUCTF 2022"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://enscribe.dev/ctfs/byu/&is_video=false&description=BYUCTF 2022"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=BYUCTF 2022&body=Check out this article: https://enscribe.dev/ctfs/byu/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://enscribe.dev/ctfs/byu/&title=BYUCTF 2022"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://enscribe.dev/ctfs/byu/&title=BYUCTF 2022"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://enscribe.dev/ctfs/byu/&title=BYUCTF 2022"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://enscribe.dev/ctfs/byu/&title=BYUCTF 2022"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://enscribe.dev/ctfs/byu/&name=BYUCTF 2022&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://enscribe.dev/ctfs/byu/&t=BYUCTF 2022"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%93%9C-Information"><span class="toc-number">1.</span> <span class="toc-text">📜 Information</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%A5%87-Placement"><span class="toc-number">2.</span> <span class="toc-text">🥇 Placement</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%8F%86-Challenges"><span class="toc-number">3.</span> <span class="toc-text">🏆 Challenges</span></a></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        BYUCTF 2022
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">jktrn</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2022-05-29T16:12:14.000Z" itemprop="datePublished">May 29, 2022</time>
+        
+      
+    </div>
+
+
+      
+
+      
+ <br>
+      <i class="fas fa-clock"></i> 2 min. read
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h2 id="📜-Information"><a href="#📜-Information" class="headerlink" title="📜 Information"></a>📜 Information</h2><p>A CTF hosted by BYU Cyberia - A CTF Team at BYU.</p>
+<p>Challenges will be geared towards beginners, with topics such as Web, Crypto, OSINT, Forensics, Reverse Engineering and more.</p>
+<p><strong>Start Time</strong>: Fri, 27 May 2022, 09:00 PDT<br><strong>End Time</strong>:  Sat, 28 May 2022, 21:00 PDT<br><strong>CTFTime</strong>: <a target="_blank" rel="noopener" href="https://ctftime.org/event/1660/">click here!</a><br><strong>Discord</strong>: <a target="_blank" rel="noopener" href="https://discord.gg/dDtxzwX5Qc">click here!</a></p>
+<h2 id="🥇-Placement"><a href="#🥇-Placement" class="headerlink" title="🥇 Placement"></a>🥇 Placement</h2><p><strong>Team Name</strong>: <code>Project Sekai</code><br><strong>Place</strong>: 01 of 435 🥇<br><strong>Points</strong>: 13980</p>
+<h2 id="🏆-Challenges"><a href="#🏆-Challenges" class="headerlink" title="🏆 Challenges"></a>🏆 Challenges</h2><table>
+<thead>
+<tr>
+<th>Challenge</th>
+<th>Category</th>
+<th>Value</th>
+<th>Time</th>
+<th>Writeup</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Shifting Mindset</td>
+<td>crypto</td>
+<td>50</td>
+<td>May 27th, 9:56:36 AM</td>
+<td></td>
+</tr>
+<tr>
+<td>Truth and Falsehood</td>
+<td>crypto</td>
+<td>432</td>
+<td>May 27th, 11:37:10 AM</td>
+<td></td>
+</tr>
+<tr>
+<td>The Most Worthy Distinction of Pain</td>
+<td>crypto</td>
+<td>465</td>
+<td>May 27th, 3:30:15 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>XQR</td>
+<td>crypto</td>
+<td>490</td>
+<td>May 27th, 5:22:59 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Shouty 2</td>
+<td>crypto</td>
+<td>493</td>
+<td>May 27th, 9:21:16 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Take Me Out to the Ball Game</td>
+<td>crypto</td>
+<td>498</td>
+<td>May 28th, 11:46:57 AM</td>
+<td></td>
+</tr>
+<tr>
+<td>Too Many Times</td>
+<td>crypto</td>
+<td>498</td>
+<td>May 28th, 5:03:17 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Kendrick Lamar</td>
+<td>crypto</td>
+<td>500</td>
+<td>May 27th, 11:17:02 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Alpine 1</td>
+<td>forensics</td>
+<td>50</td>
+<td>May 27th, 9:39:42 AM</td>
+<td></td>
+</tr>
+<tr>
+<td>Alpine 2</td>
+<td>forensics</td>
+<td>50</td>
+<td>May 27th, 12:25:12 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Alpine 3</td>
+<td>forensics</td>
+<td>50</td>
+<td>May 27th, 9:56:47 AM</td>
+<td></td>
+</tr>
+<tr>
+<td>Qool Raster</td>
+<td>forensics</td>
+<td>94</td>
+<td>May 27th, 10:33:28 AM</td>
+<td></td>
+</tr>
+<tr>
+<td>Sticky Key</td>
+<td>forensics</td>
+<td>304</td>
+<td>May 27th, 12:50:22 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Banana Smoothie</td>
+<td>forensics</td>
+<td>349</td>
+<td>May 27th, 5:39:58 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Treasure Scanner</td>
+<td>forensics</td>
+<td>401</td>
+<td>May 27th, 1:03:01 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>The Villain</td>
+<td>forensics</td>
+<td>454</td>
+<td>May 27th, 11:03:36 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Blue 3</td>
+<td>forensics</td>
+<td>482</td>
+<td>May 28th, 10:54:13 AM</td>
+<td></td>
+</tr>
+<tr>
+<td>緑</td>
+<td>forensics</td>
+<td>486</td>
+<td>May 27th, 1:45:10 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Beans Beans Beans</td>
+<td>forensics</td>
+<td>500</td>
+<td>May 28th, 2:36:26 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Sanity Check</td>
+<td>misc</td>
+<td>50</td>
+<td>May 27th, 9:09:51 AM</td>
+<td></td>
+</tr>
+<tr>
+<td>Reconstruct</td>
+<td>misc</td>
+<td>183</td>
+<td>May 27th, 1:51:05 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Makes</td>
+<td>misc</td>
+<td>267</td>
+<td>May 27th, 6:13:39 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Feedback Survey</td>
+<td>misc</td>
+<td>275</td>
+<td>May 28th, 4:09:28 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Probably</td>
+<td>misc</td>
+<td>338</td>
+<td>May 27th, 11:32:45 AM</td>
+<td></td>
+</tr>
+<tr>
+<td>Chad “The Jaw” Bronson</td>
+<td>misc</td>
+<td>492</td>
+<td>May 28th, 12:00:47 AM</td>
+<td></td>
+</tr>
+<tr>
+<td>I don’t dream about noodles, dad.</td>
+<td>osint</td>
+<td>100</td>
+<td>May 27th, 9:42:20 AM</td>
+<td><a href="https://enscribe.dev/ctfs/byu/osint/osint-compilation/">click here!</a></td>
+</tr>
+<tr>
+<td>Oh The Vanity</td>
+<td>osint</td>
+<td>100</td>
+<td>May 27th, 10:21:10 AM</td>
+<td><a href="https://enscribe.dev/ctfs/byu/osint/osint-compilation/">click here!</a></td>
+</tr>
+<tr>
+<td>B0uld3r1ng</td>
+<td>osint</td>
+<td>416</td>
+<td>May 27th, 11:05:14 PM</td>
+<td><a href="https://enscribe.dev/ctfs/byu/osint/osint-compilation/">click here!</a></td>
+</tr>
+<tr>
+<td>Squatter’s Rights</td>
+<td>osint</td>
+<td>489</td>
+<td>May 27th, 3:48:08 PM</td>
+<td><a href="https://enscribe.dev/ctfs/byu/osint/osint-compilation/">click here!</a></td>
+</tr>
+<tr>
+<td>Okta? More like OhNah</td>
+<td>osint</td>
+<td>490</td>
+<td>May 28th, 1:10:01 AM</td>
+<td><a href="https://enscribe.dev/ctfs/byu/osint/osint-compilation/">click here!</a></td>
+</tr>
+<tr>
+<td>Murder Mystery</td>
+<td>osint</td>
+<td>499</td>
+<td>May 28th, 2:02:28 AM</td>
+<td><a href="https://enscribe.dev/ctfs/byu/osint/osint-compilation/">click here!</a></td>
+</tr>
+<tr>
+<td>43</td>
+<td>osint</td>
+<td>500</td>
+<td>May 28th, 11:07:54 AM</td>
+<td><a href="https://enscribe.dev/ctfs/byu/osint/osint-compilation/">click here!</a></td>
+</tr>
+<tr>
+<td>Buckeye Billy Birthday</td>
+<td>osint</td>
+<td>500</td>
+<td>May 28th, 12:59:33 AM</td>
+<td><a href="https://enscribe.dev/ctfs/byu/osint/osint-compilation/">click here!</a></td>
+</tr>
+<tr>
+<td>Buckeye Billy Blabbin’</td>
+<td>osint</td>
+<td>500</td>
+<td>May 28th, 1:28:55 PM</td>
+<td><a href="https://enscribe.dev/ctfs/byu/osint/osint-compilation/">click here!</a></td>
+</tr>
+<tr>
+<td>Basic Rev</td>
+<td>re</td>
+<td>50</td>
+<td>May 27th, 9:22:13 AM</td>
+<td></td>
+</tr>
+<tr>
+<td>Fun Fact</td>
+<td>re</td>
+<td>50</td>
+<td>May 27th, 9:33:09 AM</td>
+<td></td>
+</tr>
+<tr>
+<td>Windows XP</td>
+<td>re</td>
+<td>50</td>
+<td>May 27th, 10:01:40 AM</td>
+<td></td>
+</tr>
+<tr>
+<td>Chicken</td>
+<td>re</td>
+<td>439</td>
+<td>May 27th, 2:24:20 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Fetaverse</td>
+<td>web</td>
+<td>50</td>
+<td>May 27th, 11:42:09 AM</td>
+<td></td>
+</tr>
+<tr>
+<td>Social Media</td>
+<td>web</td>
+<td>241</td>
+<td>May 27th, 9:52:34 AM</td>
+<td></td>
+</tr>
+<tr>
+<td>Wordle</td>
+<td>web</td>
+<td>359</td>
+<td>May 27th, 4:23:38 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Black</td>
+<td>web</td>
+<td>436</td>
+<td>May 27th, 7:26:12 PM</td>
+<td></td>
+</tr>
+<tr>
+<td>Grafana</td>
+<td>web</td>
+<td>460</td>
+<td>May 27th, 4:38:11 PM</td>
+<td></td>
+</tr>
+</tbody></table>
+<!-- flag of hidden posts -->
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">~/</a></li>
+         
+          <li><a href="/articles/">~/articles</a></li>
+         
+          <li><a href="/ctfs/">~/ctfs</a></li>
+         
+          <li><a href="/profiles/">~/profiles</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%93%9C-Information"><span class="toc-number">1.</span> <span class="toc-text">📜 Information</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%A5%87-Placement"><span class="toc-number">2.</span> <span class="toc-text">🥇 Placement</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%8F%86-Challenges"><span class="toc-number">3.</span> <span class="toc-text">🏆 Challenges</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://enscribe.dev/ctfs/byu/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://enscribe.dev/ctfs/byu/&text=BYUCTF 2022"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://enscribe.dev/ctfs/byu/&title=BYUCTF 2022"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://enscribe.dev/ctfs/byu/&is_video=false&description=BYUCTF 2022"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=BYUCTF 2022&body=Check out this article: https://enscribe.dev/ctfs/byu/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://enscribe.dev/ctfs/byu/&title=BYUCTF 2022"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://enscribe.dev/ctfs/byu/&title=BYUCTF 2022"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://enscribe.dev/ctfs/byu/&title=BYUCTF 2022"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://enscribe.dev/ctfs/byu/&title=BYUCTF 2022"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://enscribe.dev/ctfs/byu/&name=BYUCTF 2022&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://enscribe.dev/ctfs/byu/&t=BYUCTF 2022"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2022
+    jktrn
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">~/</a></li><!--
+     --><!--
+       --><li><a href="/articles/">~/articles</a></li><!--
+     --><!--
+       --><li><a href="/ctfs/">~/ctfs</a></li><!--
+     --><!--
+       --><li><a href="/profiles/">~/profiles</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"copy to clipboard!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>
