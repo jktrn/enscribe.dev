@@ -11,7 +11,7 @@
     
 
     <meta name="description" content="My complete anime watchlist (imported from MyAnimeList), updated as of 5&#x2F;16&#x2F;22.">
-<meta property="og:type" content="article">
+<meta property="og:type" content="website">
 <meta property="og:title" content="Anime Watchlist">
 <meta property="og:url" content="https://enscribe.dev/anime/index.html">
 <meta property="og:site_name" content="enscribe.dev">
@@ -60,96 +60,44 @@
 
 <body class="max-width mx-auto px3 ltr">
     
-      <div id="header-post">
-  <a id="menu-icon" href="#" aria-label="menu"><i class="fas fa-bars fa-lg"></i></a>
-  <a id="menu-icon-tablet" href="#" aria-label="menu"><i class="fas fa-bars fa-lg"></i></a>
-  <a id="top-icon-tablet" href="#" aria-label="top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
-  <span id="menu">
-    <span id="nav">
-      <ul>
-        <!--
-       --><li><a href="/">~/</a></li><!--
-     --><!--
-       --><li><a href="/articles/">~/articles</a></li><!--
-     --><!--
-       --><li><a href="/ctfs/">~/ctfs</a></li><!--
-     --><!--
-       --><li><a href="/profiles/">~/profiles</a></li><!--
-     -->
-      </ul>
-    </span>
-    <br/>
-    <span id="actions">
-      <ul>
-        
-        
-        <li><a class="icon" aria-label="back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
-        <li><a class="icon" aria-label="share post" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
-      </ul>
-      <span id="i-prev" class="info" style="display:none;">previous post</span>
-      <span id="i-next" class="info" style="display:none;">next post</span>
-      <span id="i-top" class="info" style="display:none;">back to top</span>
-      <span id="i-share" class="info" style="display:none;">share post</span>
-    </span>
-    <br/>
-    <div id="share" style="display: none">
-      <ul>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://enscribe.dev/anime/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://enscribe.dev/anime/&text=Anime Watchlist"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://enscribe.dev/anime/&title=Anime Watchlist"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://enscribe.dev/anime/&is_video=false&description=Anime Watchlist"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="mailto:?subject=Anime Watchlist&body=Check out this article: https://enscribe.dev/anime/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://enscribe.dev/anime/&title=Anime Watchlist"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://enscribe.dev/anime/&title=Anime Watchlist"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://enscribe.dev/anime/&title=Anime Watchlist"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://enscribe.dev/anime/&title=Anime Watchlist"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://enscribe.dev/anime/&name=Anime Watchlist&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://enscribe.dev/anime/&t=Anime Watchlist"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
-</ul>
-
-    </div>
-    <div id="toc">
-      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%8C%9B-current"><span class="toc-number">1.</span> <span class="toc-text">⌛ current</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%8C%9A-complete"><span class="toc-number">2.</span> <span class="toc-text">⌚ complete</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%94%AD-plan-to-watch"><span class="toc-number">3.</span> <span class="toc-text">🔭 plan-to-watch</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%9B%91-on-hold"><span class="toc-number">4.</span> <span class="toc-text">🛑 on-hold</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%97%91%EF%B8%8F-dropped"><span class="toc-number">5.</span> <span class="toc-text">🗑️ dropped</span></a></li></ol>
-    </div>
-  </span>
-</div>
-
-    
     <div class="content index py4">
         
-        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
-  <header>
+          <header id="header">
+  <a href="/">
+  
     
-    <h1 class="posttitle" itemprop="name headline">
-        Anime Watchlist
-    </h1>
+      <div id="logo" style="background-image: url(https://avatars.githubusercontent.com/u/71956291?v=4);"></div>
+    
+  
+    <div id="title">
+      <h1>Jason&#39;s Space 🐳</h1>
+    </div>
+  </a>
+  <div id="nav">
+    <ul>
+      <li class="icon">
+        <a href="#" aria-label="menu"><i class="fas fa-bars fa-2x"></i></a>
+      </li>
+      <!--
+     --><li><a href="/">~/</a></li><!--
+   --><!--
+     --><li><a href="/articles/">~/articles</a></li><!--
+   --><!--
+     --><li><a href="/ctfs/">~/ctfs</a></li><!--
+   --><!--
+     --><li><a href="/profiles/">~/profiles</a></li><!--
+   -->
+    </ul>
+  </div>
+</header>
 
-
-
-    <div class="meta">
-      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
-        <span itemprop="name">jktrn</span>
-      </span>
-      
-    <div class="postdate">
-      
-        <time datetime="2022-05-17T04:26:08.000Z" itemprop="datePublished">May 16, 2022</time>
         
-      
-    </div>
-
-
-      
-
-      
- <br>
-      <i class="fas fa-clock"></i> 4 min. read
-    </div>
-  </header>
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
   
 
   <div class="content" itemprop="articleBody">
-    <style>
+      
+          <style>
     * {
         box-sizing: border-box;
     }
@@ -1464,59 +1412,9 @@
 </tr>
 </tbody></table>
 <!-- flag of hidden posts -->
+        
   </div>
 </article>
-
-
-
-        
-          <div id="footer-post-container">
-  <div id="footer-post">
-
-    <div id="nav-footer" style="display: none">
-      <ul>
-         
-          <li><a href="/">~/</a></li>
-         
-          <li><a href="/articles/">~/articles</a></li>
-         
-          <li><a href="/ctfs/">~/ctfs</a></li>
-         
-          <li><a href="/profiles/">~/profiles</a></li>
-        
-      </ul>
-    </div>
-
-    <div id="toc-footer" style="display: none">
-      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%8C%9B-current"><span class="toc-number">1.</span> <span class="toc-text">⌛ current</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%8C%9A-complete"><span class="toc-number">2.</span> <span class="toc-text">⌚ complete</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%94%AD-plan-to-watch"><span class="toc-number">3.</span> <span class="toc-text">🔭 plan-to-watch</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%9B%91-on-hold"><span class="toc-number">4.</span> <span class="toc-text">🛑 on-hold</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%97%91%EF%B8%8F-dropped"><span class="toc-number">5.</span> <span class="toc-text">🗑️ dropped</span></a></li></ol>
-    </div>
-
-    <div id="share-footer" style="display: none">
-      <ul>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://enscribe.dev/anime/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://enscribe.dev/anime/&text=Anime Watchlist"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://enscribe.dev/anime/&title=Anime Watchlist"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://enscribe.dev/anime/&is_video=false&description=Anime Watchlist"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="mailto:?subject=Anime Watchlist&body=Check out this article: https://enscribe.dev/anime/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://enscribe.dev/anime/&title=Anime Watchlist"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://enscribe.dev/anime/&title=Anime Watchlist"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://enscribe.dev/anime/&title=Anime Watchlist"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://enscribe.dev/anime/&title=Anime Watchlist"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://enscribe.dev/anime/&name=Anime Watchlist&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://enscribe.dev/anime/&t=Anime Watchlist"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
-</ul>
-
-    </div>
-
-    <div id="actions-footer">
-        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> menu</a>
-        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
-        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> share</a>
-        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> top</a>
-    </div>
-
-  </div>
-</div>
 
         
         <footer id="footer">
@@ -1560,29 +1458,6 @@
 
 
 <!-- clipboard -->
-
-  
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
-  
-  <script type="text/javascript">
-  $(function() {
-    // copy-btn HTML
-    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"copy to clipboard!\">";
-    btn += '<i class="far fa-clone"></i>';
-    btn += '</span>'; 
-    // mount it!
-    $(".highlight table").before(btn);
-    var clip = new ClipboardJS('.btn-copy', {
-      text: function(trigger) {
-        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
-      }
-    });
-    clip.on('success', function(e) {
-      e.trigger.setAttribute('aria-label', "copied!");
-      e.clearSelection();
-    })
-  })
-  </script>
 
 
 <script src="/js/main.js"></script>
