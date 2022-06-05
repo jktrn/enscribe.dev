@@ -19,7 +19,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://enscribe.dev/image/banner-ctfs-byu.png">
 <meta property="article:published_time" content="2022-05-29T01:02:04.000Z">
-<meta property="article:modified_time" content="2022-06-03T07:03:03.260Z">
+<meta property="article:modified_time" content="2022-06-05T04:25:06.699Z">
 <meta property="article:author" content="jktrn">
 <meta property="article:tag" content="ctf">
 <meta property="article:tag" content="byu">
@@ -153,7 +153,7 @@
     </div>
 
  <br>
-      <i class="fas fa-clock"></i> 18 min. read
+      <i class="fas fa-clock"></i> 19 min. read
     </div>
   </header>
   
@@ -165,6 +165,11 @@
         padding: 1rem;
         font-size: 90%;
         text-align: center;
+    }
+    .flex-container {
+        display: flex;
+        flex-wrap: nowrap;
+        justify-content: center;
     }
 </style>
 
@@ -357,7 +362,41 @@ Flag will be completely visible once solved! You will see <code>byuctf&#123;&#12
 <p>the more billy tweeted about something, the more of a hint it might be. The flag is on his account someplace.</p>
 </blockquote>
 <p>He tweeted a lot about song lyrics:</p>
-<img src="/image/byu/blabbin2.png" width=400 alt="Song Tweets">
+<div class="flex-container">
+    <div>
+        <blockquote width=300 class="twitter-tweet" data-lang="en" data-theme="dark">
+            <p lang="en" dir="ltr">With not enough to eat<br>Who am I, to be blind pretending not to see their
+                needs?<br>A summer&#39;s disregard<br>A broken bottle top<br>And a one man&#39;s soul<br>They follow
+                each other on the wind ya know<br>&#39;Cause they got nowhere to go<br>That&#39;s why I want you to
+                know<br>I&#39;m starting with the ...</p>&mdash; #1 Buckeye Fan billy (@William_buckeye) <a
+                target="_blank" rel="noopener" href="https://twitter.com/William_buckeye/status/1515237428025462785?ref_src=twsrc%5Etfw">April 16,
+                2022</a>
+        </blockquote>
+        <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+    </div>
+    <div>
+        <blockquote width=300 class="twitter-tweet" data-lang="en" data-theme="dark">
+            <p lang="en" dir="ltr">Oh, are you some kind of magic mirror<br>Come to show to me<br>God in time and
+                space<br><br>I saw the outline of my Maker dancing backlit<br>By the rays of your incandescent
+                light<br>I saw the figure of my Father shadow dancing<br>By the flames of your electric desire</p>
+            &mdash; #1 Buckeye Fan billy (@William_buckeye) <a
+                target="_blank" rel="noopener" href="https://twitter.com/William_buckeye/status/1515238210577657857?ref_src=twsrc%5Etfw">April 16,
+                2022</a>
+        </blockquote>
+        <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+    </div>
+    <div>
+        <blockquote class="twitter-tweet" data-lang="en" data-theme="dark">
+            <p lang="en" dir="ltr">Bring your tired<br>And bring your shame<br>Bring your guilt<br>And bring your
+                pain<br>Don&#39;t you know that&#39;s not your name<br>You will always be much more to me<br>Every day I
+                wrestle with the voices<br>That keep telling me I&#39;m not right<br>But that&#39;s alright</p>&mdash;
+            #1 Buckeye Fan billy (@William_buckeye) <a
+                target="_blank" rel="noopener" href="https://twitter.com/William_buckeye/status/1515237017579229185?ref_src=twsrc%5Etfw">April 16,
+                2022</a>
+        </blockquote>
+        <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+    </div>
+</div>
 
 <p>We decided it would be best to create a list of songs, in addition to counting occurrences of topics he discussed (for brainstorming purposes). We ended up with this list:</p>
 <p><img src="/image/byu/blabbin3.png" alt="Occurences List"></p>
