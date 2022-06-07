@@ -10,16 +10,16 @@
     
     
 
-    <meta name="description" content="Writeup for the Space Heroes CTF pwn challenge [Warmup to the Dark Side].">
+    <meta name="description" content="Writeup for the Space Heroes CTF pwn challenge &quot;Warmup to the Dark Side&quot;.">
 <meta property="og:type" content="article">
 <meta property="og:title" content="shctf&#x2F;pwn: Warmup to the Dark Side">
 <meta property="og:url" content="https://enscribe.dev/ctfs/shctf/pwn/warmup-to-the-dark-side/index.html">
 <meta property="og:site_name" content="enscribe.dev">
-<meta property="og:description" content="Writeup for the Space Heroes CTF pwn challenge [Warmup to the Dark Side].">
+<meta property="og:description" content="Writeup for the Space Heroes CTF pwn challenge &quot;Warmup to the Dark Side&quot;.">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://enscribe.dev/image/banner-ctfs.png">
 <meta property="article:published_time" content="2022-04-05T22:57:40.000Z">
-<meta property="article:modified_time" content="2022-06-01T05:56:26.289Z">
+<meta property="article:modified_time" content="2022-06-06T23:41:08.350Z">
 <meta property="article:author" content="jktrn">
 <meta property="article:tag" content="ctf">
 <meta property="article:tag" content="pwn">
@@ -88,7 +88,7 @@
         <li><a class="icon" aria-label="previous post" href="/ctfs/shctf/pwn/guardians-of-the-galaxy/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
         
         
-        <li><a class="icon" aria-label="next post" href="/ctfs/pico22/pwn/buffer-overflow-1/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="next post" href="/ctfs/pico22/crypto/basic-mod1-2/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
         
         <li><a class="icon" aria-label="back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
         <li><a class="icon" aria-label="share post" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
@@ -116,7 +116,7 @@
 
     </div>
     <div id="toc">
-      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%93%9C-Description"><span class="toc-number">1.</span> <span class="toc-text">📜 Description</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%94%8D-Detailed-Solution"><span class="toc-number">2.</span> <span class="toc-text">🔍 Detailed Solution</span></a></li></ol>
+      
     </div>
   </span>
 </div>
@@ -161,10 +161,26 @@
   
 
   <div class="content" itemprop="articleBody">
-    <h2 id="📜-Description"><a href="#📜-Description" class="headerlink" title="📜 Description"></a>📜 Description</h2><p>Once you start down the dark path, forever will it dominate your destiny.<br>(And yes, the binary isn’t included)</p>
-<p><code>nc 0.cloud.chals.io 30096</code><br><strong>Author</strong>: v10l3nt</p>
-<hr>
-<h2 id="🔍-Detailed-Solution"><a href="#🔍-Detailed-Solution" class="headerlink" title="🔍 Detailed Solution"></a>🔍 Detailed Solution</h2><p>Let’s run that <code>netcat</code> link to see what’s going on:</p>
+    <style>
+    .box {
+        border: 1px solid rgba(100, 100, 100, .5);
+        padding: 1rem;
+        font-size: 90%;
+        text-align: center;
+    }
+    .flex-container {
+        display: flex;
+        flex-wrap: nowrap;
+        justify-content: center;
+    }
+</style>
+
+<p class="box">Once you start down the dark path, forever will it dominate your destiny.<br>
+(And yes, the binary isn't included)<br>
+<code>nc 0.cloud.chals.io 30096</code><br>
+<b>Author</b>: v10l3nt</p>
+
+<p>Let’s run that <code>netcat</code> link to see what’s going on:</p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">kali@kali:~/shctf/pwn/warmup-to-the-dark-side$ nc 0.cloud.chals.io 30096</span><br><span class="line">The Dark Side Of The Force, Are They. Easily They Flow, Quick To Join You In A Fight. The Dark Side resides at: 0x55a6b42f020c</span><br><span class="line">Jedi Mind tricks dont work on me &gt;&gt;&gt; </span><br></pre></td></tr></table></figure>
 
 <p>We’re given an address of the <code>win()</code> function… and that’s it. If this is a <code>ret2win</code> challenge, how are we meant to find the offset of the <code>$rip</code> register and overflow it with our code? Of course… we need to brute force it.</p>
@@ -198,7 +214,7 @@
     </div>
 
     <div id="toc-footer" style="display: none">
-      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%93%9C-Description"><span class="toc-number">1.</span> <span class="toc-text">📜 Description</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%94%8D-Detailed-Solution"><span class="toc-number">2.</span> <span class="toc-text">🔍 Detailed Solution</span></a></li></ol>
+      
     </div>
 
     <div id="share-footer" style="display: none">
