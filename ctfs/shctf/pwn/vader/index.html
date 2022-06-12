@@ -19,8 +19,8 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://enscribe.dev/asset/banner/banner-vader.png">
 <meta property="article:published_time" content="2022-06-07T17:41:26.000Z">
-<meta property="article:modified_time" content="2022-06-10T01:44:48.709Z">
-<meta property="article:author" content="jktrn">
+<meta property="article:modified_time" content="2022-06-12T21:49:47.104Z">
+<meta property="article:author" content="enscribe">
 <meta property="article:tag" content="ctf">
 <meta property="article:tag" content="pwn">
 <meta property="article:tag" content="shctf">
@@ -86,7 +86,7 @@
       <ul>
         
         
-        <li><a class="icon" aria-label="next post" href="/ctfs/pico22/pwn/buffer-overflow-0-1/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="next post" href="/ctfs/pico22/pwn/buffer-overflow-series/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
         
         <li><a class="icon" aria-label="back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
         <li><a class="icon" aria-label="share post" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
@@ -133,7 +133,7 @@
 
     <div class="meta">
       <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
-        <span itemprop="name">jktrn</span>
+        <span itemprop="name">enscribe</span>
       </span>
       
     <div class="postdate">
@@ -152,8 +152,7 @@
         <a class="tag-link-link" href="/tags/ctf/" rel="tag">ctf</a>, <a class="tag-link-link" href="/tags/pwn/" rel="tag">pwn</a>, <a class="tag-link-link" href="/tags/shctf/" rel="tag">shctf</a>
     </div>
 
- <br>
-      <i class="fas fa-clock"></i> 9 min. read
+
     </div>
   </header>
   
@@ -165,6 +164,8 @@
         padding: 1rem;
         font-size: 90%;
         text-align: center;
+        margin-bottom: 1rem;
+        margin-top: 1rem;
     }
     .flex-container {
         display: flex;
@@ -173,11 +174,11 @@
     }
 </style>
 
-<p class="box">
+<div class="box">
 Submit flag from <code>/flag.txt</code> from <code>0.cloud.chals.io:20712</code><br>
 <b>Author</b>: v10l3nt<br>
 <b>Files</b>: <a href="/asset/shctf/vader">vader</a>
-</p>
+</div>
 
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[*] &#x27;/home/kali/ctfs/shctf/pwn/vader/vader&#x27;</span><br><span class="line">    Arch:     amd64-64-little</span><br><span class="line">    RELRO:    Partial RELRO</span><br><span class="line">    Stack:    No canary found</span><br><span class="line">    NX:       NX enabled</span><br><span class="line">    PIE:      No PIE (0x400000)</span><br></pre></td></tr></table></figure>
 
@@ -286,7 +287,7 @@ Submit flag from <code>/flag.txt</code> from <code>0.cloud.chals.io:20712</code>
     
     
     2022
-    jktrn
+    enscribe
   </div>
   <div class="footer-right">
     <nav>

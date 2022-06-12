@@ -10,17 +10,17 @@
     
     
 
-    <meta name="description" content="Learn how to exploit vulnerable C functions to break the program, eventually controlling the flow of code execution! This is a writeup for the picoCTF 2022 binary&#x2F;pwn challenges &quot;Buffer overflow 0&#x2F;1&quot;.">
+    <meta name="description" content="Learn how to exploit vulnerable C functions to break the program, eventually controlling the flow of code execution! This is a writeup for the picoCTF 2022 binary&#x2F;pwn series &quot;Buffer overflow&quot;.">
 <meta property="og:type" content="article">
-<meta property="og:title" content="pico22&#x2F;pwn: Buffer overflow 0&#x2F;1">
-<meta property="og:url" content="https://enscribe.dev/ctfs/pico22/pwn/buffer-overflow-0-1/index.html">
+<meta property="og:title" content="pico22&#x2F;pwn: Buffer overflow series">
+<meta property="og:url" content="https://enscribe.dev/ctfs/pico22/pwn/buffer-overflow-series/index.html">
 <meta property="og:site_name" content="enscribe.dev">
-<meta property="og:description" content="Learn how to exploit vulnerable C functions to break the program, eventually controlling the flow of code execution! This is a writeup for the picoCTF 2022 binary&#x2F;pwn challenges &quot;Buffer overflow 0&#x2F;1&quot;.">
+<meta property="og:description" content="Learn how to exploit vulnerable C functions to break the program, eventually controlling the flow of code execution! This is a writeup for the picoCTF 2022 binary&#x2F;pwn series &quot;Buffer overflow&quot;.">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://enscribe.dev/asset/banner/banner-buffer-overflow.png">
 <meta property="article:published_time" content="2022-06-06T19:16:08.000Z">
-<meta property="article:modified_time" content="2022-06-10T01:43:43.766Z">
-<meta property="article:author" content="jktrn">
+<meta property="article:modified_time" content="2022-06-12T21:51:23.356Z">
+<meta property="article:author" content="enscribe">
 <meta property="article:tag" content="ctf">
 <meta property="article:tag" content="pico22">
 <meta property="article:tag" content="pwn">
@@ -45,7 +45,7 @@
       
     
     <!-- title -->
-    <title>pico22/pwn: Buffer overflow 0/1</title>
+    <title>pico22/pwn: Buffer overflow series</title>
     <!-- styles -->
     
 <link rel="stylesheet" href="/css/style.css">
@@ -101,17 +101,17 @@
     <br/>
     <div id="share" style="display: none">
       <ul>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://enscribe.dev/ctfs/pico22/pwn/buffer-overflow-0-1/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://enscribe.dev/ctfs/pico22/pwn/buffer-overflow-0-1/&text=pico22/pwn: Buffer overflow 0/1"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://enscribe.dev/ctfs/pico22/pwn/buffer-overflow-0-1/&title=pico22/pwn: Buffer overflow 0/1"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://enscribe.dev/ctfs/pico22/pwn/buffer-overflow-0-1/&is_video=false&description=pico22/pwn: Buffer overflow 0/1"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="mailto:?subject=pico22/pwn: Buffer overflow 0/1&body=Check out this article: https://enscribe.dev/ctfs/pico22/pwn/buffer-overflow-0-1/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://enscribe.dev/ctfs/pico22/pwn/buffer-overflow-0-1/&title=pico22/pwn: Buffer overflow 0/1"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://enscribe.dev/ctfs/pico22/pwn/buffer-overflow-0-1/&title=pico22/pwn: Buffer overflow 0/1"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://enscribe.dev/ctfs/pico22/pwn/buffer-overflow-0-1/&title=pico22/pwn: Buffer overflow 0/1"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://enscribe.dev/ctfs/pico22/pwn/buffer-overflow-0-1/&title=pico22/pwn: Buffer overflow 0/1"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://enscribe.dev/ctfs/pico22/pwn/buffer-overflow-0-1/&name=pico22/pwn: Buffer overflow 0/1&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://enscribe.dev/ctfs/pico22/pwn/buffer-overflow-0-1/&t=pico22/pwn: Buffer overflow 0/1"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://enscribe.dev/ctfs/pico22/pwn/buffer-overflow-series/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://enscribe.dev/ctfs/pico22/pwn/buffer-overflow-series/&text=pico22/pwn: Buffer overflow series"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://enscribe.dev/ctfs/pico22/pwn/buffer-overflow-series/&title=pico22/pwn: Buffer overflow series"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://enscribe.dev/ctfs/pico22/pwn/buffer-overflow-series/&is_video=false&description=pico22/pwn: Buffer overflow series"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=pico22/pwn: Buffer overflow series&body=Check out this article: https://enscribe.dev/ctfs/pico22/pwn/buffer-overflow-series/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://enscribe.dev/ctfs/pico22/pwn/buffer-overflow-series/&title=pico22/pwn: Buffer overflow series"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://enscribe.dev/ctfs/pico22/pwn/buffer-overflow-series/&title=pico22/pwn: Buffer overflow series"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://enscribe.dev/ctfs/pico22/pwn/buffer-overflow-series/&title=pico22/pwn: Buffer overflow series"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://enscribe.dev/ctfs/pico22/pwn/buffer-overflow-series/&title=pico22/pwn: Buffer overflow series"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://enscribe.dev/ctfs/pico22/pwn/buffer-overflow-series/&name=pico22/pwn: Buffer overflow series&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://enscribe.dev/ctfs/pico22/pwn/buffer-overflow-series/&t=pico22/pwn: Buffer overflow series"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
 </ul>
 
     </div>
@@ -128,14 +128,14 @@
   <header>
     
     <h1 class="posttitle" itemprop="name headline">
-        pico22/pwn: Buffer overflow 0/1
+        pico22/pwn: Buffer overflow series
     </h1>
 
 
 
     <div class="meta">
       <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
-        <span itemprop="name">jktrn</span>
+        <span itemprop="name">enscribe</span>
       </span>
       
     <div class="postdate">
@@ -154,8 +154,7 @@
         <a class="tag-link-link" href="/tags/ctf/" rel="tag">ctf</a>, <a class="tag-link-link" href="/tags/pico22/" rel="tag">pico22</a>, <a class="tag-link-link" href="/tags/pwn/" rel="tag">pwn</a>
     </div>
 
- <br>
-      <i class="fas fa-clock"></i> 12 min. read
+
     </div>
   </header>
   
@@ -167,6 +166,8 @@
         padding: 1rem;
         font-size: 90%;
         text-align: center;
+        margin-bottom: 1rem;
+        margin-top: 1rem;
     }
     .flex-container {
         display: flex;
@@ -176,8 +177,9 @@
 </style>
 
 <h3 id="Intro"><a href="#Intro" class="headerlink" title="Intro"></a>Intro</h3><p>This is a writeup for the buffer overflow series during the <strong>picoCTF 2022</strong> competition. This was arguably my favorite set of challenges, as beforehand I’d never stepped into the realm of binary exploitation&#x2F;pwn. I learned a lot from this, so I highly recommend solving it by yourself before referencing this document. Cheers!</p>
-<h2 id="Buffer-overflow-0"><a href="#Buffer-overflow-0" class="headerlink" title="Buffer overflow 0"></a>Buffer overflow 0</h2><p class="box">Smash the stack! Let's start off simple: can you overflow the correct buffer? The program is available <a href="/asset/pico/buffer-overflow-0-1/vuln-0">here</a>. You can view source <a href="/asset/pico/buffer-overflow-0-1/vuln-0.c">here</a>, and connect with it using:<br><code>nc saturn.picoctf.net 65535</code>
-</p>
+<h2 id="Buffer-overflow-0"><a href="#Buffer-overflow-0" class="headerlink" title="Buffer overflow 0"></a>Buffer overflow 0</h2><div class="box">
+  Smash the stack! Let's start off simple: can you overflow the correct buffer? The program is available <a href="/asset/pico/buffer-overflow-0-1/vuln-0">here</a>. You can view source <a href="/asset/pico/buffer-overflow-0-1/vuln-0.c">here</a>, and connect with it using:<br><code>nc saturn.picoctf.net 65535</code>
+</div>
 
 <p>Let’s analyze this <code>.c</code> file we have as reference:</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;signal.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> FLAGSIZE_MAX 64</span></span><br><span class="line"></span><br><span class="line"><span class="type">char</span> flag[FLAGSIZE_MAX];</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">sigsegv_handler</span><span class="params">(<span class="type">int</span> sig)</span> &#123;</span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">&quot;%s\n&quot;</span>, flag);</span><br><span class="line">  fflush(<span class="built_in">stdout</span>);</span><br><span class="line">  <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">vuln</span><span class="params">(<span class="type">char</span> *input)</span>&#123;</span><br><span class="line">  <span class="type">char</span> buf2[<span class="number">16</span>];</span><br><span class="line">  <span class="built_in">strcpy</span>(buf2, input);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> **argv)</span>&#123;</span><br><span class="line">  </span><br><span class="line">  FILE *f = fopen(<span class="string">&quot;flag.txt&quot;</span>,<span class="string">&quot;r&quot;</span>);</span><br><span class="line">  <span class="keyword">if</span> (f == <span class="literal">NULL</span>) &#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%s %s&quot;</span>, <span class="string">&quot;Please create &#x27;flag.txt&#x27; in this directory with your&quot;</span>,</span><br><span class="line">                    <span class="string">&quot;own debugging flag.\n&quot;</span>);</span><br><span class="line">    <span class="built_in">exit</span>(<span class="number">0</span>);</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  fgets(flag,FLAGSIZE_MAX,f);</span><br><span class="line">  signal(SIGSEGV, sigsegv_handler); <span class="comment">// Set up signal handler</span></span><br><span class="line">  </span><br><span class="line">  <span class="type">gid_t</span> gid = getegid();</span><br><span class="line">  setresgid(gid, gid, gid);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">&quot;Input: &quot;</span>);</span><br><span class="line">  fflush(<span class="built_in">stdout</span>);</span><br><span class="line">  <span class="type">char</span> buf1[<span class="number">100</span>];</span><br><span class="line">  gets(buf1); </span><br><span class="line">  vuln(buf1);</span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">&quot;The program will exit now\n&quot;</span>);</span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
@@ -190,9 +192,10 @@
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ nc saturn.picoctf.net 65535</span><br><span class="line">Input: aaaaaaaaaaaaaaaaaaaaaaaaaaa</span><br><span class="line">picoCTF&#123;ov3rfl0ws_ar3nt_that_bad_********&#125;</span><br></pre></td></tr></table></figure>
 
 <hr>
-<h2 id="Buffer-overflow-1"><a href="#Buffer-overflow-1" class="headerlink" title="Buffer overflow 1"></a>Buffer overflow 1</h2><p class="box">Control the return address.<br>
-Now we're cooking! You can overflow the buffer and return to the flag function in the <a href="javascript:;">program</a>. You can view source <a href="javascript:;">here</a>. And connect with it using:<br> <code>nc saturn.picoctf.net [PORT]</code></a>
-</p>
+<h2 id="Buffer-overflow-1"><a href="#Buffer-overflow-1" class="headerlink" title="Buffer overflow 1"></a>Buffer overflow 1</h2><div class="box">
+  Control the return address.<br>
+  Now we're cooking! You can overflow the buffer and return to the flag function in the <a href="javascript:;">program</a>. You can view source <a href="javascript:;">here</a>. And connect with it using:<br> <code>nc saturn.picoctf.net [PORT]</code></a>
+</div>
 
 <p>Let’s check out our source code:</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/types.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;asm.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> BUFSIZE 32</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> FLAGSIZE 64</span></span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">win</span><span class="params">()</span> &#123;</span><br><span class="line">  <span class="type">char</span> buf[FLAGSIZE];</span><br><span class="line">  FILE *f = fopen(<span class="string">&quot;flag.txt&quot;</span>,<span class="string">&quot;r&quot;</span>);</span><br><span class="line">  <span class="keyword">if</span> (f == <span class="literal">NULL</span>) &#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%s %s&quot;</span>, <span class="string">&quot;Please create &#x27;flag.txt&#x27; in this directory with your&quot;</span>,</span><br><span class="line">                    <span class="string">&quot;own debugging flag.\n&quot;</span>);</span><br><span class="line">    <span class="built_in">exit</span>(<span class="number">0</span>);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  fgets(buf,FLAGSIZE,f);</span><br><span class="line">  <span class="built_in">printf</span>(buf);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">vuln</span><span class="params">()</span>&#123;</span><br><span class="line">  <span class="type">char</span> buf[BUFSIZE];</span><br><span class="line">  gets(buf);</span><br><span class="line"></span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">&quot;Okay, time to return... Fingers Crossed... Jumping to 0x%x\n&quot;</span>, get_return_address());</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> **argv)</span>&#123;</span><br><span class="line"></span><br><span class="line">  setvbuf(<span class="built_in">stdout</span>, <span class="literal">NULL</span>, _IONBF, <span class="number">0</span>);</span><br><span class="line">  </span><br><span class="line">  <span class="type">gid_t</span> gid = getegid();</span><br><span class="line">  setresgid(gid, gid, gid);</span><br><span class="line"></span><br><span class="line">  <span class="built_in">puts</span>(<span class="string">&quot;Please enter your string: &quot;</span>);</span><br><span class="line">  vuln();</span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -263,17 +266,17 @@ Now we're cooking! You can overflow the buffer and return to the flag function i
 
     <div id="share-footer" style="display: none">
       <ul>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://enscribe.dev/ctfs/pico22/pwn/buffer-overflow-0-1/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://enscribe.dev/ctfs/pico22/pwn/buffer-overflow-0-1/&text=pico22/pwn: Buffer overflow 0/1"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://enscribe.dev/ctfs/pico22/pwn/buffer-overflow-0-1/&title=pico22/pwn: Buffer overflow 0/1"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://enscribe.dev/ctfs/pico22/pwn/buffer-overflow-0-1/&is_video=false&description=pico22/pwn: Buffer overflow 0/1"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="mailto:?subject=pico22/pwn: Buffer overflow 0/1&body=Check out this article: https://enscribe.dev/ctfs/pico22/pwn/buffer-overflow-0-1/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://enscribe.dev/ctfs/pico22/pwn/buffer-overflow-0-1/&title=pico22/pwn: Buffer overflow 0/1"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://enscribe.dev/ctfs/pico22/pwn/buffer-overflow-0-1/&title=pico22/pwn: Buffer overflow 0/1"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://enscribe.dev/ctfs/pico22/pwn/buffer-overflow-0-1/&title=pico22/pwn: Buffer overflow 0/1"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://enscribe.dev/ctfs/pico22/pwn/buffer-overflow-0-1/&title=pico22/pwn: Buffer overflow 0/1"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://enscribe.dev/ctfs/pico22/pwn/buffer-overflow-0-1/&name=pico22/pwn: Buffer overflow 0/1&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://enscribe.dev/ctfs/pico22/pwn/buffer-overflow-0-1/&t=pico22/pwn: Buffer overflow 0/1"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://enscribe.dev/ctfs/pico22/pwn/buffer-overflow-series/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://enscribe.dev/ctfs/pico22/pwn/buffer-overflow-series/&text=pico22/pwn: Buffer overflow series"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://enscribe.dev/ctfs/pico22/pwn/buffer-overflow-series/&title=pico22/pwn: Buffer overflow series"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://enscribe.dev/ctfs/pico22/pwn/buffer-overflow-series/&is_video=false&description=pico22/pwn: Buffer overflow series"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=pico22/pwn: Buffer overflow series&body=Check out this article: https://enscribe.dev/ctfs/pico22/pwn/buffer-overflow-series/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://enscribe.dev/ctfs/pico22/pwn/buffer-overflow-series/&title=pico22/pwn: Buffer overflow series"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://enscribe.dev/ctfs/pico22/pwn/buffer-overflow-series/&title=pico22/pwn: Buffer overflow series"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://enscribe.dev/ctfs/pico22/pwn/buffer-overflow-series/&title=pico22/pwn: Buffer overflow series"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://enscribe.dev/ctfs/pico22/pwn/buffer-overflow-series/&title=pico22/pwn: Buffer overflow series"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://enscribe.dev/ctfs/pico22/pwn/buffer-overflow-series/&name=pico22/pwn: Buffer overflow series&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://enscribe.dev/ctfs/pico22/pwn/buffer-overflow-series/&t=pico22/pwn: Buffer overflow series"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
 </ul>
 
     </div>
@@ -295,7 +298,7 @@ Now we're cooking! You can overflow the buffer and return to the flag function i
     
     
     2022
-    jktrn
+    enscribe
   </div>
   <div class="footer-right">
     <nav>

@@ -19,8 +19,8 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://enscribe.dev/asset/banner/banner-basic-mod.png">
 <meta property="article:published_time" content="2022-04-05T20:42:32.000Z">
-<meta property="article:modified_time" content="2022-06-10T01:43:25.394Z">
-<meta property="article:author" content="jktrn">
+<meta property="article:modified_time" content="2022-06-12T22:01:19.060Z">
+<meta property="article:author" content="enscribe">
 <meta property="article:tag" content="ctf">
 <meta property="article:tag" content="pico22">
 <meta property="article:tag" content="crypto">
@@ -135,7 +135,7 @@
 
     <div class="meta">
       <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
-        <span itemprop="name">jktrn</span>
+        <span itemprop="name">enscribe</span>
       </span>
       
     <div class="postdate">
@@ -154,8 +154,7 @@
         <a class="tag-link-link" href="/tags/crypto/" rel="tag">crypto</a>, <a class="tag-link-link" href="/tags/ctf/" rel="tag">ctf</a>, <a class="tag-link-link" href="/tags/pico22/" rel="tag">pico22</a>
     </div>
 
- <br>
-      <i class="fas fa-clock"></i> 4 min. read
+
     </div>
   </header>
   
@@ -167,6 +166,8 @@
         padding: 1rem;
         font-size: 90%;
         text-align: center;
+        margin-top: 1rem;
+        margin-bottom: 1rem;
     }
     .flex-container {
         display: flex;
@@ -175,9 +176,9 @@
     }
 </style>
 
-<h2 id="basic-mod1"><a href="#basic-mod1" class="headerlink" title="basic-mod1"></a>basic-mod1</h2><p class="box">
+<h2 id="basic-mod1"><a href="#basic-mod1" class="headerlink" title="basic-mod1"></a>basic-mod1</h2><div class="box">
 We found this weird message being passed around on the servers, we think we have a working decrpytion scheme. Take each number mod 37 and map it to the following character set: 0-25 is the alphabet (uppercase), 26-35 are the decimal digits, and 36 is an underscore. Wrap your decrypted message in the picoCTF flag format (i.e. <code>picoCTF&#123;decrypted_message&#125;</code>)
-</p>
+</div>
 
 <p>Let’s go over what it’s asking:</p>
 <ul>
@@ -198,10 +199,11 @@ We found this weird message being passed around on the servers, we think we have
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ python3 solve.py</span><br><span class="line">picoCTF&#123;R0UND_N_R0UND_********&#125;</span><br></pre></td></tr></table></figure>
 
 <hr>
-<h2 id="basic-mod2"><a href="#basic-mod2" class="headerlink" title="basic-mod2"></a>basic-mod2</h2><p class="box">
+<h2 id="basic-mod2"><a href="#basic-mod2" class="headerlink" title="basic-mod2"></a>basic-mod2</h2><div class="box">
 A new modular challenge!
 Take each number mod 41 and find the modular inverse for the result. Then map to the following character set: 1-26 are the alphabet, 27-36 are the decimal digits, and 37 is an underscore.
 Wrap your decrypted message in the picoCTF flag format (<code>picoCTF&#123;decrypted_message&#125;</code>).
+</div>
 
 <p>Let’s go over what it’s asking once again:</p>
 <ul>
@@ -281,7 +283,7 @@ Wrap your decrypted message in the picoCTF flag format (<code>picoCTF&#123;decry
     
     
     2022
-    jktrn
+    enscribe
   </div>
   <div class="footer-right">
     <nav>
