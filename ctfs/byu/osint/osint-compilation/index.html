@@ -19,7 +19,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://enscribe.dev/asset/banner/banner-osint.png">
 <meta property="article:published_time" content="2022-05-29T01:02:04.000Z">
-<meta property="article:modified_time" content="2022-06-12T22:38:44.639Z">
+<meta property="article:modified_time" content="2022-06-13T00:32:41.866Z">
 <meta property="article:author" content="enscribe">
 <meta property="article:tag" content="ctf">
 <meta property="article:tag" content="byu">
@@ -59,7 +59,7 @@
     
 	<!-- mathjax -->
 	
-<meta name="generator" content="Hexo 6.1.0"></head>
+<meta name="generator" content="Hexo 6.2.0"></head>
 
 <body class="max-width mx-auto px3 ltr">
     
@@ -180,9 +180,9 @@
 <h3 id="Intro"><a href="#Intro" class="headerlink" title="Intro"></a>Intro</h3><p>So, we played BYU CTF 2022. There were <strong>9 OSINT challenges</strong>. 9. It was absolutely party-time for a CTF player w&#x2F; OSINT-emphasis like me, and a tragedy for people who dislike the inherently guessy nature behind the genre. Our team managed to solve them all, so here was our (albeit flawed) thought process behind it.</p>
 <p><strong>Important note</strong>: Some of our lines of reasoning don’t make sense at all. That’s normal for this category, and it comes from a shit ton of brainstorming and guesswork. I’ll try my best to include wrong paths that we took, but for the sake of brevity some of it will be omitted.</p>
 <p>Oh, also, here is a haiku to express my carnal, passionate, burning hatred for OSINT:</p>
-<blockquote>
-<p><em>“Eternal Resentment”</em><br>Submerged in my tears,<br>I yearn for painless release.<br>The dreadful OSINT…<br>– enscribe</p>
-</blockquote>
+<blockquote><p><em>“Eternal Resentment”</em><br>Submerged in my tears,<br>I yearn for painless release.<br>The dreadful OSINT…</p>
+<footer><strong>-enscribe</strong></footer></blockquote>
+
 <p>Thank you, and enjoy.</p>
 <hr>
 <h2 id="I-don’t-dream-about-noodles-dad-🐼"><a href="#I-don’t-dream-about-noodles-dad-🐼" class="headerlink" title="I don’t dream about noodles, dad 🐼"></a>I don’t dream about noodles, dad 🐼</h2><div class="box">
@@ -225,7 +225,7 @@ I met a guy named Sam while climbing here in California. Can't remember what it'
 
 <p>Once again, I used Google Lens to figure out where the location of this image was. Turns out to be a place called the <code>Lizard&#39;s Mouth Rock</code> in Santa Barbara County, California:</p>
 <p><img src="/asset/byu/bouldering2.png" alt="Lizard&#39;s Mouth"></p>
-<p>The image given to us is a direct screenshot of an image posted by Maps contributor <a target="_blank" rel="noopener" href="https://www.google.com/maps/contrib/104742787928495148360">Jonathan P.</a>, although that has little relevance to the challenge.</p>
+<p>The image given to us is a direct screenshot of an image posted by Maps contributer <a target="_blank" rel="noopener" href="https://www.google.com/maps/contrib/104742787928495148360">Jonathan P.</a>, although that has little relevance to the challenge.</p>
 <p>Moving on, although we have the location of the image taken the flag is in <em>explicit format</em>, meaning that it’s somewhere on the internet wrapped with <code>byuctf&#123;...&#125;</code>. We noticed that a guy named “Sam” was mentioned, so we guessed that we could find him leaving a review of the place on a platform.</p>
 <p>We checked through the following platforms: Yelp, Google Reviews, TripAdvisor, AllTrails⁠—yet, we couldn’t find a recent reviewer by the name of Sam. Luckily, one of my team members searched up “Bouldering Lizard’s Mouth” (based on the challenge name) and happened to stumble across <a target="_blank" rel="noopener" href="https://www.mountainproject.com/area/105885134/the-lizards-mouth">this website</a>:</p>
 <p><img src="/asset/byu/bouldering3.png" alt="Bouldering Website"></p>
@@ -251,17 +251,16 @@ Somehow, somewhere, something in this picture has a flag, but my friend Blue Orc
 <img width=600 src="/asset/byu/squatter3.png">
 
 <p>This is where the rabbit hole begins. I looked around the reviews section of this place and found the absolute weirdest, most hilarious reviews of all time:</p>
-<blockquote>
-<p>Robert Skouson<br>In all my days, I have never seen such a magnificent water tower.  Being in its presence has given me powers beyond comprehension.  I have mastered flight in the downward direction.  I have 100% recall of events that happened to me in the last 5 minutes.  I have also discovered I am completely invisible when no one is looking.   This water tower has changed my view of who I am, and my ultimate potential.</p>
-</blockquote>
+<blockquote><p>In all my days, I have never seen such a magnificent water tower.  Being in its presence has given me powers beyond comprehension.  I have mastered flight in the downward direction.  I have 100% recall of events that happened to me in the last 5 minutes.  I have also discovered I am completely invisible when no one is looking.   This water tower has changed my view of who I am, and my ultimate potential.</p>
+<footer><strong>- Robert Skouson</strong></footer></blockquote>
+
 <p>This guy even claims it to be holy water:</p>
-<blockquote>
-<p>Nicholas Martinez<br>This water from Wyatt P. Memorial Water tower has changed the way I see water, and drink it. Every time I see this water tower, it makes me want quality water. Forget Poland Spring or Fiji. This is quality water! You know how in the Book of John Chapter 2, the Savior Jesus Christ turned water into wine? Well he actually turned already good wine to water from Wyatt P. Memorial Water tower.</p>
-</blockquote>
+<blockquote><p>This water from Wyatt P. Memorial Water tower has changed the way I see water, and drink it. Everytime I see this water tower, it makes me want quality water. Forget Poland Spring or Fiji. This is quality water! You know how in the Book of John Chapter 2, the Savior Jesus Christ turned water into wine? Well he actually turned already good wine to water from Wyatt P. Memorial Water tower.</p>
+<footer><strong>- Nicholas Martinez</strong></footer></blockquote>
+
 <p>This one might be my favorite:</p>
-<blockquote>
-<p>McKay Lush<br>Professionally speaking as a water tower enthusiast, this has to be one of the best water towers that I’ve ever visited and I’ve visited thousands. The divine structure of the 10 legs leading to the plumply, robust water basin is enough to get any man excited. The satisfying twang as you bang the side wall sends shivers down even the most hardened of souls. Never before has such a feat been attempted and accomplished. Truly this should be the EIGHTIETH WONDER OF THE WORLD.</p>
-</blockquote>
+<blockquote><p>Professionally speaking as a water tower enthusiast, this has to be one of the best water towers that I’ve ever visited and I’ve visited thousands. The divine structure of the 10 legs leading to the plumply, robust water basin is enough to get any man excited. The satisfying twang as you bang the side wall sends shivers down even the most hardened of souls. Never before has such a feat been attempted and accomplished. Truly this should be the EIGHTIETH WONDER OF THE WORLD.</p><footer><strong>- McKay Lush</strong></footer></blockquote>
+
 <p>I actually stumbled across the person it’s named after, <code>Wyatt Pangerl</code>, and I was super curious as to what the hell was going on:</p>
 <p><img src="/asset/byu/squatter4.png" alt="Wyatt"></p>
 <p>So I opened a ticket. Turns out, this Wyatt guy, a member of their team, managed to get the water tower named after himself after a series of divine, godlike social engineering strategies (assumedly to the county) and exploitation of the <a target="_blank" rel="noopener" href="https://homeguides.sfgate.com/squatters-rights-law-california-45887.html">Squatter’s Rights</a> law in California. He also claimed the location on Google Maps and put his burner phone there as well, which we called (he didn’t pick up). When I found his Facebook (will not disclose), I saw a multitude of his friends commenting hilarious crap, calling him “ICONIC.” and a “LEGEND.” for managing to make it happen.</p>
@@ -276,10 +275,10 @@ Somehow, somewhere, something in this picture has a flag, but my friend Blue Orc
 <hr>
 <h2 id="Okta-More-like-OhNah-💾"><a href="#Okta-More-like-OhNah-💾" class="headerlink" title="Okta? More like OhNah 💾"></a>Okta? More like OhNah 💾</h2><div class="box">Recently, the group known as LAPSUS$ released indications they breached Microsoft & one of the Largest SSO companies, Okta. In some of their leaks they hinted that "most of the time if you don't do anything like __________, you won't be detected".
 <br><br>
-flag: <code>byuctf&#123;answer_Timestamp in format: HH:MM&#125;</code> two word answer separated by an underscore.
+flag: <code>byuctf&#123;answer_Timestamp in format: HH:MM&#125;</code> two word answer seperated by an underscore.
 </div>
 
-<p>Looks like a challenge regarding an infamous hacking group. Seeing that the flag asks for a timestamp and the language is pseudo-colloquial, I’d safely assume that this text mentioned somewhere came from a messaging board. I downloaded <em>Telegram</em>, their main method of communication with the real world, joining their <a target="_blank" rel="noopener" href="https://t.me/minsaudebr">announcements board</a>, yet upon a <kbd>Ctrl</kbd> + <kbd>F</kbd> I couldn’t find this message anywhere. Their board mentions a <a target="_blank" rel="noopener" href="https://t.me/saudechat">group chat</a>, but it was recently purged and terminated. When the admin confirmed that this wasn’t the intended solution, I moved towards looking for screenshots surrounding the Okta leak. Our team found this <a target="_blank" rel="noopener" href="https://twitter.com/_JohnHammond/status/1506166671664463875">tweet from John Hammond</a> after a while:</p>
+<p>Looks like a challenge regarding an imfamous hacking group. Seeing that the flag asks for a timestamp and the language is pseudo-colloquial, I’d safely assume that this text mentioned somewhere came from a messaging board. I downloaded <em>Telegram</em>, their main method of communication with the real world, joining their <a target="_blank" rel="noopener" href="https://t.me/minsaudebr">announcements board</a>, yet upon a <kbd>Ctrl</kbd> + <kbd>F</kbd> I couldn’t find this message anywhere. Their board mentions a <a target="_blank" rel="noopener" href="https://t.me/saudechat">group chat</a>, but it was recently purged and terminated. When the admin confirmed that this wasn’t the intended solution, I moved towards looking for screenshots surrounding the Okta leak. Our team found this <a target="_blank" rel="noopener" href="https://twitter.com/_JohnHammond/status/1506166671664463875">tweet from John Hammond</a> after a while:</p>
 <blockquote class="twitter-tweet" align=center width=500 data-lang="en" data-theme="dark"><p lang="en" dir="ltr">even da big ones<br>[shocked pikachu] <a target="_blank" rel="noopener" href="https://t.co/YsvMMNQDPG">pic.twitter.com/YsvMMNQDPG</a></p>&mdash; John Hammond (@_JohnHammond) <a target="_blank" rel="noopener" href="https://twitter.com/_JohnHammond/status/1506166671664463875?ref_src=twsrc%5Etfw">March 22, 2022</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 
 <p>The flag is <code>byuctf&#123;port_scanning_11:22&#125;</code>.</p>
@@ -402,7 +401,7 @@ Flag will be completely visible once solved! You will see <code>byuctf&#123;&#12
 </div>
 
 <p>We decided it would be best to create a list of songs, in addition to counting occurrences of topics he discussed (for brainstorming purposes). We ended up with this list:</p>
-<p><img src="/asset/byu/blabbin3.png" alt="Occurrences List"></p>
+<p><img src="/asset/byu/blabbin3.png" alt="Occurences List"></p>
 <p>Hey, check that out in the Songs list. “3 Words”, “One Place”, “Greater”, “Ice Cream”? That sounds a lot like our previous challenge, <code>Buckeye Billy Birthday</code>. Looks like these were meant to be solved in tandem. By extension, “Man in the Mirror” and “Magic Mirror” were also hinted at, and we found a <a target="_blank" rel="noopener" href="https://twitter.com/William_buckeye/status/1515113600750219265">tweet</a> of Billy posing in front of a mirror with a BYU hat. Uncoincidentally, this is the only mention of BYU in his entire profile (I believe):</p>
 <blockquote align=center class="twitter-tweet" data-lang="en" data-theme="dark"><p lang="en" dir="ltr">thanks <a target="_blank" rel="noopener" href="https://twitter.com/byu_cosmo?ref_src=twsrc%5Etfw">@byu_cosmo</a> for the great hat! <a target="_blank" rel="noopener" href="https://t.co/IbPentkUgE">pic.twitter.com/IbPentkUgE</a></p>&mdash; #1 Buckeye Fan billy (@William_buckeye) <a target="_blank" rel="noopener" href="https://twitter.com/William_buckeye/status/1515113600750219265?ref_src=twsrc%5Etfw">April 15, 2022</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 
