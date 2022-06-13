@@ -19,7 +19,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://enscribe.dev/asset/banner/banner-ctfs.png">
 <meta property="article:published_time" content="2022-04-11T00:07:16.000Z">
-<meta property="article:modified_time" content="2022-06-13T01:38:09.450Z">
+<meta property="article:modified_time" content="2022-06-13T21:21:01.147Z">
 <meta property="article:author" content="enscribe">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://enscribe.dev/asset/banner/banner-ctfs.png">
@@ -150,17 +150,20 @@
   <div class="content" itemprop="articleBody">
     <style>
     .box {
-        border: 1px solid rgba(100, 100, 100, .5);
+        border: 1px solid #212326;
+        border-radius: 5px;
+        background-color: #212326;
         padding: 1rem;
         font-size: 90%;
         text-align: center;
         margin-bottom: 1rem;
     }
-
-    .flex-container {
-        display: flex;
-        flex-wrap: nowrap;
-        justify-content: center;
+    
+    .no-highlight {
+        user-select: none;
+        -moz-user-select: none;
+        -webkit-user-select: none;
+        -ms-user-select: none;
     }
 
     .column {
@@ -206,7 +209,7 @@
     </div>
 </div>
 
-<div class="box">
+<div class="box no-highlight">
     <details>
         <summary><b>View Team Board:</b></summary>
 
