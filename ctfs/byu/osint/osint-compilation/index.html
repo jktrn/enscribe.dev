@@ -19,7 +19,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://enscribe.dev/asset/banner/banner-osint.png">
 <meta property="article:published_time" content="2022-05-29T01:02:04.000Z">
-<meta property="article:modified_time" content="2022-06-13T03:57:05.020Z">
+<meta property="article:modified_time" content="2022-06-13T20:29:37.062Z">
 <meta property="article:author" content="enscribe">
 <meta property="article:tag" content="osint">
 <meta name="twitter:card" content="summary_large_image">
@@ -284,7 +284,7 @@ flag: <code>byuctf&#123;answer_Timestamp in format: HH:MM&#125;</code> two word 
 </div>
 
 <p>Looks like a challenge regarding an infamous hacking group. Seeing that the flag asks for a timestamp and the language is pseudo-colloquial, I’d safely assume that this text mentioned somewhere came from a messaging board. I downloaded <em>Telegram</em>, their main method of communication with the real world, joining their <a target="_blank" rel="noopener" href="https://t.me/minsaudebr">announcements board</a>, yet upon a <kbd>Ctrl</kbd> + <kbd>F</kbd> I couldn’t find this message anywhere. Their board mentions a <a target="_blank" rel="noopener" href="https://t.me/saudechat">group chat</a>, but it was recently purged and terminated. When the admin confirmed that this wasn’t the intended solution, I moved towards looking for screenshots surrounding the Okta leak. Our team found this <a target="_blank" rel="noopener" href="https://twitter.com/_JohnHammond/status/1506166671664463875">tweet from John Hammond</a> after a while:</p>
-<blockquote class="twitter-tweet" align=center width=500 data-lang="en" data-theme="dark"><p lang="en" dir="ltr">even da big ones<br>[shocked pikachu] <a target="_blank" rel="noopener" href="https://t.co/YsvMMNQDPG">pic.twitter.com/YsvMMNQDPG</a></p>&mdash; John Hammond (@_JohnHammond) <a target="_blank" rel="noopener" href="https://twitter.com/_JohnHammond/status/1506166671664463875?ref_src=twsrc%5Etfw">March 22, 2022</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+<blockquote class="twitter-tweet tw-align-center" width=500 data-lang="en" data-theme="dark"><p lang="en" dir="ltr">even da big ones<br>[shocked pikachu] <a target="_blank" rel="noopener" href="https://t.co/YsvMMNQDPG">pic.twitter.com/YsvMMNQDPG</a></p>&mdash; John Hammond (@_JohnHammond) <a target="_blank" rel="noopener" href="https://twitter.com/_JohnHammond/status/1506166671664463875?ref_src=twsrc%5Etfw">March 22, 2022</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 
 <p>The flag is <code>byuctf&#123;port_scanning_11:22&#125;</code>.</p>
 <p>A hint was later added to the challenge:</p>
@@ -303,7 +303,7 @@ Note, the flag will not include the name or dates found in the inscription.
 
 <p>Instantly, we moved to <a target="_blank" rel="noopener" href="https://gchq.github.io/CyberChef/">Cyberchef</a> for the binary conversion, and it resulted in <code>nrhpidLKÐ</code>. We thought it was garbage at first, until a teammate noticed “NRHP ID” within the string, which is related to the <a target="_blank" rel="noopener" href="https://history.idaho.gov/nrhp/">National Register of Historic Places</a>. Since there’s a historic date also in the description, we can immediately conclude that this is the correct path to take. We isolated the last part and converted it into decimal instead - <code>80002319</code>.</p>
 <p>Following the trail for <code>NRHP ID 80002319</code>, we found this <a target="_blank" rel="noopener" href="https://en.upwiki.one/wiki/Jesse_James_Home_Museum">UpWiki Page</a> About the “Jesse James Home Museum”, which is the location registered under this ID.</p>
-<p>When I looked up “jesse james famous inscription”, I found a <a target="_blank" rel="noopener" href="https://photocontest.smithsonianmag.com/photocontest/detail/the-original-grave-site-of-jesse-james-located-in-the-yard-of-the-james-fam/">Smithsonian Magazine</a> page that photographs Mr. James; grave:</p>
+<p>When I looked up “jesse james famous inscription”, I found a <a target="_blank" rel="noopener" href="https://photocontest.smithsonianmag.com/photocontest/detail/the-original-grave-site-of-jesse-james-located-in-the-yard-of-the-james-fam/">Smithsonian Magazine</a> page that photographs Mr. James’ grave:</p>
 <img src="/asset/byu/mystery1.png" width=600>
 
 <p>Removing the dates and names as the description specifies, the flag is <code>byuctf&#123;murdered_by_a_traitor_and_coward_whose_name_is_not_worthy_to_appear_here&#125;</code>.</p>
@@ -408,7 +408,7 @@ Flag will be completely visible once solved! You will see <code>byuctf&#123;&#12
 <p>We decided it would be best to create a list of songs, in addition to counting occurrences of topics he discussed (for brainstorming purposes). We ended up with this list:</p>
 <p><img src="/asset/byu/blabbin3.png" alt="Occurrences List"></p>
 <p>Hey, check that out in the Songs list. “3 Words”, “One Place”, “Greater”, “Ice Cream”? That sounds a lot like our previous challenge, <code>Buckeye Billy Birthday</code>. Looks like these were meant to be solved in tandem. By extension, “Man in the Mirror” and “Magic Mirror” were also hinted at, and we found a <a target="_blank" rel="noopener" href="https://twitter.com/William_buckeye/status/1515113600750219265">tweet</a> of Billy posing in front of a mirror with a BYU hat. Uncoincidentally, this is the only mention of BYU in his entire profile (I believe):</p>
-<blockquote align=center class="twitter-tweet" data-lang="en" data-theme="dark"><p lang="en" dir="ltr">thanks <a target="_blank" rel="noopener" href="https://twitter.com/byu_cosmo?ref_src=twsrc%5Etfw">@byu_cosmo</a> for the great hat! <a target="_blank" rel="noopener" href="https://t.co/IbPentkUgE">pic.twitter.com/IbPentkUgE</a></p>&mdash; #1 Buckeye Fan billy (@William_buckeye) <a target="_blank" rel="noopener" href="https://twitter.com/William_buckeye/status/1515113600750219265?ref_src=twsrc%5Etfw">April 15, 2022</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+<blockquote class="twitter-tweet tw-align-center" data-lang="en" data-theme="dark"><p lang="en" dir="ltr">thanks <a target="_blank" rel="noopener" href="https://twitter.com/byu_cosmo?ref_src=twsrc%5Etfw">@byu_cosmo</a> for the great hat! <a target="_blank" rel="noopener" href="https://t.co/IbPentkUgE">pic.twitter.com/IbPentkUgE</a></p>&mdash; #1 Buckeye Fan billy (@William_buckeye) <a target="_blank" rel="noopener" href="https://twitter.com/William_buckeye/status/1515113600750219265?ref_src=twsrc%5Etfw">April 15, 2022</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 
 <p>My team used steganography tools on this image, and lo and behold:</p>
 <p><img src="/asset/byu/blabbin5.png" alt="Flag in Steganography Analysis"></p>
