@@ -19,7 +19,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://enscribe.dev/asset/banner/banner-darkside.png">
 <meta property="article:published_time" content="2022-04-05T22:57:40.000Z">
-<meta property="article:modified_time" content="2022-06-15T05:23:38.353Z">
+<meta property="article:modified_time" content="2022-06-15T16:59:03.155Z">
 <meta property="article:author" content="enscribe">
 <meta property="article:tag" content="pwn">
 <meta property="article:tag" content="buffer-overflow">
@@ -199,7 +199,7 @@
 <p>In the code snippet below, I got the address provided in the prompt by reading the line and taking its substring (ASLR is enabled, so it’s different each time). Then, I slowly increase the buffer of the payload with a loop until I find the right offset of the <code>$rip</code>:</p>
 <figure class="highlight py">
     <figcaption><span>warmup-to-the-dark-side.py</span><a target="_blank" rel="noopener"
-      href="https://gist.github.com/jktrn/dd861b378b859a0588b48c71ad9fbf45"><span style="color:#82C4E4">github gist link</span></a></figcaption>
+      href="https://gist.github.com/jktrn/dd861b378b859a0588b48c71ad9fbf45"><span style="color:#82C4E4">[github gist link]</span></a></figcaption>
     <table>
         <tr>
             <td class="gutter">
