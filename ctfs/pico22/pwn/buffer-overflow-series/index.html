@@ -19,7 +19,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://enscribe.dev/asset/banner/banner-buffer-overflow.png">
 <meta property="article:published_time" content="2022-06-06T19:16:08.000Z">
-<meta property="article:modified_time" content="2022-06-13T19:37:09.167Z">
+<meta property="article:modified_time" content="2022-06-15T05:33:20.750Z">
 <meta property="article:author" content="enscribe">
 <meta property="article:tag" content="pwn">
 <meta property="article:tag" content="buffer-overflow">
@@ -164,7 +164,9 @@
   
 
   <div class="content" itemprop="articleBody">
-    <style>
+    <script src="https://kit.fontawesome.com/129342a70b.js" crossorigin="anonymous"></script>
+
+<style>
     .box {
         border: 1px solid rgb(23, 25, 27);
         border-radius: 5px;
@@ -176,16 +178,27 @@
         margin-bottom: 1rem;
     }
 
-    .flex-container {
-        display: flex;
-        flex-wrap: nowrap;
-        justify-content: center;
+    .warning {
+        border: 1px solid #481219;
+        border-radius: 5px;
+        background-color: #481219;
+        padding: 1rem;
+        font-size: 90%;
+        text-align: center;
+    }
+
+    .no-highlight {
+        user-select: none;
+        -moz-user-select: none;
+        -webkit-user-select: none;
+        -ms-user-select: none;
     }
 </style>
 
 <h3 id="Intro"><a href="#Intro" class="headerlink" title="Intro"></a>Intro</h3><p>This is a writeup for the buffer overflow series during the <strong>picoCTF 2022</strong> competition. This was arguably my favorite set of challenges, as beforehand I’d never stepped into the realm of binary exploitation&#x2F;pwn. I learned a lot from this, so I highly recommend solving it by yourself before referencing this document. Cheers!</p>
-<h2 id="Buffer-overflow-0"><a href="#Buffer-overflow-0" class="headerlink" title="Buffer overflow 0"></a>Buffer overflow 0</h2><div class="box">
-  Smash the stack! Let's start off simple: can you overflow the correct buffer? The program is available <a href="/asset/pico/buffer-overflow-0-1/vuln-0">here</a>. You can view source <a href="/asset/pico/buffer-overflow-0-1/vuln-0.c">here</a>, and connect with it using:<br><code>nc saturn.picoctf.net 65535</code>
+<h2 id="Buffer-overflow-0"><a href="#Buffer-overflow-0" class="headerlink" title="Buffer overflow 0"></a>Buffer overflow 0</h2><div class="box no-highlight">
+  Smash the stack! Let's start off simple: can you overflow the correct buffer? The program is available <a href="/asset/pico/buffer-overflow-0-1/vuln-0">here</a>. You can view source <a href="/asset/pico/buffer-overflow-0-1/vuln-0.c">here</a>, and connect with it using:<br><code>nc saturn.picoctf.net 65535</code><br><br><b>Authors</b>: Alex Fulton, Palash Oswal
+  <details><summary><b>Hints:</b></summary><br>1. How can you trigger the flag to print?<br>2. If you try to do the math by hand, maybe try and add a few more characters. Sometimes there are things you aren't expecting.<br>3. Run <code>man gets</code> and read the BUGS section. How many characters can the program really read?</details>
 </div>
 
 <figure class="highlight console">
@@ -228,9 +241,15 @@
 
 
 <hr>
-<h2 id="Buffer-overflow-1"><a href="#Buffer-overflow-1" class="headerlink" title="Buffer overflow 1"></a>Buffer overflow 1</h2><div class="box">
+<h2 id="Buffer-overflow-1"><a href="#Buffer-overflow-1" class="headerlink" title="Buffer overflow 1"></a>Buffer overflow 1</h2><div class="box no-highlight">
   Control the return address.<br>
-  Now we're cooking! You can overflow the buffer and return to the flag function in the <a href="javascript:;">program</a>. You can view source <a href="javascript:;">here</a>. And connect with it using:<br> <code>nc saturn.picoctf.net [PORT]</code></a>
+  Now we're cooking! You can overflow the buffer and return to the flag function in the <a href="/asset/pico/buffer-overflow-0-1/vuln-1">program</a>. You can view source <a href="/asset/pico/buffer-overflow-0-1/vuln-1.c">here</a>. And connect with it using:<br> <code>nc saturn.picoctf.net [PORT]</code><br><br>
+  <b>Authors</b>: Sanjay C., Palash Oswal
+  <details><summary><b>Hints:</b></summary><br>1. Make sure you consider big Endian vs small Endian.<br>2. Changing the address of the return pointer can call different functions.</details>
+</div>
+
+<div class="warning">
+<i class="fa-solid fa-triangle-exclamation"></i> Warning: This is an <b>instance-based</b> challenge. Port info will be redacted alongside the last eight characters of the flag, as they are dynamic.
 </div>
 
 <figure class="highlight console">
@@ -298,7 +317,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 Okay, time to return... Fingers Crossed... Jumping to 0x41414141
 
 <p>Program received signal SIGSEGV, Segmentation fault.<br><span style="color:#367BF0">0x41414141</span> in <span style="color:#FEA44C">??</span> ()<br>[ Legend: <span style="color:#EC0101"><b>Modified register</b></span> | <span style="color:#D41919">Code</span> | <span style="color:#5EBDAB">Heap</span> | <span style="color:#9755B3">Stack</span> | <span style="color:#FEA44C">String</span> ]<br><span style="color:#585858"><b>──────────────────────────────────────────────────────────────────── </b></span><span style="color:#49AEE6">registers</span><span style="color:#585858"><b> ────</b></span><br><span style="color:#EC0101"><b>$eax   </b></span>: 0x41<br><span style="color:#EC0101"><b>$ebx   </b></span>: 0x41414141 (“<span style="color:#FEA44C">AAAA</span>“?)<br><span style="color:#EC0101"><b>$ecx   </b></span>: 0x41<br><span style="color:#EC0101"><b>$edx   </b></span>: 0xffffffff<br><span style="color:#EC0101"><b>$esp   </b></span>: <span style="color:#9755B3">0xffffd130</span>  →  <span style="color:#FEA44C">“AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA”</span><br><span style="color:#EC0101"><b>$ebp   </b></span>: 0x41414141 (“<span style="color:#FEA44C">AAAA</span>“?)<br><span style="color:#EC0101"><b>$esi   </b></span>: 0x1<br><span style="color:#EC0101"><b>$edi   </b></span>: <span style="color:#D41919">0x80490e0</span>  →  <span style="color:#585858"><b>&lt;_start+0&gt; endbr32 </b></span><br><span style="color:#EC0101"><b>$eip   </b></span>: 0x41414141 (“<span style="color:#FEA44C">AAAA</span>“?)<br><span style="color:#367BF0">$cs</span>: 0x23 <span style="color:#367BF0">$ss</span>: 0x2b <span style="color:#367BF0">$ds</span>: 0x2b <span style="color:#367BF0">$es</span>: 0x2b <span style="color:#367BF0">$fs</span>: 0x00 <span style="color:#EC0101"><b>$gs</b></span>: 0x63<br><span style="color:#585858"><b>────────────────────────────────────────────────────────────────── </b></span><span style="color:#49AEE6">code:x86:32</span><span style="color:#585858"><b> ────</b></span><br><span style="color:#EC0101"><b>[!]</b></span> Cannot disassemble from $PC<br><span style="color:#EC0101"><b>[!]</b></span> Cannot access memory at address 0x41414141<br><span style="color:#585858"><b>────────────────────────────────────────────────────────────────────── </b></span><span style="color:#49AEE6">threads</span><span style="color:#585858"><b> ────</b></span><br>[<span style="color:#47D4B9"><b>#0</b></span>] Id 1, Name: “vuln”, <span style="color:#EC0101"><b>stopped</b></span> <span style="color:#367BF0">0x41414141</span> in <span style="color:#FF8A18"><b>??</b></span> (), reason: <span style="color:#962AC3"><b>SIGSEGV</b></span></pre></td></tr></table></figure></p>
-<div style="margin-top:-2.5%; margin-bottom:2.5%;">Look what happened: our program threw a SIGSEGV (segmentation) fault, as it is trying to reference the address <code>0x41414141</code>, which doesn&#39;t exist! This is because our <code>$eip</code> was overwritten by all our <code>A</code>s (<code>0x41</code> in ASCII = <code>A</code> in text).</div>
+<div style="margin-top:-2.5%; margin-bottom:2.5%;">Look what happened: our program threw a SIGSEGV (segmentation) fault, as it is trying to reference the address <code>0x41414141</code>, which doesn&#39;t exist! This is because our <code>$eip</code> was overwritten by all our <code>A</code>s (<code>0x41</code> in hex = <code>A</code> in ASCII).</div>
 
 <h3 id="Part-III-Smashing-the-Stack-with-finesse"><a href="#Part-III-Smashing-the-Stack-with-finesse" class="headerlink" title="Part III: Smashing the Stack (with finesse)"></a>Part III: Smashing the Stack (with finesse)</h3><p>Although we’ve managed to smash the stack, we still dont’ know the offset (<strong>how many</strong> <code>A</code>s we need to pass in order to reach the <code>$eip</code>). To solve this problem, we can use the pwntools <code>cyclic</code> command, which creates a string with a recognizable cycling pattern for it to identify:</p>
 <figure class="highlight text"><table><tr><td class="code"><pre><span style="color:#47D4B9"><b>gef➤  </b></span>shell cyclic 48
