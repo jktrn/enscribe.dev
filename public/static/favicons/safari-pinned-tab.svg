@@ -1,21 +1,22 @@
-<?xml version="1.0" standalone="no"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20010904//EN"
- "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
-<svg version="1.0" xmlns="http://www.w3.org/2000/svg"
- width="107.000000pt" height="107.000000pt" viewBox="0 0 107.000000 107.000000"
- preserveAspectRatio="xMidYMid meet">
-<metadata>
-Created by potrace 1.11, written by Peter Selinger 2001-2013
-</metadata>
-<g transform="translate(0.000000,107.000000) scale(0.100000,-0.100000)"
-fill="#000000" stroke="none">
-<path d="M609 942 c-17 -18 -95 -88 -289 -258 -117 -102 -177 -155 -204 -179
--6 -5 -31 -28 -56 -50 l-45 -39 -1 -144 -1 -143 21 18 c11 10 25 23 31 28 7 6
-46 41 88 79 86 77 86 77 216 196 52 47 103 93 115 103 11 10 50 45 86 77 l65
-59 -1 131 c0 71 -3 132 -5 135 -3 2 -12 -3 -20 -13z"/>
-<path d="M929 857 c-64 -56 -145 -128 -180 -159 -35 -31 -75 -66 -89 -78 -55
--47 -68 -59 -150 -131 l-85 -76 2 -129 c1 -71 2 -135 2 -143 1 -11 5 -10 19 5
-10 10 54 51 98 89 43 39 92 83 109 99 26 24 63 58 189 171 12 11 47 43 77 70
-30 28 70 63 89 79 l35 29 1 138 c1 77 1 139 0 139 0 -1 -53 -47 -117 -103z"/>
+<svg width="237" height="237" viewBox="0 0 237 237" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_20_52)">
+<circle cx="118.5" cy="118.5" r="118.5" fill="#E9D3B6"/>
+<path d="M56.2484 102.24L118.489 39.9999L134.737 56.2483L72.515 118.501L64.3817 110.371L56.2484 102.24Z" fill="#111111"/>
+<path d="M87.3762 133.338L149.602 71.1126L165.85 87.361L103.696 149.545L87.3762 133.338Z" fill="url(#paint0_linear_20_52)"/>
+<path d="M118.489 164.451L180.714 102.225L196.963 118.474L134.808 180.658L118.489 164.451Z" fill="url(#paint1_linear_20_52)"/>
+<path d="M118.489 196.978L40 118.489L56.2484 102.24L134.682 180.643L118.489 196.978Z" fill="#111111"/>
 </g>
+<defs>
+<linearGradient id="paint0_linear_20_52" x1="19.3438" y1="139.145" x2="118.1" y2="40.3885" gradientUnits="userSpaceOnUse">
+<stop stop-color="#E9D3B6" stop-opacity="0.75"/>
+<stop offset="1" stop-color="#111111"/>
+</linearGradient>
+<linearGradient id="paint1_linear_20_52" x1="19.8322" y1="138.657" x2="118.1" y2="40.3885" gradientUnits="userSpaceOnUse">
+<stop stop-color="#E9D3B6" stop-opacity="0.75"/>
+<stop offset="1" stop-color="#111111"/>
+</linearGradient>
+<clipPath id="clip0_20_52">
+<rect width="237" height="237" fill="white"/>
+</clipPath>
+</defs>
 </svg>

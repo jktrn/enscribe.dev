@@ -26,7 +26,7 @@ const MobileNav = () => {
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 20 20"
                     fill="currentColor"
-                    className="h-8 w-8 text-gray-900 dark:text-gray-100"
+                    className="h-8 w-8 text-foreground"
                 >
                     <path
                         fillRule="evenodd"
@@ -36,9 +36,8 @@ const MobileNav = () => {
                 </svg>
             </button>
             <div
-                className={`fixed left-0 top-0 z-10 h-full w-full transform bg-white opacity-95 duration-300 ease-in-out dark:bg-gray-950 dark:opacity-[0.98] ${
-                    navShow ? 'translate-x-0' : 'translate-x-full'
-                }`}
+                className={`fixed left-0 top-[3.75rem] z-10 h-full w-full transform bg-background opacity-95 duration-300 ease-in-out dark:opacity-[0.98] ${navShow ? 'translate-x-0' : 'translate-x-full'
+                    }`}
             >
                 <div className="flex justify-end">
                     <button
@@ -50,7 +49,7 @@ const MobileNav = () => {
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 20 20"
                             fill="currentColor"
-                            className="text-gray-900 dark:text-gray-100"
+                            className="text-foreground"
                         >
                             <path
                                 fillRule="evenodd"
@@ -65,7 +64,7 @@ const MobileNav = () => {
                         <div key={link.title} className="px-12 py-4">
                             <Link
                                 href={link.href}
-                                className="text-2xl font-bold tracking-widest text-gray-900 dark:text-gray-100"
+                                className="text-2xl font-bold tracking-widest text-foreground"
                                 onClick={onToggleNav}
                             >
                                 {link.title}
