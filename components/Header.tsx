@@ -9,7 +9,7 @@ import Link from './Link'
 
 const Header = () => {
     return (
-        <header className="fixed top-0 left-0 right-0 z-40 shadow-sm backdrop-blur-[10px] bg-background/50 saturate-100">
+        <header className="fixed left-0 right-0 top-0 z-40 bg-background/50 shadow-sm saturate-100 backdrop-blur-[10px]">
             <div className="mx-auto flex h-[60px] max-w-4xl items-center justify-between px-8">
                 <div>
                     <Link href="/" aria-label={siteMetadata.headerTitle}>
@@ -25,7 +25,7 @@ const Header = () => {
                         {headerNavLinks.map((link, i) => (
                             <li key={i}>
                                 <Link
-                                    className="rounded py-2 px-3 text-sm font-medium text-muted-foreground transition-all duration-300 hover:brightness-125 hover:bg-secondary/25"
+                                    className="rounded px-3 py-2 text-sm font-medium text-muted-foreground transition-all duration-300 hover:bg-secondary/25 hover:brightness-125"
                                     href={link.href}
                                 >
                                     {link.title}

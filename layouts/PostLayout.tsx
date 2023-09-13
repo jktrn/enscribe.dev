@@ -78,9 +78,7 @@ export default function PostLayout({ content, authorDetails, next, prev, childre
                                             )}
                                             <dl className="whitespace-nowrap text-sm font-medium leading-5">
                                                 <dt className="sr-only">Name</dt>
-                                                <dd className="text-foreground">
-                                                    {author.name}
-                                                </dd>
+                                                <dd className="text-foreground">{author.name}</dd>
                                                 <dt className="sr-only">Twitter</dt>
                                                 <dd>
                                                     {author.twitter && (
