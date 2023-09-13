@@ -95,7 +95,7 @@ export default function ListLayout({
                                 type="text"
                                 onChange={(e) => setSearchValue(e.target.value)}
                                 placeholder="Search articles"
-                                className="block w-full rounded-md border border-muted-foreground px-4 py-2 text-muted-foreground bg-muted focus:border-primary focus:ring-primary dark:border-muted"
+                                className="block w-full rounded-md border border-muted-foreground bg-muted px-4 py-2 text-muted-foreground focus:border-primary focus:ring-primary dark:border-muted"
                             />
                         </label>
                         <svg
@@ -132,10 +132,7 @@ export default function ListLayout({
                                     <div className="space-y-3 xl:col-span-3">
                                         <div>
                                             <h3 className="text-2xl font-bold leading-8 tracking-tight">
-                                                <Link
-                                                    href={`/${path}`}
-                                                    className="text-foreground"
-                                                >
+                                                <Link href={`/${path}`} className="text-foreground">
                                                     {title}
                                                 </Link>
                                             </h3>

@@ -11,7 +11,7 @@
 }
 
 .footnotes {
-    @apply mt-12 border-t border-muted-foreground dark:border-muted pt-8;
+    @apply mt-12 border-t border-muted-foreground pt-8 dark:border-muted;
 }
 
 .data-footnote-backref {
