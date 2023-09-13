@@ -7,7 +7,7 @@
 
 /* Code title styles */
 .remark-code-title {
-    @apply rounded-t bg-gray-700 px-5 py-3 font-mono text-sm font-bold text-gray-200 dark:bg-gray-800;
+    @apply rounded-t px-5 py-3 font-mono text-sm font-bold bg-secondary text-secondary-foreground;
 }
 
 .remark-code-title + div > pre {
@@ -32,11 +32,11 @@
 }
 
 .highlight-line {
-    @apply -mx-4 border-l-4 border-primary bg-gray-700 bg-opacity-50;
+    @apply -mx-4 border-l-4 border-primary bg-primary bg-opacity-50;
 }
 
 .line-number::before {
-    @apply -ml-2 mr-4 inline-block w-4 text-right text-gray-400;
+    @apply -ml-2 mr-4 inline-block w-4 text-right text-muted-foreground;
     content: attr(line);
 }
 

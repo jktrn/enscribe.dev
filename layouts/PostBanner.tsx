@@ -6,7 +6,6 @@ import type { Blog } from 'contentlayer/generated'
 import Comments from '@/components/Comments'
 import Link from '@/components/Link'
 import PageTitle from '@/components/PageTitle'
-import SectionContainer from '@/components/SectionContainer'
 import siteMetadata from '@/data/siteMetadata'
 import ScrollTopAndComment from '@/components/ScrollTopAndComment'
 
@@ -23,11 +22,11 @@ export default function PostMinimal({ content, next, prev, children }: LayoutPro
         images && images.length > 0 ? images[0] : 'https://picsum.photos/seed/picsum/800/400'
 
     return (
-        <SectionContainer>
+        <>
             <ScrollTopAndComment />
             <article>
                 <div>
-                    <div className="space-y-1 pb-10 text-center dark:border-gray-700">
+                    <div className="space-y-1 pb-10 text-center">
                         <div className="w-full">
                             <Bleed>
                                 <div className="relative aspect-[2/1] w-full">
@@ -47,7 +46,7 @@ export default function PostMinimal({ content, next, prev, children }: LayoutPro
                     <div className="prose max-w-none py-4 dark:prose-invert">{children}</div>
                     {siteMetadata.comments && (
                         <div
-                            className="pb-6 pt-6 text-center text-gray-700 dark:text-gray-300"
+                            className="pb-6 pt-6 text-center text-muted-foreground"
                             id="comment"
                         >
                             <Comments slug={slug} />
@@ -59,7 +58,7 @@ export default function PostMinimal({ content, next, prev, children }: LayoutPro
                                 <div className="pt-4 xl:pt-8">
                                     <Link
                                         href={`/${prev.path}`}
-                                        className="text-primary hover:brightness-110 dark:hover:brightness-110"
+                                        className="text-primary hover:brightness-125 dark:hover:brightness-125"
                                         aria-label={`Previous post: ${prev.title}`}
                                     >
                                         &larr; {prev.title}
@@ -70,7 +69,7 @@ export default function PostMinimal({ content, next, prev, children }: LayoutPro
                                 <div className="pt-4 xl:pt-8">
                                     <Link
                                         href={`/${next.path}`}
-                                        className="text-primary hover:brightness-110 dark:hover:brightness-110"
+                                        className="text-primary hover:brightness-125 dark:hover:brightness-125"
                                         aria-label={`Next post: ${next.title}`}
                                     >
                                         {next.title} &rarr;
@@ -81,6 +80,6 @@ export default function PostMinimal({ content, next, prev, children }: LayoutPro
                     </footer>
                 </div>
             </article>
-        </SectionContainer>
+        </>
     )
 }

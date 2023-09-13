@@ -2,7 +2,7 @@ import 'css/tailwind.css'
 import './globals.css'
 import 'pliny/search/algolia.css'
 
-import { Space_Grotesk } from 'next/font/google'
+import { JetBrains_Mono } from 'next/font/google'
 import { Analytics, AnalyticsConfig } from 'pliny/analytics'
 import { SearchProvider, SearchConfig } from 'pliny/search'
 import Header from '@/components/Header'
@@ -12,10 +12,10 @@ import siteMetadata from '@/data/siteMetadata'
 import { ThemeProviders } from './theme-providers'
 import { Metadata } from 'next'
 
-const space_grotesk = Space_Grotesk({
+const space_grotesk = JetBrains_Mono({
     subsets: ['latin'],
     display: 'swap',
-    variable: '--font-space-grotesk',
+    variable: '--font-space-jetbrains-mono',
 })
 
 export const metadata: Metadata = {
@@ -92,7 +92,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <ThemeProviders>
                     <Analytics analyticsConfig={siteMetadata.analytics as AnalyticsConfig} />
                     <SectionContainer>
-                        <div className="flex h-screen flex-col justify-between font-sans">
+                        <div className="flex h-full flex-col justify-between font-sans">
                             <SearchProvider searchConfig={siteMetadata.search as SearchConfig}>
                                 <Header />
                                 <main className="mb-auto">{children}</main>
