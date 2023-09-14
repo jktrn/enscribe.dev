@@ -100,12 +100,18 @@ module.exports = {
                             },
                             code: { color: theme('colors.primary.DEFAULT') },
                         },
+                        p: {
+                            fontSize: '14px',
+                        },
                         'h1,h2': {
                             fontWeight: '700',
                             letterSpacing: theme('letterSpacing.tight'),
                         },
                         h3: {
                             fontWeight: '600',
+                        },
+                        pre: {
+                            fontSize: '1rem !important',
                         },
                         code: {
                             color: theme('colors.primary.DEFAULT'),
@@ -120,6 +126,9 @@ module.exports = {
                                 filter: 'brightness(1.10)',
                             },
                             code: { color: theme('colors.primary.DEFAULT') },
+                        },
+                        p: {
+                            fontSize: '14px',
                         },
                         'h1,h2,h3,h4,h5,h6': {
                             color: theme('colors.gray.100'),

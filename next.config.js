@@ -66,7 +66,7 @@ module.exports = () => {
             dirs: ['app', 'components', 'layouts', 'scripts'],
         },
         images: {
-            domains: ['picsum.photos'],
+            domains: ['picsum.photos', 'www.gravatar.com'],
         },
         experimental: {
             appDir: true,

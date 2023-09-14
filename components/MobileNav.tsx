@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Link from './Link'
 import headerNavLinks from '@/data/headerNavLinks'
+import { Menu } from 'lucide-react'
 
 const MobileNav = () => {
     const [navShow, setNavShow] = useState(false)
@@ -21,22 +22,11 @@ const MobileNav = () => {
 
     return (
         <>
-            <button aria-label="Toggle Menu" onClick={onToggleNav} className="sm:hidden">
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                    className="h-8 w-8 text-foreground"
-                >
-                    <path
-                        fillRule="evenodd"
-                        d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
-                        clipRule="evenodd"
-                    />
-                </svg>
+            <button className="sm:hidden" aria-label="Toggle Menu" onClick={onToggleNav}>
+                <Menu />
             </button>
             <div
-                className={`fixed left-0 top-[3.75rem] z-10 h-full w-full transform bg-background opacity-95 duration-300 ease-in-out dark:opacity-[0.98] ${
+                className={`fixed left-0 top-[3.75rem] z-50 h-screen w-full transform bg-background opacity-95 duration-300 ease-in-out ${
                     navShow ? 'translate-x-0' : 'translate-x-full'
                 }`}
             >
@@ -60,7 +50,7 @@ const MobileNav = () => {
                         </svg>
                     </button>
                 </div>
-                <nav className="fixed mt-8 h-full">
+                <nav className="fixed mt-8 w-full">
                     {headerNavLinks.map((link) => (
                         <div key={link.title} className="px-12 py-4">
                             <Link

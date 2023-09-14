@@ -7,7 +7,5 @@ module.exports = {
     trailingComma: 'es5',
     bracketSpacing: true,
     endOfLine: 'auto',
-    importOrder: ['^@core/(.*)$', '^@server/(.*)$', '^@ui/(.*)$', '^[./]'],
-    importOrderSortSpecifiers: true,
     plugins: ['prettier-plugin-tailwindcss'],
 }
