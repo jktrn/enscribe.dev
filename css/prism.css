@@ -7,7 +7,7 @@
 
 /* Code title styles */
 .remark-code-title {
-    @apply rounded-t bg-secondary px-5 py-3 font-mono text-sm font-bold text-secondary-foreground;
+    @apply mt-6 rounded-t bg-secondary px-5 py-3 font-mono text-sm font-bold text-secondary-foreground;
 }
 
 .remark-code-title + div > pre {
@@ -40,93 +40,83 @@
     content: attr(line);
 }
 
-/* Token styles */
 /**
- * MIT License
- * Copyright (c) 2018 Sarah Drasner
- * Sarah Drasner's[@sdras] Night Owl
- * Ported by Sara vieria [@SaraVieira]
- * Added by Souvik Mandal [@SimpleIndian]
+ * Darcula theme
+ *
+ * Adapted from a theme based on:
+ * IntelliJ Darcula Theme (https://github.com/bulenkov/Darcula)
+ *
+ * @author Alexandre Paradis <service.paradis@gmail.com>
+ * @version 1.0
  */
+
 .token.comment,
 .token.prolog,
 .token.cdata {
-    color: rgb(99, 119, 119);
-    font-style: italic;
+    color: #808080;
 }
 
-.token.punctuation {
-    color: rgb(199, 146, 234);
+.token.delimiter,
+.token.boolean,
+.token.keyword,
+.token.selector,
+.token.important,
+.token.atrule {
+    color: #cc7832;
 }
 
-.namespace {
-    color: rgb(178, 204, 214);
-}
-
-.token.deleted {
-    color: rgba(239, 83, 80, 0.56);
-    font-style: italic;
-}
-
-.token.symbol,
-.token.property {
-    color: rgb(128, 203, 196);
+.token.operator,
+.token.punctuation,
+.token.attr-name {
+    color: #a9b7c6;
 }
 
 .token.tag,
-.token.operator,
-.token.keyword {
-    color: rgb(127, 219, 202);
+.token.tag .punctuation,
+.token.doctype,
+.token.builtin {
+    color: #e8bf6a;
 }
 
-.token.boolean {
-    color: rgb(255, 88, 116);
+.token.entity,
+.token.number,
+.token.symbol {
+    color: #6897bb;
 }
 
-.token.number {
-    color: rgb(247, 140, 108);
-}
-
+.token.property,
 .token.constant,
-.token.function,
-.token.builtin,
-.token.char {
-    color: rgb(130, 170, 255);
-}
-
-.token.selector,
-.token.doctype {
-    color: rgb(199, 146, 234);
-    font-style: italic;
-}
-
-.token.attr-name,
-.token.inserted {
-    color: rgb(173, 219, 103);
-    font-style: italic;
+.token.variable {
+    color: #9876aa;
 }
 
 .token.string,
-.token.url,
-.token.entity,
-.language-css .token.string,
-.style .token.string {
-    color: rgb(173, 219, 103);
+.token.char {
+    color: #6a8759;
 }
 
-.token.class-name,
-.token.atrule,
-.token.attr-value {
-    color: rgb(255, 203, 139);
+.token.attr-value,
+.token.attr-value .punctuation {
+    color: #a5c261;
 }
 
-.token.regex,
-.token.important,
-.token.variable {
-    color: rgb(214, 222, 235);
+.token.attr-value .punctuation:first-child {
+    color: #a9b7c6;
 }
 
-.token.important,
+.token.url {
+    color: #287bde;
+    text-decoration: underline;
+}
+
+.token.function {
+    color: #ffc66d;
+}
+
+.token.regex {
+    background: #364135;
+}
+
 .token.bold {
     font-weight: bold;
 }
@@ -135,10 +125,26 @@
     font-style: italic;
 }
 
-.token.table {
-    display: inline;
+.token.inserted {
+    background: #294436;
 }
 
-.token.table {
-    display: inline;
+.token.deleted {
+    background: #484a4a;
+}
+
+code.language-css .token.property,
+code.language-css .token.property + .token.punctuation {
+    color: #a9b7c6;
+}
+
+code.language-css .token.id {
+    color: #ffc66d;
+}
+
+code.language-css .token.selector > .token.class,
+code.language-css .token.selector > .token.attribute,
+code.language-css .token.selector > .token.pseudo-class,
+code.language-css .token.selector > .token.pseudo-element {
+    color: #ffc66d;
 }

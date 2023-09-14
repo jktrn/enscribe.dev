@@ -11,6 +11,6 @@
     },
     "aliases": {
         "components": "@/components",
-        "utils": "@/scripts"
+        "utils": "@/scripts/utils/tailwind-helpers"
     }
 }
