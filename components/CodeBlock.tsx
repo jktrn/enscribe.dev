@@ -91,7 +91,9 @@ const CodeBlock: FC<CodeBlockProps> = ({
             ) {
                 return null
             } else if (skipLines.some(([startSkip, endSkip]) => lineNumber === endSkip)) {
-                const foundSkipLine = skipLines.find(([startSkip, endSkip]) => lineNumber === endSkip)
+                const foundSkipLine = skipLines.find(
+                    ([startSkip, endSkip]) => lineNumber === endSkip
+                )
                 if (foundSkipLine) {
                     const [startSkip, endSkip] = foundSkipLine
                     return (
