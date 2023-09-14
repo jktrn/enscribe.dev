@@ -158,7 +158,7 @@ const CodeBlock: FC<CodeBlockProps> = ({
         <div
             onMouseEnter={onEnter}
             onMouseLeave={onExit}
-            className="relative my-6 overflow-hidden rounded-lg border"
+            className="relative my-6 overflow-hidden rounded-lg border border-border"
             ref={textInput}
         >
             {fileName || title ? (
