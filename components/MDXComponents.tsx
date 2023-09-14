@@ -2,6 +2,7 @@ import TOCInline from 'pliny/ui/TOCInline'
 import Pre from 'pliny/ui/Pre'
 import type { MDXComponents } from 'mdx/types'
 import Image from './Image'
+import CodeBlock from './CodeBlock'
 import CustomLink from './Link'
 
 export const components: MDXComponents = {
@@ -9,4 +10,5 @@ export const components: MDXComponents = {
     TOCInline,
     a: CustomLink,
     pre: Pre,
+    CodeBlock,
 }
