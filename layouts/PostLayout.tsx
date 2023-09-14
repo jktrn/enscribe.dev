@@ -100,7 +100,7 @@ export default function PostLayout({ content, authorDetails, next, prev, childre
                             </dd>
                         </dl>
                         <div className="divide-y divide-accent-foreground dark:divide-accent xl:col-span-3 xl:row-span-2 xl:pb-0">
-                            <div className="prose max-w-none pb-8 pt-10 dark:prose-invert">
+                            <div className="prose prose-sm max-w-none pb-8 pt-10 dark:prose-invert">
                                 {children}
                             </div>
                             <div className="pb-6 pt-6 text-sm text-muted-foreground">
