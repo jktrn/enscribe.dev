@@ -1,0 +1,7 @@
+<span style="color:#DC3958">$</span> python3 gcd-query-v2.py
+[<span style="color:#47D4B9"><b>+</b></span>] Opening connection to amt.rs on port 31693: Done
+100%|█████████████████████████████████████████████████████| 16/16 [00:01<00:00, 11.55it/s]
+[<span style="color:#277FFF"><b>*</b></span>] Guessing result 621207498018765489399784775...
+[<span style="color:#47D4B9"><b>+</b></span>] Receiving all data: Done (15B)
+[<span style="color:#277FFF"><b>*</b></span>] Closed connection to amt.rs port 31693
+[<span style="color:#47D4B9"><b>+</b></span>] get better lol

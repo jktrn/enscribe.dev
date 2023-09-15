@@ -135,6 +135,7 @@ module.exports = {
                             borderRadius: '0.5rem',
                             borderWidth: '1px',
                             borderColor: theme('colors.border'),
+                            margin: '1.5rem auto !important',
                         },
                         blockquote: {
                             color: theme('colors.muted.foreground'),

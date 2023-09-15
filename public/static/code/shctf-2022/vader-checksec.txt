@@ -1,0 +1,7 @@
+<span style="color:#DC3958">$</span> checksec vader
+[<span style="color:#277FFF"><b>*</b></span>] '/home/kali/ctfs/shctf/pwn/vader/vader'
+    Arch:     amd64-64-little
+    RELRO:    <span style="color:#FEA44C">Partial RELRO</span>
+    Stack:    <span style="color:#D41919">No canary found</span>
+    NX:       <span style="color:#5EBDAB">NX enabled</span>
+    PIE:      <span style="color:#D41919">No PIE (0x400000)</span>

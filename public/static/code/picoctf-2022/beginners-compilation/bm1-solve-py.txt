@@ -1,0 +1,10 @@
+#!/usr/bin/env python3
+import string
+x = "54 211 168 309 262 110 272 73 54 137 131 383 188 332 [REDACTED]"
+y = x.split()
+
+a = string.ascii_uppercase + string.digits + "_"
+
+# Insane list comprehension
+z = [a[int(i) % 37] for i in y]
+print("picoCTF{"+''.join(z)+"}")

@@ -1,0 +1,12 @@
+from operator import mul
+from sympy import prime
+from functools import reduce
+
+N = 11
+
+product = lambda arr: reduce(mul, arr)
+primes = lambda n: [prime(i) for i in range(1, n + 1)]
+
+primorial = product(primes_list := primes(N))
+print(primes_list)
+print(primorial)

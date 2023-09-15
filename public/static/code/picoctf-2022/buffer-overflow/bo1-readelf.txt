@@ -1,0 +1,2 @@
+<span style="color:#DC3958">$</span> readelf -h vuln | grep endian
+  Data: 2&#x27;s complement, little endian

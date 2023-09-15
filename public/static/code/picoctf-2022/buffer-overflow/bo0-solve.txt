@@ -1,0 +1,3 @@
+<span style="color:#DC3958">$</span> nc saturn.picoctf.net 65535
+Input: aaaaaaaaaaaaaaaaaaaaaaaaaaa
+picoCTF{ov3rfl0ws_ar3nt_that_bad_<span style="color:#696969"><b>[REDACTED]</b></span>}

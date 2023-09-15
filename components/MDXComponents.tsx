@@ -6,6 +6,8 @@ import Challenge from './Challenge'
 import CodeBlock from './CodeBlock'
 import CustomLink from './Link'
 import StaticTweet from './StaticTweet'
+import Box from './Box'
+import YouTube from './YouTube'
 
 export const components: MDXComponents = {
     Image,
@@ -15,4 +17,6 @@ export const components: MDXComponents = {
     CodeBlock,
     Challenge,
     StaticTweet,
+    Box,
+    YouTube,
 }

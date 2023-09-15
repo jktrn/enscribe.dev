@@ -1,0 +1,19 @@
+00000000004011c9 <gadget1>:
+  4011c9: 55                    push   rbp
+  4011ca: 48 89 e5              mov    rbp,rsp
+  4011cd: 59                    pop    rcx
+  4011ce: 5a                    pop    rdx
+  4011cf: c3                    ret
+  4011d0: 90                    nop
+  4011d1: 5d                    pop    rbp
+  4011d2: c3                    ret
+
+00000000004011d3 <gadget2>:
+  4011d3: 55                    push   rbp
+  4011d4: 48 89 e5              mov    rbp,rsp
+  4011d7: 41 59                 pop    r9
+  4011d9: 41 58                 pop    r8
+  4011db: c3                    ret
+  4011dc: 90                    nop
+  4011dd: 5d                    pop    rbp
+  4011de: c3                    ret

@@ -1,0 +1,25 @@
+<span style="color:#47D4B9"><b>gef➤  </b></span>r
+Starting program: /home/kali/ctfs/pico22/buffer-overflow-1/vuln
+Please enter your string:
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+Okay, time to return... Fingers Crossed... Jumping to 0x41414141
+
+Program received signal SIGSEGV, Segmentation fault.
+<span style="color:#367BF0">0x41414141</span> in <span style="color:#FEA44C">??</span> ()
+[ Legend: <span style="color:#EC0101"><b>Modified register</b></span> | <span style="color:#D41919">Code</span> | <span style="color:#5EBDAB">Heap</span> | <span style="color:#9755B3">Stack</span> | <span style="color:#FEA44C">String</span> ]
+<span style="color:#585858"><b>──────────────────────────────────────────────────────────────────── </b></span><span style="color:#49AEE6">registers</span><span style="color:#585858"><b> ────</b></span>
+<span style="color:#EC0101"><b>$eax   </b></span>: 0x41
+<span style="color:#EC0101"><b>$ebx   </b></span>: 0x41414141 ("<span style="color:#FEA44C">AAAA</span>"?)
+<span style="color:#EC0101"><b>$ecx   </b></span>: 0x41
+<span style="color:#EC0101"><b>$edx   </b></span>: 0xffffffff
+<span style="color:#EC0101"><b>$esp   </b></span>: <span style="color:#9755B3">0xffffd130</span>  →  <span style="color:#FEA44C">"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"</span>
+<span style="color:#EC0101"><b>$ebp   </b></span>: 0x41414141 ("<span style="color:#FEA44C">AAAA</span>"?)
+<span style="color:#EC0101"><b>$esi   </b></span>: 0x1
+<span style="color:#EC0101"><b>$edi   </b></span>: <span style="color:#D41919">0x80490e0</span>  →  <span style="color:#585858"><b>&lt;_start+0&gt; endbr32 </b></span>
+<span style="color:#EC0101"><b>$eip   </b></span>: 0x41414141 ("<span style="color:#FEA44C">AAAA</span>"?)
+<span style="color:#367BF0">$cs</span>: 0x23 <span style="color:#367BF0">$ss</span>: 0x2b <span style="color:#367BF0">$ds</span>: 0x2b <span style="color:#367BF0">$es</span>: 0x2b <span style="color:#367BF0">$fs</span>: 0x00 <span style="color:#EC0101"><b>$gs</b></span>: 0x63
+<span style="color:#585858"><b>────────────────────────────────────────────────────────────────── </b></span><span style="color:#49AEE6">code:x86:32</span><span style="color:#585858"><b> ────</b></span>
+<span style="color:#EC0101"><b>[!]</b></span> Cannot disassemble from $PC
+<span style="color:#EC0101"><b>[!]</b></span> Cannot access memory at address 0x41414141
+<span style="color:#585858"><b>────────────────────────────────────────────────────────────────────── </b></span><span style="color:#49AEE6">threads</span><span style="color:#585858"><b> ────</b></span>
+[<span style="color:#47D4B9"><b>#0</b></span>] Id 1, Name: "vuln", <span style="color:#EC0101"><b>stopped</b></span> <span style="color:#367BF0">0x41414141</span> in <span style="color:#FF8A18"><b>??</b></span> (), reason: <span style="color:#962AC3"><b>SIGSEGV</b></span>

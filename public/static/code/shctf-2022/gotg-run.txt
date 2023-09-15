@@ -1,0 +1,24 @@
+<span style="color:#DC3958">$</span> python3 exp.py
+[<span style="color:#47D4B9"><b>+</b></span>] Opening connection to 0.cloud.chals.io on port 12690: Done
+[<span style="color:#277FFF"><b>*</b></span>] Trying offset 0...
+[<span style="color:#277FFF"><b>*</b></span>] Closed connection to 0.cloud.chals.io port 12690
+[<span style="color:#47D4B9"><b>+</b></span>] Opening connection to 0.cloud.chals.io on port 12690: Done
+[<span style="color:#277FFF"><b>*</b></span>] Trying offset 1...
+[<span style="color:#277FFF"><b>*</b></span>] Closed connection to 0.cloud.chals.io port 12690
+[<span style="color:#47D4B9"><b>+</b></span>] Opening connection to 0.cloud.chals.io on port 12690: Done
+[<span style="color:#277FFF"><b>*</b></span>] Trying offset 2...
+[<span style="color:#277FFF"><b>*</b></span>] Closed connection to 0.cloud.chals.io port 12690
+[<span style="color:#47D4B9"><b>+</b></span>] Opening connection to 0.cloud.chals.io on port 12690: Done
+[<span style="color:#277FFF"><b>*</b></span>] Trying offset 3...
+[<span style="color:#277FFF"><b>*</b></span>] Closed connection to 0.cloud.chals.io port 12690
+[<span style="color:#47D4B9"><b>+</b></span>] Opening connection to 0.cloud.chals.io on port 12690: Done
+[<span style="color:#277FFF"><b>*</b></span>] Trying offset 4...
+[<span style="color:#277FFF"><b>*</b></span>] Closed connection to 0.cloud.chals.io port 12690
+[<span style="color:#47D4B9"><b>+</b></span>] Opening connection to 0.cloud.chals.io on port 12690: Done
+[<span style="color:#277FFF"><b>*</b></span>] Trying offset 5...
+[<span style="color:#277FFF"><b>*</b></span>] Closed connection to 0.cloud.chals.io port 12690
+[<span style="color:#47D4B9"><b>+</b></span>] Opening connection to 0.cloud.chals.io on port 12690: Done
+[<span style="color:#277FFF"><b>*</b></span>] Trying offset 6...
+[<span style="color:#47D4B9"><b>+</b></span>] Does Quill manage to win the dance battle?
+    Oh no, Ronano has seen through the distraction!
+    shctf&#123;im_distracting_you&#125;

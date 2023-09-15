@@ -1,0 +1,18 @@
+// Splitting into array
+x = "54 211 168 309 262 110 272 73 54 137 131 383 188 332 [REDACTED]".split();
+// Mod 37
+y = x.map(x => x % 37);
+z = [];
+for (let i = 0; i < y.length; i++) {
+    // Mapping to charset
+    if (y[i] >= 0 && y[i] <= 25) {
+      z.push(String.fromCharCode(y[i] + 'A'.charCodeAt(0)));
+    } else if (y[i] >= 26 && y[i] <= 35) {
+      z.push(y[i] - 26);
+    } else if (y[i] == 36) {
+      z.push("_");
+    }
+}
+// Combine back to string
+z = z.join("");
+console.log(`picoCTF{${z}}`);

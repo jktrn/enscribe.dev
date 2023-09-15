@@ -1,0 +1,7 @@
+<span style="color:#DC3958">$</span> python3 gcd-query-v2.py
+[<span style="color:#47D4B9"><b>+</b></span>] Opening connection to amt.rs on port 31693: Done
+100%|█████████████████████████████████████████████████████| 16/16 [00:01<00:00, 11.16it/s]
+[<span style="color:#277FFF"><b>*</b></span>] Guessing result 330896654198662695248401611762768684627...
+[<span style="color:#47D4B9"><b>+</b></span>] Receiving all data: Done (15B)
+[<span style="color:#277FFF"><b>*</b></span>] Closed connection to amt.rs port 31693
+[<span style="color:#47D4B9"><b>+</b></span>] amateursCTF{crt_really_is_too_op...wtf??!??!?!?must_be_cheating!!...i_shouldn't've_removed_query_number_cap.}

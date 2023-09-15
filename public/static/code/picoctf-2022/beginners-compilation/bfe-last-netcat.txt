@@ -1,0 +1,21 @@
+<span style="color:#DC3958">$</span> nc saturn.picoctf.net 50366
+Hi, welcome to my echo chamber!
+Type '1' to enter a phrase into our database
+Type '2' to echo a phrase in our database
+Type '3' to exit the program
+<span style="color:#DC3958">&gt;</span> 1
+1
+Please enter your data:
+<span style="color:#DC3958">&gt;</span> hello
+hello
+Please enter the length of your data:
+<span style="color:#DC3958">&gt;</span> 5
+5
+Your entry number is: 1
+Write successful, would you like to do anything else?
+<span style="color:#DC3958">&gt;</span> 2
+2
+Please enter the entry number of your data:
+<span style="color:#DC3958">&gt;</span> "NO!"
+"NO!"
+picoCTF{M4K3_5UR3_70_CH3CK_Y0UR_1NPU75_<span style="color:#696969"><b>[REDACTED]</b></span>}

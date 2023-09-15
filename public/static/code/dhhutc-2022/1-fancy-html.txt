@@ -1,0 +1,17 @@
+<div class="flex-container">
+    <div>
+        <fieldset>
+            <p>Start Level:</p>
+            <div>
+                <button id="lvl0">Level 1</button>
+            </div>
+            <p>Steer Ships:</p>
+            <div>
+                <button id="steer0">Steer 0</button>
+            </div>
+        </fieldset>
+    </div>
+    <div>
+        <textarea id="textarea" cols="80" rows="20"></textarea>
+    </div>
+</div>

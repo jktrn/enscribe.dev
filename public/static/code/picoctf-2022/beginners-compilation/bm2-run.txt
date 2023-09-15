@@ -1,0 +1,2 @@
+<span style="color:#DC3958">$</span> node solve.js
+picoCTF{1NV3R53LY_H4RD_<span style="color:#696969"><b>[REDACTED]</b></span>}
