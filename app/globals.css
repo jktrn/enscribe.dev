@@ -30,7 +30,7 @@
 
         --border: 0 0% 89.8%;
         --input: 0 0% 89.8%;
-        --ring: 0 0% 3.9%;
+        --ring: 34 54% 45%;
 
         --radius: 0.5rem;
     }
@@ -62,7 +62,7 @@
 
         --border: 0 0% 14.9%;
         --input: 0 0% 14.9%;
-        --ring: 0 0% 83.1%;
+        --ring: 34 54% 81%;
 
         --radius: 0.5rem;
     }
@@ -77,20 +77,40 @@
     }
 }
 
+/* Targeting inserted/removed lines in codeblocks */
 span[style*='background-color: rgba(233, 211, 182, 0.05)'] > span > .linenumber {
-    visibility: hidden;
+    @apply hidden;
 }
 
 span[style*='background-color: rgba(233, 211, 182, 0.05)'] > span > .linenumber:after {
-    visibility: visible;
-    content: '+';
+    @apply visible content-['+'];
 }
 
 span[style*='background-color: rgba(255, 0, 0, 0.1)'] > span > .linenumber {
-    visibility: hidden;
+    @apply hidden;
 }
 
 span[style*='background-color: rgba(255, 0, 0, 0.1)'] > span > .linenumber:after {
-    visibility: visible;
-    content: '-';
+    @apply visible content-['-'];
+}
+
+/* Overwriting pliny/search kbar */
+.bg-gray-300\/50 .overflow-hidden.rounded-2xl.border.border-gray-100 {
+    @apply bg-background border-border rounded-lg;
+}
+
+.bg-gray-300\/50 .space-x-4.p-4 > input {
+    @apply rounded-md text-foreground placeholder-muted-foreground;
+}
+
+.bg-gray-300\/50 .space-x-4.p-4 > input:focus {
+    @apply border-primary ring-transparent;
+}
+
+.bg-gray-300\/50 .space-x-4.p-4 > kbd {
+    @apply text-muted-foreground border-border;
+}
+
+.overflow-hidden.rounded-2xl.border.border-gray-100 .block.border-t.border-gray-100 {
+    @apply border-t-border text-muted-foreground;
 }
