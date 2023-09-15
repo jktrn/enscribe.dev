@@ -1,0 +1,37 @@
+void vader(char *param_1,char *param_2,char *param_3,char *param_4,char *param_5) {
+    int iVar1;
+    undefined8 local_38;
+    undefined8 local_30;
+    undefined8 local_28;
+    undefined8 local_20;
+    FILE *local_10;
+
+    iVar1 = strcmp(param_1,"DARK");
+    if (iVar1 == 0) {
+        iVar1 = strcmp(param_2,"S1D3");
+        if (iVar1 == 0) {
+            iVar1 = strcmp(param_3,"OF");
+            if (iVar1 == 0) {
+                iVar1 = strcmp(param_4,"TH3");
+                if (iVar1 == 0) {
+                    iVar1 = strcmp(param_5,"FORC3");
+                    if (iVar1 == 0) {
+                        local_38 = 0;
+                        local_30 = 0;
+                        local_28 = 0;
+                        local_20 = 0;
+                        local_10 = (FILE *)0x0;
+                        local_10 = fopen("flag.txt","r");
+                        fgets((char *)&local_38,0x30,local_10);
+                        printf("<<< %s\n",&local_38);
+                    }
+                }
+            }
+        }
+        else {
+            printf("You are a wretched thing, of weakness and fear.");
+        }
+        exit(1);
+    }
+    return;
+}

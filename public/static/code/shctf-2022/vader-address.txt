@@ -1,0 +1,2 @@
+<span style="color:#EC0101"><b>gef➤  </b></span>x vader
+<span style="color:#367BF0">0x40146b</span> &lt;<span style="color:#FEA44C">vader</span>&gt;:	0xe5894855

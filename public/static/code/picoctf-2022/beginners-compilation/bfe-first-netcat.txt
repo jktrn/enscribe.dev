@@ -1,0 +1,5 @@
+<span style="color:#DC3958">$</span> nc saturn.picoctf.net 50366
+Hi, welcome to my echo chamber!
+Type '1' to enter a phrase into our database
+Type '2' to echo a phrase in our database
+Type '3' to exit the program

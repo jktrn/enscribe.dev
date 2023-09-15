@@ -1,0 +1,6 @@
+from sympy.ntheory.modular import crt
+
+remainders = [0, 1, 2]
+moduli = [1, 66, 145]
+
+print(crt(moduli, remainders)[0] if crt(moduli, remainders) else None)

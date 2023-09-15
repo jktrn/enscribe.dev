@@ -1,0 +1,29 @@
+<span style="color:#EC0101"><b>gef➤  </b></span>b main
+Breakpoint 1 at <span style="color:#367BF0">0x80492d7</span>
+<span style="color:#EC0101"><b>gef➤  </b></span>r
+Starting program: /home/kali/ctfs/pico22/buffer-overflow-1/vuln
+Breakpoint 1, <span style="color:#367BF0">0x080492d7</span> in <span style="color:#FEA44C">main</span> ()
+[ Legend: <span style="color:#EC0101"><b>Modified register</b></span> | <span style="color:#D41919">Code</span> | <span style="color:#5EBDAB">Heap</span> | <span style="color:#9755B3">Stack</span> | <span style="color:#FEA44C">String</span> ]
+<span style="color:#585858"><b>──────────────────────────────────────────────────────────────────── </b></span><span style="color:#49AEE6">registers</span><span style="color:#585858"><b> ────</b></span>
+<span style="color:#EC0101"><b>$eax   </b></span>: 0xf7fa39e8  →  <span style="color:#9755B3">0xffffd20c</span>  →  <span style="color:#9755B3">0xffffd3d1</span>  →  <span style="color:#FEA44C">"SHELL=/usr/bin/bash"</span>
+<span style="color:#367BF0">$ebx   </span>: 0x0
+<span style="color:#EC0101"><b>$ecx   </b></span>: <span style="color:#9755B3">0xffffd160</span>  →  0x00000001
+<span style="color:#EC0101"><b>$edx   </b></span>: <span style="color:#9755B3">0xffffd194</span>  →  0x00000000
+<span style="color:#EC0101"><b>$esp   </b></span>: <span style="color:#9755B3">0xffffd140</span>  →  <span style="color:#9755B3">0xffffd160</span>  →  0x00000001
+<span style="color:#EC0101"><b>$ebp   </b></span>: <span style="color:#9755B3">0xffffd148</span>  →  0x00000000
+<span style="color:#EC0101"><b>$esi   </b></span>: 0x1
+<span style="color:#EC0101"><b>$edi   </b></span>: <span style="color:#D41919">0x80490e0</span>  →  <span style="color:#585858"><b>&lt;_start+0&gt; endbr32 </b></span>
+<span style="color:#EC0101"><b>$eip   </b></span>: <span style="color:#D41919">0x80492d7</span>  →  <span style="color:#585858"><b>&lt;main+19&gt; sub esp, 0x10</b></span>
+<span style="color:#367BF0">$cs</span>: 0x23 <span style="color:#367BF0">$ss</span>: 0x2b <span style="color:#367BF0">$ds</span>: 0x2b <span style="color:#367BF0">$es</span>: 0x2b <span style="color:#367BF0">$fs</span>: 0x00 <span style="color:#EC0101"><b>$gs</b></span>: 0x63
+<span style="color:#585858"><b>────────────────────────────────────────────────────────────────── </b></span><span style="color:#49AEE6">code:x86:32</span><span style="color:#585858"><b> ────</b></span>
+   <span style="color:#585858"><b> 0x80492d3 &lt;main+15&gt;        mov    ebp, esp</b></span>
+   <span style="color:#585858"><b> 0x80492d5 &lt;main+17&gt;        push   ebx</b></span>
+   <span style="color:#585858"><b> 0x80492d6 &lt;main+18&gt;        push   ecx</b></span>
+ <span style="color:#5EBDAB">→  0x80492d7 &lt;main+19&gt;        sub    esp, 0x10</span>
+    0x80492da &lt;main+22&gt;        call   0x8049130 &lt;__x86.get_pc_thunk.bx&gt;
+    0x80492df &lt;main+27&gt;        add    ebx, 0x2d21
+    0x80492e5 &lt;main+33&gt;        mov    eax, DWORD PTR [ebx-0x4]
+    0x80492eb &lt;main+39&gt;        mov    eax, DWORD PTR [eax]
+    0x80492ed &lt;main+41&gt;        push   0x0
+<span style="color:#585858"><b>────────────────────────────────────────────────────────────────────── </b></span><span style="color:#49AEE6">threads</span><span style="color:#585858"><b> ────</b></span>
+[<span style="color:#47D4B9"><b>#0</b></span>] Id 1, Name: "vuln", <span style="color:#EC0101"><b>stopped</b></span> <span style="color:#367BF0">0x80492d7</span> in <span style="color:#FF8A18"><b>main</b></span> (), reason: <span style="color:#962AC3"><b>BREAKPOINT</b></span>

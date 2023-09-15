@@ -1,0 +1,5 @@
+...
+ID: 0 | (688, 115) (748, 383) | DIR: UP
+ID: 0 | (688, 115) (748, 383) | DIR: UP
+ID: 0 | (688, 111) (748, 379) | DIR: UP
+{"type":"WIN","flag":"CTF{CapTA1n-cRUCh}"}

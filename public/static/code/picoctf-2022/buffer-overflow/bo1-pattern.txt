@@ -1,0 +1,4 @@
+<span style="color:#47D4B9"><b>gef➤  </b></span>pattern search 0x6161616c
+<span style="color:#277FFF"><b>[+]</b></span> Searching for &apos;0x6161616c&apos;
+<span style="color:#47D4B9"><b>[+]</b></span> Found at offset 44 (little-endian search) <span style="color:#EC0101"><b>likely</b></span>
+<span style="color:#47D4B9"><b>[+]</b></span> Found at offset 41 (big-endian search)

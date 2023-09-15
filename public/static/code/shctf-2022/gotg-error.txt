@@ -1,0 +1,2 @@
+<span style="color:#DC3958">$</span> ./guardians 
+Error, please message admins with 'infinity_error'.

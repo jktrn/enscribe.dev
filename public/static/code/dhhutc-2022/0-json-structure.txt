@@ -1,0 +1,22 @@
+{
+  "type": "TICK",
+  "ships": [
+    {
+      "type": "SHIP_6",
+      "area": [
+        {
+          "x": 472,
+          "y": 795
+        },
+        {
+          "x": 532,
+          "y": 1063.75
+        }
+      ],
+      "direction": "UP",
+      "speed": 3,
+      "id": 0,
+      "isDocked": false
+    }
+  ]
+}

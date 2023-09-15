@@ -1,0 +1,13 @@
+<span style="color:#DC3958">>>></span> core = Corefile('./core')
+[<span style="color:#9755B3">x</span>] Parsing corefile...
+[<span style="color:#277FFF"><b>*</b></span>] '/home/kali/ctfs/pico22/buffer-overflow-1/core'
+    Arch:      i386-32-little
+    EIP:       0x6161616c
+    ESP:       0xff93abe0
+    Exe:       '/home/kali/ctfs/pico22/buffer-overflow-1/vuln' (0x8048000)
+    Fault:     0x6161616c
+[<span style="color:#47D4B9"><b>+</b></span>] Parsing corefile...: Done
+<span style="color:#DC3958">>>></span> core.registers
+{'eax': 65, 'ebp': 1633771883, 'ebx': 1633771882, 'ecx': 65, 'edi': 134516960, 'edx': 4294967295, 'eflags': 66178, 'eip': 1633771884, 'esi': 1, 'esp': 4287867872, 'orig_eax': 4294967295, 'xcs': 35, 'xds': 43, 'xes': 43, 'xfs': 0, 'xgs': 99, 'xss': 43}
+<span style="color:#DC3958">>>></span> hex(core.eip)
+'0x6161616c'

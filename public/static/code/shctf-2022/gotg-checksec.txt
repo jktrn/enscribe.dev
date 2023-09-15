@@ -1,0 +1,7 @@
+<span style="color:#DC3958">$</span> checksec guardians
+[<span style="color:#277FFF"><b>*</b></span>] '/home/kali/ctfs/shctf/guardians/guardians'  
+    Arch:     amd64-64-little  
+    RELRO:    <span style="color:#5EBDAB">Full RELRO</span>  
+    Stack:    <span style="color:#D41919">No canary found</span>  
+    NX:       <span style="color:#5EBDAB">NX enabled</span>  
+    PIE:      <span style="color:#5EBDAB">PIE enabled</span>

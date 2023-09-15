@@ -1,0 +1,10 @@
+<span style="color:#DC3958">$</span> python3 -q
+<span style="color:#DC3958">>>></span> from pwn import *
+<span style="color:#DC3958">>>></span> elf = context.binary = ELF('./vuln')
+[<span style="color:#277FFF"><b>*</b></span>] '/home/kali/ctfs/pico22/buffer-overflow-1/vuln'
+    Arch:     i386-32-little
+    RELRO:    <span style="color:#FEA44C">Partial RELRO</span>
+    Stack:    <span style="color:#D41919">No canary found</span>
+    NX:       <span style="color:#D41919">NX disabled</span>
+    PIE:      <span style="color:#D41919">No PIE (0x8048000)</span>
+    RWX:      <span style="color:#D41919">Has RWX segments</span>

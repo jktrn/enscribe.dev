@@ -1,0 +1,8 @@
+<span style="color:#DC3958">$</span> checksec vuln
+[<span style="color:#277FFF"><b>*</b></span>] '/home/kali/ctfs/pico22/ropfu/vuln'
+    Arch:     i386-32-little
+    RELRO:    <span style="color:#FEA44C">Partial RELRO</span>
+    Stack:    <span style="color:#5EBDAB">Canary found</span>
+    NX:       <span style="color:#D41919">NX disabled</span>
+    PIE:      <span style="color:#D41919">No PIE (0x8048000)</span>
+    RWX:      <span style="color:#D41919">Has RWX segments</span>

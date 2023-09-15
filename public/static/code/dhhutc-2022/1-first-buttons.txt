@@ -1,0 +1,5 @@
+<p>Start Level:</p>
+<button id="lvl0">Level 1</button>
+
+<p>Steer Ships:</p>
+<button id="steer0">Steer 0</button>

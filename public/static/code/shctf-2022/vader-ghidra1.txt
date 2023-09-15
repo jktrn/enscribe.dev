@@ -1,0 +1,8 @@
+undefined8 main(void) {
+    char local_28 [32];
+
+    print_darth();
+    printf("\n\nWhen I left you, I was but the learner. Now I am the master >>> ");
+    fgets(local_28,0x100,stdin);
+    return 0;
+}

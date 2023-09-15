@@ -1,0 +1,30 @@
+from sympy.ntheory.modular import crt
+from sympy import primorial
+from tqdm import tqdm
+from pwn import *
+
+# Generate the 256th primorial
+N = 2**8
+primorial = primorial(N)
+
+p = remote('amt.rs', 31692)
+
+for _ in range(10):
+    remainders = []
+    moduli = []
+
+    for j in tqdm(range(1412)):
+        n = -j
+        m = primorial
+        p.sendlineafter(b'n m: ', bytes(f'{n} {m}', 'utf-8'))
+
+        # Append positive j and the GCD result to remainders and moduli
+        remainders.append(j)
+        moduli.append(int(p.recvlineS()))
+
+    # Apply Chinese Remainder Theorem on the generated congruence system
+    result = crt(moduli, remainders)[0]
+    log.info(f'Guessing result {result}...')
+    p.sendlineafter(b'x: ', bytes(str(result), 'utf-8'))
+
+log.success(p.recvallS())

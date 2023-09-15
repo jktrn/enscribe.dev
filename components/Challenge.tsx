@@ -122,7 +122,7 @@ const Challenge = ({
                     {authors && Array.isArray(authors) ? (
                         <>
                             <span className="flex items-center space-x-2">
-                                <PenTool /> <b>authors</b>:
+                                <PenTool size={14} strokeWidth={3} /> <b>authors</b>:
                             </span>
                             {authors.map((author, index) => (
                                 <span key={index}>
@@ -133,8 +133,8 @@ const Challenge = ({
                         </>
                     ) : (
                         authors && (
-                            <span>
-                                <PenTool /> <b>author</b>: {authors}
+                            <span className="flex items-center space-x-2">
+                                <PenTool size={14} strokeWidth={3} /> <b>author</b>: {authors}
                                 <br />
                             </span>
                         )

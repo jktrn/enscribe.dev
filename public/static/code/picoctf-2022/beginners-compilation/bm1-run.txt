@@ -1,0 +1,2 @@
+<span style="color:#DC3958">$</span> python3 solve.py
+picoCTF{R0UND_N_R0UND_<span style="color:#696969"><b>[REDACTED]</b></span>}

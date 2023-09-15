@@ -1,0 +1,24 @@
+// Splitting into array
+x = "54 211 168 309 262 110 272 73 54 137 131 383 188 332 [REDACTED]".split();
+// Mapping to % 41 with modular inverse of 41
+y = x.map(x => x % 41).map(x => modInverse(x, 41));
+z = [];
+
+// Mapping to charset
+for (let i = 0; i < y.length; i++) {
+    if (y[i] >= 1 && y[i] <= 26) z.push(String.fromCharCode(y[i] + 64));
+    else if (y[i] >= 27 && y[i] <= 36) z.push(y[i] - 27);
+    else if (y[i] == 37) z.push("_");
+}
+
+console.log(`picoCTF{${z.join("")}}`);
+
+// credit to: https://rosettacode.org/wiki/Modular_inverse
+function modInverse(a, b) {
+    a %= b;
+    for (var x = 1; x < b; x++) {
+        if ((a * x) % b == 1) {
+            return x;
+        }
+    }
+}

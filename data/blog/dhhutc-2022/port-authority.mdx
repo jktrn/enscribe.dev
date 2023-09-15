@@ -1,0 +1,365 @@
+---
+title: 'Hacky Holidays 2022: “Port Authority”, a WebSocket Strategy Game'
+date: '2022-07-27'
+lastmod: '2022-07-27'
+tags: ['programming', 'websocket']
+authors: ['enscribe']
+summary: 'Play a JSON-controlled strategy game through WebSocket—this is my writeup for the Hackazon Unlock the City programming challenge "Port Authority."'
+thumbnail: '/static/images/dhhutc-2022/banner.svg'
+images: ['/static/images/dhhutc-2022/banner.webp']
+layout: PostSimple
+---
+
+### Intro
+
+This challenge was part of the Deloitte Hackazon Hacky Holidays "Unlock the City" 2022 CTF (yeah, what a name!). Labeled under the `#ppc` category, which apparently stands for "professional programming challenge", it was the final challenge under the "District 1" segment of the CTF and categorized under the Hard difficulty.
+
+This was the first CTF problem which didn't just challenge my ability to critically think and problem solve - it also challenged my **motor control** and **hand-eye coordination**. Why? _Because I solved it by hand!_ I believe this challenge was meant to be solved using 100% programming, but I wanted to challenge myself. This was the process.
+
+---
+
+<Challenge
+    title="Port Authority"
+    authors={['Luuk Hofman', 'Diederik Bakker']}
+    solvers={['blueset', 'jktrn', 'sahuang']}
+    category="ppc"
+    points="5/5 = 350"
+    description="The harbour is in total chaos, the ships are no longer on course. The AI has disabled the brakes of all the ships and corrupted our control systems. The ships about to crash into each other, can you build a new AI that will rescue the ships and deliver the cargo?"
+/>
+
+<Box
+    text="Note: This is an **instance-based** challenge. No website URL will be provided!"
+    type="info"
+/>
+
+We're initially provided with a link that takes us to a nice-looking webgame called the "Port Traffic Control Interface":
+
+![Initial Website](/static/images/dhhutc-2022/initial-website.gif)
+
+Although we can't directly interact with the game using keyboard controls, there's a manual on the top-right which details the task:
+
+![Manual Website](/static/images/dhhutc-2022/manual-website.png)
+
+According to this, we can start playing the game and controlling the ships that appear through a [WebSocket](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API/) connection, which is an API that enables two-way communication between a user's browser and a server. [This documentation](https://javascript.info/websocket) describes the protocol alongside how to open/close and send/receive using JavaScript.
+
+Heavily referencing the aforementioned documentation, I started off by installing the WebSocket package with `npm i ws`, and then creating a `solve.js` with the following code:
+
+<CodeBlock
+    src="dhhutc-2022/0-first-connection"
+    language="javascript"
+    fileName="solve.js"
+    title="Initial WebSocket Connection"
+/>
+
+Look what happens when we establish a connection - the game starts running, and we start receiving per-tick input from the server in our console:
+
+![Start Website](/static/images/dhhutc-2022/start-website.gif)
+
+<CodeBlock src="dhhutc-2022/0-first-logging" rawHTML={true} terminal={true} />
+
+Let's see what happens when we send the `SHIP_STEER` command to the server after five seconds. We can do that with the [`setTimeout()`](https://developer.mozilla.org/en-US/docs/Web/API/setTimeout) method in our `socket.onopen` listener:
+
+<CodeBlock
+    src="dhhutc-2022/0-steer-test"
+    language="javascript"
+    fileName="solve.js"
+    title="Testing steering mechanic"
+    range={[[9, 23]]}
+    addedLines={[[16, 22]]}
+/>
+
+![First Turn](/static/images/dhhutc-2022/first-turn.gif)
+
+From the provided GIF, we can see that the ship will turn clockwise on its central point when told to steer!
+
+With this, we have a goal: **get the ship into the port by sending JSON instructions to the WebSocket server**. However, it's definitely a good idea to create some quality-of-life features first, such as:
+
+-   A way to convert our JSON data into an object we can reference
+-   A class which can construct objects for each ship
+-   An HTML/JS "controller", which can be used to steer the ships with UI and to start new levels
+
+Firstly, cleaning up the output involves parsing what we receive from the server, which we can do with the `JSON.parse()` method. We'll assign it into a variable named `obj` (and also delete our steer-testing code):
+
+<CodeBlock
+    src="dhhutc-2022/0-json-parsing"
+    language="javascript"
+    fileName="solve.js"
+    title="Parsing JSON"
+    range={[[16, 31]]}
+    addedLines={[[29, 30]]}
+    removedLines={[[16, 22]]}
+/>
+
+Each tick, `obj` will change to an object structured this way:
+
+<CodeBlock
+    src="dhhutc-2022/0-json-structure"
+    language="json"
+    title="Tick output"
+    showLineNumbers={false}
+/>
+
+Check out the `obj.type` key - there'll be multiple types of these (including but not limited to `"LOSS"`, `"GAME_START"`). We'll make it so that if `obj.type` is `"TICK"`, it will create a new Class instance for each object in the `obj.ships` array:
+
+<CodeBlock
+    src="dhhutc-2022/0-ship-instances"
+    language="javascript"
+    fileName="solve.js"
+    title="Ship class, instance creation, pretty logging"
+    range={[[18, 49]]}
+    addedLines={[
+        [18, 32],
+        [38, 47],
+    ]}
+/>
+
+With this new Class, we can get both our own `ships` array _and_ really clean logging from the server:
+
+<CodeBlock src="dhhutc-2022/0-clean-logging" rawHTML={true} terminal={true} />
+
+Let's finally get to solving the challenge.
+
+---
+
+<Challenge
+    title="Level 1"
+    solvers={['sahuang', 'blueset']}
+    points="25"
+    description="Do you know how websockets work?"
+/>
+
+The last thing I want to add was a web-based "controller", which can steer the ship on-click and start new levels. I moved all my code from a local `.js` file to [CodePen](https://codepen.io/) for instant page regeneration and accessability by teammates. Here's the HTML:
+
+<CodeBlock
+    src="dhhutc-2022/1-first-buttons"
+    language="html"
+    fileName="index.html"
+    title="First start & steer buttons"
+/>
+
+Here's the JS that adds functionality to these buttons. Note that these are made to be scalable/"future-proof", meaning I can freely add more buttons without needing to copy/paste slight alterations of the same code. I also made some changes upon switching to the CodePen, including deleting the `require()` method and preventing level 1 from automatically starting on-open:
+
+<CodeBlock
+    src="dhhutc-2022/1-futureproofing"
+    language="javascript"
+    fileName="solve.js"
+    title="Future-proof DOM listeners & events"
+    addedLines={[
+        [7, 12],
+        [53, 83],
+    ]}
+    skipLines={[[23, 52]]}
+    removedLines={[
+        [1, 2],
+        [17, 21],
+    ]}
+    scrollable={true}
+/>
+
+The preview on CodePen will look something like this:
+
+![CodePen](/static/images/dhhutc-2022/codepen.png)
+
+Let's see if it actually works:
+
+![First Buttons](/static/images/dhhutc-2022/first-buttons.gif)
+
+We could totally flag the challenge right now, but currently there's no way to see the filtered output we created. I know there's a "Console" button at the bottom-left of CodePen, but I'd like to see the output on the actual webpage, outside of the IDE. To do this, let's create a `log()` function to append strings to a `<textarea>` we'll add in the HTML:
+
+<CodeBlock
+    src="dhhutc-2022/1-log-function"
+    language="javascript"
+    fileName="solve.js"
+    title="Converting to log() function"
+    range={[[11, 87]]}
+    addedLines={[
+        [44, 44],
+        [46, 48],
+        [83, 87],
+    ]}
+    skipLines={[
+        [12, 36],
+        [50, 82],
+    ]}
+    removedLines={[[43, 43]]}
+/>
+
+We'll also spice up the page slightly with flexboxes, a `<fieldset>` and some CSS:
+
+<CodeBlock
+    src="dhhutc-2022/1-fancy-html"
+    language="html"
+    fileName="index.html"
+    title="Adding flexboxes and fieldsets"
+    addedLines={[
+        [1, 3],
+        [5, 5],
+        [7, 7],
+        [9, 9],
+        [11, 17],
+    ]}
+/>
+
+<CodeBlock
+    src="dhhutc-2022/1-fancy-css"
+    language="css"
+    fileName="style.css"
+    title="Some beauty treatment"
+    scrollable={true}
+/>
+
+Here's the preview now:
+
+![Updated Codepen](/static/images/dhhutc-2022/codepen2.png)
+
+Sorry I was being extra. Let's flag the challenge now (sped up):
+
+![Flag 1](/static/images/dhhutc-2022/flag1.gif)
+
+<CodeBlock src="dhhutc-2022/1-flag" rawHTML={true} terminal={true} />
+
+We've succesfully completed Level 1!
+
+---
+
+<Challenge
+    title="Level 2"
+    solvers={['sahuang', 'blueset']}
+    points="25"
+    description="Lets script it - don't forget the order!"
+/>
+
+"Lets script it"? I've already scripted throughout the entirety of Level 1 to accommodate for future levels! Let's add a Level 2 button to our scalable, future-proof code 😉:
+
+<CodeBlock
+    src="dhhutc-2022/2-adding-flag"
+    language="javascript"
+    fileName="solve.js"
+    title="Adding Level 2 button"
+    range={[[6, 14]]}
+    addedLines={[[10, 13]]}
+/>
+
+<CodeBlock
+    src="dhhutc-2022/2-adding-html"
+    language="html"
+    fileName="index.html"
+    title="Adding Level 2 button"
+    range={[[3, 8]]}
+    addedLines={[[7, 7]]}
+/>
+
+This is what appears when clicking the button:
+
+![Level 2](/static/images/dhhutc-2022/level2.gif)
+
+Looks like we'll have to add two more steer buttons:
+
+<CodeBlock
+    src="dhhutc-2022/2-more-buttons"
+    language="html"
+    fileName="index.html"
+    title="Adding steer buttons"
+    range={[[9, 15]]}
+    addedLines={[[12, 13]]}
+/>
+
+It seems as though that you also need the ships to enter in a specific order. It will be difficult to multitask all three, but it's doable! Let's try to solve it (also very sped up):
+
+![Flag 2](/static/images/dhhutc-2022/flag2.gif)
+
+<CodeBlock src="dhhutc-2022/2-flag" rawHTML={true} terminal={true} />
+
+Although we've solved level 2 manually, I have a gut feeling the next few ones won't be as trivial...
+
+---
+
+<Challenge
+    title="Level 3"
+    solvers="sahuang"
+    points="50"
+    description="Can you deal with the rocks that appeared in our once so peaceful harbor?"
+/>
+
+After adding another button to start Level 3, this is the field we start with:
+
+![Level 3](/static/images/dhhutc-2022/level3.gif)
+
+They added some rocks to the board, and the ships are now moving at a faster speed. This is unfeasable to complete via multitasking, so we'll have to come up with a method to keep the ships in place.
+
+Here's the plan: let's make it so that these ships will constantly rotate at a certain interval - in doing so, they'll complete a 360° loop within a small area, and we can commandeer them one-at-a-time by disabling the loop for certain ships. Let's start by adding checkboxes to enable the loop:
+
+<CodeBlock
+    src="dhhutc-2022/3-loop-toggle"
+    language="html"
+    fileName="index.html"
+    title="Adding loop checkboxes"
+    range={[[10, 22]]}
+    addedLines={[[16, 21]]}
+/>
+
+Regarding the JavaScript, I'll be using `performance.now()` and checking if the difference between it and `window.lastRot` is greater than 500ms. This check will happen every tick, and in theory will create a consistently steering ship that doesn't produce `"ILLEGAL_MOVE"`s for inputting too quickly:
+
+<CodeBlock
+    src="dhhutc-2022/3-looped-rotations"
+    language="javascript"
+    fileName="solve.js"
+    title="Implementing looped rotations"
+    range={[[40, 71]]}
+    addedLines={[
+        [40, 40],
+        [59, 70],
+    ]}
+/>
+
+Let's see if it works:
+
+![Looping](/static/images/dhhutc-2022/looping.gif)
+
+We've managed to stabilize the playing field for a manual solve! Let's flag the level:
+
+<video className="my-4 rounded-md" controls>
+    <source src="/static/images/dhhutc-2022/flag3.mp4" type="video/mp4" />
+    Your browser does not support the video tag.
+</video>
+
+<CodeBlock src="dhhutc-2022/3-flag" rawHTML={true} terminal={true} />
+
+---
+
+<Challenge
+    title="Level 4"
+    solvers="sahuang"
+    points="50"
+    description="The algorithm disturbed our radar system - boats that veer too far off track are lost and never seen again. Can you give them directions in time?"
+/>
+
+After I added the level 4 button alongside steer/loop buttons for the extra ship that popped up, I discovered that my solution for level 3 actually worked for level 4 as well:
+
+![Level 4](/static/images/dhhutc-2022/level4.gif)
+
+This means I can flag this level without needing to code at all!:
+
+<video className="my-4 rounded-md" controls>
+    <source src="/static/images/dhhutc-2022/flag4.mp4" type="video/mp4" />
+    Your browser does not support the video tag.
+</video>
+
+<CodeBlock src="dhhutc-2022/4-flag" rawHTML={true} terminal={true} />
+
+---
+
+<Challenge
+    title="Level 5"
+    solvers={['enscribe', 'sahuang']}
+    points="200"
+    description="A huge influx of ships is coming our way - can you lead them safely to the port?"
+/>
+
+Oh boy...
+
+![Level 5](/static/images/dhhutc-2022/level5.gif)
+
+Level five gives us a large increase in rocks, a tiny harbor, and six total ships to work with at max speed. Unfortunately, there's not enough room for the ships to loop around in circles, so the solution to levels 3 and 4 won't work. We'll have to figure out something else.
+
+Luckily, during some experimenation on level 1 I found out that you can actually do a full 180° turn by calling two consecutive turns in the code. In doing so, the ship won't hit any of the objects in its surroundings as compared to if it rotated 90° twice. We can observe this phenomenon below:
