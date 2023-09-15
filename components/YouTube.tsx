@@ -25,7 +25,7 @@ const YouTube = ({
 
     return (
         <div
-            className="youtube-mdx-embed my-6 relative w-full"
+            className="youtube-mdx-embed relative my-6 w-full"
             style={{
                 ...getPadding(aspectRatio),
             }}

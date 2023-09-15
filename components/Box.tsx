@@ -37,8 +37,9 @@ const Box = ({ text, type }) => {
                 components={{ p: React.Fragment }}
                 remarkPlugins={[remarkMath]}
                 rehypePlugins={[rehypeKatex]}
-                children={text}
-            />
+            >
+                {text}
+            </ReactMarkdown>
         </div>
     )
 }
