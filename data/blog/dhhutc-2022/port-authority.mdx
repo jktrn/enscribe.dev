@@ -351,7 +351,7 @@ This means I can flag this level without needing to code at all!:
 
 <Challenge
     title="Level 5"
-    solvers={['enscribe', 'sahuang']}
+    solvers={['jktrn', 'sahuang']}
     points="200"
     description="A huge influx of ships is coming our way - can you lead them safely to the port?"
 />
@@ -363,3 +363,157 @@ Oh boy...
 Level five gives us a large increase in rocks, a tiny harbor, and six total ships to work with at max speed. Unfortunately, there's not enough room for the ships to loop around in circles, so the solution to levels 3 and 4 won't work. We'll have to figure out something else.
 
 Luckily, during some experimenation on level 1 I found out that you can actually do a full 180° turn by calling two consecutive turns in the code. In doing so, the ship won't hit any of the objects in its surroundings as compared to if it rotated 90° twice. We can observe this phenomenon below:
+
+<div className="flex justify-center align-center gap-0 flex-col md:gap-4 md:flex-row">
+    <CodeBlock
+        src="dhhutc-2022/5-180-turn"
+        language="javascript"
+        fileName="solve.js"
+        title="180° turn"
+        range={[[142, 151]]}
+    />
+    ![180° Turn](/static/images/dhhutc-2022/180.gif)
+</div>
+
+Also, if you noticed in the first GIF, the ships are spawning at around the same locations every time. With this, we can come up with a plan: create "obstacles" with x-y coordinates that will cause any ship that comes into the region to turn 180°. We'll create separate "lanes" for each ship that spawns, therefore stabilizing the playfield and allowing for a feasible manual solve:
+
+![Lanes](/static/images/dhhutc-2022/obstacles.png)
+
+Now, how are these checks going to work? After a lot of experimenting I found that **three** total criteria should be met:
+1. The ship is travelling in the same the direction passed as an argument when the `check()` function is called
+2. The absolute difference between the x and y values of the object and the ship's top-left is less than a certain threshold (I chose 75px)
+3. The global variable to determine whether or not the ship has been rotated 180° yet is false (`hasRotated`)
+
+Here's a visual I drew in case you're lost. The red/green squares on the left indicate the status of each check during different stages of the turn:
+
+![Check Visual](/static/images/dhhutc-2022/checkvisual.svg)
+
+We can now begin programming by creating an Obstacle class and manually placing them down throughout the map. This was just a lot of trial and error, so don't worry about these coordinates feeling random:
+
+<CodeBlock
+    src="dhhutc-2022/5-obstacle-class"
+    language="javascript"
+    fileName="solve.js"
+    title="Creating obstacles"
+    range={[[48, 68]]}
+/>
+
+Next, let's create the aforementioned `hasRotated` object alongside the `check()` function, which will implement the three criteria:
+
+<CodeBlock
+    src="dhhutc-2022/5-180-check"
+    language="javascript"
+    fileName="solve.js"
+    title="Creating check() function"
+    skipLines={[[78, 151]]}
+    range={[[70, 165]]}
+/>
+
+
+Finally, let's call the `check()` function for each index in the `ships` array. Each tick, *every single* ship will go through these twelve checks. Although this might seem redundant, we have no way of assigning lanes to specific ships, as the IDs are randomized every time based on the order they're meant to dock. This method simply generalizes all of them, and shouldn't cause issues performance-wise:
+
+<CodeBlock
+    src="dhhutc-2022/5-lane-checks"
+    language="javascript"
+    fileName="solve.js"
+    title="Implementing lane checks"
+    range={[[86, 108]]}
+/>
+
+In theory, these checks should cause the ships to bounce back and forth in their specific lanes. Let's check it out:
+
+![Lanes](/static/images/dhhutc-2022/lanes.gif)
+
+Yes! We've managed to stabilize level 5 completely! Now, we need to be able to toggle the lanes off to manually solve the challenge. Let's add more checkboxes to the HTML and adjust the JS accordingly:
+
+<CodeBlock
+    src="dhhutc-2022/5-lane-checkboxes"
+    language="html"
+    fileName="index.html"
+    title="Adding lane checkboxes"
+    range={[[21, 39]]}
+    addedLines={[[30, 38]]}
+/>
+
+<CodeBlock
+    src="dhhutc-2022/5-toggleable-lanes"
+    language="javascript"
+    fileName="solve.js"
+    title="Toggleable lanes"
+    scrollable={true}
+    range={[[80, 120]]}
+    addedLines={[[80, 80], [96, 96], [99, 100], [103, 104], [107, 108], [111, 112], [115, 116], [119, 119]]}
+/>
+
+Now, we can strategize on how to solve the challenge manually. Our team deduced that the most ideal order for ships would look something like this:
+
+![Strategy](/static/images/dhhutc-2022/obstacles2.svg)
+
+This order allows for the first ship to enter the port within two turns, and provides plenty of space for the second and third ships to work with. Although it would require a lot of restarting (as the order is always random), it's worth it to ease the difficulty of the challenge.
+
+Moving on, we began work on the manual solve process. It was super tedious and involved a lot of mess-ups, especially around the port area. We discovered that the window to turn into the port was extraordinarily small, leading to many runs dying to something like this:
+
+<div className="flex justify-center align-center gap-0 flex-col md:gap-4 md:flex-row">
+    ![Death 1](/static/images/dhhutc-2022/death1.png)
+    ![Death 2](/static/images/dhhutc-2022/death2.png)
+</div>
+
+We decided it'd be best if we added another obstacle to perfectly turn us into the dock every time. This time around, it would have to be a 90° turn utlizing the middle of the ship instead of the top-left, as each ship is a different length and would therefore turn at different points when within the obstacles's hitbox:
+
+![90 Turn](/static/images/dhhutc-2022/90turn.svg)
+
+Here is its implementation:
+
+<CodeBlock
+    src="dhhutc-2022/5-auto-dock"
+    language="javascript"
+    fileName="solve.js"
+    title="Implementing auto-dock"
+    range={[[65, 219]]}
+    skipLines={[[70, 116], [121, 202]]}
+    addedLines={[[203, 219]]}
+/>
+
+When you turn a ship through those rocks into the obstacle, the ship will now automatically turn to enter the dock perfectly:
+
+![Autodock](/static/images/dhhutc-2022/autodock.gif)
+
+**NOW IT'S TIME TO SOLVE THE CHALLENGE MANUALLY!** It took multiple hours across several days, and included some chokes as tragic as this one:
+
+![Choke](/static/images/dhhutc-2022/choke.png)
+
+But, finally, I got the solve run clipped here, with a small reaction 🤣:
+
+<video controls>
+    <source src="/static/images/dhhutc-2022/solve-cut.mp4" type="video/mp4" />
+    <track kind="captions" />
+    Your browser does not support the video tag.
+</video>
+
+<Box text="**Port Authority**, Level 5: `CTF{CaPT41n-j4Ck-sp4rR0w}`" type="flag" />
+
+Here is the final script:
+
+<CodeBlock
+    src="dhhutc-2022/5-final-script"
+    language="javascript"
+    fileName="solve.js"
+    title="Final script"
+    scrollable={true}
+/>
+
+---
+
+### Afterword
+
+If you made it to this point of the writeup, I want to sincerely thank you for reading. This writeup genuinely took longer to create than it took to solve the challenge (about 30 hours across two weeks), as I had to recreate, record, crop, and optimize every aspect of the solve. I had to create my own multi-hundred-line plugins to implement custom code blocks specifically for this writeup. Everything from the line numbers in highlighted diffs of code to the diagrams were hand-done, as this is my passion: to create for people to learn in a concise, aesthetically pleasing manner. This is also an entry for the Hacky Holidays writeup competition, so wish me luck! 🤞
+
+\- enscribe
+
+---
+
+Update: There I am! 🎉 Thanks for the support, everybody.
+
+![Leaderboard](/static/images/dhhutc-2022/leaderboard.png)
+
+---

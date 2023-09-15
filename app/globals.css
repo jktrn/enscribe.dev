@@ -79,19 +79,21 @@
 
 /* Targeting inserted/removed lines in codeblocks */
 span[style*='background-color: rgba(233, 211, 182, 0.05)'] > span > .linenumber {
-    @apply hidden;
+    visibility: hidden;
 }
 
 span[style*='background-color: rgba(233, 211, 182, 0.05)'] > span > .linenumber:after {
-    @apply visible content-['+'];
+    visibility: visible;
+    content: '+';
 }
 
 span[style*='background-color: rgba(255, 0, 0, 0.1)'] > span > .linenumber {
-    @apply hidden;
+    visibility: hidden;
 }
 
 span[style*='background-color: rgba(255, 0, 0, 0.1)'] > span > .linenumber:after {
-    @apply visible content-['-'];
+    visibility: visible;
+    content: '-';
 }
 
 /* Overwriting pliny/search kbar */
