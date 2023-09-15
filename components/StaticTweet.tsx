@@ -45,6 +45,7 @@ const StaticTweet = ({ avatar, username, handle, date, text, src, media, video }
                 {video && (
                     <video controls width="100%" className="!mb-0 rounded-md">
                         <source src={video} type="video/mp4" />
+                        <track kind="captions" />
                         Sorry, your browser doesn't support embedded videos.
                     </video>
                 )}
