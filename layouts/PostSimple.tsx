@@ -2,9 +2,9 @@ import { ReactNode } from 'react'
 import { formatDate } from 'pliny/utils/formatDate'
 import { CoreContent } from 'pliny/utils/contentlayer'
 import type { Blog, Authors } from 'contentlayer/generated'
-import Bleed from 'pliny/ui/Bleed'
 import Comments from '@/components/Comments'
 import Link from '@/components/Link'
+import Tag from '@/components/Tag'
 import Image from '@/components/Image'
 import PageTitle from '@/components/PageTitle'
 import siteMetadata from '@/data/siteMetadata'
@@ -19,8 +19,8 @@ interface LayoutProps {
 }
 
 export default function PostLayout({ content, authorDetails, next, prev, children }: LayoutProps) {
-    const { path, slug, date, title, images } = content
-    const displayImage = images && images.length > 0 ? images[0] : '/static/images/twitter-card.png'
+    const { path, slug, tags, date, title, thumbnail } = content
+    const displayThumbnail = thumbnail ? thumbnail : '/static/images/twitter-card.png'
 
     return (
         <>
@@ -30,18 +30,18 @@ export default function PostLayout({ content, authorDetails, next, prev, childre
                     <header>
                         <div className="space-y-1 border-b border-muted-foreground pb-10 text-center dark:border-muted">
                             <div className="w-full">
-                                <Bleed>
-                                    <div className="relative aspect-[2/1] w-full">
+                                <div className="relative -mx-6 mt-6 md:-mx-8">
+                                    <div className="relative aspect-[1.91/1] w-full">
                                         <Image
-                                            src={displayImage}
+                                            src={displayThumbnail}
                                             alt={title}
                                             fill
-                                            className="rounded-md object-cover"
+                                            className="rounded-md object-contain"
                                             priority
                                             unoptimized
                                         />
                                     </div>
-                                </Bleed>
+                                </div>
                             </div>
                             <dl className="relative pt-10">
                                 <div>
@@ -56,6 +56,15 @@ export default function PostLayout({ content, authorDetails, next, prev, childre
                             <div>
                                 <PageTitle>{title}</PageTitle>
                             </div>
+                            {tags && (
+                                <div className="py-2">
+                                    <div className="align-center flex flex-wrap justify-center space-x-3">
+                                        {tags.map((tag) => (
+                                            <Tag key={tag} text={tag} />
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
                             <dl className="pt-6">
                                 <dt className="sr-only">Authors</dt>
                                 <dd>

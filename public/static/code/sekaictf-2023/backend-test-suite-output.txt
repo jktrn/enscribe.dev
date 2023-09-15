@@ -1,0 +1,27 @@
+<span style="color:#DC3958">$</span> npm run test 
+
+> gacha-backend@0.0.0 test
+> node --experimental-vm-modules node_modules/jest/bin/jest.js
+
+  <span style="color:#656565">console.log</span>
+    Server listening on port 3000
+
+      <span style="color:#656565">at Server.&lt;anonymous&gt; (src/main.ts:150:13)</span>
+
+<span style="background-color:#0DBC79;color:#656565"> PASS </span> <span style="color:#656565">__tests__/</span><span style="font-weight:bold">main.test.ts</span>
+  Gacha endpoint
+    <span style="color:#0DBC79">√</span> <span style="color:#656565">should return a valid response for ten pulls (51 ms)</span>
+    <span style="color:#0DBC79">√</span> <span style="color:#656565">should return an array of ten characters if the user has enough gems for ten pulls (6 ms)</span>
+    <span style="color:#0DBC79">√</span> <span style="color:#656565">should show the flag if the user has 1,000,000 pulls (9 ms)</span>
+    <span style="color:#0DBC79">√</span> <span style="color:#656565">should return an error if numPulls is not either 1 or 10 (7 ms)</span>
+    <span style="color:#0DBC79">√</span> <span style="color:#656565">should return an error if the user does not have enough gems for ten pulls (6 ms)</span>
+    <span style="color:#0DBC79">√</span> <span style="color:#656565">should return an error if the return body is incomplete (6 ms)</span>
+    <span style="color:#0DBC79">√</span> <span style="color:#656565">should return a valid response for a single pull (7 ms)</span>
+    <span style="color:#0DBC79">√</span> <span style="color:#656565">should return an array of one character if the user has enough gems for a single pull (5 ms)</span>
+    <span style="color:#0DBC79">√</span> <span style="color:#656565">should return an error if the user does not have enough gems for a single pull (7 ms)</span>
+
+<b>Test Suites:</b> <span style="color:#0DBC79;font-weight:bold">1 passed</span>, 1 total
+<b>Tests:</b>       <span style="color:#0DBC79;font-weight:bold">9 passed</span>, 9 total
+<b>Snapshots:</b>   0 total
+<b>Time:</b>        2.118 s, estimated 3 s
+<span style="color:#656565">Ran all test suites.</span>

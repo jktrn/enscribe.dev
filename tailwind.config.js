@@ -111,10 +111,39 @@ module.exports = {
                             fontWeight: '600',
                         },
                         pre: {
-                            fontSize: '1rem !important',
+                            fontSize: '14px !important',
                         },
                         code: {
                             color: theme('colors.primary.DEFAULT'),
+                            fontSize: 'inherit',
+                            fontWeight: '400',
+                            backgroundColor: theme('colors.primary.foreground'),
+                            borderWidth: '1px',
+                            borderColor: theme('colors.border'),
+                            fontFamily: 'inherit',
+                            borderRadius: '0.25rem',
+                            padding: '0.25rem 0.5rem',
+                        },
+                        'code::before': {
+                            display: 'none',
+                        },
+                        'code::after': {
+                            display: 'none',
+                        },
+                        img: {
+                            display: 'block',
+                            borderRadius: '0.5rem',
+                            borderWidth: '1px',
+                            borderColor: theme('colors.border'),
+                        },
+                        blockquote: {
+                            color: theme('colors.muted.foreground'),
+                            quotes: 'none',
+                            fontStyle: 'normal',
+                            borderLeftColor: theme('colors.border'),
+                        },
+                        hr: {
+                            borderColor: theme('colors.border'),
                         },
                     },
                 },

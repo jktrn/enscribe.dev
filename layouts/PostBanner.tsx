@@ -29,7 +29,7 @@ export default function PostMinimal({ content, next, prev, children }: LayoutPro
                     <div className="space-y-1 pb-10 text-center">
                         <div className="w-full">
                             <Bleed>
-                                <div className="relative aspect-[2/1] w-full">
+                                <div className="relative aspect-[1.91/1] w-full">
                                     <Image
                                         src={displayImage}
                                         alt={title}
