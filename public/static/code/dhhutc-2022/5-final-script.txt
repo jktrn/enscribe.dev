@@ -1,0 +1,219 @@
+// Regex so that I can freely paste the URL when the instance is changed
+const url = "https://[REDACTED].challenge.hackazon.org/";
+// Opens WebSocket connection
+const socket = new WebSocket(`wss://${url.replace(/^https?:\/\//, "")}ws`);
+// Object literal for level lookup
+const passwords = [{
+        level: 1,
+        password: ""
+    },
+    {
+        level: 2,
+        password: "CTF{CapTA1n-cRUCh}"
+    },
+    {
+        level: 3,
+        password: "CTF{capt41n-h00k!}"
+    },
+    {
+        level: 4,
+        password: "CTF{c4pt41N-m0rG4N}"
+    },
+    {
+        level: 5,
+        password: "CTF{C4pt41N-4MErIc4}"
+    }
+];
+const text = document.getElementById("textarea");
+
+// Runs on socket open, equivalent to .addEventListener()
+socket.onopen = function() {
+    log("[+] Connected!");
+};
+
+class Ship {
+    // Initializes class object instance
+    constructor(id, topLeft, bottomRight, direction) {
+        this.id = id;
+        this.topLeft = topLeft;
+        this.bottomRight = bottomRight;
+        this.direction = direction;
+    }
+    // Getter + abusing template literals
+    get printState() {
+        return `ID: ${this.id} | (${Math.floor(this.topLeft.x)}, ${Math.floor(this.topLeft.y)}) (${Math.floor(this.bottomRight.x)}, ${Math.floor(this.bottomRight.y)}) | DIR: ${this.direction}`;
+    }
+}
+
+class Obstacle {
+    constructor(x, y) {
+        this.x = x
+        this.y = y
+    }
+}
+
+let obstacles = [
+    new Obstacle(450, 1060), //1
+    new Obstacle(750, 1060), //2
+    new Obstacle(1200, 1060), //3
+    new Obstacle(1600, 1060), //4
+    new Obstacle(604, 700), //5
+    new Obstacle(1070, 600), //6
+    new Obstacle(1730, 650), //7
+    new Obstacle(604, 70), //8
+    new Obstacle(674, 200), //9
+    new Obstacle(1070, 350), //10
+    new Obstacle(1530, 200), //11
+    new Obstacle(1730, 300), //12
+    new Obstacle(232, 575) //13
+]
+
+let hasRotated = {
+    0: false,
+    1: false,
+    2: false,
+    3: false,
+    4: false,
+    5: false
+}
+
+window.lastRot = 0;
+let checkList = findAll("toggle");
+
+// Runs when output from server is received
+socket.onmessage = function (event) {
+    // Converts server output into object
+    let obj = JSON.parse(event.data);
+    if (obj.type == "TICK") {
+        let ships = [];
+        // For each ship in obj.ships, push class object into ships array
+        for (const i of obj.ships) {
+            ships.push(new Ship(i.id, i.area[0], i.area[1], i.direction));
+        }
+        // Call the string literal getter
+        for (const i of ships) {
+            log(i.printState);
+            // Infinite checks!
+            if (!checkList[0].checked) {
+                check(i, obstacles[0], "LEFT");
+                check(i, obstacles[1], "RIGHT");
+            }
+            if (!checkList[1].checked) {
+                check(i, obstacles[2], "LEFT");
+                check(i, obstacles[3], "RIGHT");
+            }
+            if (!checkList[2].checked) {
+                check(i, obstacles[4], "DOWN");
+                check(i, obstacles[7], "UP");
+            }
+            if (!checkList[3].checked) {
+                check(i, obstacles[5], "DOWN");
+                check(i, obstacles[9], "UP");
+            }
+            if (!checkList[4].checked) {
+                check(i, obstacles[6], "DOWN");
+                check(i, obstacles[11], "UP");
+            }
+            if (!checkList[5].checked) {
+                check(i, obstacles[8], "LEFT");
+                check(i, obstacles[10], "RIGHT");
+            }
+            // Auto-docking obstacle
+            check90(i, obstacles[12], "LEFT");
+        }
+    } else {
+        log(JSON.stringify(JSON.parse(event.data)));
+    }
+    // Guard clause for looping ships!
+    if (performance.now() - window.lastRot < 500) return;
+    window.lastRot = performance.now();
+    // If statement for each element that begins with "loop"
+    findAll("loop").forEach(function (element, index) {
+        if (element.checked) {
+            socket.send(JSON.stringify({
+                type: "SHIP_STEER",
+                shipId: `${index}`
+            }));
+        }
+    });
+};
+
+// Assigns onclick listeners for each level button
+findAll("lvl").forEach(function(element, index) {
+    element.onclick = function() {
+        socket.send(JSON.stringify({
+            type: "START_GAME",
+            level: passwords[index].level,
+            password: passwords[index].password
+        }));
+    };
+});
+
+// Assigns onclick listeners for each steer button
+findAll("steer").forEach(function(element, index) {
+    element.onclick = function() {
+        socket.send(JSON.stringify({
+            type: "SHIP_STEER",
+            shipId: `${index}`
+        }));
+    };
+});
+
+// Creates DOM array for each element with name id + int
+function findAll(id) {
+    let i = 0;
+    let list = [];
+    while (document.getElementById(id + i)) {
+        list[i] = document.getElementById(id + i);
+        i++;
+    }
+    return list;
+}
+
+function log(str) {
+    text.value += "\n" + str;
+    text.value = text.value.substring(text.value.length - 10000);
+    text.scrollTop = text.scrollHeight;
+}
+
+function turn180(id) {
+    socket.send(JSON.stringify({
+        type: "SHIP_STEER",
+        shipId: id
+    }));
+    socket.send(JSON.stringify({
+        type: "SHIP_STEER",
+        shipId: id
+    }));
+}
+
+function check(s, o, d) {
+    if (!hasRotated[s.id] &&
+        Math.abs(s.topLeft.y - o.y) < 75 &&
+        Math.abs(s.topLeft.x - o.x) < 75 &&
+        s.direction == d) {
+        hasRotated[s.id] = true;
+        turn180(s.id);
+        setTimeout(() => {
+            hasRotated[s.id] = false
+        }, "1000");
+    }
+}
+
+function check90(s, o, d) {
+    // Calculates middle of ship in coordinates
+    let mid = Math.abs(Math.floor(s.topLeft.x + s.bottomRight.x) / 2);
+    if (!hasRotated[s.id] &&
+        Math.abs(s.topLeft.y - o.y) < 400 && // Large y for legroom
+        Math.abs(mid - o.x) < 20 && // Small x for accuracy
+        s.direction == d) {
+        hasRotated[s.id] = true;
+        socket.send(JSON.stringify({
+            type: "SHIP_STEER",
+            shipId: s.id
+        }));
+        setTimeout(() => {
+            hasRotated[s.id] = false
+        }, "1000");
+    }
+}

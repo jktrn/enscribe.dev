@@ -33,7 +33,6 @@ const Challenge = ({
     const [userAvatars, setUserAvatars] = useState({})
     const usernameMapping = {
         jktrn: 'enscribe',
-        'neil-vs': 'neil',
     }
 
     useEffect(() => {
@@ -76,8 +75,8 @@ const Challenge = ({
                 <div className="flex flex-col justify-center gap-1 bg-secondary/25 px-6 py-4 text-xs">
                     {solvers && Array.isArray(solvers) ? (
                         <>
-                            <span className="flex">
-                                <Users /> <b>solvers</b>:
+                            <span className="flex items-center space-x-2">
+                                <Users size={14} strokeWidth={3} /> <b>solvers</b>:
                             </span>
                             {solvers.map((solver, index) => (
                                 <span key={index} className="flex items-center space-x-2">
