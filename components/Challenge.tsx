@@ -10,7 +10,7 @@ import Link from './Link'
 interface TitleProps {
     level: number
     className?: string
-    children: any
+    children: React.ReactNode
 }
 
 const Title = ({ level, className, children }: TitleProps) => {
