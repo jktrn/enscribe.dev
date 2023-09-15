@@ -1,0 +1,22 @@
+<span style="color:#DC3958">$</span> git ls-tree -r --name-only HEAD | tree --fromfile
+.
+├── .editorconfig
+├── .eslintignore
+├── .eslintrc.json
+├── .gitignore
+├── .prettierrc
+├── Dockerfile
+├── <span style="font-weight:bold;color:#3B78FF">__tests__</span>
+│   └── main.test.ts
+├── cleanup.sh
+├── jest.config.js
+├── package-lock.json
+├── package.json
+├── <span style="font-weight:bold;color:#3B78FF">src</span>
+│   ├── <span style="font-weight:bold;color:#B4009E">flag.png</span>
+│   ├── gacha.json
+│   └── interfaces.ts
+│   └── main.ts
+├── start.sh
+├── tsconfig.json
+└── tsconfig.release.json

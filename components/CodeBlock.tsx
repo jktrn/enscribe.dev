@@ -163,7 +163,7 @@ const CodeBlock: FC<CodeBlockProps> = ({
         >
             {fileName || title ? (
                 <div className="align-center flex gap-3 px-3 py-1">
-                    <div className="flex items-center gap-2 rounded-md bg-secondary/25 px-2 py-1 text-[13px]">
+                    <div className="hidden items-center gap-2 rounded-md bg-secondary/25 px-2 py-1 text-[13px] md:flex">
                         {getLanguageIcon(language)}
                         {fileName && <span className="font-bold">{fileName}</span>}
                     </div>

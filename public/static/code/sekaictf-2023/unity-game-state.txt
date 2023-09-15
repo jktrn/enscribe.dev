@@ -1,0 +1,16 @@
+using UnityEngine;
+
+public class GameState : MonoBehaviour
+{
+    private const int OnePullCost = 100;
+    private const int TenPullCost = 1000;
+
+    public int crystals = 1000;
+    public int pulls = 0;
+
+    public void SpendCrystals(int numPulls)
+    {
+        crystals -= numPulls == 1 ? OnePullCost : TenPullCost;
+        pulls += numPulls;
+    }
+}
