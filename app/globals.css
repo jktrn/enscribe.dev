@@ -98,7 +98,7 @@ span[style*='background-color: rgba(255, 0, 0, 0.1)'] > span > .linenumber:after
 
 /* Overwriting pliny/search kbar */
 .bg-gray-300\/50 .overflow-hidden.rounded-2xl.border.border-gray-100 {
-    @apply bg-background border-border rounded-lg;
+    @apply rounded-lg border-border bg-background;
 }
 
 .bg-gray-300\/50 .space-x-4.p-4 > input {
@@ -110,7 +110,7 @@ span[style*='background-color: rgba(255, 0, 0, 0.1)'] > span > .linenumber:after
 }
 
 .bg-gray-300\/50 .space-x-4.p-4 > kbd {
-    @apply text-muted-foreground border-border;
+    @apply border-border text-muted-foreground;
 }
 
 .overflow-hidden.rounded-2xl.border.border-gray-100 .block.border-t.border-gray-100 {

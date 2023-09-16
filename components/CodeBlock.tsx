@@ -54,7 +54,7 @@ const CodeBlock: FC<CodeBlockProps> = ({
     addedLines = [],
     removedLines = [],
 }) => {
-    const code = useFetchData(src)
+    const { code, loading } = useFetchData(src)
     const textInput = useRef(null)
     const [hovered, onEnter, onExit] = useHover()
     const [copied, onCopy] = useCopy(textInput)
@@ -161,41 +161,52 @@ const CodeBlock: FC<CodeBlockProps> = ({
             className="relative my-6 overflow-hidden rounded-lg border border-border"
             ref={textInput}
         >
-            {fileName || title ? (
-                <div className="align-center flex gap-3 px-3 py-1">
-                    <div className="hidden items-center gap-2 rounded-md bg-secondary/25 px-2 py-1 text-[13px] md:flex">
-                        {getLanguageIcon(language)}
-                        {fileName && <span className="font-bold">{fileName}</span>}
-                    </div>
-                    {title && (
-                        <span className="flex items-center text-muted-foreground">{title}</span>
-                    )}
+            {loading ? (
+                // Loading circle using Tailwind
+                <div className="flex h-40 items-center justify-center">
+                    <div className="h-12 w-12 animate-spin rounded-full border-t-2 border-border"></div>
                 </div>
-            ) : null}
-            {rawHTML ? (
-                <pre style={preStyles}>
-                    <code>
-                        <div
-                            className="line"
-                            dangerouslySetInnerHTML={{ __html: code }}
-                            style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}
-                        />
-                    </code>
-                </pre>
             ) : (
-                <SyntaxHighlighter
-                    language={language}
-                    useInlineStyles={false}
-                    wrapLines={true}
-                    customStyle={preStyles}
-                    codeTagProps={codeStyles}
-                    wrapLongLines={wrapLongLines}
-                    renderer={lineRenderer}
-                >
-                    {code}
-                </SyntaxHighlighter>
+                <>
+                    {fileName || title ? (
+                        <div className="align-center flex gap-3 px-3 py-1">
+                            <div className="hidden items-center gap-2 rounded-md bg-secondary/25 px-2 py-1 text-[13px] md:flex">
+                                {getLanguageIcon(language)}
+                                {fileName && <span className="font-bold">{fileName}</span>}
+                            </div>
+                            {title && (
+                                <span className="flex items-center text-muted-foreground">
+                                    {title}
+                                </span>
+                            )}
+                        </div>
+                    ) : null}
+                    {rawHTML ? (
+                        <pre style={preStyles}>
+                            <code>
+                                <div
+                                    className="line"
+                                    dangerouslySetInnerHTML={{ __html: code }}
+                                    style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}
+                                />
+                            </code>
+                        </pre>
+                    ) : (
+                        <SyntaxHighlighter
+                            language={language}
+                            useInlineStyles={false}
+                            wrapLines={true}
+                            customStyle={preStyles}
+                            codeTagProps={codeStyles}
+                            wrapLongLines={wrapLongLines}
+                            renderer={lineRenderer}
+                        >
+                            {code}
+                        </SyntaxHighlighter>
+                    )}
+                    {!terminal && <CopyButton onClick={onCopy} copied={copied} hovered={hovered} />}
+                </>
             )}
-            {!terminal && <CopyButton onClick={onCopy} copied={copied} hovered={hovered} />}
         </div>
     )
 }
@@ -213,14 +224,18 @@ const fetchData = async (src: string): Promise<string> => {
 
 const useFetchData = (src?: string) => {
     const [code, setCode] = useState<string>('')
+    const [loading, setLoading] = useState<boolean>(false) // Add a loading state
 
     useEffect(() => {
         if (src) {
-            fetchData(src).then(setCode)
+            setLoading(true) // Set loading to true before fetching
+            fetchData(src)
+                .then(setCode)
+                .finally(() => setLoading(false)) // Set loading to false after fetching
         }
     }, [src])
 
-    return code
+    return { code, loading } // Return the loading state along with the code
 }
 
 const useHover = (): [
