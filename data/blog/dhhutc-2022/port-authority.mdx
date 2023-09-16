@@ -364,7 +364,7 @@ Level five gives us a large increase in rocks, a tiny harbor, and six total ship
 
 Luckily, during some experimenation on level 1 I found out that you can actually do a full 180° turn by calling two consecutive turns in the code. In doing so, the ship won't hit any of the objects in its surroundings as compared to if it rotated 90° twice. We can observe this phenomenon below:
 
-<div className="flex justify-center align-center gap-0 flex-col md:gap-4 md:flex-row">
+<div className="align-center flex flex-col justify-center gap-0 md:flex-row md:gap-4">
     <CodeBlock
         src="dhhutc-2022/5-180-turn"
         language="javascript"
@@ -380,6 +380,7 @@ Also, if you noticed in the first GIF, the ships are spawning at around the same
 ![Lanes](/static/images/dhhutc-2022/obstacles.png)
 
 Now, how are these checks going to work? After a lot of experimenting I found that **three** total criteria should be met:
+
 1. The ship is travelling in the same the direction passed as an argument when the `check()` function is called
 2. The absolute difference between the x and y values of the object and the ship's top-left is less than a certain threshold (I chose 75px)
 3. The global variable to determine whether or not the ship has been rotated 180° yet is false (`hasRotated`)
@@ -409,8 +410,7 @@ Next, let's create the aforementioned `hasRotated` object alongside the `check()
     range={[[70, 165]]}
 />
 
-
-Finally, let's call the `check()` function for each index in the `ships` array. Each tick, *every single* ship will go through these twelve checks. Although this might seem redundant, we have no way of assigning lanes to specific ships, as the IDs are randomized every time based on the order they're meant to dock. This method simply generalizes all of them, and shouldn't cause issues performance-wise:
+Finally, let's call the `check()` function for each index in the `ships` array. Each tick, _every single_ ship will go through these twelve checks. Although this might seem redundant, we have no way of assigning lanes to specific ships, as the IDs are randomized every time based on the order they're meant to dock. This method simply generalizes all of them, and shouldn't cause issues performance-wise:
 
 <CodeBlock
     src="dhhutc-2022/5-lane-checks"
@@ -442,7 +442,16 @@ Yes! We've managed to stabilize level 5 completely! Now, we need to be able to t
     title="Toggleable lanes"
     scrollable={true}
     range={[[80, 120]]}
-    addedLines={[[80, 80], [96, 96], [99, 100], [103, 104], [107, 108], [111, 112], [115, 116], [119, 119]]}
+    addedLines={[
+        [80, 80],
+        [96, 96],
+        [99, 100],
+        [103, 104],
+        [107, 108],
+        [111, 112],
+        [115, 116],
+        [119, 119],
+    ]}
 />
 
 Now, we can strategize on how to solve the challenge manually. Our team deduced that the most ideal order for ships would look something like this:
@@ -453,9 +462,9 @@ This order allows for the first ship to enter the port within two turns, and pro
 
 Moving on, we began work on the manual solve process. It was super tedious and involved a lot of mess-ups, especially around the port area. We discovered that the window to turn into the port was extraordinarily small, leading to many runs dying to something like this:
 
-<div className="flex justify-center align-center gap-0 flex-col md:gap-4 md:flex-row">
-    ![Death 1](/static/images/dhhutc-2022/death1.png)
-    ![Death 2](/static/images/dhhutc-2022/death2.png)
+<div className="align-center flex flex-col justify-center gap-0 md:flex-row md:gap-4">
+    ![Death 1](/static/images/dhhutc-2022/death1.png) ![Death
+    2](/static/images/dhhutc-2022/death2.png)
 </div>
 
 We decided it'd be best if we added another obstacle to perfectly turn us into the dock every time. This time around, it would have to be a 90° turn utlizing the middle of the ship instead of the top-left, as each ship is a different length and would therefore turn at different points when within the obstacles's hitbox:
@@ -470,7 +479,10 @@ Here is its implementation:
     fileName="solve.js"
     title="Implementing auto-dock"
     range={[[65, 219]]}
-    skipLines={[[70, 116], [121, 202]]}
+    skipLines={[
+        [70, 116],
+        [121, 202],
+    ]}
     addedLines={[[203, 219]]}
 />
 

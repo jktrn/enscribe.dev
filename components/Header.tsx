@@ -4,7 +4,7 @@ import siteMetadata from '@/data/siteMetadata'
 import MobileNav from './MobileNav'
 import ThemeSwitch from './ThemeSwitch'
 import SearchButton from './SearchButton'
-import Image from './Image'
+import NextImage from 'next/image'
 import Link from './Link'
 
 const Header = () => {
@@ -14,7 +14,7 @@ const Header = () => {
                 <div>
                     <Link href="/" aria-label={siteMetadata.headerTitle}>
                         <div className="flex items-center justify-between">
-                            <Image src={Logo} alt="Logo" width="40" height="40" />
+                            <NextImage src={Logo} alt="Logo" width="40" height="40" />
                         </div>
                     </Link>
                 </div>

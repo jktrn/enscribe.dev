@@ -1,4 +1,6 @@
-import { ReactNode } from 'react'
+'use client'
+
+import { ReactNode, useState } from 'react'
 import { formatDate } from 'pliny/utils/formatDate'
 import { CoreContent } from 'pliny/utils/contentlayer'
 import type { Blog, Authors } from 'contentlayer/generated'
@@ -6,9 +8,11 @@ import Comments from '@/components/Comments'
 import Link from '@/components/Link'
 import Tag from '@/components/Tag'
 import Image from '@/components/Image'
+import NextImage from 'next/image'
 import PageTitle from '@/components/PageTitle'
 import siteMetadata from '@/data/siteMetadata'
 import ScrollTopAndComment from '@/components/ScrollTopAndComment'
+import { Skeleton } from '@/components/shadcn/skeleton'
 
 interface LayoutProps {
     content: CoreContent<Blog>
@@ -21,6 +25,7 @@ interface LayoutProps {
 export default function PostLayout({ content, authorDetails, next, prev, children }: LayoutProps) {
     const { path, slug, tags, date, title, thumbnail } = content
     const displayThumbnail = thumbnail ? thumbnail : '/static/images/twitter-card.png'
+    const [isLoading, setIsLoading] = useState(true)
 
     return (
         <>
@@ -31,15 +36,21 @@ export default function PostLayout({ content, authorDetails, next, prev, childre
                         <div className="space-y-1 border-b border-muted-foreground pb-10 text-center dark:border-muted">
                             <div className="w-full">
                                 <div className="relative -mx-6 mt-6 md:-mx-8">
-                                    <div className="relative aspect-[1.91/1] w-full">
-                                        <Image
+                                    <div className="relative aspect-[1.91/1] w-full rounded-md">
+                                        <NextImage
                                             src={displayThumbnail}
                                             alt={title}
                                             fill
-                                            className="rounded-md object-contain"
+                                            className={`rounded-md object-contain ${
+                                                isLoading ? 'hidden' : ''
+                                            }`}
                                             priority
                                             unoptimized
+                                            onLoad={() => setIsLoading(false)}
                                         />
+                                        {isLoading && (
+                                            <Skeleton className="absolute left-0 top-0 h-full w-full rounded-md object-contain" />
+                                        )}
                                     </div>
                                 </div>
                             </div>
