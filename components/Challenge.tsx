@@ -101,22 +101,26 @@ const Challenge = ({
                             ))}
                         </>
                     ) : (
-                        <span className="flex items-center space-x-2">
-                            <User size={14} strokeWidth={3} /> <b>solver</b>
-                            :&nbsp;
-                            {userAvatars[solvers] && (
-                                <Image
-                                    src={userAvatars[solvers]}
-                                    alt={`${solvers}'s avatar`}
-                                    className="!m-0 inline-block h-4 w-4 rounded-full align-middle"
-                                    width={16}
-                                    height={16}
-                                />
-                            )}
-                            <Link href={`https://github.com/${solvers}`}>
-                                {usernameMapping[solvers] || solvers}
-                            </Link>
-                            <br />
+                        <span className="flex items-center">
+                            <span className="flex items-center space-x-2">
+                                <User size={14} strokeWidth={3} /> <b>solver</b>
+                                :&nbsp;
+                            </span>
+                            <span className="flex items-center space-x-1">
+                                {userAvatars[solvers] && (
+                                    <Image
+                                        src={userAvatars[solvers]}
+                                        alt={`${solvers}'s avatar`}
+                                        className="!m-0 inline-block h-4 w-4 rounded-full align-middle"
+                                        width={16}
+                                        height={16}
+                                    />
+                                )}
+                                <Link href={`https://github.com/${solvers}`}>
+                                    {usernameMapping[solvers] || solvers}
+                                </Link>
+                                <br />
+                            </span>
                         </span>
                     )}
                     {authors && Array.isArray(authors) ? (

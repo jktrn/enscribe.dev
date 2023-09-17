@@ -1,0 +1,5 @@
+{
+    "crystals": 5000, // number of in-hand crystals
+    "pulls": 2, // number of pulls made in this game instance
+    "numPulls": 10 // meaning the user has selected a ten-pull
+}
