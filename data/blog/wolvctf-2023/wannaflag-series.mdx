@@ -1,0 +1,94 @@
+---
+title: 'WolvCTF 2023: Hunting Down a Flag-Stealing Ransomware Group with OSINT'
+date: '2023-03-17'
+lastmod: '2023-03-17'
+tags: ['osint', 'compilation']
+summary: 'Hunting down a flag-stealing ransomware group with the power of OSINT——from Ethereum breadcrumbs to TF2 workshop maps.'
+thumbnail: '/static/images/wolvctf-2023/banner.svg'
+images: ['/static/images/wolvctf-2023/banner.png']
+authors: ['enscribe']
+layout: PostSimple
+---
+
+### Intro
+
+Over the last weekend, I played in WolvSec's second CTF iteration with [Project Sekai](https://sekai.team/) — [WolvCTF 2023](https://ctftime.org/event/1866). We placed first in the open division, and throughout the solving process I became intrigued by a specific series of challenges placed under the OSINT category: **WannaFlag**. Telling a story of a supposed ransomware group which had been terrorizing the CTF community for the past several months, these series of challenges offered an opportunity for players to track down this group's means of operation. Ultimately, the goal was to find WannaFlag's kingpin through all possible methods.
+
+Project Sekai was the first to blood the entire series. Here was our thought process, notes, and conclusions.
+
+---
+
+<Challenge
+    title="WannaFlag I: An Introduction"
+    authors="dree"
+    solvers="jktrn"
+    files="[image.png](/static/wolvctf-2023/image.png)"
+    genre="osint"
+    points="188"
+    solves="107"
+    description="Welcome to WolvCTF's OSINT Category! We have a bunch of great OSINT lined up, assuming nothing goes wrong hahahhahahhahah but why would it?  
+        For this challenge, find where the image was taken, and look at the Google Maps reviews!  
+        **Note**: Flags can be found in standard format `wctf{...}` for ALL OSINT challenges   
+        <Image src='/static/images/wolvctf-2023/image.png' className='!mb-0 w-72' alt='image.png' />
+        <figcaption>image.png</figcaption>"
+/>
+
+We're first given a little bit of a warmup: find the location of the following object, and to view its Google Reviews:
+
+![image.png](/static/images/wolvctf-2023/image.png)
+
+Simple task! These types of challenges, often called GEOINT (geospacial intelligence), can be trivial if there is a landmark object situated within the image — in this case, we have some public art resembling a black cube. We can use [Google Lens](https://lens.google) to identify it:
+
+![lens.png](/static/images/wolvctf-2023/lens.png)
+
+Looks like Google's given us a hit: this is "The Cube," a public art installation in the University of Michigan. Let's take a look at the Google Reviews:
+
+![reviews.png](/static/images/wolvctf-2023/reviews.png)
+
+This `netcat wanna-flag-i dot wolvctf dot io one three three seven` can be converted to a command: `nc wanna-flag-i.wolvctf.io 1337`. Let's connect to this server to see what it has to say:
+
+![netcat.gif](/static/images/wolvctf-2023/netcat.gif)
+
+Well... that was unexpected. Let's first digest what in the world just happened to this netcat:
+
+-   Our flag is cut off midway, and WannaFlag supposedly "pwns" the server
+-   We're told to pay 500,000 Goerli to the wallet `0x08f5AF98610aE4B93...`
+-   This hashtag `#YourFlagsBelongToUs` is spammed everywhere throughout the message
+-   The group tells "John OSINTs" to leave them alone on Twitter
+
+There's a small connection here, but it's not immediately obvious. We can actually search for this hashtag on Twitter, revealing a tweet from none other than `@JohnOSINT_` himself:
+
+<StaticTweet
+    avatar="https://pbs.twimg.com/profile_images/1634679088731557889/DkCPnIw__400x400.jpg"
+    username="John OSINT"
+    handle="JohnOSINT_"
+    date="March 11, 2023"
+    text="I've been getting reports of a new ransomware group that have been specifically targeting CTFs. They've been posting [#YourFlagsBelongToUs](https://twitter.com/hashtag/YourFlagsBelongToUs) to their victims and demanding crypto in exchange for the flags and infra back. This is big....."
+    src="https://twitter.com/JohnOSINT_/status/1634680651768270848"
+/>
+
+<StaticTweet
+    avatar="https://pbs.twimg.com/profile_images/1634679088731557889/DkCPnIw__400x400.jpg"
+    username="John OSINT"
+    handle="JohnOSINT_"
+    date="March 11, 2023"
+    text="I've only exfiltrated one flag from them so far: d2N0Znt1aGhoX3doM3IzX2QxZF80bGxfMHVyX2ZsNGdzX2cwP30="
+    src="https://twitter.com/JohnOSINT_/status/1634682918764429313"
+/>
+
+A simple [base64 decode](https://www.base64decode.org/) of the exfiltrated string gives us our first flag:
+
+<Box text="**WannaFlag I: An Introduction**: `wctf{uhhh_wh3r3_d1d_4ll_0ur_fl4gs_g0?}`" type="flag">
+
+---
+
+<Challenge
+    title="WannaFlag II: Payments"
+    authors="dree"
+    genre="osint"
+    points="348"
+    solves="75"
+    description="Ok well.........................something may have gone wrong  
+        WannaFlag's ransom demand is insane, there's no way we are paying that. Can you figure out which address the money is being funneled to?  
+        From the ransom note: send 500,000 Goerli to `0x08f5AF98610aE4B93cD0A856682E6319bF1be8a6`"
+/>
