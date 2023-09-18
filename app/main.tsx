@@ -1,6 +1,7 @@
 import Link from '@/components/Link'
 import Tag from '@/components/Tag'
 import siteMetadata from '@/data/siteMetadata'
+import BentoBox from '@/components/BentoBox'
 import { formatDate } from 'pliny/utils/formatDate'
 
 const MAX_DISPLAY = 5
@@ -9,6 +10,9 @@ export default function Home({ posts }) {
     return (
         <>
             <div className="divide-y divide-accent-foreground dark:divide-accent">
+                <div className="-mx-[20vw] max-w-[1200px] z-10 m-auto">
+                    <BentoBox />
+                </div>
                 <div className="space-y-2 pb-8 pt-6 md:space-y-5">
                     <h1 className="text-3xl font-extrabold leading-9 tracking-tight text-foreground sm:text-4xl sm:leading-10 md:text-6xl md:leading-14">
                         Latest
