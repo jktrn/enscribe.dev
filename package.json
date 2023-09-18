@@ -13,6 +13,7 @@
     },
     "dependencies": {
         "@next/bundle-analyzer": "13.4.19",
+        "@radix-ui/react-tooltip": "^1.0.6",
         "@tailwindcss/forms": "^0.5.4",
         "@tailwindcss/typography": "^0.5.9",
         "autoprefixer": "^10.4.13",
