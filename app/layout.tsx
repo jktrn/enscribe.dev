@@ -1,5 +1,7 @@
 import 'css/tailwind.css'
 import './globals.css'
+import 'react-grid-layout/css/styles.css'
+import 'react-resizable/css/styles.css'
 import 'pliny/search/algolia.css'
 
 import { JetBrains_Mono } from 'next/font/google'
