@@ -30,8 +30,7 @@ const BentoBox = () => {
         { i: 'h', x: 0, y: 6, w: 1, h: 1 }, // H (1x1)
         { i: 'i', x: 1, y: 6, w: 1, h: 1 }, // I (1x1)
         { i: 'j', x: 0, y: 7, w: 2, h: 1 }, // J (2x1)
-    ];
-    
+    ]
 
     const [rowHeight, setRowHeight] = useState(280)
 

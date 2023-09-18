@@ -10,7 +10,7 @@ export default function Home({ posts }) {
     return (
         <>
             <div className="divide-y divide-accent-foreground dark:divide-accent">
-                <div className="-mx-[20vw] z-10 m-auto">
+                <div className="z-10 m-auto -mx-[20vw]">
                     <BentoBox />
                 </div>
                 <div className="space-y-2 pb-8 pt-6 md:space-y-5">
