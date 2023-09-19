@@ -2,6 +2,7 @@ import React, { useEffect } from 'react'
 import { set } from 'react-use-lanyard'
 import Image from 'next/image'
 import { MoveUpRight } from 'lucide-react'
+import { FaSpotify } from 'react-icons/fa'
 import Link from '../Link'
 
 const SpotifyPresence = ({ lanyard }) => {
@@ -62,15 +63,17 @@ const SpotifyPresence = ({ lanyard }) => {
                         )}
                     </span>
                     <span className="text-md mb-2 line-clamp-2 font-bold leading-none">{song}</span>
-                    <span className="line-clamp-2 w-[85%] text-xs text-muted-foreground">
+                    <span className="line-clamp-1 w-[85%] text-xs text-muted-foreground">
                         <span className="opacity-80">by</span> {artist}
                     </span>
-                    <span className="line-clamp-2 w-[85%] text-xs text-muted-foreground">
+                    <span className="line-clamp-1 w-[85%] text-xs text-muted-foreground">
                         <span className="opacity-80">on</span> {album}
                     </span>
                 </div>
             </div>
-
+            <div className="absolute top-0 right-0 m-3 text-primary">
+                <FaSpotify size={64} />
+            </div>
             <Link href={`https://open.spotify.com/track/${track_id}`} className="block">
                 <div className="absolute bottom-0 right-0 m-3 flex w-fit items-end rounded-full border border-border bg-tertiary/50 p-3 text-primary transition-all duration-300 hover:brightness-125">
                     <MoveUpRight size={16} />
