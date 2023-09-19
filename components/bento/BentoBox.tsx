@@ -55,7 +55,7 @@ const BentoBox = ({ posts }) => {
     }
 
     const lanyard = useLanyard({
-        userId: process.env.NEXT_PUBLIC_DISCORD_USER_ID!,
+        userId: "747519888347627550",
     })
 
     return (
