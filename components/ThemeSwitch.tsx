@@ -3,6 +3,12 @@
 import { useEffect, useState } from 'react'
 import { useTheme } from 'next-themes'
 import { Sun, Moon } from 'lucide-react'
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from '@/components/shadcn/tooltip'
 
 const ThemeSwitch = () => {
     const [mounted, setMounted] = useState(false)
@@ -16,12 +22,23 @@ const ThemeSwitch = () => {
     }
 
     return (
-        <button
-            aria-label="Toggle Dark Mode"
-            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-        >
-            {mounted && theme === 'dark' ? <Sun /> : <Moon />}
-        </button>
+        <TooltipProvider>
+            <Tooltip>
+                <TooltipTrigger>
+                    <button
+                        disabled
+                        aria-label="Toggle Dark Mode"
+                        className="flex cursor-not-allowed items-center transition-opacity duration-300 hover:brightness-125 disabled:opacity-50"
+                        onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                    >
+                        {mounted && theme === 'dark' ? <Sun /> : <Moon />}
+                    </button>
+                </TooltipTrigger>
+                <TooltipContent>
+                    <span>Temporarily disabled!</span>
+                </TooltipContent>
+            </Tooltip>
+        </TooltipProvider>
     )
 }
 

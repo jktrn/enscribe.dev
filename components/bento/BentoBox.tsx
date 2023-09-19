@@ -8,9 +8,8 @@ import { useLanyard } from 'react-use-lanyard'
 import IconBox from './IconBox'
 import SpotifyPresence from './SpotifyPresence'
 import { FaGithub, FaTwitter } from 'react-icons/fa'
-import Link from '../Link'
 
-const ResponsiveGridLayout = WidthProvider(Responsive)
+const ResponsiveGridLayout = WidthProvider(Responsive, { measureBeforeMount: true })
 
 const BentoBox = ({ posts }) => {
     const mainLayout = [
@@ -63,6 +62,7 @@ const BentoBox = ({ posts }) => {
             <ResponsiveGridLayout
                 className="layout"
                 layouts={{ lg: mainLayout, md: mainLayout, sm: mobileLayout }}
+                // I don't know why but if I don't subtract 1 everything shits itself
                 breakpoints={{ lg: 1199, md: 799, sm: 374 }}
                 cols={{ lg: 4, md: 4, sm: 2 }}
                 rowHeight={rowHeight}
@@ -70,14 +70,28 @@ const BentoBox = ({ posts }) => {
                 onWidthChange={handleWidthChange}
                 isBounded={true}
                 margin={[16, 16]}
-                useCSSTransforms={true}
+                useCSSTransforms={false}
             >
-                <div
-                    key="a"
-                    className={`intro-background bg-cover ${
-                        introSilhouette ? 'show-silhouette' : 'no-silhouette'
-                    }`}
-                />
+                <div key="a">
+                    <Image
+                        src="/static/images/bento/bento-intro-silhouette.svg"
+                        alt="Bento Intro Silhouette"
+                        fill={true}
+                        className={`rounded-3xl object-cover transition-opacity duration-300 ${
+                            introSilhouette ? 'opacity-100' : 'opacity-0 delay-75'
+                        }`}
+                        unoptimized
+                    />
+                    <Image
+                        src="/static/images/bento/bento-intro.svg"
+                        alt="Bento Intro"
+                        fill={true}
+                        className={`rounded-3xl object-cover transition-opacity duration-300 ${
+                            introSilhouette ? 'opacity-0 delay-75' : 'opacity-100'
+                        }`}
+                        unoptimized
+                    />
+                </div>
                 <div key="b">
                     <IconBox icon={FaGithub} href="https://github.com/jktrn" />
                 </div>
@@ -93,7 +107,7 @@ const BentoBox = ({ posts }) => {
                 <div key="d">Child D</div>
                 <div
                     key="e"
-                    className="flex items-start bg-[url('/static/images/bento/bento-latest-post-silhouette.svg')] bg-cover hover:bg-[url('/static/images/bento/bento-latest-post.svg')]"
+                    className="group flex items-start"
                     onMouseEnter={() => setIntroSilhouette(true)}
                     onMouseLeave={() => setIntroSilhouette(false)}
                 >
@@ -102,7 +116,21 @@ const BentoBox = ({ posts }) => {
                         alt={posts[0].title}
                         width={0}
                         height={0}
-                        className="m-2 w-[80%] rounded-2xl border border-border md:ml-3 lg:ml-4"
+                        className="m-2 w-[80%] rounded-2xl border border-border md:m-3 lg:m-4"
+                        unoptimized
+                    />
+                    <Image
+                        src="/static/images/bento/bento-latest-post-silhouette.svg"
+                        alt="Bento Latest Post Silhouette"
+                        fill={true}
+                        className="rounded-3xl object-cover transition-opacity duration-300 group-hover:opacity-0 group-hover:delay-75"
+                        unoptimized
+                    />
+                    <Image
+                        src="/static/images/bento/bento-latest-post.svg"
+                        alt="Bento Latest Post Silhouette"
+                        fill={true}
+                        className="rounded-3xl object-cover opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-hover:delay-75"
                         unoptimized
                     />
                     <a href={posts[0].path} className="block">

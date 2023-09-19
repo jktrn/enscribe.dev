@@ -147,11 +147,3 @@ span[style*='background-color: rgba(255, 0, 0, 0.1)'] > span > .linenumber:after
         @apply w-[375px];
     }
 }
-
-.show-silhouette {
-    @apply bg-[url('/static/images/bento/bento-intro-silhouette.svg')];
-}
-
-.no-silhouette {
-    @apply bg-[url('/static/images/bento/bento-intro.svg')];
-}
