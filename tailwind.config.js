@@ -41,6 +41,7 @@ module.exports = {
                 foreground: 'hsl(var(--foreground))',
                 primary: {
                     DEFAULT: 'hsl(var(--primary))',
+                    // DocSearch colors
                     400: 'hsl(var(--primary))',
                     500: 'hsl(var(--primary))',
                     600: 'hsl(var(--primary))',
@@ -49,6 +50,10 @@ module.exports = {
                 secondary: {
                     DEFAULT: 'hsl(var(--secondary))',
                     foreground: 'hsl(var(--secondary-foreground))',
+                },
+                tertiary: {
+                    DEFAULT: 'hsl(var(--tertiary))',
+                    foreground: 'hsl(var(--tertiary-foreground))',
                 },
                 destructive: {
                     DEFAULT: 'hsl(var(--destructive))',

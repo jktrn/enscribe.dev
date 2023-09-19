@@ -1,14 +1,18 @@
 'use client'
 
-import React, { useState } from 'react'
-import { Github, Twitter } from 'lucide-react'
-import { Responsive, WidthProvider } from 'react-grid-layout'
+import { MoveUpRight } from 'lucide-react'
 import Image from 'next/image'
+import React, { useState } from 'react'
+import { Responsive, WidthProvider } from 'react-grid-layout'
+import { useLanyard } from 'react-use-lanyard'
 import IconBox from './IconBox'
+import SpotifyPresence from './SpotifyPresence'
+import { FaGithub, FaTwitter } from 'react-icons/fa'
+import Link from '../Link'
 
 const ResponsiveGridLayout = WidthProvider(Responsive)
 
-const BentoBox = () => {
+const BentoBox = ({ posts }) => {
     const mainLayout = [
         { i: 'a', x: 0, y: 0, w: 2, h: 1 },
         { i: 'b', x: 2, y: 0, w: 1, h: 1 },
@@ -38,6 +42,7 @@ const BentoBox = () => {
     ]
 
     const [rowHeight, setRowHeight] = useState(280)
+    const [introSilhouette, setIntroSilhouette] = useState(false)
 
     const handleWidthChange = (width) => {
         if (width <= 500) {
@@ -48,6 +53,10 @@ const BentoBox = () => {
             setRowHeight(280)
         }
     }
+
+    const lanyard = useLanyard({
+        userId: process.env.NEXT_PUBLIC_DISCORD_USER_ID!,
+    })
 
     return (
         <div className="react-grid-container">
@@ -63,21 +72,18 @@ const BentoBox = () => {
                 margin={[16, 16]}
                 useCSSTransforms={true}
             >
-                <div key="a">
-                    <Image
-                        src="/static/images/bento-intro.svg"
-                        alt="Bento Intro"
-                        fill={true}
-                        className="rounded-3xl object-cover"
-                        unoptimized
-                    />
-                </div>
+                <div
+                    key="a"
+                    className={`intro-background bg-cover ${
+                        introSilhouette ? 'show-silhouette' : 'no-silhouette'
+                    }`}
+                />
                 <div key="b">
-                    <IconBox icon={Github} name="Github" href="https://github.com/jktrn" />
+                    <IconBox icon={FaGithub} href="https://github.com/jktrn" />
                 </div>
                 <div key="c">
                     <Image
-                        src="/static/images/bento-image-1.svg"
+                        src="/static/images/bento/bento-image-1.svg"
                         alt="Bento Box 1"
                         fill={true}
                         className="rounded-3xl object-cover"
@@ -85,10 +91,29 @@ const BentoBox = () => {
                     />
                 </div>
                 <div key="d">Child D</div>
-                <div key="e">Child E</div>
+                <div
+                    key="e"
+                    className="flex items-start bg-[url('/static/images/bento/bento-latest-post-silhouette.svg')] bg-cover hover:bg-[url('/static/images/bento/bento-latest-post.svg')]"
+                    onMouseEnter={() => setIntroSilhouette(true)}
+                    onMouseLeave={() => setIntroSilhouette(false)}
+                >
+                    <Image
+                        src={posts[0].images[0]}
+                        alt={posts[0].title}
+                        width={0}
+                        height={0}
+                        className="ml-2 w-[80%] rounded-2xl border border-border md:ml-3 lg:ml-4"
+                        unoptimized
+                    />
+                    <a href={posts[0].path} className="block">
+                        <div className="absolute bottom-0 right-0 m-3 flex w-fit items-end rounded-full border border-border bg-tertiary/50 p-3 text-primary transition-all duration-300 hover:brightness-125">
+                            <MoveUpRight size={16} />
+                        </div>
+                    </a>
+                </div>
                 <div key="f">
                     <Image
-                        src="/static/images/bento-image-2.svg"
+                        src="/static/images/bento/bento-image-2.svg"
                         alt="Bento Box 2"
                         fill={true}
                         className="rounded-3xl object-cover"
@@ -97,12 +122,14 @@ const BentoBox = () => {
                 </div>
                 <div key="g">Child G</div>
                 <div key="h">
-                    <IconBox icon={Twitter} name="X/Twitter" href="https://x.com/enscry" />
+                    <IconBox icon={FaTwitter} href="https://x.com/enscry" />
                 </div>
-                <div key="i">Child I</div>
+                <div key="i">
+                    {!lanyard.isValidating && <SpotifyPresence lanyard={lanyard.data} />}
+                </div>
                 <div key="j">
                     <Image
-                        src="/static/images/bento-technologies.svg"
+                        src="/static/images/bento/bento-technologies.svg"
                         alt="Bento Technologies"
                         fill={true}
                         className="rounded-3xl object-cover"
