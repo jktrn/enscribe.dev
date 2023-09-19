@@ -5,11 +5,11 @@ import { MoveUpRight } from 'lucide-react'
 import Link from '../Link'
 
 const SpotifyPresence = ({ lanyard }) => {
-    if (
-        JSON.parse(lanyard.data.kv.spotify_last_played) !== lanyard.data.spotify &&
-        lanyard.data.listening_to_spotify
-    ) {
-        useEffect(() => {
+    useEffect(() => {
+        if (
+            JSON.parse(lanyard.data.kv.spotify_last_played) !== lanyard.data.spotify &&
+            lanyard.data.listening_to_spotify
+        ) {
             const setLastPlayed = async () => {
                 try {
                     await set({
@@ -17,15 +17,15 @@ const SpotifyPresence = ({ lanyard }) => {
                         userId: process.env.NEXT_PUBLIC_DISCORD_USER_ID!,
                         key: 'spotify_last_played',
                         value: JSON.stringify(lanyard.data.spotify),
-                    })
+                    });
                 } catch (error) {
-                    console.error('Error setting KV pair:', error)
+                    console.error('Error setting KV pair:', error);
                 }
-            }
-
-            setLastPlayed()
-        }, [lanyard.data.spotify])
-    }
+            };
+    
+            setLastPlayed();
+        }
+    }, [lanyard.data.spotify]);
 
     let displayData = lanyard.data.spotify
     if (!displayData && lanyard.data.kv.spotify_last_played) {
