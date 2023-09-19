@@ -55,7 +55,7 @@ const BentoBox = ({ posts }) => {
     }
 
     const lanyard = useLanyard({
-        userId: "747519888347627550",
+        userId: '747519888347627550',
     })
 
     return (
