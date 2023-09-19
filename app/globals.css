@@ -13,11 +13,14 @@
         --popover: 0 0% 100%;
         --popover-foreground: 0 0% 3.9%;
 
-        --primary: 34 54% 45%;
+        --primary: 34 54% 60%;
         --primary-foreground: 0 0% 98%;
 
-        --secondary: 0 0% 96.1%;
+        --secondary: 0 0% 98%;
         --secondary-foreground: 0 0% 9%;
+
+        --tertiary: 0 0% 96.1%;
+        --tertiary-foreground: 0 0% 9%;
 
         --muted: 0 0% 96.1%;
         --muted-foreground: 0 0% 45.1%;
@@ -48,8 +51,11 @@
         --primary: 34 54% 81%;
         --primary-foreground: 0 0% 9%;
 
-        --secondary: 0 0% 14.9%;
+        --secondary: 0 0% 6%;
         --secondary-foreground: 0 0% 98%;
+
+        --tertiary: 0 0% 14.9%;
+        --tertiary-foreground: 0 0% 98%;
 
         --muted: 0 0% 14.9%;
         --muted-foreground: 0 0% 63.9%;
@@ -123,11 +129,11 @@ span[style*='background-color: rgba(255, 0, 0, 0.1)'] > span > .linenumber:after
 }
 
 .react-grid-item {
-    @apply flex select-none items-center justify-center rounded-3xl border border-border bg-[#101010] !duration-500 hover:shadow-lg;
+    @apply flex select-none items-center rounded-3xl border border-border bg-secondary !duration-500 hover:shadow-lg;
 }
 
 .react-grid-placeholder {
-    @apply !bg-primary/75 !duration-200;
+    @apply !bg-primary/75 !duration-500;
 }
 
 @media (max-width: 1200px) {
@@ -140,4 +146,12 @@ span[style*='background-color: rgba(255, 0, 0, 0.1)'] > span > .linenumber:after
     .react-grid-container {
         @apply w-[375px];
     }
+}
+
+.show-silhouette {
+    @apply bg-[url('/static/images/bento/bento-intro-silhouette.svg')];
+}
+
+.no-silhouette {
+    @apply bg-[url('/static/images/bento/bento-intro.svg')];
 }

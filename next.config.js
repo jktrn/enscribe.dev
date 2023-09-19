@@ -66,7 +66,13 @@ module.exports = () => {
             dirs: ['app', 'components', 'layouts', 'scripts'],
         },
         images: {
-            domains: ['www.gravatar.com', 'avatars.githubusercontent.com', 'pbs.twimg.com'],
+            domains: [
+                'www.gravatar.com',
+                'avatars.githubusercontent.com',
+                'pbs.twimg.com',
+                'i.scdn.co',
+                'api.lanyard.rest',
+            ],
         },
         experimental: {
             appDir: true,

@@ -72,7 +72,7 @@ const Challenge = ({
                 </Title>
             </div>
             <div className="flex">
-                <div className="flex flex-col justify-center gap-1 bg-secondary/25 px-6 py-4 text-xs">
+                <div className="flex flex-col justify-center gap-1 bg-secondary px-6 py-4 text-xs">
                     {solvers && Array.isArray(solvers) ? (
                         <>
                             <span className="flex items-center space-x-2">
@@ -171,7 +171,7 @@ const Challenge = ({
                         </span>
                     )}
                 </div>
-                <div className="flex flex-1 items-center justify-center bg-secondary/50 p-4 text-center">
+                <div className="flex flex-1 items-center justify-center bg-tertiary/50 p-4 text-center">
                     <span className="text-[13px]">
                         <ReactMarkdown
                             components={{ p: React.Fragment }}

@@ -11,7 +11,7 @@ const Box = ({ text, type }) => {
             icon: AlertCircle,
         },
         info: {
-            color: 'bg-secondary',
+            color: 'bg-tertiary',
             icon: Info,
         },
         definition: {
