@@ -26,7 +26,7 @@ const SpotifyPresence = ({ lanyard }) => {
 
             setLastPlayed()
         }
-    }, [lanyard.data.spotify])
+    }, [])
 
     let displayData = lanyard.data.spotify
     if (!displayData && lanyard.data.kv.spotify_last_played) {
@@ -71,7 +71,7 @@ const SpotifyPresence = ({ lanyard }) => {
                     </span>
                 </div>
             </div>
-            <div className="absolute top-0 right-0 m-3 text-primary">
+            <div className="absolute right-0 top-0 m-3 text-primary">
                 <FaSpotify size={64} />
             </div>
             <Link href={`https://open.spotify.com/track/${track_id}`} className="block">
