@@ -17,15 +17,15 @@ const SpotifyPresence = ({ lanyard }) => {
                         userId: process.env.NEXT_PUBLIC_DISCORD_USER_ID!,
                         key: 'spotify_last_played',
                         value: JSON.stringify(lanyard.data.spotify),
-                    });
+                    })
                 } catch (error) {
-                    console.error('Error setting KV pair:', error);
+                    console.error('Error setting KV pair:', error)
                 }
-            };
-    
-            setLastPlayed();
+            }
+
+            setLastPlayed()
         }
-    }, [lanyard.data.spotify]);
+    }, [lanyard.data.spotify])
 
     let displayData = lanyard.data.spotify
     if (!displayData && lanyard.data.kv.spotify_last_played) {
