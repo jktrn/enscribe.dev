@@ -102,7 +102,7 @@ const BentoBox = ({ posts }) => {
                         alt={posts[0].title}
                         width={0}
                         height={0}
-                        className="ml-2 w-[80%] rounded-2xl border border-border md:ml-3 lg:ml-4"
+                        className="m-2 w-[80%] rounded-2xl border border-border md:ml-3 lg:ml-4"
                         unoptimized
                     />
                     <a href={posts[0].path} className="block">
