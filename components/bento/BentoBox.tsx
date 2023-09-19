@@ -8,6 +8,7 @@ import { useLanyard } from 'react-use-lanyard'
 import IconBox from './IconBox'
 import SpotifyPresence from './SpotifyPresence'
 import { FaGithub, FaTwitter } from 'react-icons/fa'
+import Link from '../Link'
 
 const ResponsiveGridLayout = WidthProvider(Responsive, { measureBeforeMount: true })
 
@@ -92,8 +93,34 @@ const BentoBox = ({ posts }) => {
                         unoptimized
                     />
                 </div>
-                <div key="b">
-                    <IconBox icon={FaGithub} href="https://github.com/jktrn" />
+                <div
+                    key="b"
+                    className="group"
+                    onMouseEnter={() => setIntroSilhouette(true)}
+                    onMouseLeave={() => setIntroSilhouette(false)}
+                >
+                    <div className="relative flex h-full w-full items-center justify-center rounded-lg">
+                        <FaGithub size={96} className="z-10 text-primary" />
+                        <Image
+                            src="/static/images/bento/bento-github-silhouette.svg"
+                            alt="Bento Github Silhouette"
+                            fill={true}
+                            className="rounded-3xl object-cover transition-opacity duration-300 group-hover:opacity-0 group-hover:delay-75"
+                            unoptimized
+                        />
+                        <Image
+                            src="/static/images/bento/bento-github.svg"
+                            alt="Bento Github Silhouette"
+                            fill={true}
+                            className="rounded-3xl object-cover opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-hover:delay-75"
+                            unoptimized
+                        />
+                        <Link href="https://github.com/jktrn">
+                            <div className="absolute bottom-0 right-0 m-3 flex w-fit items-end rounded-full border border-border bg-tertiary/50 p-3 text-primary transition-all duration-300 hover:brightness-125">
+                                <MoveUpRight size={16} />
+                            </div>
+                        </Link>
+                    </div>
                 </div>
                 <div key="c">
                     <Image
@@ -107,7 +134,7 @@ const BentoBox = ({ posts }) => {
                 <div key="d">Child D</div>
                 <div
                     key="e"
-                    className="group flex items-start"
+                    className="group"
                     onMouseEnter={() => setIntroSilhouette(true)}
                     onMouseLeave={() => setIntroSilhouette(false)}
                 >
