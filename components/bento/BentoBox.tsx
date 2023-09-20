@@ -100,7 +100,7 @@ const BentoBox = ({ posts }) => {
                     onMouseLeave={() => setIntroSilhouette(false)}
                 >
                     <div className="relative flex h-full w-full items-center justify-center rounded-lg">
-                        <FaGithub size={96} className="z-10 text-primary" />
+                        <FaGithub size={96} className="z-[1] text-primary" />
                         <Image
                             src="/static/images/bento/bento-github-silhouette.svg"
                             alt="Bento Github Silhouette"
@@ -110,7 +110,7 @@ const BentoBox = ({ posts }) => {
                         />
                         <Image
                             src="/static/images/bento/bento-github.svg"
-                            alt="Bento Github Silhouette"
+                            alt="Bento Github"
                             fill={true}
                             className="rounded-3xl object-cover opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-hover:delay-75"
                             unoptimized
@@ -176,11 +176,56 @@ const BentoBox = ({ posts }) => {
                     />
                 </div>
                 <div key="g">Child G</div>
-                <div key="h">
-                    <IconBox icon={FaTwitter} href="https://x.com/enscry" />
+                <div
+                    key="h"
+                    className="group"
+                    onMouseEnter={() => setIntroSilhouette(true)}
+                    onMouseLeave={() => setIntroSilhouette(false)}
+                >
+                    <div className="relative flex h-full w-full items-center justify-center rounded-lg">
+                        <FaTwitter size={96} className="z-[1] text-primary" />
+                        <Image
+                            src="/static/images/bento/bento-twitter-silhouette.svg"
+                            alt="Bento twitter Silhouette"
+                            fill={true}
+                            className="rounded-3xl object-cover transition-opacity duration-300 group-hover:opacity-0 group-hover:delay-75"
+                            unoptimized
+                        />
+                        <Image
+                            src="/static/images/bento/bento-twitter.svg"
+                            alt="Bento twitter"
+                            fill={true}
+                            className="rounded-3xl object-cover opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-hover:delay-75"
+                            unoptimized
+                        />
+                        <Link href="https://twitter.com/enscry">
+                            <div className="absolute bottom-0 right-0 m-3 flex w-fit items-end rounded-full border border-border bg-tertiary/50 p-3 text-primary transition-all duration-300 hover:brightness-125">
+                                <MoveUpRight size={16} />
+                            </div>
+                        </Link>
+                    </div>
                 </div>
-                <div key="i">
+                <div
+                    key="i"
+                    className="group"
+                    onMouseEnter={() => setIntroSilhouette(true)}
+                    onMouseLeave={() => setIntroSilhouette(false)}
+                >
                     {!lanyard.isValidating && <SpotifyPresence lanyard={lanyard.data} />}
+                    <Image
+                        src="/static/images/bento/bento-spotify-silhouette.svg"
+                        alt="Bento Spotify Silhouette"
+                        fill={true}
+                        className="rounded-3xl object-cover transition-opacity duration-300 group-hover:opacity-0 group-hover:delay-75"
+                        unoptimized
+                    />
+                    <Image
+                        src="/static/images/bento/bento-spotify.svg"
+                        alt="Bento Spotify"
+                        fill={true}
+                        className="rounded-3xl object-cover opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-hover:delay-75"
+                        unoptimized
+                    />
                 </div>
                 <div key="j">
                     <Image
