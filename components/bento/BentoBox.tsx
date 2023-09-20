@@ -37,7 +37,12 @@ const BentoBox = ({ posts }) => {
         if (timeoutRef.current) {
             clearTimeout(timeoutRef.current)
         }
-        element.style.zIndex = '100'
+
+        document.querySelectorAll('.react-grid-item').forEach((item) => {
+            ;(item as HTMLElement).style.zIndex = '1'
+        })
+
+        element.style.zIndex = '10'
     }
 
     const handleDragStop = (element) => {
