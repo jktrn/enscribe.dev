@@ -1,8 +1,8 @@
 'use client'
 
-import { useState } from 'react'
 import { Skeleton } from '@/components/shadcn/skeleton'
 import NextImage, { ImageProps } from 'next/image'
+import { useState } from 'react'
 
 interface ExtendedImageProps extends ImageProps {
     noSkeleton?: boolean

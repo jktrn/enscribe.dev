@@ -1,6 +1,7 @@
 import { Twitter } from 'lucide-react'
 import React from 'react'
 import ReactMarkdown from 'react-markdown'
+
 import Image from './Image'
 
 const StaticTweet = ({ avatar, username, handle, date, text, src, media, video }) => {

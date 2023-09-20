@@ -1,91 +1,11 @@
-import Link from '@/components/Link'
-import Tag from '@/components/Tag'
-import siteMetadata from '@/data/siteMetadata'
 import BentoBox from '@/components/bento/BentoBox'
-import { formatDate } from 'pliny/utils/formatDate'
-
-const MAX_DISPLAY = 5
 
 export default function Home({ posts }) {
     return (
-        <>
-            <div className="divide-y divide-accent-foreground dark:divide-accent">
-                <div className="z-10 m-auto md:-mx-[20vw]">
-                    <BentoBox posts={posts} />
-                </div>
-                {/* <div className="space-y-2 pb-8 pt-6 md:space-y-5">
-                    <h1 className="text-3xl font-extrabold leading-9 tracking-tight text-foreground sm:text-4xl sm:leading-10 md:text-6xl md:leading-14">
-                        Latest
-                    </h1>
-                    <p className="text-lg leading-7 text-muted-foreground">
-                        {siteMetadata.description}
-                    </p>
-                </div>
-                <ul className="divide-y divide-accent-foreground dark:divide-accent">
-                    {!posts.length && 'No posts found.'}
-                    {posts.slice(0, MAX_DISPLAY).map((post) => {
-                        const { slug, date, title, summary, tags } = post
-                        return (
-                            <li key={slug} className="py-12">
-                                <article>
-                                    <div className="space-y-2 xl:grid xl:grid-cols-4 xl:items-baseline xl:space-y-0">
-                                        <dl>
-                                            <dt className="sr-only">Published on</dt>
-                                            <dd className="text-base font-medium leading-6 text-muted-foreground">
-                                                <time dateTime={date}>
-                                                    {formatDate(date, siteMetadata.locale)}
-                                                </time>
-                                            </dd>
-                                        </dl>
-                                        <div className="space-y-5 xl:col-span-3">
-                                            <div className="space-y-6">
-                                                <div>
-                                                    <h2 className="text-2xl font-bold leading-8 tracking-tight">
-                                                        <Link
-                                                            href={`/blog/${slug}`}
-                                                            className="text-foreground"
-                                                        >
-                                                            {title}
-                                                        </Link>
-                                                    </h2>
-                                                    <div className="flex flex-wrap space-x-3">
-                                                        {tags.map((tag) => (
-                                                            <Tag key={tag} text={tag} />
-                                                        ))}
-                                                    </div>
-                                                </div>
-                                                <div className="prose prose-sm max-w-none text-muted-foreground">
-                                                    {summary}
-                                                </div>
-                                            </div>
-                                            <div className="text-base font-medium leading-6">
-                                                <Link
-                                                    href={`/blog/${slug}`}
-                                                    className="text-primary hover:brightness-125 dark:hover:brightness-125"
-                                                    aria-label={`Read "${title}"`}
-                                                >
-                                                    Read more &rarr;
-                                                </Link>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </article>
-                            </li>
-                        )
-                    })}
-                </ul> */}
+        <div className="divide-y divide-accent-foreground dark:divide-accent">
+            <div className="z-10 m-auto md:-mx-[20vw]">
+                <BentoBox posts={posts} />
             </div>
-            {/* {posts.length > MAX_DISPLAY && (
-                <div className="flex justify-end text-base font-medium leading-6">
-                    <Link
-                        href="/blog"
-                        className="text-primary hover:brightness-125 dark:hover:brightness-125"
-                        aria-label="All posts"
-                    >
-                        All Posts &rarr;
-                    </Link>
-                </div>
-            )} */}
-        </>
+        </div>
     )
 }

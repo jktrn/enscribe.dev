@@ -1,9 +1,9 @@
-import React, { useEffect } from 'react'
-import { set } from 'react-use-lanyard'
 import Image from 'next/image'
-import { MoveUpRight } from 'lucide-react'
+import React, { useEffect } from 'react'
 import { FaSpotify } from 'react-icons/fa'
-import Link from '../Link'
+import { set } from 'react-use-lanyard'
+
+import ExternalLink from './ExternalLink'
 
 const SpotifyPresence = ({ lanyard }) => {
     useEffect(() => {
@@ -74,11 +74,10 @@ const SpotifyPresence = ({ lanyard }) => {
             <div className="absolute right-0 top-0 z-[1] m-3 text-primary">
                 <FaSpotify size={64} />
             </div>
-            <Link href={`https://open.spotify.com/track/${track_id}`} className="z-[1] block">
-                <div className="absolute bottom-0 right-0 m-3 flex w-fit items-end rounded-full border border-border bg-tertiary/50 p-3 text-primary transition-all duration-300 hover:brightness-125">
-                    <MoveUpRight size={16} />
-                </div>
-            </Link>
+            <ExternalLink
+                href={`https://open.spotify.com/track/${track_id}`}
+                className="z-[1] block"
+            />
         </>
     )
 }

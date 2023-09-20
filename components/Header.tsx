@@ -1,11 +1,12 @@
 import headerNavLinks from '@/data/headerNavLinks'
 import Logo from '@/data/logo.png'
 import siteMetadata from '@/data/siteMetadata'
-import MobileNav from './MobileNav'
-import ThemeSwitch from './ThemeSwitch'
-import SearchButton from './SearchButton'
 import NextImage from 'next/image'
+
 import Link from './Link'
+import MobileNav from './MobileNav'
+import SearchButton from './SearchButton'
+import ThemeSwitch from './ThemeSwitch'
 
 const Header = () => {
     return (

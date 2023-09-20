@@ -1,4 +1,4 @@
-import { Book, Flag, Info, CheckCircle2, AlertCircle } from 'lucide-react'
+import { AlertCircle, Book, CheckCircle2, Flag, Info } from 'lucide-react'
 import React from 'react'
 import ReactMarkdown from 'react-markdown'
 import rehypeKatex from 'rehype-katex'

@@ -1,3 +1,4 @@
+import { IconType } from 'react-icons/lib'
 import {
     SiC,
     SiCplusplus,
@@ -12,7 +13,6 @@ import {
     SiTypescript,
     SiYaml,
 } from 'react-icons/si'
-import { IconType } from 'react-icons/lib'
 
 export const languageIcons: { [key: string]: IconType } = {
     html: SiHtml5,
