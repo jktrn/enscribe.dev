@@ -39,7 +39,7 @@ const SpotifyPresence = ({ lanyard }) => {
 
     return (
         <>
-            <div className="flex h-full w-full flex-col justify-between p-6">
+            <div className="z-[1] flex h-full w-full flex-col justify-between p-6">
                 <Image
                     src={album_art_url}
                     alt="Album art"
@@ -71,10 +71,10 @@ const SpotifyPresence = ({ lanyard }) => {
                     </span>
                 </div>
             </div>
-            <div className="absolute right-0 top-0 m-3 text-primary">
+            <div className="absolute right-0 top-0 z-[1] m-3 text-primary">
                 <FaSpotify size={64} />
             </div>
-            <Link href={`https://open.spotify.com/track/${track_id}`} className="block">
+            <Link href={`https://open.spotify.com/track/${track_id}`} className="z-[1] block">
                 <div className="absolute bottom-0 right-0 m-3 flex w-fit items-end rounded-full border border-border bg-tertiary/50 p-3 text-primary transition-all duration-300 hover:brightness-125">
                     <MoveUpRight size={16} />
                 </div>
