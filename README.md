@@ -35,7 +35,7 @@ This is a list of the various technologies used to build this website:
 
 Thanks for taking a look at my blog!
 
-While I'm thrilled to copyleft and open-source my code, I kindly request that you refrain from cloning this repository to use the theme or its contents as your own. The theme, design, graphics, and all blog content are personal to my brand, and I would appreciate it if they remain unique to this site. However, I wholeheartedly encourage you to use this repository as a learning tool, a reference, or a source of inspiration for your own projects. **Embracing originality not only fosters personal growth, but also nurtures innovation and uniqueness.**
+While I'm thrilled to open-source my code, I kindly request that you refrain from cloning this repository to use the theme or its contents as your own. The theme, design, graphics, and all blog content are personal to my brand, and I would appreciate it if they remain unique to this site. However, I wholeheartedly encourage you to use this repository as a learning tool, a reference, or a source of inspiration for your own projects. **Embracing originality not only fosters personal growth, but also nurtures innovation and uniqueness.**
 
 Remember, I'm always open for chats, discussions, or collaborations. Feel free to reach out if you have any questions about this project, or if you just want to share your thoughts. Cheers!
 
