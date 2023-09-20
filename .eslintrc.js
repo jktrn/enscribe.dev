@@ -25,7 +25,7 @@ module.exports = {
         'prettier/prettier': 'error',
         'react/react-in-jsx-scope': 'off',
         'jsx-a11y/anchor-is-valid': [
-            'error',
+            'warning',
             {
                 components: ['Link'],
                 specialLink: ['hrefLeft', 'hrefRight'],

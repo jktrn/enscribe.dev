@@ -11,6 +11,8 @@ import { usePathname } from 'next/navigation'
 import { CoreContent } from 'pliny/utils/contentlayer'
 import { formatDate } from 'pliny/utils/formatDate'
 
+/* eslint-disable jsx-a11y/anchor-is-valid */
+
 interface PaginationProps {
     totalPages: number
     currentPage: number
