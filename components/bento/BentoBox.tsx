@@ -150,7 +150,7 @@ const BentoBox = ({ posts }) => {
                             unoptimized
                         />
                     </SilhouetteHover>
-                    <ExternalLink href={`/blog/${posts[0].path}`} />
+                    <ExternalLink href={posts[0].path} />
                 </div>
                 <div key="f">
                     <Image
