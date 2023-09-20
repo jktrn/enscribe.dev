@@ -1,6 +1,7 @@
-import Link from './Link'
 import siteMetadata from '@/data/siteMetadata'
-import { Twitter, Mail, Github } from 'lucide-react'
+import { Github, Mail, Twitter } from 'lucide-react'
+
+import Link from './Link'
 
 export default function Footer() {
     return (

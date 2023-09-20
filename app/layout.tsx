@@ -1,18 +1,18 @@
-import 'css/tailwind.css'
-import './globals.css'
-import 'react-grid-layout/css/styles.css'
-import 'react-resizable/css/styles.css'
-import 'pliny/search/algolia.css'
-
-import { JetBrains_Mono } from 'next/font/google'
-import { Analytics, AnalyticsConfig } from 'pliny/analytics'
-import { SearchProvider, SearchConfig } from 'pliny/search'
+import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import SectionContainer from '@/components/SectionContainer'
-import Footer from '@/components/Footer'
 import siteMetadata from '@/data/siteMetadata'
-import { ThemeProviders } from './theme-providers'
+import 'css/tailwind.css'
 import { Metadata } from 'next'
+import { JetBrains_Mono } from 'next/font/google'
+import { Analytics, AnalyticsConfig } from 'pliny/analytics'
+import { SearchConfig, SearchProvider } from 'pliny/search'
+import 'pliny/search/algolia.css'
+import 'react-grid-layout/css/styles.css'
+import 'react-resizable/css/styles.css'
+
+import './globals.css'
+import { ThemeProviders } from './theme-providers'
 
 const space_grotesk = JetBrains_Mono({
     subsets: ['latin'],

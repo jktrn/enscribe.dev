@@ -1,7 +1,7 @@
-import { ReactNode } from 'react'
-import type { Authors } from 'contentlayer/generated'
-import { Twitter, Mail, Github, Linkedin } from 'lucide-react'
 import Image from '@/components/Image'
+import type { Authors } from 'contentlayer/generated'
+import { Github, Linkedin, Mail, Twitter } from 'lucide-react'
+import { ReactNode } from 'react'
 
 interface Props {
     children: ReactNode

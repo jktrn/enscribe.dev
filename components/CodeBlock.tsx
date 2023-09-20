@@ -1,9 +1,10 @@
 'use client'
 
-import React, { useEffect, useRef, useState, FC } from 'react'
+import { getLanguageIcon } from '@/scripts/utils/language-icons.tsx'
+import React, { FC, useEffect, useRef, useState } from 'react'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
 import createElement from 'react-syntax-highlighter/dist/cjs/create-element'
-import { getLanguageIcon } from '@/scripts/utils/language-icons.tsx'
+
 import CopyButton from './CopyButton'
 
 interface LineProps {

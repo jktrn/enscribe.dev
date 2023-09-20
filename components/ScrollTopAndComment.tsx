@@ -1,8 +1,8 @@
 'use client'
 
 import siteMetadata from '@/data/siteMetadata'
-import { useEffect, useState } from 'react'
 import { ArrowUp, MessagesSquare } from 'lucide-react'
+import { useEffect, useState } from 'react'
 
 const ScrollTopAndComment = () => {
     const [show, setShow] = useState(false)

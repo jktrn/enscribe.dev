@@ -1,48 +1,27 @@
 'use client'
 
-import { MoveUpRight } from 'lucide-react'
+import { mainLayout, mobileLayout } from '@/scripts/utils/bento-layouts'
 import Image from 'next/image'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Responsive, WidthProvider } from 'react-grid-layout'
-import { useLanyard } from 'react-use-lanyard'
-import IconBox from './IconBox'
-import SpotifyPresence from './SpotifyPresence'
 import { FaGithub, FaTwitter } from 'react-icons/fa'
-import Link from '../Link'
+import { useLanyard } from 'react-use-lanyard'
+
+import ExternalLink from './ExternalLink'
+import SilhouetteHover from './SilhouetteHover'
+import SpotifyPresence from './SpotifyPresence'
 
 const ResponsiveGridLayout = WidthProvider(Responsive, { measureBeforeMount: true })
 
 const BentoBox = ({ posts }) => {
-    const mainLayout = [
-        { i: 'a', x: 0, y: 0, w: 2, h: 1 },
-        { i: 'b', x: 2, y: 0, w: 1, h: 1 },
-        { i: 'c', x: 4, y: 0, w: 1, h: 2 },
-        { i: 'd', x: 0, y: 1, w: 1, h: 1 },
-        { i: 'e', x: 1, y: 1, w: 2, h: 1 },
-        { i: 'f', x: 0, y: 3, w: 1, h: 2 },
-        { i: 'g', x: 1, y: 3, w: 1, h: 1 },
-        { i: 'h', x: 2, y: 3, w: 1, h: 1 },
-        { i: 'i', x: 3, y: 3, w: 1, h: 1 },
-        { i: 'j', x: 1, y: 4, w: 1, h: 1 },
-        { i: 'k', x: 2, y: 4, w: 2, h: 1 },
-    ]
-
-    const mobileLayout = [
-        { i: 'a', x: 0, y: 0, w: 2, h: 1, static: true },
-        { i: 'e', x: 0, y: 1, w: 2, h: 1, static: true },
-        { i: 'f', x: 0, y: 2, w: 1, h: 2, static: true },
-        { i: 'b', x: 1, y: 2, w: 1, h: 1, static: true },
-        { i: 'd', x: 0, y: 4, w: 1, h: 1, static: true },
-        { i: 'c', x: 1, y: 3, w: 1, h: 2, static: true },
-        { i: 'g', x: 0, y: 5, w: 1, h: 1, static: true },
-        { i: 'h', x: 1, y: 5, w: 1, h: 1, static: true },
-        { i: 'i', x: 0, y: 6, w: 1, h: 1, static: true },
-        { i: 'j', x: 1, y: 6, w: 1, h: 1, static: true },
-        { i: 'k', x: 0, y: 7, w: 2, h: 1, static: true },
-    ]
+    const lanyard = useLanyard({
+        userId: '747519888347627550',
+    })
 
     const [rowHeight, setRowHeight] = useState(280)
     const [introSilhouette, setIntroSilhouette] = useState(false)
+
+    const timeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null)
 
     const handleWidthChange = (width) => {
         if (width <= 500) {
@@ -54,9 +33,26 @@ const BentoBox = ({ posts }) => {
         }
     }
 
-    const lanyard = useLanyard({
-        userId: '747519888347627550',
-    })
+    const handleDragStart = (element) => {
+        if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current)
+        }
+        element.style.zIndex = '100'
+    }
+
+    const handleDragStop = (element) => {
+        timeoutRef.current = setTimeout(() => {
+            element.style.zIndex = '1'
+        }, 500)
+    }
+
+    useEffect(() => {
+        return () => {
+            if (timeoutRef.current) {
+                clearTimeout(timeoutRef.current)
+            }
+        }
+    }, [])
 
     return (
         <div className="react-grid-container">
@@ -72,6 +68,12 @@ const BentoBox = ({ posts }) => {
                 isBounded={true}
                 margin={[16, 16]}
                 useCSSTransforms={false}
+                onDragStart={(layout, oldItem, newItem, placeholder, e, element) =>
+                    handleDragStart(element)
+                }
+                onDragStop={(layout, oldItem, newItem, placeholder, e, element) =>
+                    handleDragStop(element)
+                }
             >
                 <div key="a">
                     <Image
@@ -100,26 +102,15 @@ const BentoBox = ({ posts }) => {
                     onMouseLeave={() => setIntroSilhouette(false)}
                 >
                     <div className="relative flex h-full w-full items-center justify-center rounded-lg">
-                        <FaGithub size={96} className="z-[1] text-primary" />
-                        <Image
-                            src="/static/images/bento/bento-github-silhouette.svg"
-                            alt="Bento Github Silhouette"
-                            fill={true}
-                            className="rounded-3xl object-cover transition-opacity duration-300 group-hover:opacity-0 group-hover:delay-75"
-                            unoptimized
+                        <FaGithub size={96} className="absolute z-[1] text-primary" />
+                        <SilhouetteHover
+                            silhouetteSrc="/static/images/bento/bento-github-silhouette.svg"
+                            silhouetteAlt="Bento Github Silhouette"
+                            mainSrc="/static/images/bento/bento-github.svg"
+                            mainAlt="Bento Github"
+                            className="rounded-3xl object-cover"
                         />
-                        <Image
-                            src="/static/images/bento/bento-github.svg"
-                            alt="Bento Github"
-                            fill={true}
-                            className="rounded-3xl object-cover opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-hover:delay-75"
-                            unoptimized
-                        />
-                        <Link href="https://github.com/jktrn">
-                            <div className="absolute bottom-0 right-0 m-3 flex w-fit items-end rounded-full border border-border bg-tertiary/50 p-3 text-primary transition-all duration-300 hover:brightness-125">
-                                <MoveUpRight size={16} />
-                            </div>
-                        </Link>
+                        <ExternalLink href="https://github.com/jktrn" />
                     </div>
                 </div>
                 <div key="c">
@@ -138,33 +129,23 @@ const BentoBox = ({ posts }) => {
                     onMouseEnter={() => setIntroSilhouette(true)}
                     onMouseLeave={() => setIntroSilhouette(false)}
                 >
-                    <Image
-                        src={posts[0].images[0]}
-                        alt={posts[0].title}
-                        width={0}
-                        height={0}
-                        className="m-2 w-[80%] rounded-2xl border border-border md:m-3 lg:m-4"
-                        unoptimized
-                    />
-                    <Image
-                        src="/static/images/bento/bento-latest-post-silhouette.svg"
-                        alt="Bento Latest Post Silhouette"
-                        fill={true}
-                        className="rounded-3xl object-cover transition-opacity duration-300 group-hover:opacity-0 group-hover:delay-75"
-                        unoptimized
-                    />
-                    <Image
-                        src="/static/images/bento/bento-latest-post.svg"
-                        alt="Bento Latest Post Silhouette"
-                        fill={true}
-                        className="rounded-3xl object-cover opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-hover:delay-75"
-                        unoptimized
-                    />
-                    <a href={posts[0].path} className="block">
-                        <div className="absolute bottom-0 right-0 m-3 flex w-fit items-end rounded-full border border-border bg-tertiary/50 p-3 text-primary transition-all duration-300 hover:brightness-125">
-                            <MoveUpRight size={16} />
-                        </div>
-                    </a>
+                    <SilhouetteHover
+                        silhouetteSrc="/static/images/bento/bento-latest-post-silhouette.svg"
+                        silhouetteAlt="Bento Latest Post Silhouette"
+                        mainSrc="/static/images/bento/bento-latest-post.svg"
+                        mainAlt="Bento Latest Post"
+                        className="rounded-3xl object-cover"
+                    >
+                        <Image
+                            src={posts[0].images[0]}
+                            alt={posts[0].title}
+                            width={0}
+                            height={0}
+                            className="m-2 w-[80%] rounded-2xl border border-border md:m-3 lg:m-4"
+                            unoptimized
+                        />
+                    </SilhouetteHover>
+                    <ExternalLink href={`/blog/${posts[0].path}`} />
                 </div>
                 <div key="f">
                     <Image
@@ -183,26 +164,15 @@ const BentoBox = ({ posts }) => {
                     onMouseLeave={() => setIntroSilhouette(false)}
                 >
                     <div className="relative flex h-full w-full items-center justify-center rounded-lg">
-                        <FaTwitter size={96} className="z-[1] text-primary" />
-                        <Image
-                            src="/static/images/bento/bento-twitter-silhouette.svg"
-                            alt="Bento twitter Silhouette"
-                            fill={true}
-                            className="rounded-3xl object-cover transition-opacity duration-300 group-hover:opacity-0 group-hover:delay-75"
-                            unoptimized
+                        <FaTwitter size={96} className="absolute z-[1] text-primary" />
+                        <SilhouetteHover
+                            silhouetteSrc="/static/images/bento/bento-twitter-silhouette.svg"
+                            silhouetteAlt="Bento Twitter Silhouette"
+                            mainSrc="/static/images/bento/bento-twitter.svg"
+                            mainAlt="Bento Twitter"
+                            className="rounded-3xl object-cover"
                         />
-                        <Image
-                            src="/static/images/bento/bento-twitter.svg"
-                            alt="Bento twitter"
-                            fill={true}
-                            className="rounded-3xl object-cover opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-hover:delay-75"
-                            unoptimized
-                        />
-                        <Link href="https://twitter.com/enscry">
-                            <div className="absolute bottom-0 right-0 m-3 flex w-fit items-end rounded-full border border-border bg-tertiary/50 p-3 text-primary transition-all duration-300 hover:brightness-125">
-                                <MoveUpRight size={16} />
-                            </div>
-                        </Link>
+                        <ExternalLink href="https://twitter.com/jktrn" />
                     </div>
                 </div>
                 <div
@@ -212,19 +182,12 @@ const BentoBox = ({ posts }) => {
                     onMouseLeave={() => setIntroSilhouette(false)}
                 >
                     {!lanyard.isValidating && <SpotifyPresence lanyard={lanyard.data} />}
-                    <Image
-                        src="/static/images/bento/bento-spotify-silhouette.svg"
-                        alt="Bento Spotify Silhouette"
-                        fill={true}
-                        className="rounded-3xl object-cover transition-opacity duration-300 group-hover:opacity-0 group-hover:delay-75"
-                        unoptimized
-                    />
-                    <Image
-                        src="/static/images/bento/bento-spotify.svg"
-                        alt="Bento Spotify"
-                        fill={true}
-                        className="rounded-3xl object-cover opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-hover:delay-75"
-                        unoptimized
+                    <SilhouetteHover
+                        silhouetteSrc="/static/images/bento/bento-spotify-silhouette.svg"
+                        silhouetteAlt="Bento Spotify Silhouette"
+                        mainSrc="/static/images/bento/bento-spotify.svg"
+                        mainAlt="Bento Spotify"
+                        className="rounded-3xl object-cover"
                     />
                 </div>
                 <div key="j">

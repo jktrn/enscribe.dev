@@ -264,8 +264,8 @@ Here's an example on how to create a donut chart from Chart.js (assuming you alr
 ```tsx
 'use client'
 
+import { ArcElement, Chart as ChartJS, Legend, Tooltip } from 'chart.js'
 import { Doughnut } from 'react-chartjs-2'
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
 
 ChartJS.register(ArcElement, Tooltip, Legend)
 
@@ -334,10 +334,10 @@ Add a `SearchProvider` component such as the one shown below and use it in place
 ```tsx
 'use client'
 
-import { KBarSearchProvider } from 'pliny/search/KBar'
-import { useRouter } from 'next/navigation'
-import { CoreContent } from 'pliny/utils/contentlayer'
 import { Blog } from 'contentlayer/generated'
+import { useRouter } from 'next/navigation'
+import { KBarSearchProvider } from 'pliny/search/KBar'
+import { CoreContent } from 'pliny/utils/contentlayer'
 
 export const SearchProvider = ({ children }) => {
     const router = useRouter()
