@@ -7,6 +7,7 @@ import { Responsive, WidthProvider } from 'react-grid-layout'
 import { FaGithub, FaTwitter } from 'react-icons/fa'
 import { useLanyard } from 'react-use-lanyard'
 
+import DiscordPresence from './DiscordPresence'
 import ExternalLink from './ExternalLink'
 import SilhouetteHover from './SilhouetteHover'
 import SpotifyPresence from './SpotifyPresence'
@@ -127,7 +128,9 @@ const BentoBox = ({ posts }) => {
                         unoptimized
                     />
                 </div>
-                <div key="d">Child D</div>
+                <div key="d">
+                    {!lanyard.isValidating && <DiscordPresence lanyard={lanyard.data} />}
+                </div>
                 <div
                     key="e"
                     className="group"

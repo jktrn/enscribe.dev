@@ -18,16 +18,16 @@
 
 This is a list of the various technologies used to build this website:
 
-| Name                     | Link                                                                      |
-| ------------------------ | ------------------------------------------------------------------------- |
-| Framework                | [Next.js](https://nextjs.org/)                                            |
-| Deployment               | [Vercel](https://vercel.com)                                              |
-| Comments                 | [Giscus](https://giscus.app/)                                             |
-| Content                  | [MDX](https://mdxjs.com/) + [Contentlayer](https://www.contentlayer.dev/) |
-| Analytics                | [Cloudflare](https://www.cloudflare.com/)                                 |
-| Styling                  | [Tailwind](https://tailwindcss.com)                                       |
-| Syntax Highlighting      | [Prism](https://prismjs.com/)                                             |
-| Graphics                 | [Figma](https://www.figma.com/)                                           |
+| Name                | Link                                                                      |
+| ------------------- | ------------------------------------------------------------------------- |
+| Framework           | [Next.js](https://nextjs.org/)                                            |
+| Deployment          | [Vercel](https://vercel.com)                                              |
+| Comments            | [Giscus](https://giscus.app/)                                             |
+| Content             | [MDX](https://mdxjs.com/) + [Contentlayer](https://www.contentlayer.dev/) |
+| Analytics           | [Cloudflare](https://www.cloudflare.com/)                                 |
+| Styling             | [Tailwind](https://tailwindcss.com)                                       |
+| Syntax Highlighting | [Prism](https://prismjs.com/)                                             |
+| Graphics            | [Figma](https://www.figma.com/)                                           |
 
 ---
 
