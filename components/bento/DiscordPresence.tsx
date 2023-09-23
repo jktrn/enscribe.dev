@@ -1,5 +1,3 @@
-'use client'
-
 import Image from 'next/image'
 import React, { useEffect, useState } from 'react'
 import { FaDiscord } from 'react-icons/fa'
@@ -9,20 +7,23 @@ const DiscordPresence = ({ lanyard }) => {
         (activity) => activity.type === 0 && activity.assets
     )[0]
 
-    const [hasMainActivity, setHasMainActivity] = useState<boolean>(!!mainActivity)
+    const hasMainActivity = !!mainActivity
+
     const [elapsedTime, setElapsedTime] = useState<string>(
-        mainActivity ? getElapsedTime(mainActivity.timestamps.start) : '00:00:00'
+        mainActivity && mainActivity.timestamps && mainActivity.timestamps.start
+            ? getElapsedTime(mainActivity.timestamps.start)
+            : ''
     )
 
     useEffect(() => {
-        if (hasMainActivity) {
+        if (mainActivity && mainActivity.timestamps && mainActivity.timestamps.start) {
             const interval = setInterval(() => {
                 setElapsedTime(getElapsedTime(mainActivity.timestamps.start))
             }, 1000)
 
             return () => clearInterval(interval)
         }
-    }, [mainActivity?.timestamps.start, hasMainActivity])
+    }, [mainActivity?.timestamps?.start])
 
     return (
         <>
@@ -36,20 +37,20 @@ const DiscordPresence = ({ lanyard }) => {
                             width={96}
                             height={96}
                         />
-                        {lanyard.data.discord_status == 'online' && (
+                        {lanyard.data.discord_status === 'online' && (
                             <div className="absolute bottom-0 right-0 w-6 h-6 flex items-center justify-center rounded-full bg-primary border-4 border-background" />
                         )}
-                        {lanyard.data.discord_status == 'idle' && (
+                        {lanyard.data.discord_status === 'idle' && (
                             <div className="absolute bottom-0 right-0 w-6 h-6 rounded-full bg-primary border-4 border-background">
                                 <div className="bg-background w-[10px] h-[10px] rounded-full" />
                             </div>
                         )}
-                        {lanyard.data.discord_status == 'dnd' && (
+                        {lanyard.data.discord_status === 'dnd' && (
                             <div className="absolute bottom-0 right-0 w-6 h-6 rounded-full bg-destructive flex items-center justify-center border-4 border-background">
                                 <div className="bg-background w-[11px] h-[4px] rounded-full" />
                             </div>
                         )}
-                        {lanyard.data.discord_status == 'offline' && (
+                        {lanyard.data.discord_status === 'offline' && (
                             <div className="absolute bottom-0 right-0 w-6 h-6 rounded-full bg-muted-foreground flex items-center justify-center border-4 border-background">
                                 <div className="bg-background w-2 h-2 rounded-full" />
                             </div>
@@ -109,9 +110,11 @@ const DiscordPresence = ({ lanyard }) => {
                                     <div className="text-[10px] text-muted-foreground line-clamp-1">
                                         {mainActivity.state}
                                     </div>
-                                    <div className="text-[10px] text-muted-foreground">
-                                        {getElapsedTime(mainActivity.timestamps.start)}
-                                    </div>
+                                    {elapsedTime && (
+                                        <div className="text-[10px] text-muted-foreground">
+                                            {elapsedTime}
+                                        </div>
+                                    )}
                                 </div>
                             </>
                         ) : (
@@ -141,20 +144,20 @@ const DiscordPresence = ({ lanyard }) => {
                                     height={96}
                                     unoptimized
                                 />
-                                {lanyard.data.discord_status == 'online' && (
+                                {lanyard.data.discord_status === 'online' && (
                                     <div className="absolute -bottom-0 right-0 w-5 h-5 flex items-center justify-center rounded-full bg-primary border-4 border-background" />
                                 )}
-                                {lanyard.data.discord_status == 'idle' && (
+                                {lanyard.data.discord_status === 'idle' && (
                                     <div className="absolute bottom-0 right-0 w-5 h-5 rounded-full bg-primary border-4 border-background">
                                         <div className="bg-background w-[7px] h-[7px] rounded-full" />
                                     </div>
                                 )}
-                                {lanyard.data.discord_status == 'dnd' && (
+                                {lanyard.data.discord_status === 'dnd' && (
                                     <div className="absolute bottom-0 right-0 w-5 h-5 rounded-full bg-destructive flex items-center justify-center border-4 border-background">
                                         <div className="bg-background w-2 h-1 rounded-full" />
                                     </div>
                                 )}
-                                {lanyard.data.discord_status == 'offline' && (
+                                {lanyard.data.discord_status === 'offline' && (
                                     <div className="absolute bottom-0 right-0 w-5 h-5 rounded-full bg-muted-foreground flex items-center justify-center border-4 border-background">
                                         <div className="bg-background w-[6px] h-[6px] rounded-full" />
                                     </div>
@@ -208,9 +211,11 @@ const DiscordPresence = ({ lanyard }) => {
                                     <div className="text-[10px] text-muted-foreground line-clamp-1">
                                         {mainActivity.state}
                                     </div>
-                                    <div className="text-[10px] text-muted-foreground">
-                                        {getElapsedTime(mainActivity.timestamps.start)}
-                                    </div>
+                                    {elapsedTime && (
+                                        <div className="text-[10px] text-muted-foreground">
+                                            {elapsedTime}
+                                        </div>
+                                    )}
                                 </div>
                             </>
                         ) : (
