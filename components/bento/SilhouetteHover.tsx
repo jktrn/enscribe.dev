@@ -5,6 +5,7 @@ interface SilhouetteHoverProps {
     silhouetteAlt: string
     mainSrc: string
     mainAlt: string
+    objectCover?: boolean
     children?: React.ReactNode
     className?: string
 }
@@ -14,6 +15,7 @@ const SilhouetteHover = ({
     silhouetteAlt,
     mainSrc,
     mainAlt,
+    objectCover = true,
     children,
     className,
 }: SilhouetteHoverProps) => {
@@ -23,14 +25,18 @@ const SilhouetteHover = ({
                 src={silhouetteSrc}
                 alt={silhouetteAlt}
                 fill={true}
-                className="rounded-3xl object-cover transition-opacity delay-75 duration-300 group-hover:opacity-0"
+                className={`rounded-3xl ${
+                    objectCover ? 'object-cover' : 'object-contain'
+                } transition-opacity delay-75 duration-300 group-hover:opacity-0`}
                 unoptimized
             />
             <Image
                 src={mainSrc}
                 alt={mainAlt}
                 fill={true}
-                className="rounded-3xl object-cover opacity-0 transition-opacity delay-75 duration-300 group-hover:opacity-100"
+                className={`rounded-3xl ${
+                    objectCover ? 'object-cover' : 'object-contain'
+                } opacity-0 transition-opacity delay-75 duration-300 group-hover:opacity-100`}
                 unoptimized
             />
             {children}
