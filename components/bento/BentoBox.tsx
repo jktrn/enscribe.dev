@@ -1,6 +1,6 @@
 'use client'
 
-import { mainLayout, mobileLayout } from '@/scripts/utils/bento-layouts'
+import { lgLayout, mdLayout, smLayout } from '@/scripts/utils/bento-layouts'
 import Image from 'next/image'
 import React, { useEffect, useState } from 'react'
 import { Responsive, WidthProvider } from 'react-grid-layout'
@@ -64,7 +64,7 @@ const BentoBox = ({ posts }) => {
         <div className="react-grid-container">
             <ResponsiveGridLayout
                 className="layout"
-                layouts={{ lg: mainLayout, md: mainLayout, sm: mobileLayout }}
+                layouts={{ lg: lgLayout, md: mdLayout, sm: smLayout }}
                 // I don't know why but if I don't subtract 1 everything shits itself
                 breakpoints={{ lg: 1199, md: 799, sm: 374 }}
                 cols={{ lg: 4, md: 4, sm: 2 }}
@@ -81,7 +81,7 @@ const BentoBox = ({ posts }) => {
                     handleDragStop(element)
                 }
             >
-                <div key="a">
+                <div key="intro">
                     <Image
                         src="/static/images/bento/bento-intro-silhouette.svg"
                         alt="Bento Intro Silhouette"
@@ -90,6 +90,7 @@ const BentoBox = ({ posts }) => {
                             introSilhouette ? 'opacity-100' : 'opacity-0 delay-75'
                         }`}
                         unoptimized
+                        priority
                     />
                     <Image
                         src="/static/images/bento/bento-intro.svg"
@@ -99,16 +100,17 @@ const BentoBox = ({ posts }) => {
                             introSilhouette ? 'opacity-0 delay-75' : 'opacity-100'
                         }`}
                         unoptimized
+                        priority
                     />
                 </div>
                 <div
-                    key="b"
+                    key="github"
                     className="group"
                     onMouseEnter={() => setIntroSilhouette(true)}
                     onMouseLeave={() => setIntroSilhouette(false)}
                 >
                     <div className="relative flex h-full w-full items-center justify-center rounded-lg">
-                        <FaGithub size={96} className="absolute z-[1] text-primary" />
+                        <FaGithub className="absolute z-[1] text-primary w-20 h-20 bento-md:w-24 bento-md:h-24" />
                         <SilhouetteHover
                             silhouetteSrc="/static/images/bento/bento-github-silhouette.svg"
                             silhouetteAlt="Bento Github Silhouette"
@@ -119,7 +121,7 @@ const BentoBox = ({ posts }) => {
                         <ExternalLink href="https://github.com/jktrn" />
                     </div>
                 </div>
-                <div key="c">
+                <div key="image-1">
                     <Image
                         src="/static/images/bento/bento-image-1.svg"
                         alt="Bento Box 1"
@@ -128,11 +130,11 @@ const BentoBox = ({ posts }) => {
                         unoptimized
                     />
                 </div>
-                <div key="d">
+                <div key="discord">
                     {!lanyard.isValidating && <DiscordPresence lanyard={lanyard.data} />}
                 </div>
                 <div
-                    key="e"
+                    key="latest-post"
                     className="group"
                     onMouseEnter={() => setIntroSilhouette(true)}
                     onMouseLeave={() => setIntroSilhouette(false)}
@@ -155,7 +157,7 @@ const BentoBox = ({ posts }) => {
                     </SilhouetteHover>
                     <ExternalLink href={posts[0].path} />
                 </div>
-                <div key="f">
+                <div key="image-2">
                     <Image
                         src="/static/images/bento/bento-image-2.svg"
                         alt="Bento Box 2"
@@ -164,15 +166,15 @@ const BentoBox = ({ posts }) => {
                         unoptimized
                     />
                 </div>
-                <div key="g">Child G</div>
+                <div key="wakatime">Child G</div>
                 <div
-                    key="h"
+                    key="twitter"
                     className="group"
                     onMouseEnter={() => setIntroSilhouette(true)}
                     onMouseLeave={() => setIntroSilhouette(false)}
                 >
                     <div className="relative flex h-full w-full items-center justify-center rounded-lg">
-                        <FaTwitter size={96} className="absolute z-[1] text-primary" />
+                        <FaTwitter className="absolute z-[1] text-primary w-20 h-20 bento-md:w-24 bento-md:h-24" />
                         <SilhouetteHover
                             silhouetteSrc="/static/images/bento/bento-twitter-silhouette.svg"
                             silhouetteAlt="Bento Twitter Silhouette"
@@ -184,7 +186,7 @@ const BentoBox = ({ posts }) => {
                     </div>
                 </div>
                 <div
-                    key="i"
+                    key="spotify"
                     className="group"
                     onMouseEnter={() => setIntroSilhouette(true)}
                     onMouseLeave={() => setIntroSilhouette(false)}
@@ -195,10 +197,17 @@ const BentoBox = ({ posts }) => {
                         silhouetteAlt="Bento Spotify Silhouette"
                         mainSrc="/static/images/bento/bento-spotify.svg"
                         mainAlt="Bento Spotify"
-                        className="rounded-3xl object-cover"
+                        className="hidden bento-lg:block object-cover rounded-3xl ml-auto"
+                    />
+                    <SilhouetteHover
+                        silhouetteSrc="/static/images/bento/bento-spotify-silhouette-2x1.svg"
+                        silhouetteAlt="Bento Spotify Silhouette"
+                        mainSrc="/static/images/bento/bento-spotify-2x1.svg"
+                        mainAlt="Bento Spotify"
+                        className="block bento-lg:hidden object-cover rounded-3xl ml-auto"
                     />
                 </div>
-                <div key="j">
+                <div key="tech">
                     <Image
                         src="/static/images/bento/bento-technologies.svg"
                         alt="Bento Technologies"
@@ -207,7 +216,7 @@ const BentoBox = ({ posts }) => {
                         unoptimized
                     />
                 </div>
-                <div key="k">Child K</div>
+                <div key="contributions">Child K</div>
             </ResponsiveGridLayout>
         </div>
     )

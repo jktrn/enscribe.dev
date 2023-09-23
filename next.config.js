@@ -72,6 +72,7 @@ module.exports = () => {
                 'pbs.twimg.com',
                 'i.scdn.co',
                 'api.lanyard.rest',
+                'cdn.discordapp.com',
             ],
         },
         experimental: {

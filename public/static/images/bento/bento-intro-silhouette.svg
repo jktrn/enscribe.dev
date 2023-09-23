@@ -1,23 +1,23 @@
 <svg width="576" height="281" viewBox="0 0 576 281" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 <mask id="mask0_9_2" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="-1" y="-1" width="578" height="282">
-<rect x="-0.5" y="-0.5" width="577" height="281" fill="#101010"/>
+<rect x="-0.5" y="-0.5" width="577" height="281" fill="#0F0F0F"/>
 <rect x="-0.5" y="-0.5" width="577" height="281" fill="url(#pattern0)" fill-opacity="0.1"/>
 <rect x="-0.5" y="-0.5" width="577" height="281" stroke="#272727"/>
 </mask>
 <g mask="url(#mask0_9_2)">
-<rect width="576" height="280" fill="#101010"/>
+<rect width="576" height="280" fill="#0F0F0F"/>
 <rect width="576" height="280" fill="url(#pattern1)" fill-opacity="0.1"/>
 <path d="M141.875 165.586C154.822 162.659 163.643 170.988 166.514 184.189L188 283L52.1224 283L36.9807 213.475C34.1054 200.272 37.2721 188.213 50.2229 185.286" stroke="#E9D3B6" stroke-opacity="0.5" stroke-width="0.5" stroke-linejoin="round" stroke-dasharray="6 6"/>
 <circle cx="90.3519" cy="145.394" r="54.7989" transform="rotate(-12.5 90.3519 145.394)" stroke="#E9D3B6" stroke-opacity="0.5" stroke-linejoin="round" stroke-dasharray="6 6"/>
-<rect x="356" width="54" height="19" fill="#101010"/>
-<rect x="356" width="54" height="19" fill="#101010"/>
-<rect x="356" width="54" height="19" fill="#101010"/>
-<rect x="234" y="39" width="54" height="19" fill="#101010"/>
-<rect x="234" y="39" width="54" height="19" fill="#101010"/>
-<rect x="234" y="39" width="54" height="19" fill="#101010"/>
-<rect x="218" y="52" width="22" height="19" fill="#101010"/>
-<rect x="218" y="52" width="22" height="19" fill="#101010"/>
-<rect x="218" y="52" width="22" height="19" fill="#101010"/>
+<rect x="356" width="54" height="19" fill="#0F0F0F"/>
+<rect x="356" width="54" height="19" fill="#0F0F0F"/>
+<rect x="356" width="54" height="19" fill="#0F0F0F"/>
+<rect x="234" y="39" width="54" height="19" fill="#0F0F0F"/>
+<rect x="234" y="39" width="54" height="19" fill="#0F0F0F"/>
+<rect x="234" y="39" width="54" height="19" fill="#0F0F0F"/>
+<rect x="218" y="52" width="22" height="19" fill="#0F0F0F"/>
+<rect x="218" y="52" width="22" height="19" fill="#0F0F0F"/>
+<rect x="218" y="52" width="22" height="19" fill="#0F0F0F"/>
 </g>
 <defs>
 <pattern id="pattern0" patternContentUnits="objectBoundingBox" width="1" height="1">

@@ -22,6 +22,11 @@ module.exports = {
             },
         },
         extend: {
+            screens: {
+                'bento-sm': '374px',
+                'bento-md': '799px',
+                'bento-lg': '1199px',
+            },
             lineHeight: {
                 11: '2.75rem',
                 12: '3rem',

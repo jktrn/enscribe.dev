@@ -39,7 +39,7 @@ const SpotifyPresence = ({ lanyard }) => {
 
     return (
         <>
-            <div className="z-[1] flex h-full w-full flex-col justify-between p-6">
+            <div className="flex bento-md:hidden z-[1] bento-lg:flex h-full w-full flex-col justify-between p-6">
                 <Image
                     src={album_art_url}
                     alt="Album art"
@@ -64,15 +64,47 @@ const SpotifyPresence = ({ lanyard }) => {
                     </span>
                     <span className="text-md mb-2 line-clamp-2 font-bold leading-none">{song}</span>
                     <span className="line-clamp-1 w-[85%] text-xs text-muted-foreground">
-                        <span className="opacity-80">by</span> {artist}
+                        <span className="text-secondary-foreground font-semibold">by</span> {artist}
                     </span>
                     <span className="line-clamp-1 w-[85%] text-xs text-muted-foreground">
-                        <span className="opacity-80">on</span> {album}
+                        <span className="text-secondary-foreground font-semibold">on</span> {album}
+                    </span>
+                </div>
+            </div>
+            <div className="hidden bento-md:flex z-[1] bento-lg:hidden h-full w-full px-4 items-center gap-4">
+                <Image
+                    src={album_art_url}
+                    alt="Album art"
+                    width={0}
+                    height={0}
+                    className="w-32 rounded-xl border border-border grayscale"
+                    unoptimized
+                />
+                <div className="flex flex-col w-[42%]">
+                    <span className="mb-2 flex gap-2">
+                        <Image
+                            src="/static/images/bento/bento-now-playing.svg"
+                            alt="Now playing"
+                            width={16}
+                            height={16}
+                        />
+                        {lanyard.data.listening_to_spotify ? (
+                            <span className="text-sm text-primary">Now playing...</span>
+                        ) : (
+                            <span className="text-sm text-primary">Last played...</span>
+                        )}
+                    </span>
+                    <span className="text-md mb-2 line-clamp-3 font-bold leading-none">{song}</span>
+                    <span className="line-clamp-2 w-[85%] text-xs text-muted-foreground">
+                        <span className="text-secondary-foreground font-semibold">by</span> {artist}
+                    </span>
+                    <span className="line-clamp-2 w-[85%] text-xs text-muted-foreground">
+                        <span className="text-secondary-foreground font-semibold">on</span> {album}
                     </span>
                 </div>
             </div>
             <div className="absolute right-0 top-0 z-[1] m-3 text-primary">
-                <FaSpotify size={64} />
+                <FaSpotify size={56} />
             </div>
             <ExternalLink
                 href={`https://open.spotify.com/track/${track_id}`}
