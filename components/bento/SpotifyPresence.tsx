@@ -6,42 +6,42 @@ import { set } from 'react-use-lanyard'
 import ExternalLink from './ExternalLink'
 
 const SpotifyPresence = ({ lanyard, onLoad }) => {
+    const setLastPlayed = async () => {
+        try {
+            await set({
+                apiKey: process.env.NEXT_PUBLIC_LANYARD_KV_KEY!,
+                userId: '747519888347627550',
+                key: 'spotify_last_played',
+                value: JSON.stringify(lanyard.data.spotify),
+            })
+        } catch (error) {
+            console.error('Error setting KV pair:', error)
+        }
+    }
+
     useEffect(() => {
         if (
             JSON.parse(lanyard.data.kv.spotify_last_played) !== lanyard.data.spotify &&
             lanyard.data.listening_to_spotify
         ) {
-            const setLastPlayed = async () => {
-                try {
-                    await set({
-                        apiKey: process.env.NEXT_PUBLIC_LANYARD_KV_KEY!,
-                        userId: '747519888347627550',
-                        key: 'spotify_last_played',
-                        value: JSON.stringify(lanyard.data.spotify),
-                    })
-                } catch (error) {
-                    console.error('Error setting KV pair:', error)
-                }
-            }
-
             setLastPlayed()
         }
-    }, [])
+    }, [lanyard.data.spotify, lanyard.data.listening_to_spotify, lanyard.data.kv.spotify_last_played])
 
     let displayData = lanyard.data.spotify
     if (!displayData && lanyard.data.kv.spotify_last_played) {
         displayData = JSON.parse(lanyard.data.kv.spotify_last_played)
     }
 
+    useEffect(() => {
+        if (displayData && onLoad) {
+            onLoad()
+        }
+    }, [displayData, onLoad])
+
     if (!displayData) return <p>Something absolutely horrible has gone wrong</p>
 
     const { song, artist, album, album_art_url, track_id } = displayData
-
-    useEffect(() => {
-        if (lanyard && onLoad) {
-            onLoad()
-        }
-    }, [lanyard, onLoad])
 
     return (
         <>
