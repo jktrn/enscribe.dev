@@ -18,7 +18,7 @@
 
 This is a list of the various technologies used to build this website:
 
-| Name                | Link                                                                      |
+| Category            | Technology Name                                                           |
 | ------------------- | ------------------------------------------------------------------------- |
 | Framework           | [Next.js](https://nextjs.org/)                                            |
 | Deployment          | [Vercel](https://vercel.com)                                              |

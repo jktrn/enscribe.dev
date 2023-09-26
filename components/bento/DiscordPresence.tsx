@@ -2,7 +2,7 @@ import Image from 'next/image'
 import React, { useEffect, useState } from 'react'
 import { FaDiscord } from 'react-icons/fa'
 
-const DiscordPresence = ({ lanyard }) => {
+const DiscordPresence = ({ lanyard, onLoad }) => {
     const mainActivity = lanyard.data.activities.filter(
         (activity) => activity.type === 0 && activity.assets
     )[0]
@@ -24,6 +24,12 @@ const DiscordPresence = ({ lanyard }) => {
             return () => clearInterval(interval)
         }
     }, [mainActivity?.timestamps?.start])
+
+    useEffect(() => {
+        if (hasMainActivity && onLoad) {
+            onLoad()
+        }
+    }, [hasMainActivity, onLoad])
 
     return (
         <>

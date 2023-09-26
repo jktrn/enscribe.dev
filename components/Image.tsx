@@ -6,20 +6,22 @@ import { useState } from 'react'
 
 interface ExtendedImageProps extends ImageProps {
     noSkeleton?: boolean
+    noRelative?: boolean
     skeletonClassName?: string
 }
 
 const Image = ({
     onLoad,
     className,
-    noSkeleton,
+    noSkeleton = false,
+    noRelative = false,
     skeletonClassName,
     ...rest
 }: ExtendedImageProps) => {
     const [isLoading, setIsLoading] = useState(true)
 
     return (
-        <div className="relative">
+        <div className={`${noRelative ? 'inline-block' : 'relative'}`}>
             {!noSkeleton && isLoading && (
                 <Skeleton
                     className={`absolute left-0 top-0 h-full w-full rounded-md object-contain ${skeletonClassName}`}

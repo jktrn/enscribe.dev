@@ -5,7 +5,7 @@ import { set } from 'react-use-lanyard'
 
 import ExternalLink from './ExternalLink'
 
-const SpotifyPresence = ({ lanyard }) => {
+const SpotifyPresence = ({ lanyard, onLoad }) => {
     useEffect(() => {
         if (
             JSON.parse(lanyard.data.kv.spotify_last_played) !== lanyard.data.spotify &&
@@ -36,6 +36,12 @@ const SpotifyPresence = ({ lanyard }) => {
     if (!displayData) return <p>Something absolutely horrible has gone wrong</p>
 
     const { song, artist, album, album_art_url, track_id } = displayData
+
+    useEffect(() => {
+        if (lanyard && onLoad) {
+            onLoad()
+        }
+    }, [lanyard, onLoad])
 
     return (
         <>
