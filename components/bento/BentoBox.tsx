@@ -1,12 +1,13 @@
 'use client'
 
 import { lgLayout, mdLayout, smLayout } from '@/scripts/utils/bento-layouts'
-import Image from 'next/image'
 import React, { useEffect, useState } from 'react'
 import { Responsive, WidthProvider } from 'react-grid-layout'
 import { FaGithub, FaTwitter } from 'react-icons/fa'
 import { useLanyard } from 'react-use-lanyard'
 
+import Image from '../Image'
+import { Skeleton } from '../shadcn/skeleton'
 import DiscordPresence from './DiscordPresence'
 import ExternalLink from './ExternalLink'
 import SilhouetteHover from './SilhouetteHover'
@@ -21,6 +22,9 @@ const BentoBox = ({ posts }) => {
 
     const [rowHeight, setRowHeight] = useState(280)
     const [introSilhouette, setIntroSilhouette] = useState(false)
+
+    const [isDiscordLoaded, setDiscordLoaded] = useState(false)
+    const [isSpotifyLoaded, setIsSpotifyLoaded] = useState(false)
 
     const timeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null)
 
@@ -89,6 +93,8 @@ const BentoBox = ({ posts }) => {
                         className={`rounded-3xl object-cover transition-opacity duration-300 ${
                             introSilhouette ? 'opacity-100' : 'opacity-0 delay-75'
                         }`}
+                        skeletonClassName="rounded-3xl"
+                        noRelative
                         unoptimized
                         priority
                     />
@@ -99,6 +105,8 @@ const BentoBox = ({ posts }) => {
                         className={`rounded-3xl object-cover transition-opacity duration-300 ${
                             introSilhouette ? 'opacity-0 delay-75' : 'opacity-100'
                         }`}
+                        skeletonClassName="rounded-3xl"
+                        noRelative
                         unoptimized
                         priority
                     />
@@ -126,12 +134,22 @@ const BentoBox = ({ posts }) => {
                         src="/static/images/bento/bento-image-1.svg"
                         alt="Bento Box 1"
                         fill={true}
+                        noRelative
                         className="rounded-3xl object-cover"
+                        skeletonClassName="rounded-3xl"
                         unoptimized
+                        priority
                     />
                 </div>
                 <div key="discord">
-                    {!lanyard.isValidating && <DiscordPresence lanyard={lanyard.data} />}
+                    {lanyard.data && !lanyard.isValidating ? (
+                        <DiscordPresence
+                            lanyard={lanyard.data}
+                            onLoad={() => setDiscordLoaded(true)}
+                        />
+                    ) : (
+                        <Skeleton className="w-full h-full rounded-3xl" />
+                    )}
                 </div>
                 <div
                     key="latest-post"
@@ -152,6 +170,8 @@ const BentoBox = ({ posts }) => {
                             width={0}
                             height={0}
                             className="m-2 w-[80%] rounded-2xl border border-border md:m-3 lg:m-4"
+                            skeletonClassName="rounded-3xl"
+                            noRelative
                             unoptimized
                         />
                     </SilhouetteHover>
@@ -163,7 +183,9 @@ const BentoBox = ({ posts }) => {
                         alt="Bento Box 2"
                         fill={true}
                         className="rounded-3xl object-cover"
+                        noRelative
                         unoptimized
+                        priority
                     />
                 </div>
                 <div key="wakatime">Child G</div>
@@ -191,7 +213,14 @@ const BentoBox = ({ posts }) => {
                     onMouseEnter={() => setIntroSilhouette(true)}
                     onMouseLeave={() => setIntroSilhouette(false)}
                 >
-                    {!lanyard.isValidating && <SpotifyPresence lanyard={lanyard.data} />}
+                    {lanyard.data && !lanyard.isValidating ? (
+                        <SpotifyPresence
+                            lanyard={lanyard.data}
+                            onLoad={() => setIsSpotifyLoaded(true)}
+                        />
+                    ) : (
+                        <Skeleton className="w-full h-full rounded-3xl z-[1]" />
+                    )}
                     <SilhouetteHover
                         silhouetteSrc="/static/images/bento/bento-spotify-silhouette.svg"
                         silhouetteAlt="Bento Spotify Silhouette"
@@ -213,6 +242,8 @@ const BentoBox = ({ posts }) => {
                         alt="Bento Technologies"
                         fill={true}
                         className="rounded-3xl object-cover"
+                        skeletonClassName="rounded-3xl"
+                        noRelative
                         unoptimized
                     />
                 </div>
