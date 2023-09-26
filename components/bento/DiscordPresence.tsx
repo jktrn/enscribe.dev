@@ -23,7 +23,7 @@ const DiscordPresence = ({ lanyard, onLoad }) => {
 
             return () => clearInterval(interval)
         }
-    }, [mainActivity?.timestamps?.start])
+    }, [mainActivity, mainActivity.timestamps.start])
 
     useEffect(() => {
         if (hasMainActivity && onLoad) {
