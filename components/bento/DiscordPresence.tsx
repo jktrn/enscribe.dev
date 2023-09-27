@@ -20,10 +20,10 @@ const DiscordPresence = ({ lanyard, onLoad }) => {
             const interval = setInterval(() => {
                 setElapsedTime(getElapsedTime(mainActivity.timestamps.start))
             }, 1000)
-
+    
             return () => clearInterval(interval)
         }
-    }, [mainActivity, mainActivity.timestamps.start])
+    }, [mainActivity, mainActivity?.timestamps?.start])
 
     useEffect(() => {
         if (hasMainActivity && onLoad) {
