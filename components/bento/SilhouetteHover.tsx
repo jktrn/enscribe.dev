@@ -39,7 +39,7 @@ const SilhouetteHover = ({
                 noRelative
                 className={`rounded-3xl ${
                     objectCover ? 'object-cover' : 'object-contain'
-                } opacity-0 transition-opacity delay-75 duration-300 group-hover:opacity-100`}
+                } !opacity-0 transition-opacity delay-75 duration-300 group-hover:!opacity-100`}
                 skeletonClassName="rounded-3xl z-[1]"
                 unoptimized
             />
