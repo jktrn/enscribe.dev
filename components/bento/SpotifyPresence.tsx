@@ -26,7 +26,11 @@ const SpotifyPresence = ({ lanyard, onLoad }) => {
         ) {
             setLastPlayed()
         }
-    }, [lanyard.data.spotify, lanyard.data.listening_to_spotify, lanyard.data.kv.spotify_last_played])
+    }, [
+        lanyard.data.spotify,
+        lanyard.data.listening_to_spotify,
+        lanyard.data.kv.spotify_last_played,
+    ])
 
     let displayData = lanyard.data.spotify
     if (!displayData && lanyard.data.kv.spotify_last_played) {

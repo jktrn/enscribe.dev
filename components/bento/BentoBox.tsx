@@ -2,6 +2,7 @@
 
 import { lgLayout, mdLayout, smLayout } from '@/scripts/utils/bento-layouts'
 import React, { useEffect, useState } from 'react'
+import GitHubCalendar from 'react-github-calendar'
 import { Responsive, WidthProvider } from 'react-grid-layout'
 import { FaGithub, FaTwitter } from 'react-icons/fa'
 import { useLanyard } from 'react-use-lanyard'
@@ -63,6 +64,19 @@ const BentoBox = ({ posts }) => {
             }
         }
     }, [])
+
+    const DAYS_TO_SHOW = 130
+
+    const selectLastNDays = (contributions) => {
+        const today = new Date()
+        const startDate = new Date(today)
+        startDate.setDate(today.getDate() - DAYS_TO_SHOW)
+
+        return contributions.filter((activity) => {
+            const activityDate = new Date(activity.date)
+            return activityDate >= startDate && activityDate <= today
+        })
+    }
 
     return (
         <div className="react-grid-container">
@@ -247,7 +261,37 @@ const BentoBox = ({ posts }) => {
                         unoptimized
                     />
                 </div>
-                <div key="contributions">Child K</div>
+                <div
+                    key="contributions"
+                    className="group flex items-center justify-center"
+                    onMouseEnter={() => setIntroSilhouette(true)}
+                    onMouseLeave={() => setIntroSilhouette(false)}
+                >
+                    <SilhouetteHover
+                        silhouetteSrc="/static/images/bento/bento-contributions-silhouette.svg"
+                        silhouetteAlt="Bento GitHub Contributions Silhouette"
+                        mainSrc="/static/images/bento/bento-contributions.svg"
+                        mainAlt="Bento GitHub Contributions"
+                        className="rounded-3xl object-cover z-[2]"
+                    />
+                    <GitHubCalendar
+                        username="jktrn"
+                        transformData={selectLastNDays}
+                        theme={{
+                            dark: ['#1A1A1A', '#E9D3B6'],
+                        }}
+                        hideColorLegend
+                        hideTotalCount
+                        blockMargin={6}
+                        blockSize={20}
+                        blockRadius={7}
+                        style={{
+                            width: '100%',
+                            margin: '1rem',
+                            zIndex: 1,
+                        }}
+                    />
+                </div>
             </ResponsiveGridLayout>
         </div>
     )
