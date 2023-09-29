@@ -29,7 +29,7 @@ const Image = ({
             )}
             <NextImage
                 {...rest}
-                className={`${className} ${isLoading ? 'opacity-0' : 'opacity-100'}`}
+                className={`${className} ${isLoading ? 'invisible' : 'visible'}`}
                 onLoad={(event) => {
                     setIsLoading(false)
                     if (onLoad) onLoad(event)

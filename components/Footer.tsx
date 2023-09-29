@@ -1,9 +1,14 @@
+'use client'
+
 import siteMetadata from '@/data/siteMetadata'
 import { Github, Mail, Twitter } from 'lucide-react'
+import { usePathname } from 'next/navigation'
 
 import Link from './Link'
 
 export default function Footer() {
+    const pathName = usePathname()
+
     return (
         <footer>
             <div className="mt-16 flex flex-col items-center">
@@ -33,6 +38,17 @@ export default function Footer() {
                         </a>
                     )}
                 </div>
+                {pathName == '/' && (
+                    <div className="mb-2 text-xs text-muted-foreground/50">
+                        Background assets by{' '}
+                        <Link
+                            href="https://freepik.com"
+                            className="underline text-muted-foreground/75"
+                        >
+                            Freepik
+                        </Link>
+                    </div>
+                )}
                 <div className="mb-10 flex space-x-2 text-sm text-muted-foreground">
                     <div>{siteMetadata.author}</div>
                     <div>{` • `}</div>
