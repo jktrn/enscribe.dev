@@ -65,7 +65,7 @@ const BentoBox = ({ posts }) => {
         }
     }, [])
 
-    const DAYS_TO_SHOW = 130
+    const DAYS_TO_SHOW = 133
 
     const selectLastNDays = (contributions) => {
         const today = new Date()
@@ -202,7 +202,20 @@ const BentoBox = ({ posts }) => {
                         priority
                     />
                 </div>
-                <div key="wakatime">Child G</div>
+                <div
+                    key="about-ctfs"
+                    className="group bg-[url('/static/images/bento/bento-about-ctfs-bg.svg')] bg-cover bg-center"
+                    onMouseEnter={() => setIntroSilhouette(true)}
+                    onMouseLeave={() => setIntroSilhouette(false)}
+                >
+                    <SilhouetteHover
+                        silhouetteSrc="/static/images/bento/bento-about-ctfs-silhouette.svg"
+                        silhouetteAlt="Bento About CTFs Silhouette"
+                        mainSrc="/static/images/bento/bento-about-ctfs.svg"
+                        mainAlt="Bento About CTFs"
+                        className="rounded-3xl object-cover"
+                    />
+                </div>
                 <div
                     key="twitter"
                     className="group"
@@ -218,7 +231,7 @@ const BentoBox = ({ posts }) => {
                             mainAlt="Bento Twitter"
                             className="rounded-3xl object-cover"
                         />
-                        <ExternalLink href="https://twitter.com/jktrn" />
+                        <ExternalLink href="https://twitter.com/enscry" />
                     </div>
                 </div>
                 <div
@@ -274,23 +287,25 @@ const BentoBox = ({ posts }) => {
                         mainAlt="Bento GitHub Contributions"
                         className="rounded-3xl object-cover z-[2]"
                     />
-                    <GitHubCalendar
-                        username="jktrn"
-                        transformData={selectLastNDays}
-                        theme={{
-                            dark: ['#1A1A1A', '#E9D3B6'],
-                        }}
-                        hideColorLegend
-                        hideTotalCount
-                        blockMargin={6}
-                        blockSize={20}
-                        blockRadius={7}
-                        style={{
-                            width: '100%',
-                            margin: '1rem',
-                            zIndex: 1,
-                        }}
-                    />
+                    <div className={isDiscordLoaded ? 'visible' : 'invisible'}>
+                        <GitHubCalendar
+                            username="jktrn"
+                            transformData={selectLastNDays}
+                            theme={{
+                                dark: ['#1A1A1A', '#E9D3B6'],
+                            }}
+                            hideColorLegend
+                            hideTotalCount
+                            blockMargin={6}
+                            blockSize={20}
+                            blockRadius={7}
+                            style={{
+                                width: '100%',
+                                margin: '1rem',
+                                zIndex: 1,
+                            }}
+                        />
+                    </div>
                 </div>
             </ResponsiveGridLayout>
         </div>
