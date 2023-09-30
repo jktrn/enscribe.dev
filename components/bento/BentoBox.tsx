@@ -197,6 +197,7 @@ const BentoBox = ({ posts }) => {
                         alt="Bento Box 2"
                         fill
                         className="rounded-3xl object-cover"
+                        skeletonClassName="rounded-3xl"
                         noRelative
                         unoptimized
                         priority

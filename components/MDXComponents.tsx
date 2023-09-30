@@ -5,6 +5,7 @@ import TOCInline from 'pliny/ui/TOCInline'
 import Box from './Box'
 import Challenge from './Challenge'
 import CodeBlock from './CodeBlock'
+import CountryFlag from './CountryFlag'
 import Image from './Image'
 import CustomLink from './Link'
 import StaticTweet from './StaticTweet'
@@ -16,6 +17,7 @@ export const components: MDXComponents = {
     a: CustomLink,
     pre: Pre,
     CodeBlock,
+    CountryFlag,
     Challenge,
     StaticTweet,
     Box,

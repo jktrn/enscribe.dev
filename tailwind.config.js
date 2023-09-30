@@ -157,6 +157,15 @@ module.exports = {
                         hr: {
                             borderColor: theme('colors.border'),
                         },
+                        tr: {
+                            borderColor: theme('colors.border'),
+                        },
+                        thead: {
+                            borderColor: theme('colors.border'),
+                        },
+                        'li::marker': {
+                            color: theme('colors.muted.foreground'),
+                        },
                     },
                 },
                 invert: {
