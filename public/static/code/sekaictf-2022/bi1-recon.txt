@@ -1,0 +1,6 @@
+<span style="color:#DC3958">$</span> tree
+.
+├── etc
+├── home
+├── root
+└── snap

@@ -93,12 +93,7 @@ Although "cloning" the game and its functionality might not be too brain-rotting
 > -   A custom agent `SekaiCTF`
 > -   The following JSON data:
 >
-> <CodeBlock
->     src="sekaictf-2023/example-json"
->     language="json"
->     showLineNumbers={false}
->     terminal={true}
-> />
+> <CodeBlock src="sekaictf-2023/example-json" language="json" showLineNumbers={false} terminal />
 
 > The endpoint will return:
 >
@@ -107,13 +102,7 @@ Although "cloning" the game and its functionality might not be too brain-rotting
 
 Here's a verbose `curl` which demonstrates the request and response (of course, made after the challenge was deployed for the sake of demonstration):
 
-<CodeBlock
-    src="sekaictf-2023/backend-post-request"
-    rawHTML={true}
-    terminal={true}
-    scrollable={true}
-    wrappedLines={true}
-/>
+<CodeBlock src="sekaictf-2023/backend-post-request" rawHTML terminal scrollable wrappedLines />
 
 > We will hint in the description that a million pulls is needed to achieve the goal through a "pity" system. To complete the challenge, the player can do either of these strategies:
 >
@@ -137,26 +126,21 @@ Manually going through every entry listed in the database, I created the followi
 <CodeBlock
     src="sekaictf-2023/backend-pool-json"
     language="json"
-    scrollable={true}
+    scrollable
     fileName="gacha.json"
     title="Gacha Pool Structure"
 />
 
 The new TypeScript project I made utilized the [`jsynowiec/node-typescript-boilerplate`](https://github.com/jsynowiec/node-typescript-boilerplate) repository, which (after some of my own additions and removals) resulted in this project structure:
 
-<CodeBlock
-    src="sekaictf-2023/backend-project-structure"
-    rawHTML={true}
-    terminal={true}
-    scrollable={true}
-/>
+<CodeBlock src="sekaictf-2023/backend-project-structure" rawHTML terminal scrollable />
 
 Here is `src/main.ts`, the main entrypoint of the server and the place where the pity system, gacha pool, and endpoint are implemented:
 
 <CodeBlock
     src="sekaictf-2023/backend-script"
     language="typescript"
-    scrollable={true}
+    scrollable
     fileName="src/main.ts"
     title="Main Backend Script"
 />
@@ -168,20 +152,14 @@ Testing this endpoint was made buttery smooth with the help of [Jest](https://je
 <CodeBlock
     src="sekaictf-2023/backend-test-suite"
     language="typescript"
-    scrollable={true}
+    scrollable
     fileName="__tests__/main.test.ts"
     title="Backend Test Suite"
 />
 
 These tests were a godsend after breaking changes to ensure code functionality was as expected:
 
-<CodeBlock
-    src="sekaictf-2023/backend-test-suite-output"
-    rawHTML={true}
-    terminal={true}
-    scrollable={true}
-    wrappedLines={true}
-/>
+<CodeBlock src="sekaictf-2023/backend-test-suite-output" rawHTML terminal scrollable wrappedLines />
 
 Beautiful! We finished off the backend by deploying to [Cloudzy](https://cloudzy.com/) (our captain had an egregious sum of free credits), which gave us a suspicious raw IP that surely would draw attention while looking through the challenge files.
 
@@ -247,7 +225,7 @@ Of course, in order for the entire gacha system to function, we needed a script 
 <CodeBlock
     src="sekaictf-2023/unity-request-classes"
     language="cs"
-    scrollable={true}
+    scrollable
     fileName="Assets/Scripts/RequestClasses.cs"
     title="Request Classes"
 />
@@ -257,7 +235,7 @@ We can utilize these in the main script to create a new `GachaRequest` object, w
 <CodeBlock
     src="sekaictf-2023/unity-gacha-manager"
     language="cs"
-    scrollable={true}
+    scrollable
     fileName="Assets/Scripts/GachaManager.cs"
     title="Gacha Manager Script"
 />
@@ -301,7 +279,7 @@ Although bite-sized in comparison to the other scripts, this script is responsib
 <CodeBlock
     src="sekaictf-2023/unity-game-state"
     language="cs"
-    scrollable={true}
+    scrollable
     fileName="Assets/Scripts/GameState.cs"
     title="Game State Script"
 />
@@ -317,7 +295,7 @@ It is with honor I introduce to you this 549-line BEHEMOTH of a script!
 <CodeBlock
     src="sekaictf-2023/unity-ui-manager"
     language="cs"
-    scrollable={true}
+    scrollable
     fileName="Assets/Scripts/UIManager.cs"
     title="UI Manager Script"
 />
@@ -380,7 +358,7 @@ We can now define the audio controller to take an array of `Sound[]`s and two fl
 <CodeBlock
     src="sekaictf-2023/unity-audio-controller"
     language="cs"
-    scrollable={true}
+    scrollable
     fileName="Assets/Scripts/AudioController.cs"
     title="Audio Controller Script"
 />
@@ -411,7 +389,7 @@ This script is responsible for the diagonal movement in the background of the sp
 <CodeBlock
     src="sekaictf-2023/unity-background-scroller"
     language="cs"
-    scrollable={true}
+    scrollable
     fileName="Assets/Scripts/BackgroundScroller.cs"
     title="Background Scroller Script"
 />
@@ -431,7 +409,7 @@ The [Prefab](https://docs.unity3d.com/Manual/Prefabs.html) system was utilized t
 <CodeBlock
     src="sekaictf-2023/unity-shrink-button"
     language="cs"
-    scrollable={true}
+    scrollable
     fileName="Assets/Scripts/ShrinkButton.cs"
     title="Button Animation Script"
 />
@@ -451,7 +429,7 @@ These two scripts were adopted from the [`wmjoers/CameraScaler`](https://github.
 <CodeBlock
     src="sekaictf-2023/unity-camera-scaler"
     language="cs"
-    scrollable={true}
+    scrollable
     fileName="Assets/Scripts/CameraScaler.cs"
     title="Camera Scaler Script"
 />
@@ -459,7 +437,7 @@ These two scripts were adopted from the [`wmjoers/CameraScaler`](https://github.
 <CodeBlock
     src="sekaictf-2023/unity-fullscreen-handler"
     language="cs"
-    scrollable={true}
+    scrollable
     fileName="Assets/Scripts/FullscreenHandler.cs"
     title="Fullscreen Handler Script"
 />
@@ -523,7 +501,7 @@ We can see that `SetRequestHeader()` is being called to add some custom headers 
     fileName="Assembly-CSharp.dll"
     title="SendGachaRequest Method"
     wrapLongLines={false}
-    scrollable={true}
+    scrollable
     range={[[27, 49]]}
     addedLines={[[30, 30]]}
 />

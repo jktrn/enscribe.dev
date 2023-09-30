@@ -24,7 +24,7 @@ const SilhouetteHover = ({
             <Image
                 src={silhouetteSrc}
                 alt={silhouetteAlt}
-                fill={true}
+                fill
                 noRelative
                 className={`rounded-3xl ${
                     objectCover ? 'object-cover' : 'object-contain'
@@ -35,7 +35,7 @@ const SilhouetteHover = ({
             <Image
                 src={mainSrc}
                 alt={mainAlt}
-                fill={true}
+                fill
                 noRelative
                 className={`rounded-3xl ${
                     objectCover ? 'object-cover' : 'object-contain'

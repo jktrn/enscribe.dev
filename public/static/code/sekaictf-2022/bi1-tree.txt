@@ -1,0 +1,12 @@
+<span style="color:#DC3958">home/sekaictf$</span> tree | grep -C 5 firefox
+│   ├── german.png
+│   ├── ginger.png
+│   └── meme.png
+├── Public
+├── snap
+│   ├── firefox
+│   │   ├── 1551
+│   │   ├── 1589
+│   │   ├── common
+│   │   └── current
+│   └── snapd-desktop-integration

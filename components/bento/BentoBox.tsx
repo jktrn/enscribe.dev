@@ -89,7 +89,7 @@ const BentoBox = ({ posts }) => {
                 rowHeight={rowHeight}
                 isResizable={false}
                 onWidthChange={handleWidthChange}
-                isBounded={true}
+                isBounded
                 margin={[16, 16]}
                 useCSSTransforms={false}
                 onDragStart={(layout, oldItem, newItem, placeholder, e, element) =>
@@ -103,7 +103,7 @@ const BentoBox = ({ posts }) => {
                     <Image
                         src="/static/images/bento/bento-intro-silhouette.svg"
                         alt="Bento Intro Silhouette"
-                        fill={true}
+                        fill
                         className={`rounded-3xl object-cover transition-opacity duration-300 ${
                             introSilhouette ? 'opacity-100' : 'opacity-0 delay-75'
                         }`}
@@ -115,7 +115,7 @@ const BentoBox = ({ posts }) => {
                     <Image
                         src="/static/images/bento/bento-intro.svg"
                         alt="Bento Intro"
-                        fill={true}
+                        fill
                         className={`rounded-3xl object-cover transition-opacity duration-300 ${
                             introSilhouette ? 'opacity-0 delay-75' : 'opacity-100'
                         }`}
@@ -147,7 +147,7 @@ const BentoBox = ({ posts }) => {
                     <Image
                         src="/static/images/bento/bento-image-1.svg"
                         alt="Bento Box 1"
-                        fill={true}
+                        fill
                         noRelative
                         className="rounded-3xl object-cover"
                         skeletonClassName="rounded-3xl"
@@ -195,7 +195,7 @@ const BentoBox = ({ posts }) => {
                     <Image
                         src="/static/images/bento/bento-image-2.svg"
                         alt="Bento Box 2"
-                        fill={true}
+                        fill
                         className="rounded-3xl object-cover"
                         noRelative
                         unoptimized
@@ -267,7 +267,7 @@ const BentoBox = ({ posts }) => {
                     <Image
                         src="/static/images/bento/bento-technologies.svg"
                         alt="Bento Technologies"
-                        fill={true}
+                        fill
                         className="rounded-3xl object-cover"
                         skeletonClassName="rounded-3xl"
                         noRelative
@@ -287,7 +287,8 @@ const BentoBox = ({ posts }) => {
                         mainAlt="Bento GitHub Contributions"
                         className="rounded-3xl object-cover z-[2]"
                     />
-                    <div className={isDiscordLoaded ? 'visible' : 'invisible'}>
+                    {/* i'm too lazy to make an onLoad for this */}
+                    <div className={isSpotifyLoaded ? 'visible' : 'invisible'}>
                         <GitHubCalendar
                             username="jktrn"
                             transformData={selectLastNDays}

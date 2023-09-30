@@ -30,15 +30,15 @@ So me and a couple of LFGs (looking-for-groups) played [Space Heroes CTF](https:
     `nc 0.cloud.chals.io 12690`"
 />
 
-<CodeBlock src="shctf-2022/gotg-checksec" rawHTML={true} terminal={true} />
+<CodeBlock src="shctf-2022/gotg-checksec" rawHTML terminal />
 
 Let's look at what happens when you run that binary given to us:
 
-<CodeBlock src="shctf-2022/gotg-error" rawHTML={true} terminal={true} />
+<CodeBlock src="shctf-2022/gotg-error" rawHTML terminal />
 
 This error is because the binary is probably trying to reference a `flag.txt` within its directory that doesn't exist. Let's create one and run it again:
 
-<CodeBlock src="shctf-2022/gotg-fix" rawHTML={true} terminal={true} />
+<CodeBlock src="shctf-2022/gotg-fix" rawHTML terminal />
 
 There, we got it to work locally. Since we know that this is problem a format string vulnerability from the "find a successful distraction format" part of the description, let's assume that the vulnerability is it writing our input to the stack with `printf()`. We will need to work our way up the stack with the format `%n$s`, where `n` is the decimal index of the argument you want, and `s` is the `printf()` specifier for a **string of characters**. Here is a Python script used to brute force our way up:
 
@@ -46,7 +46,7 @@ There, we got it to work locally. Since we know that this is problem a format st
 
 This script will send a UTF-8 encoded format string, with `str(i)` being the iterating variable. If its output contains the flag, the loop breaks and the script will stop. Let's run it:
 
-<CodeBlock src="shctf-2022/gotg-run" rawHTML={true} scrollable={true} terminal={true} />
+<CodeBlock src="shctf-2022/gotg-run" rawHTML scrollable terminal />
 
 ---
 
@@ -60,7 +60,7 @@ This script will send a UTF-8 encoded format string, with `str(i)` being the ite
     description="Submit flag from `/flag.txt` from `0.cloud.chals.io:20712`"
 />
 
-<CodeBlock src="shctf-2022/vader-checksec" rawHTML={true} terminal={true} />
+<CodeBlock src="shctf-2022/vader-checksec" rawHTML terminal />
 
 As with any other sourceless pwn challenge, we first need to boot it up in the **Ghidra** disassembler for static analysis. Let's check what our `main()` function does:
 
@@ -68,7 +68,7 @@ As with any other sourceless pwn challenge, we first need to boot it up in the *
 
 Looks like it reads our input (`stdin`) with a fixed length of 256 through `fgets()`. Let's continue sifting around:
 
-<CodeBlock src="shctf-2022/vader-ghidra2" language="c" scrollable={true} />
+<CodeBlock src="shctf-2022/vader-ghidra2" language="c" scrollable />
 
 The goal is now clear: call the `vader()` function with five correct arguments to print the flag. Simple, right? Let's start building our chain.
 
@@ -88,11 +88,11 @@ Although you can use these, it's not really in the nature of a ROP challenge, so
 
 To find the gadgets we need, we will be utilizing a program called `ropper` and `grep`-ing the output:
 
-<CodeBlock src="shctf-2022/vader-ropper1" rawHTML={true} terminal={true} />
+<CodeBlock src="shctf-2022/vader-ropper1" rawHTML terminal />
 
 Check it out -- at the bottom of the code block (`0x40165b`) there's a perfect gadget for us to use! Let's find ones for the rest of them:
 
-<CodeBlock src="shctf-2022/vader-ropper2" rawHTML={true} terminal={true} />
+<CodeBlock src="shctf-2022/vader-ropper2" rawHTML terminal />
 
 The first `pop rsi; pop r15;` isn't ideal, as it's popping a redundant register -- we'll need to repopulate it with 8 bytes of garbage. On the other hand, the `pop rcx; pop r8;` takes care of two registers at once!
 
@@ -106,7 +106,7 @@ The last thing we need to do is to find the hex addresses of our argument string
 
 Don't forget the address of `vader()` too!:
 
-<CodeBlock src="shctf-2022/vader-address" rawHTML={true} terminal={true} />
+<CodeBlock src="shctf-2022/vader-address" rawHTML terminal />
 
 Here is my final script, which defines a variable for each section of our gigantic payload — this is for enhanced readability. I've also used the `p64()` function, which converts the address into little endian:
 
@@ -134,7 +134,7 @@ This is considered a "simple" challenge for those experienced with the field of 
 
 Let's run that `netcat` link to see what's going on:
 
-<CodeBlock src="shctf-2022/wttds-netcat" rawHTML={true} terminal={true} />
+<CodeBlock src="shctf-2022/wttds-netcat" rawHTML terminal />
 
 We're given an address of the `win()` function... and that's it. If this is a `ret2win` challenge, how are we meant to find the offset of the `$rip` register and overflow it with our code? Of course... we need to brute force it.
 
@@ -144,7 +144,7 @@ In the code snippet below, I got the address provided in the prompt by reading t
 
 Let's run this script on the server to see if we can get the flag:
 
-<CodeBlock src="shctf-2022/wttds-run" rawHTML={true} terminal={true} />
+<CodeBlock src="shctf-2022/wttds-run" rawHTML terminal />
 
 ---
 
@@ -159,7 +159,7 @@ Let's run this script on the server to see if we can get the flag:
 
 Let's open that `netcat` link to see what's going on:
 
-<CodeBlock src="shctf-2022/rahool-netcat" rawHTML={true} terminal={true} scrollable={true} />
+<CodeBlock src="shctf-2022/rahool-netcat" rawHTML terminal scrollable />
 
 For themed CTFs, I find it really fun to figure out the cultural references in the challenge before solving them. In this case, **Rahool** is a vendor in the _Destiny 2_ Tower that can decrypt legendary engrams (purple) and sell exotic engrams (gold). Uncoincidentally, that's what we'll be doing here.
 
@@ -258,6 +258,6 @@ We can now follow the instructions in the plaintext and send it to the server wi
 
 Sending the string:
 
-<CodeBlock src="shctf-2022/rahool-run" rawHTML={true} terminal={true} />
+<CodeBlock src="shctf-2022/rahool-run" rawHTML terminal />
 
 We just solved `Rahool's Challenge` without needing to write any algorithms!

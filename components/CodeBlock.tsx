@@ -196,7 +196,7 @@ const CodeBlock: FC<CodeBlockProps> = ({
                         <SyntaxHighlighter
                             language={language}
                             useInlineStyles={false}
-                            wrapLines={true}
+                            wrapLines
                             customStyle={preStyles}
                             codeTagProps={codeStyles}
                             wrapLongLines={wrapLongLines}

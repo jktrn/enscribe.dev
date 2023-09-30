@@ -1,0 +1,2 @@
+<span style="color:#DC3958">$</span> python3 mnemonic.py
+['evidence', 'leopard', 'solution', 'layer', 'legend', 'danger', 'orient', 'project', 'silver', 'flower', 'wrong', 'path', 'stove', 'throw', 'fortune', 'report', 'nuclear', 'old', 'target', 'exact', 'broom', 'hawk', 'toss', 'paper']
