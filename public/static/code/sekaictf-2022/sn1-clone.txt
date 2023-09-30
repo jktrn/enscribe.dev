@@ -1,0 +1,2 @@
+<span style="color:#DC3958">$</span> git <span class="built_in">clone</span> https://github.com/volatilityfoundation/volatility3.git
+<span style="color:#DC3958">$</span> <span class="built_in">cd</span> volatility3

@@ -1,0 +1,3 @@
+<span style="color:#DC3958">$</span> git <span class="built_in">clone</span> https://github.com/volatilityfoundation/dwarf2json  
+<span style="color:#DC3958">$</span> <span class="built_in">cd</span> dwarf2json 
+<span style="color:#DC3958">$</span> go build  

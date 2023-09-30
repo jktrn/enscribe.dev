@@ -4,7 +4,7 @@ date: '2023-07-24'
 lastmod: '2023-07-24'
 tags: ['programming', 'algorithm']
 authors: ['enscribe']
-summary: 'AmateursCTF 2023 offered an interesting programming challenge: guess a 2048-bit (~617-digit) integer through querying its greatest common divisors!'
+summary: "Ever wanted to guess an integer that's 617 digits long? Well, I did. Here's how I did it using ancient abacus math (Chinese Remainder Theorem)."
 thumbnail: '/static/images/actf-2023/banner.svg'
 images: ['/static/images/actf-2023/banner.webp']
 layout: PostSimple
@@ -179,7 +179,7 @@ Bob's ended up deciding on $$m = p_{11}\#$$. He pulls out his laptop and calcula
     title="Calculating Primorials"
 />
 
-<CodeBlock src="actf-2023/v1-primorial-run" rawHTML={true} terminal={true} />
+<CodeBlock src="actf-2023/v1-primorial-run" rawHTML terminal />
 
 Bob's now ready to go! He walks up to the operator and hands him his pieces of paper. The operator hastily hands him back three pieces of paper with the resulting GCDs:
 
@@ -204,7 +204,7 @@ and he can apply the Chinese Remainder Theorem to solve for $$x$$. Bob opens bac
     title="Solving the Carnival Puzzle"
 />
 
-<CodeBlock src="actf-2023/v1-crt-run" rawHTML={true} terminal={true} />
+<CodeBlock src="actf-2023/v1-crt-run" rawHTML terminal />
 
 Bob's got the number! Congratulations, Bob!
 
@@ -225,13 +225,7 @@ Here is the script that I used to solve this challenge. It's very straightforwar
 
 Let's run the script on the remote server:
 
-<CodeBlock
-    src="actf-2023/v1-run"
-    rawHTML={true}
-    terminal={true}
-    scrollable={true}
-    wrapLongLines={true}
-/>
+<CodeBlock src="actf-2023/v1-run" rawHTML terminal scrollable wrapLongLines />
 
 We've solved `gcd-query-v1`!
 
@@ -283,13 +277,13 @@ Well, first step is to try and rerun the same script that we used for `gcd-query
     ]}
 />
 
-<CodeBlock src="actf-2023/v2-edit-run" rawHTML={true} terminal={true} />
+<CodeBlock src="actf-2023/v2-edit-run" rawHTML terminal />
 
 Well, that didn't work. We're correctly parsing input and a number is being generated, but for some reason the server is telling us to "get better lol".
 
 I added some print statements to see what we were getting in our moduli and remainder arrays:
 
-<CodeBlock src="actf-2023/v2-print" rawHTML={true} terminal={true} />
+<CodeBlock src="actf-2023/v2-print" rawHTML terminal />
 
 Wow, check out that moduli array... that's not even nearly enough prime factors to accurately apply CRT. Let's increase the primorial then for increased chances:
 
@@ -305,7 +299,7 @@ Wow, check out that moduli array... that's not even nearly enough prime factors 
 
 Let's try running the script again:
 
-<CodeBlock src="actf-2023/v2-run" rawHTML={true} terminal={true} />
+<CodeBlock src="actf-2023/v2-run" rawHTML terminal />
 
 We've managed to solve the entire challenge with only 16 queries!
 

@@ -1,0 +1,1 @@
+<span style="color:#DC3958">$</span> dwarf2json linux --elf vmlinux-5.15.0-43-generic > ubuntu22.json

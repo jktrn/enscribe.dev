@@ -30,11 +30,11 @@ This is a writeup for the buffer overflow series during the **picoCTF 2022** com
     `nc saturn.picoctf.net 65535`"
 />
 
-<CodeBlock src="picoctf-2022/buffer-overflow/bo0-checksec" rawHTML={true} terminal={true} />
+<CodeBlock src="picoctf-2022/buffer-overflow/bo0-checksec" rawHTML terminal />
 
 Let's check out our source code:
 
-<CodeBlock src="picoctf-2022/buffer-overflow/bo0-attachment" language="c" scrollable={true} />
+<CodeBlock src="picoctf-2022/buffer-overflow/bo0-attachment" language="c" scrollable />
 
 The first thing we should do is check how the flag is printed. Looks like it's handled in a `sigsegv_handler()` function:
 
@@ -44,7 +44,7 @@ Researching online, a "SIGSEGV" stands for a **segmentation fault**, which is an
 
 We see that on line 40, the horrible `gets()` is called, and reads `buf1` (the user input) onto the stack. This function sucks, as it will write the user's input to the stack without regard to its allocated length. The user can simply overflow this length, and the program will pass their input into the `vuln()` function to trigger a segmentation fault:
 
-<CodeBlock src="picoctf-2022/buffer-overflow/bo0-solve" rawHTML={true} terminal={true} />
+<CodeBlock src="picoctf-2022/buffer-overflow/bo0-solve" rawHTML terminal />
 
 ---
 
@@ -64,11 +64,11 @@ We see that on line 40, the horrible `gets()` is called, and reads `buf1` (the u
     text="**Warning**: This is an **instance-based** challenge. Port info will be redacted alongside the last eight characters of the flag, as they are dynamic."
 />
 
-<CodeBlock src="picoctf-2022/buffer-overflow/bo1-checksec" rawHTML={true} terminal={true} />
+<CodeBlock src="picoctf-2022/buffer-overflow/bo1-checksec" rawHTML terminal />
 
 Let's check out our source code:
 
-<CodeBlock src="picoctf-2022/buffer-overflow/bo1-attachment" language="c" scrollable={true} />
+<CodeBlock src="picoctf-2022/buffer-overflow/bo1-attachment" language="c" scrollable />
 
 In the `vuln()` function, we see that once again, the `gets()` function is being used. However, instead of triggering a segmentation fault like Buffer overflow 0, we will instead utilize its vulnerability to write our own addresses onto the stack, changing the return address to `win()` instead.
 
@@ -90,11 +90,11 @@ If we are deliberate of the characters we pass into `gets()`, we will be able to
 
 To start, we first need to figure out our "offset". The offset is the distance, in characters, between the beginning of the buffer and the position of the `$eip`. This can be visualized with the `gdb-gef` utility by setting a breakpoint (a place to pause the runtime) in the `main()` function:
 
-<CodeBlock src="picoctf-2022/buffer-overflow/bo1-gef1" rawHTML={true} terminal={true} />
+<CodeBlock src="picoctf-2022/buffer-overflow/bo1-gef1" rawHTML terminal />
 
 Analyzing this breakpoint, if we look at the arrow on the assembly code, we can see that its address is the exact same as the `$eip` (`0x80492d7`). Let's try overflowing this register by passing an unhealthy amount of `A`s into the program:
 
-<CodeBlock src="picoctf-2022/buffer-overflow/bo1-gef2" rawHTML={true} terminal={true} />
+<CodeBlock src="picoctf-2022/buffer-overflow/bo1-gef2" rawHTML terminal />
 
 Look what happened: our program threw a SIGSEGV (segmentation) fault, as it is trying to reference the address `0x41414141`, which doesn't exist! This is because our `$eip` was overwritten by all our `A`s (`0x41` in hex = `A` in ASCII).
 
@@ -102,19 +102,19 @@ Look what happened: our program threw a SIGSEGV (segmentation) fault, as it is t
 
 Although we've managed to smash the stack, we still don't know the offset (**how many** `A`s we need to pass in order to reach the `$eip`). To solve this problem, we can use the pwntools `cyclic` command, which creates a string with a recognizable cycling pattern for it to identify:
 
-<CodeBlock src="picoctf-2022/buffer-overflow/bo1-cyclic" rawHTML={true} terminal={true} />
+<CodeBlock src="picoctf-2022/buffer-overflow/bo1-cyclic" rawHTML terminal />
 
 We can see that `$eip` is currently overflowed with the pattern `0x6161616c` (`laaa`). let's search for this pattern using `pattern search`:
 
-<CodeBlock src="picoctf-2022/buffer-overflow/bo1-pattern" rawHTML={true} terminal={true} />
+<CodeBlock src="picoctf-2022/buffer-overflow/bo1-pattern" rawHTML terminal />
 
 To figure out which offset we need to use, we can use `readelf` to analyze header of the `vuln` executable:
 
-<CodeBlock src="picoctf-2022/buffer-overflow/bo1-readelf" rawHTML={true} terminal={true} />
+<CodeBlock src="picoctf-2022/buffer-overflow/bo1-readelf" rawHTML terminal />
 
 Our binary is in little endian, we know that 44 `A`s are needed in order to reach the `$eip`. The only thing we need now before we create our exploit is the address of the `win()` function, which will be appended to the end of our buffer to overwrite the `$eip` on the stack:
 
-<CodeBlock src="picoctf-2022/buffer-overflow/bo1-address" rawHTML={true} terminal={true} />
+<CodeBlock src="picoctf-2022/buffer-overflow/bo1-address" rawHTML terminal />
 
 Win is at `0x80491f6`, but we need to convert it to the little endian format. You can do this with the pwntools `p32()` command, which results in `\xf6\x91\x04\x08`.
 Let's make a final visual of our payload:
@@ -127,7 +127,7 @@ Let's write our payload and send it to the remote server with Python3/pwntools:
 
 Let's try running the script on the server:
 
-<CodeBlock src="picoctf-2022/buffer-overflow/bo1-run" rawHTML={true} terminal={true} />
+<CodeBlock src="picoctf-2022/buffer-overflow/bo1-run" rawHTML terminal />
 
 We have completed our first `ret2win` buffer overflow on a x32 binary! Yet, this is just the beginning. How about we spice things up a little bit?
 
@@ -144,15 +144,15 @@ The main helper we will be using is [`pwnlib.elf.corefile`](https://docs.pwntool
 
 Before we start, let's work through the steps with command-line Python. First, let's import the pwntools global namespace and generate an `elf` object using pwntool's `ELF()`:
 
-<CodeBlock src="picoctf-2022/buffer-overflow/bo1-elf-object" rawHTML={true} terminal={true} />
+<CodeBlock src="picoctf-2022/buffer-overflow/bo1-elf-object" rawHTML terminal />
 
 We can then generate a `cyclic()` payload and start a local process referencing the aforementioned `elf` object. Sending the payload and using the [`.wait()`](https://www.educba.com/python-wait/) method will throw an exit code -11, which signals a segmentation fault and generates a core dump.
 
-<CodeBlock src="picoctf-2022/buffer-overflow/bo1-coredump" rawHTML={true} terminal={true} />
+<CodeBlock src="picoctf-2022/buffer-overflow/bo1-coredump" rawHTML terminal />
 
 We can now create a corefile object and freely reference registers! To find the offset, we can simply call the object key within `cyclic_find()`.
 
-<CodeBlock src="picoctf-2022/buffer-overflow/bo1-registers" rawHTML={true} terminal={true} />
+<CodeBlock src="picoctf-2022/buffer-overflow/bo1-registers" rawHTML terminal />
 
 Now that we know how ELF objects and core dumps work, let's apply them to our previous script. Another cool helper I would like to implement is [`flat()`](https://docs.pwntools.com/en/stable/util/packing.html) (which has a great tutorial [here](https://www.youtube.com/watch?v=AMDbbuLaXfk), referred to by the legacy alias `fit()`), which flattens arguments given in lists, tuples, or dictionaries into a string with `pack()`. This will help us assemble our payload without needing to concatenate seemingly random strings of `A`s and little-endian addresses, increasing readability.
 
@@ -162,7 +162,7 @@ This is my final, completely automated script:
 
 Let's run the script on the server:
 
-<CodeBlock src="picoctf-2022/buffer-overflow/bo1-run-automated" rawHTML={true} terminal={true} />
+<CodeBlock src="picoctf-2022/buffer-overflow/bo1-run-automated" rawHTML terminal />
 
 We've successfully automated a solve on a simple x32 buffer overflow!
 
@@ -185,11 +185,11 @@ We've successfully automated a solve on a simple x32 buffer overflow!
     text="**Warning**: This is an **instance-based** challenge. Port info will be redacted alongside the last eight characters of the flag, as they are dynamic."
 />
 
-<CodeBlock src="picoctf-2022/buffer-overflow/bo2-checksec" rawHTML={true} terminal={true} />
+<CodeBlock src="picoctf-2022/buffer-overflow/bo2-checksec" rawHTML terminal />
 
 Let's check out our source code:
 
-<CodeBlock src="picoctf-2022/buffer-overflow/bo2-attachment" language="c" scrollable={true} />
+<CodeBlock src="picoctf-2022/buffer-overflow/bo2-attachment" language="c" scrollable />
 
 Looking at the `win()` function, we can see that two arguments are required that need to be passed into the function to receive the flag. Two guard clauses lay above the flag print:
 
@@ -201,7 +201,7 @@ The goal is simple: call `win(0xCAFEF00D, 0xF00DF00D)`! We'll be doing it the ha
 
 We can apply a lot from what we learned in Buffer overflow 1. The first thing we should do is find the offset, which requires no hassle with pwntools helpers! Although we'll get actual number here, I won't include it in the final script for the sake of not leaving out any steps. Simply segfault the process with a cyclic string, read the core dump's fault address (`$eip`) and throw it into `cyclic_find()`:
 
-<CodeBlock src="picoctf-2022/buffer-overflow/bo2-coredump" rawHTML={true} terminal={true} />
+<CodeBlock src="picoctf-2022/buffer-overflow/bo2-coredump" rawHTML terminal />
 
 The next thing we need to know about is the way functions are laid out on the stack. Let's recall the diagram I drew out earlier:
 
@@ -213,7 +213,7 @@ If we want to call a function with parameters, we'll need to include the base po
 
 Let's run it on the remote server:
 
-<CodeBlock src="picoctf-2022/buffer-overflow/bo2-run" rawHTML={true} terminal={true} />
+<CodeBlock src="picoctf-2022/buffer-overflow/bo2-run" rawHTML terminal />
 
 ### II: The Easy Way 🐇
 
@@ -223,7 +223,7 @@ But... what if you wanted to be an even **more** lazy pwner? Well, you're in luc
 
 Let's run it on the remote server:
 
-<CodeBlock src="picoctf-2022/buffer-overflow/bo2-run-automated" rawHTML={true} terminal={true} />
+<CodeBlock src="picoctf-2022/buffer-overflow/bo2-run-automated" rawHTML terminal />
 
 We've successfully called a function with arguments through buffer overflow!
 
@@ -244,13 +244,13 @@ We've successfully called a function with arguments through buffer overflow!
     text="**Warning**: This is an **instance-based** challenge. Port info will be redacted alongside the last eight characters of the flag, as they are dynamic."
 />
 
-<CodeBlock src="picoctf-2022/buffer-overflow/bo3-checksec" rawHTML={true} terminal={true} />
+<CodeBlock src="picoctf-2022/buffer-overflow/bo3-checksec" rawHTML terminal />
 
 ### I: Finding the Canary 🐦
 
 So, Dr. Oswal apparently implemented a [stack canary](https://www.sans.org/blog/stack-canaries-gingerly-sidestepping-the-cage/), which is just a **dynamic value** appended to binaries during compilation. It helps detect and mitigate stack smashing attacks, and programs can terminate if they detect the canary being overwritten. Yet, `checksec` didn't find a canary. That's a bit suspicious... but let's check out our source code first:
 
-<CodeBlock src="picoctf-2022/buffer-overflow/bo3-attachment" language="c" scrollable={true} />
+<CodeBlock src="picoctf-2022/buffer-overflow/bo3-attachment" language="c" scrollable />
 
 If you look closely, you might be able to see why `checksec` didn't find a stack canary. That's because it's actually a static variable, being read from a `canary.txt` on the host machine. Canaries that aren't implemented by the compiler are not really canaries!
 
@@ -287,7 +287,7 @@ The final thing we need to figure out is the offset between the canary to `$eip`
     text="**Note**: My canary is `abcd` because I put that in my `canary.txt`. It will be different on the remote server!"
 />
 
-<CodeBlock src="picoctf-2022/buffer-overflow/bo3-coredump" rawHTML={true} terminal={true} />
+<CodeBlock src="picoctf-2022/buffer-overflow/bo3-coredump" rawHTML terminal />
 
 The offset is 16, so we'll have to append that amount of bytes to the payload followed by the address of `win()`. I'll combine all sections of our payload together with `flat()`, and then hopefully read the flag from the output:
 
@@ -295,10 +295,10 @@ The offset is 16, so we'll have to append that amount of bytes to the payload fo
 
 Here is my final script with all of its components put together:
 
-<CodeBlock src="picoctf-2022/buffer-overflow/bo3-solve" language="python" scrollable={true} />
+<CodeBlock src="picoctf-2022/buffer-overflow/bo3-solve" language="python" scrollable />
 
 Running the script:
 
-<CodeBlock src="picoctf-2022/buffer-overflow/bo3-run" rawHTML={true} terminal={true} />
+<CodeBlock src="picoctf-2022/buffer-overflow/bo3-run" rawHTML terminal />
 
 We've successfully performed a brute force on a vulnerable static canary!

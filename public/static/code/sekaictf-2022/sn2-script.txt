@@ -1,0 +1,6 @@
+import dis
+import marshal
+
+with open('file.pyc', 'rb') as f:
+    f.seek(16)
+    print(dis.dis(marshal.load(f)))

@@ -1,0 +1,4 @@
+<span style="color:#DC3958">$</span> python3 file.pyc password
+Traceback (most recent call last):
+  File "test2.py", line 12, in <module>
+FileNotFoundError: [Errno 2] No such file or directory: 'bip39list.txt'
