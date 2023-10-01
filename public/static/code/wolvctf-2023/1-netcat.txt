@@ -1,4 +1,4 @@
-<span class="meta prompt_">$</span> nc wanna-flag-i.wolvctf.io 1337
+<span style="color:#DC3958">$</span> nc wanna-flag-i.wolvctf.io 1337
 == proof-of-work: disabled ==
 Good job finding the Cube! It's a favorite destination among UofM students!
 Anyways here is the flag:

@@ -1,0 +1,11 @@
+      <footer class="w3-center w3-black w3-padding-64 w3-opacity w3-hover-opacity-off">
+         <button onclick="topFunction()" class="w3-button w3-light-grey" title="Go to top"><i class="fa fa-arrow-up w3-margin-right w3-light-grey"></i>To Top</button>
+         <div class="w3-xlarge w3-section">
+            <!-- small logo with redirecting link -->
+            <a href="https://youtu.be/dQw4w9WgXcQ" <i class="fa fa-twitter w3-hover-opacity"></a>
+            <a href="data.html" <i class="fa fa-instagram w3-hover-opacity"></a>
+            <a href="https://youtu.be/dQw4w9WgXcQ" <i class="fa fa-github w3-hover-opacity"></a>
+         </div>
+         <!-- page link -->
+         </p>
+      </footer>

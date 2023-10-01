@@ -92,11 +92,15 @@ const Challenge = ({
                                             height={16}
                                         />
                                     ) : (
-                                        <User />
+                                        <User size={16} strokeWidth={3} />
                                     )}
-                                    <Link href={`https://github.com/${solver}`}>
-                                        {usernameMapping[solver] || solver}
-                                    </Link>
+                                    {userAvatars[solver] ? (
+                                        <Link href={`https://github.com/${solver}`}>
+                                            {usernameMapping[solver] || solver}
+                                        </Link>
+                                    ) : (
+                                        <span>{usernameMapping[solver] || solver}</span>
+                                    )}
                                     {index !== solvers.length - 1 && <br />}
                                 </span>
                             ))}
@@ -108,7 +112,7 @@ const Challenge = ({
                                 :&nbsp;
                             </span>
                             <span className="flex items-center space-x-1">
-                                {userAvatars[solvers] && (
+                                {userAvatars[solvers] ? (
                                     <Image
                                         src={userAvatars[solvers]}
                                         alt={`${solvers}'s avatar`}
@@ -117,10 +121,16 @@ const Challenge = ({
                                         width={16}
                                         height={16}
                                     />
+                                ) : (
+                                    <User size={16} strokeWidth={3} />
                                 )}
-                                <Link href={`https://github.com/${solvers}`}>
-                                    {usernameMapping[solvers] || solvers}
-                                </Link>
+                                {userAvatars[solvers] ? (
+                                    <Link href={`https://github.com/${solvers}`}>
+                                        {usernameMapping[solvers] || solvers}
+                                    </Link>
+                                ) : (
+                                    <span>{usernameMapping[solvers] || solvers}</span>
+                                )}
                                 <br />
                             </span>
                         </span>

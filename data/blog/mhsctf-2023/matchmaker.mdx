@@ -238,16 +238,16 @@ Like any other reasonable person would do if they were stuck, I asked ChatGPT-4 
     type="warning"
 />
 
-<div class="flex flex-col mx-auto bg-secondary rounded p-4 my-4 space-y-4">
-    <div class="flex space-x-4">
-        <img class="w-12 h-12 rounded-lg !m-0" src="https://www.gravatar.com/avatar/bac00b54948ebf5ea072824aeafa890f?d=identicon&s=256" alt="User Profile Picture" />
-        <div class="bg-tertiary/50 float-left rounded p-4 text-sm relative">
+<div className="flex flex-col mx-auto bg-secondary rounded p-4 my-4 space-y-4">
+    <div className="flex space-x-4">
+        <img className="w-12 h-12 rounded-lg !m-0" src="https://www.gravatar.com/avatar/bac00b54948ebf5ea072824aeafa890f?d=identicon&s=256" alt="User Profile Picture" />
+        <div className="bg-tertiary/50 float-left rounded p-4 text-sm relative">
             <p className="m-0">Explain the primal-dual method to someone completely new to algorithms and graph theory.</p>
         </div>
     </div>
-    <div class="flex space-x-4">
-        <img class="w-12 h-12 rounded-lg !m-0" src="/static/images/mhsctf-2023/chatgpt-icon.png" alt="ChatGPT Profile Picture" />
-        <div class="bg-green-700/25 float-right rounded p-4 text-sm relative max-h-[500px] overflow-auto">
+    <div className="flex space-x-4">
+        <img className="w-12 h-12 rounded-lg !m-0" src="/static/images/mhsctf-2023/chatgpt-icon.png" alt="ChatGPT Profile Picture" />
+        <div className="bg-green-700/25 float-right rounded p-4 text-sm relative max-h-[500px] overflow-auto">
         <p className="m-0">
 
 <p className="mt-0">
@@ -296,15 +296,15 @@ The power of the primal-dual method lies in the fact that while the primal probl
         </p>
         </div>
     </div>
-    <div class="flex space-x-4">
-        <img class="w-12 h-12 rounded-lg !m-0" src="https://www.gravatar.com/avatar/bac00b54948ebf5ea072824aeafa890f?d=identicon&s=256" alt="User Profile Picture" />
-        <div class="bg-tertiary/50 float-left rounded p-4 text-sm relative">
+    <div className="flex space-x-4">
+        <img className="w-12 h-12 rounded-lg !m-0" src="https://www.gravatar.com/avatar/bac00b54948ebf5ea072824aeafa890f?d=identicon&s=256" alt="User Profile Picture" />
+        <div className="bg-tertiary/50 float-left rounded p-4 text-sm relative">
         <p className="m-0">How can you combine the Blossom algorithm and the primal-dual method together to create maximum weighted matchings?</p>
         </div>
     </div>
-    <div class="flex space-x-4">
-        <img class="w-12 h-12 rounded-lg !m-0" src="/static/images/mhsctf-2023/chatgpt-icon.png" alt="ChatGPT Profile Picture" />
-        <div class="bg-green-700/25 float-right rounded p-4 text-sm relative max-h-[500px] overflow-auto">
+    <div className="flex space-x-4">
+        <img className="w-12 h-12 rounded-lg !m-0" src="/static/images/mhsctf-2023/chatgpt-icon.png" alt="ChatGPT Profile Picture" />
+        <div className="bg-green-700/25 float-right rounded p-4 text-sm relative max-h-[500px] overflow-auto">
             <p className="mt-0">To understand how the Blossom algorithm and the primal-dual method can be combined to create maximum weighted matchings, we first need to briefly review each concept:</p>
 
 1.  **Blossom Algorithm**: The Blossom algorithm is primarily used to find a maximum cardinality matching in a general graph (i.e., not just bipartite). A "blossom" in this context refers to an odd cycle in the graph, where the cycle has a particular structure that can be "shrunk" into a single vertex, simplifying the graph and allowing for more matchings to be found.
@@ -342,6 +342,7 @@ In essence, the primal-dual method guides the search by adjusting the weights in
 
         </div>
     </div>
+
 </div>
 
 Take what you will from this information. I'll just sweep it under the rug right now, since we'll simply be "borrowing" an implementation of the above algorithm to solve this challenge. Let me know if you are knowledgable in this area and would like to contribute to this section!
