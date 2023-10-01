@@ -4,7 +4,7 @@
 
 ## enscribe.dev
 
-[![CodeFactor]](https://www.codefactor.io/repository/github/jktrn/enscribe.dev-v2)
+[![CodeFactor]](https://www.codefactor.io/repository/github/jktrn/enscribe.dev)
 [![Next.js]](https://hexo.io)
 [![License]](LICENSE)
 
@@ -39,6 +39,6 @@ While I'm thrilled to open-source my code, I kindly request that you refrain fro
 
 Remember, I'm always open for chats, discussions, or collaborations. Feel free to reach out if you have any questions about this project, or if you just want to share your thoughts. Cheers!
 
-[CodeFactor]: https://img.shields.io/codefactor/grade/github/jktrn/enscribe.dev-v2?color=5d5449&logo=codefactor&logoColor=fff&style=for-the-badge
-[Next.js]: https://img.shields.io/github/package-json/dependency-version/jktrn/enscribe.dev-v2/next?color=756a5b&logo=next.js&logoColor=fff&style=for-the-badge
-[License]: https://img.shields.io/github/license/jktrn/enscribe.dev-v2?color=8c7f6d&logo=github&logoColor=fff&style=for-the-badge
+[CodeFactor]: https://img.shields.io/codefactor/grade/github/jktrn/enscribe.dev?color=5d5449&logo=codefactor&logoColor=fff&style=for-the-badge
+[Next.js]: https://img.shields.io/github/package-json/dependency-version/jktrn/enscribe.dev/next?color=756a5b&logo=next.js&logoColor=fff&style=for-the-badge
+[License]: https://img.shields.io/github/license/jktrn/enscribe.dev?color=8c7f6d&logo=github&logoColor=fff&style=for-the-badge
