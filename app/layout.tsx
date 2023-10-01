@@ -5,7 +5,7 @@ import siteMetadata from '@/data/siteMetadata'
 import 'css/tailwind.css'
 import { Metadata } from 'next'
 import { JetBrains_Mono } from 'next/font/google'
-import { Analytics, AnalyticsConfig } from 'pliny/analytics'
+import { Analytics } from '@vercel/analytics/react'
 import { SearchConfig, SearchProvider } from 'pliny/search'
 import 'pliny/search/algolia.css'
 import 'react-grid-layout/css/styles.css'
@@ -14,7 +14,7 @@ import 'react-resizable/css/styles.css'
 import './globals.css'
 import { ThemeProviders } from './theme-providers'
 
-const space_grotesk = JetBrains_Mono({
+const font = JetBrains_Mono({
     subsets: ['latin'],
     display: 'swap',
     variable: '--font-space-jetbrains-mono',
@@ -64,7 +64,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     return (
         <html
             lang={siteMetadata.language}
-            className={`${space_grotesk.variable} scroll-smooth`}
+            className={`${font.variable} scroll-smooth`}
             suppressHydrationWarning
         >
             <link
@@ -92,7 +92,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <link rel="alternate" type="application/rss+xml" href="/feed.xml" />
             <body className="bg-background text-black antialiased dark:text-white">
                 <ThemeProviders>
-                    <Analytics analyticsConfig={siteMetadata.analytics as AnalyticsConfig} />
+                    <Analytics />
                     <SectionContainer>
                         <div className="flex h-full flex-col justify-between font-sans">
                             <SearchProvider searchConfig={siteMetadata.search as SearchConfig}>

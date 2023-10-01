@@ -46,11 +46,11 @@ export default function PostMinimal({ content, next, prev, children }: LayoutPro
                     <div className="prose prose-sm max-w-none py-4 dark:prose-invert">
                         {children}
                     </div>
-                    {siteMetadata.comments && (
+                    {/* {siteMetadata.comments && (
                         <div className="pb-6 pt-6 text-center text-muted-foreground" id="comment">
                             <Comments slug={slug} />
                         </div>
-                    )}
+                    )} */}
                     <footer>
                         <div className="flex flex-col text-sm font-medium sm:flex-row sm:justify-between sm:text-base">
                             {prev && prev.path && (
