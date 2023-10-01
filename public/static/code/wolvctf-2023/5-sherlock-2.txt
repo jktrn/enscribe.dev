@@ -1,0 +1,7 @@
+<span style="color:#DC3958">$</span> python3 sherlock.py s0llym41n3006
+[<span style="color:#277FFF"><b>*</b></span>] Checking username s0llym41n3006 on:
+
+[<span style="color:#47D4B9"><b>+</b></span>] Coil: https://coil.com/u/s0llym41n3006
+[<span style="color:#47D4B9"><b>+</b></span>] Pastebin: https://pastebin.com/u/s0llym41n3006
+
+[<span style="color:#277FFF"><b>*</b></span>] Search completed with 2 results

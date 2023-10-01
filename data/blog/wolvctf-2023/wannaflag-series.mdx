@@ -22,7 +22,7 @@ Project Sekai was the first to blood the entire series. Here was our thought pro
     title="WannaFlag I: An Introduction"
     authors="dree"
     solvers="jktrn"
-    files="[image.png](/static/wolvctf-2023/image.png)"
+    files="[image.png](/static/images/wolvctf-2023/image.png)"
     genre="osint"
     points="188"
     solves="107"
@@ -82,3 +82,309 @@ A simple [base64 decode](https://www.base64decode.org/) of the exfiltrated strin
     text="**WannaFlag I: An Introduction**: `wctf{uhhh_wh3r3_d1d_4ll_0ur_fl4gs_g0?}`"
     type="flag"
 />
+
+---
+
+<Challenge
+    title="WannaFlag II: Payments"
+    authors="dree"
+    genre="osint"
+    points="348"
+    solvers={['Legoclones', 'sahuang']}
+    solves="75"
+    description="Ok well.........................something may have gone wrong
+        WannaFlag's ransom demand is insane, there's no way we are paying that. Can you figure out which address the money is being funneled to?  
+        From the ransom note: send 500,000 Goerli to `0x08f5AF98610aE4B93cD0A856682E6319bF1be8a6`"
+/>
+
+Our next step involves figuring out where this ransom money is being funneled to. We can use [Etherscan](https://etherscan.io/)'s [Goerli Testnet Explorer](https://goerli.etherscan.io/) for transactions involving the address `0x08f5AF98610aE4B93cD0A856682E6319bF1be8a6`:
+
+![Goerli](/static/images/wolvctf-2023/goerli.png)
+
+We can see the transactions this account has made so far, but the only ones that are relevant would be the ones done before the competition started (since those would be part of the challenge creation process). These are the following transactions the account has made within this reasonable scope:
+
+![Goerli 2](/static/images/wolvctf-2023/goerli2.png)
+
+Looks like there's something that stands out — although there are a lot of <span className="bg-green-500/25 px-3 py-1 rounded border border-green-400/50 text-green-600">IN</span> transactions, there's only one <span className="bg-yellow-500/25 px-3 py-1 rounded border border-yellow-400/50 text-yellow-600">OUT</span> transaction. This is the transaction that we're looking for, and it's a pretty big one being sent to `0xA01FD0...`. Let's follow the breadcrumb:
+
+![Goerli 3](/static/images/wolvctf-2023/goerli3.png)
+
+From here, it seems as if the money is being distributed into several different accounts. Upon checking these transactions, though, these addresses actually just loop back the crypto into the original `0x08f5AF...` wallet. Here is an example of one of these "dummy" accounts, `0xc527ad...`; the second transaction on this list sends money back in a seeming "loop":
+
+![Goerli 4](/static/images/wolvctf-2023/goerli4.png)
+
+However, one outlier amongst these <span className="bg-yellow-500/25 px-3 py-1 rounded border border-yellow-400/50 text-yellow-600">OUT</span> transactions exists: the address `0x80710E...`, which funnels these payments into three different accounts:
+
+![Goerli 5](/static/images/wolvctf-2023/goerli5.png)
+
+Once again, two of these accounts are dummies, and will send money back into `0x08f5AF...`. However, one of these accounts, `0x64E69A...`, will send money to a completely new address, `0x79616B...`, where the trail ends:
+
+![Goerli 6](/static/images/wolvctf-2023/goerli6.png)
+
+There's a suspicious <span className="bg-gray-500/25 px-3 py-1 rounded border border-gray-400/50 text-gray-400">SELF</span> transaction on this address. Hovering over it, we can see that Etherscan believes there is a hidden message in the "Input Data" field:
+
+![Goerli 7](/static/images/wolvctf-2023/goerli7.png)
+
+If we take a look at the transaction hash and click on the "More Details" button, we find the flag in the "Input Data" section when decoding it into UTF-8:
+
+![Goerli 8](/static/images/wolvctf-2023/goerli8.png)
+
+If you're lost, I made a visualization of the transactions which took place, highlighting the breadcrumbs which eventually led to the flag:
+
+![Transactions](/static/images/wolvctf-2023/transactions.svg)
+
+<Box text="**WannaFlag II: Payments**: `wctf{g1v3_m3_b4cK_mY_cRypT0!!11!}`" type="flag" />
+
+---
+
+<Challenge
+    title="WannaFlag III: Infiltration"
+    solvers="jktrn"
+    authors="dree"
+    genre="osint"
+    points="318"
+    solves="82"
+    description="We have some solid leads so far. However, we need our flags back. Find a way to locate their communication and infiltrate their private ransom service, and submit the stolen flag we wanted to use for the first OSINT!  
+        From outside intelligence, we know the group sometimes goes by `w4nn4_fl4g`"
+/>
+
+We're now given a keyphrase to work with: `w4nn4_fl4g`. We can search for the specific term on Google by wrapping it in quotes, and our first result is a subreddit, [r/w4nn4_fl4g](https://www.reddit.com/r/w4nn4_fl4g/):
+
+![Reddit](/static/images/wolvctf-2023/reddit.png)
+
+Looking through the small amount of posts on this locked subreddit, we can find three users in particular which have access to post permissions (alongside one moderator): `u/w4nn4fl4g_admin`, `u/RemarkableDiamond443`, and `u/[deleted]`. None of the posts and memes were particularly interesting or relevant, but one thing stuck out in particular: the deleted user. We can find the username of the user through querying [camas.unddit.com](https://camas.unddit.com/) for a specific comment in `r/w4nn4_fl4g`; let's utilize the comment "sorry" they left under [this post](https://www.reddit.com/r/w4nn4_fl4g/comments/11p6utf/questions/):
+
+![First Query](/static/images/wolvctf-2023/query1.png)
+
+We found the original username of the deleted user: `u/Chemical_Bread1558`! We can now query for posts the user made under the subreddit:
+
+![Second Query](/static/images/wolvctf-2023/query2.png)
+
+We've got a hit on a [moderator-deleted post](https://reddit.com/11p5w72). Let's check it out:
+
+![Deleted Post](/static/images/wolvctf-2023/deleted-post.png)
+
+Well, that doesn't really help. However, we can see the post's original content by using the Unddit tool once again — simply replace the `reddit` in the URL with `unddit` to see deleted comments:
+
+![Unddit](/static/images/wolvctf-2023/unddit.png)
+
+The secret website provided leads us to this:
+
+![Website](/static/images/wolvctf-2023/website.png)
+
+We've managed to recover the flag from the first OSINT challenge, but it's actually meant to be submitted as part of the third:
+
+<Box text="**WannaFlag III: Infiltration**: `wctf{sp1nnnNn_tH3_cUb333e3E}`" type="flag" />
+
+---
+
+<Challenge
+    title="WannaFlag IV: Exfiltration"
+    solvers="jktrn"
+    authors="dree"
+    genre="osint"
+    points="491"
+    solves="19"
+    description="Now that we've successfully gotten into their website - I say we figure out what other data they have.  
+        Find and crack the master flag list, and submit the flag you see of ours on the list."
+/>
+
+<span className="text-[#FF9999]">**First blood!**</span> We're now tasked with analyzing the contents
+of their website. Scouring through the source code, we find two extra pages: `/ctfs.html` and `/prices.html`:
+
+![CTFs](/static/images/wolvctf-2023/website-ctfs.png)
+
+![Prices](/static/images/wolvctf-2023/website-prices.png)
+
+We've also got a footer with various social medias (which are all unsurprisingly rickrolls):
+
+![Footer](/static/images/wolvctf-2023/website-footer.png)
+
+However, on the `/ctfs.html` page, upon further inspection of the source code we find a secret page, `/data.html`, linked under the Instagram icon:
+
+<CodeBlock
+    src="wolvctf-2023/4-ctfs-html"
+    language="html"
+    fileName="ctfs.html"
+    title="Secret Page"
+    wrapLongLines={false}
+/>
+
+Accessing the secret page reveals a secret download link:
+
+![Data](/static/images/wolvctf-2023/website-data.png)
+
+Downloading the file, we find a `flaglist.xlsx`, a Microsoft Excel document. There is an issue, however — the spreadsheet is completely encrypted via password protection, and we cannot import it to Google Sheets:
+
+![Fail](/static/images/wolvctf-2023/fail.png)
+
+Let's see what we can do about this. Inspecting the source code of `/data.html`, we actually find that the file is being sourced from a GitHub account, `fl4gpwners`:
+
+<CodeBlock
+    src="wolvctf-2023/4-data-html"
+    language="html"
+    fileName="data.html"
+    title="Secret Page"
+    wrapLongLines={false}
+/>
+
+![GitHub](/static/images/wolvctf-2023/github.png)
+
+There happens to be an extraordinarily convenient `password-repo` repository on this GitHub account, which reveals a `passwords_stub.lst` file:
+
+![Password Repo](/static/images/wolvctf-2023/password-repo.png)
+
+Unfortunately, none of the passwords in this list were accepted by the spreadsheet. However, it reveals extraordinarily useful information: the password list is a stub (as hinted by part of the filename), and the real password of the spreadsheet was likely part of the original document.
+
+Let's further analyze the passwords which were given to us. We have the name of a U.S. city/town, followed by a number of some kind. Googling the city followed by the number reveals that the number is actually the population of the city which proceeds it; this means that `Concord_city` has a population of `105186`, `Baton_Rouge_city` has a population of `225128`, etc. We can use this information to our advantage to reassemble the password list, assuming it is every U.S. city/town followed by its population.
+
+Upon further research, the population of the city was discovered to be sourced from the U.S. 2020 Census. [Census.gov](https://www.census.gov/data/tables/time-series/demo/popest/2020s-total-cities-and-towns.html), their official website, has various datasets of "Annual Estimates of the Resident Population for Incorporated Places of 50,000 or More." Importing the data into Google Sheets, we can see that this was the exact dataset which was used to generate the stub:
+
+![Census](/static/images/wolvctf-2023/census.png)
+
+<Box
+    text="**Note**: See how the term “city”, “munincipality”, and “village” were lowercase in `password_stub.lst`? This is because the census uses these terms to categorize urban areas in the United States, and are not actually part of the area’s name. That is also why there are some entries which have two “cities” in their name (e.g. `Oklahoma City city`), as city is both part of the official city name and categorization."
+    type="info"
+/>
+
+Let's create a wordlist from this data. Although we can export it as a `.csv` and run a Python script to filter out the passwords, we can simply create a spreadsheet formula on another column to create the wordlist:
+
+<CodeBlock src="wolvctf-2023/4-spreadsheet-formula" language="python" />
+
+![Wordlist](/static/images/wolvctf-2023/wordlist.png)
+
+We can now copy the column into a text file, `wordlist.txt`, and use it to crack the spreadsheet. We'll be utilizing the `john` tool to achieve this.
+
+Firstly, we need the hash of the spreadsheet. We can use the [`office2john.py`](https://github.com/openwall/john/blob/bleeding-jumbo/run/office2john.py) tool to extract the proper hash:
+
+![office2john.gif](/static/images/wolvctf-2023/office2john.gif)
+
+After we pipe it into a file, `hash.txt`, we can now finally run `john`:
+
+![john.gif](/static/images/wolvctf-2023/john.gif)
+
+<Box
+    text="**Note**: For some reason, `john` when installed with `apt-get` doesn't have Office support (at least for me). Make sure that you are compiling from source if you want to use this tool (or just use `hashcat`)!"
+    type="info"
+/>
+
+The password is `Great_Falls_city_60506`, which we can now use to open the spreadsheet:
+
+![Flaglist](/static/images/wolvctf-2023/flaglist.png)
+
+<Box text="**WannaFlag IV: Exfiltration**: `wctf{y0ur_fl4gS_b3l0nG_t0_m3_;)}`" type="flag" />
+
+---
+
+<Challenge
+    title="WannaFlag V: The Mastermind"
+    solvers={['Guesslemonger', 'jktrn', 'sahuang', 'Violin']}
+    authors="dree"
+    genre="osint"
+    points="500"
+    solves="6"
+    description="Alright, I don't know about you but I'm kinda sick of this WannaFlag group. I say we take them down once and for all. Maybe there's a way to figure out who is behind the whole operation...  
+        Consider all possible leads and clues so far. This challenge may be the most complex so far.  
+        No games or programs need to be downloaded, or users messaged."
+/>
+
+This challenge remained unsolved for a long while until the first hint was released:
+
+> Perhaps we can find the Mastermind's email...
+
+This immediately gave us a starting path to work with. We can find the email address of the user from the commit history of `fl4gpwners`; I found it from the [patch](https://github.com/fl4gpwners/flaglist/commit/9c689f4c2e0582d20577a951bf72ae243d65146a.patch) of the commit which uploaded `flaglist.xlsx` to the `flaglist` repository:
+
+![Patch](/static/images/wolvctf-2023/patch.png)
+
+We've found a `civilianengi3421@proton.me` — from here, although various email OSINT strategies yielded no results (e.g. [Epieos](https://epieos.com/)), a simple keyword search on Google resulted in a [GameBanana](https://gamebanana.com/members/2530374) profile:
+
+![GameBanana](/static/images/wolvctf-2023/gamebanana.png)
+
+Let's take a look at this user. They currently have one submission, a map titled [`jump_forklift`](https://gamebanana.com/wips/74502) for the game [Team Fortress 2](https://www.teamfortress.com/):
+
+![GameBanana Submission](/static/images/wolvctf-2023/gamebanana-submission.png)
+
+Check out that screenshot: it has a snippet of a Discord link, `discord.gg/aY4Wuy...`. It seems cut off, however, so we'll have to try and recover the rest of the invite.
+
+Although we actually attempted to brute force the invite code (simply a two-character combination of `A-Z, a-z, 0-9`), we ended up completely IP rate-limited by Discord. So, like any logical person would do, I tried to open the map in the game itself.
+
+To download maps into TF2, you need to subscribe to its respective workshop on Steam. Although GameBanana never explicitly provided the Steam account for this user (or so I believe), their Steam account conveniently had the same as their GameBanana, `civilianengi3421`:
+
+![Steam](/static/images/wolvctf-2023/steam.png)
+
+Here is the [workshop](https://steamcommunity.com/sharedfiles/filedetails/?id=2945817953) item associated with `jump_forklift`:
+
+![Workshop](/static/images/wolvctf-2023/workshop.png)
+
+After subscribing to the item, I booted up TF2 for the first time in a couple of years to check out what was going on.
+
+<Box
+    text="**Note**: The challenge explicitly states that you **do not** need to download any games or programs. I just simply took the easy route and did so, anyways!"
+    type="info"
+/>
+
+We can navigate to the "Create Server" menu and select the map at the bottom:
+
+![Forklift](/static/images/wolvctf-2023/forklift.png)
+
+I entered the map and lo and behold, the Discord invite was fully visible:
+
+![Discord Link](/static/images/wolvctf-2023/discord-link.png)
+
+Let's join the server... or not, I guess:
+
+![Invalid](/static/images/wolvctf-2023/invalid.png)
+
+Although this hiccup had my team scratching their heads for a while, we eventually stumbled upon a discrepancy in the invite link presented in the screenshot and the one in the map — the screenshot's initial characters are `aY4Wuy...`, while the map has `aYWuyn...`. Let's try adding the missing character `4` to the invite link:
+
+![Valid](/static/images/wolvctf-2023/valid.png)
+
+We've successfully gained access to the server! Let's take a look around:
+
+![Discord](/static/images/wolvctf-2023/discord.png)
+
+Although there's nothing of relevance in any of the channels, we see that the server has two individuals who have interacted with each other: `rocketjumper3005` and `s0llym41n3006`, who had left the server earlier. Let's run a Sherlock search on these two users and see what we can find:
+
+<CodeBlock src="wolvctf-2023/5-sherlock-1" rawHTML terminal />
+
+<CodeBlock src="wolvctf-2023/5-sherlock-2" rawHTML terminal />
+
+Coil was a false-positive, but that Pastebin account for the second user was a hit. Visiting their account reveals an interesting [paste](https://pastebin.com/GYJvaUNe):
+
+![Paste](/static/images/wolvctf-2023/paste.png)
+
+The paste reveals that the `rocketjumper3005` user had been keeping their schoolwork in the Discord server, and it had been visible using BetterDiscord's [ShowHiddenChannels](https://github.com/JustOptimize/return-ShowHiddenChannels) plugin. The following image was attached:
+
+![Screenshot](/static/images/wolvctf-2023/screenshot.png)
+
+We're given a couple hints to pick at: `rocketjumper3005`'s real name is Corey, and he had been working on his application to "TNISO University." Let's run a Google search for "corey tniso university" on DuckDuckGo:
+
+![TNISO Search](/static/images/wolvctf-2023/tniso-search.png)
+
+We've got him! This "Corey Jacobs" actually has a [LinkedIn](https://www.linkedin.com/in/corey-jacobs-27259826a/) profile:
+
+![Corey](/static/images/wolvctf-2023/corey.png)
+
+Expanding the "About" section reveals... some interesting text:
+
+![About](/static/images/wolvctf-2023/corey2.png)
+
+A [base64 decode](https://www.base64decode.org/) reveals our final flag:
+
+<Box
+    text="**WannaFlag V: The Mastermind**: `wctf{y0u_c4n_r0ck3tjUmp_bUt_y0u_c4nt_h1d3}`"
+    type="flag"
+/>
+
+---
+
+### Afterword
+
+This was an extraordinarily well-designed challenge. A lot of OSINT nowadays isn't creative at all, and doesn't employ any sort of "out-of-the-box" thinking. The WannaFlag series, however, was my breath of fresh air — it brought in some really wacky and unique stuff, like the TF2 map/Steam (the Excel password cracking bit was more forensics, but that's just part of the nature of OSINT in general). I hope to see more of these types of challenges in the future. Here is a compiled list of tools that I used throughout the challenge — I hope you find them useful:
+
+-   [Google Lens](https://lens.google/)
+-   [Goerli Testnet Explorer](https://goerli.etherscan.io/)
+-   [Unddit](https://camas.unddit.com/)
+-   [Sherlock.py](https://github.com/sherlock-project/sherlock)
+-   [Epieos](https://epieos.com/)
+-   [Wayback Machine](https://archive.org/)

@@ -1,0 +1,5 @@
+      <h1 class="left topp">If you made it to this page, you must be an 3l1t3 h4x0r that's one of us. Nobody else wouldve sifted through those rickrolls. The stolen flag list is below. </h1>
+      <a href="https://raw.githubusercontent.com/fl4gpwners/flaglist/main/flaglist.xlsx" class="button leftmar ">List of Flags</a>
+      <p>      
+      It's encrypted so you still need the password duhhh
+      </p>

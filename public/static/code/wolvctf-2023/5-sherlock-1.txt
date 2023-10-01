@@ -1,0 +1,6 @@
+<span style="color:#DC3958">$</span> python3 sherlock.py rocketjumper3005
+[<span style="color:#277FFF"><b>*</b></span>] Checking username rocketjumper3005 on:
+
+[<span style="color:#47D4B9"><b>+</b></span>] Coil: https://coil.com/u/rocketjumper3005
+
+[<span style="color:#277FFF"><b>*</b></span>] Search completed with 1 results

@@ -1,0 +1,1 @@
+=SUBSTITUTE(SUBSTITUTE(LEFT(B5,FIND(",",B5)-1)," ","_"),",","")&"_"&SUBSTITUTE(C5,",","")
