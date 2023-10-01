@@ -103,6 +103,14 @@ span[style*='background-color: rgba(255, 0, 0, 0.1)'] > span > .linenumber:after
 }
 
 /* Overwriting pliny/search kbar */
+.bg-gray-300\/50.p-4.backdrop-blur.backdrop-filter {
+    @apply z-[2];
+}
+
+.bg-primary-600 {
+    @apply !bg-primary/25;
+}
+
 .bg-gray-300\/50 .overflow-hidden.rounded-2xl.border.border-gray-100 {
     @apply rounded-lg border-border bg-background;
 }
