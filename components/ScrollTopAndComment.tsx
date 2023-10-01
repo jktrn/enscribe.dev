@@ -29,7 +29,7 @@ const ScrollTopAndComment = () => {
                 show ? 'md:flex' : 'md:hidden'
             }`}
         >
-            {siteMetadata.comments?.provider && (
+            {/* {siteMetadata.comments?.provider && (
                 <button
                     aria-label="Scroll To Comment"
                     onClick={handleScrollToComment}
@@ -37,7 +37,7 @@ const ScrollTopAndComment = () => {
                 >
                     <MessagesSquare />
                 </button>
-            )}
+            )} */}
             <button
                 aria-label="Scroll To Top"
                 onClick={handleScrollTop}

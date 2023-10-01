@@ -24,7 +24,7 @@ This is a list of the various technologies used to build this website:
 | Deployment          | [Vercel](https://vercel.com)                                              |
 | Comments            | [Giscus](https://giscus.app/)                                             |
 | Content             | [MDX](https://mdxjs.com/) + [Contentlayer](https://www.contentlayer.dev/) |
-| Analytics           | [Cloudflare](https://www.cloudflare.com/)                                 |
+| Analytics           | [Vercel Analytics](https://vercel.com/docs/analytics)                     |
 | Styling             | [Tailwind](https://tailwindcss.com)                                       |
 | Syntax Highlighting | [Prism](https://prismjs.com/)                                             |
 | Graphics            | [Figma](https://www.figma.com/)                                           |
