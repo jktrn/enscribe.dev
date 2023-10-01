@@ -6,8 +6,8 @@ const siteMetadata = {
     description: 'Freelance frontend web development and cybersecurity shenanigans',
     language: 'en-us',
     theme: 'dark', // system, dark or light
-    siteUrl: 'https://test-blog-v2-jktrn.vercel.app/',
-    siteRepo: 'https://github.com/jktrn/enscribe.dev-v2',
+    siteUrl: 'https://enscribe.dev/',
+    siteRepo: 'https://github.com/jktrn/enscribe.dev',
     siteLogo: '/static/images/logo.png',
     socialBanner: '/static/images/twitter-card.png',
     // mastodon: 'https://mastodon.social/@mastodonuser',
