@@ -40,7 +40,7 @@ export default function Footer() {
                 </div>
                 {pathName == '/' && (
                     <div className="mb-2 text-xs text-muted-foreground/50">
-                        Background assets by{' '}
+                        Homepage assets by{' '}
                         <Link
                             href="https://freepik.com"
                             className="underline text-muted-foreground/75"
