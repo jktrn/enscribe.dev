@@ -1,0 +1,25 @@
+from pwn import remote
+import networkx as nx
+import networkx.algorithms.matching as matching
+
+def parse_input(data: str) -> list[list[int]]:
+    data = [list(map(int, x.split())) for x in data.splitlines()[:-1]]
+    [data[i].insert(i, 0) for i in range(len(data))]
+    return data
+
+def main() -> None:
+    p = remote('0.cloud.chals.io', [PORT])
+    for _ in range(3):
+        data = [[0, 0, 100, 0], [0, 100, 0, 0], [0, 100, 0, 0], [100, 0, 0, 0]]
+        data = parse_input(p.recvuntilS(b'> '))
+        G: nx.Graph = nx.Graph([(i, j, {'weight': data[i][j] + data[j][i]}) for i in range(len(data)) for j in range(len(data[i])) if i != j])
+        M: set[tuple] = matching.max_weight_matching(G, maxcardinality=True)
+        M_S: list[tuple] = sorted(list(M) + [(b, a) for a, b in M])
+        result: str = ';'.join([f'{a},{b}' for a, b in M_S])
+        print(data)
+        p.sendline(result.encode())
+
+    p.interactive()
+
+if __name__ == '__main__':
+    main()

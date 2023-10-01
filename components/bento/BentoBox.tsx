@@ -302,7 +302,6 @@ const BentoBox = ({ posts }) => {
                             blockSize={20}
                             blockRadius={7}
                             style={{
-                                width: '100%',
                                 margin: '1rem',
                                 zIndex: 1,
                             }}
