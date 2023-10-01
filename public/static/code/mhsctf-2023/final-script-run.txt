@@ -1,0 +1,5 @@
+<span style="color:#F99157">$ </span>python3 matchmaker.py
+[<span style="color:#47D4B9"><b>+</b></span>] Opening connection to 0.cloud.chals.io on port <span style="color:#696969">[PORT]</span>: Done
+[<span style="color:#277FFF"><b>*</b></span>] Switching to interactive mode
+Congratulations! Here's your valentine: valentine{l0V3_i5_1n_7he_4ir}
+[<span style="color:#277FFF"><b>*</b></span>] Got EOF while reading in interactive

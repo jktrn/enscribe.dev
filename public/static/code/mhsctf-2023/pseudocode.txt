@@ -1,0 +1,9 @@
+<span style="color:#e9d3b6"><b>procedure</b></span> <span style="color:#f06431">find_maximum_matching</span>(<span style="color:#f79a32">G</span>, <span style="color:#f79a32">M</span>)
+    <span style="color:#dc3958">P</span> = <span style="color:#f06431">find_augmenting_path</span>(<span style="color:#f79a32">G</span>, <span style="color:#f79a32">M</span>)
+    <span style="color:#e9d3b6"><b>if</b></span>  <span style="color:#dc3958">P</span> == [] <span style="color:#e9d3b6"><b>then</b></span>
+        <span style="color:#e9d3b6"><b>return</b></span> M
+    <span style="color:#e9d3b6"><b>else</b></span>
+        <span style="color:#dc3958">MP</span> = <span style="color:#f06431">augment_matching</span>(<span style="color:#f79a32">M</span>, <span style="color:#dc3958">P</span>)
+        <span style="color:#e9d3b6"><b>return</b></span> <span style="color:#f06431">find_maximum_matching</span>(<span style="color:#f79a32">G</span>, <span style="color:#dc3958">MP</span>)
+    <span style="color:#e9d3b6"><b>end if</b></span>
+<span style="color:#e9d3b6"><b>end procedure</b></span>

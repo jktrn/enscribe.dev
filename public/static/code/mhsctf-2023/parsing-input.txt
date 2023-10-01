@@ -1,0 +1,15 @@
+from pwn import remote
+
+def parse_input(data):
+    # [:-1] Removes the trailing '> '
+    data = data.splitlines()[:-1]
+    data = [x.split() for x in data]
+    table = [[int(x) for x in row] for row in data]
+    # Insert 0 at the index which the student skipped themselves
+    for i in range(len(data)):
+        table[i].insert(i, 0)
+    return table
+
+p = remote('0.cloud.chals.io', [PORT])
+data = parse_input(p.recvuntilS(b'> '))
+print(data)
