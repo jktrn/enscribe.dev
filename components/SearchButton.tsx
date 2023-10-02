@@ -20,7 +20,9 @@ const SearchButton = () => {
                     <kbd className="flex items-center justify-center !w-6 !h-6 border border-border rounded-md">
                         <Command size={12} />
                     </kbd>
-                    <kbd className="flex items-center justify-center !w-6 !h-6 p-1 border border-border rounded-md">K</kbd>
+                    <kbd className="flex items-center justify-center !w-6 !h-6 p-1 border border-border rounded-md">
+                        K
+                    </kbd>
                 </span>
             </>
         )
