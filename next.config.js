@@ -1,4 +1,5 @@
 const { withContentlayer } = require('next-contentlayer')
+const redirects = require('./data/redirects.js')
 
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
     enabled: process.env.ANALYZE === 'true',
@@ -85,6 +86,9 @@ module.exports = () => {
                     headers: securityHeaders,
                 },
             ]
+        },
+        async redirects() {
+            return redirects
         },
         webpack: (config, options) => {
             config.module.rules.push({
