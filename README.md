@@ -47,7 +47,21 @@ I'm thrilled that my work is open-source and hope that it serves as a learning t
 
 For the purposes of this license, "code" refers to the software components, configurations, layouts, styles, functions, scripts, and other functional elements of the website, excluding content-rendering scripts (e.g. MDX, Markdown, and SVG files) contained within this repository.
 
-All such code in this repository is licensed under the **Apache License 2.0**. You can use, modify, and distribute the code according to the terms of this license. A copy of the license is available in the repository or you can review it at [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0).
+All such code in this repository is licensed under the **Apache License 2.0**:
+
+> [enscribe.dev](https://enscribe.dev) © 2023 by enscribe
+>
+> Licensed under the Apache License, Version 2.0 (the "License");
+> you may not use this file except in compliance with the License.
+> You may obtain a copy of the License at
+>
+>   http://www.apache.org/licenses/LICENSE-2.0
+>
+> Unless required by applicable law or agreed to in writing, software
+> distributed under the License is distributed on an "AS IS" BASIS,
+> WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+> See the License for the specific language governing permissions and
+> limitations under the License.
 
 ### Non-Code Content
 
