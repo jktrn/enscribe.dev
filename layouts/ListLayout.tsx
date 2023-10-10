@@ -1,5 +1,6 @@
 'use client'
 
+import Image from '@/components/Image'
 import Link from '@/components/Link'
 import Tag from '@/components/Tag'
 import siteMetadata from '@/data/siteMetadata'
@@ -105,21 +106,23 @@ export default function ListLayout({
                 <ul>
                     {!filteredBlogPosts.length && 'No posts found.'}
                     {displayPosts.map((post) => {
-                        const { path, date, title, summary, tags } = post
+                        const { path, date, title, summary, tags, thumbnail } = post
                         return (
                             <li key={path} className="py-4">
-                                <article className="space-y-2 xl:grid xl:grid-cols-4 xl:items-baseline xl:space-y-0">
-                                    <dl>
-                                        <dt className="sr-only">Published on</dt>
-                                        <dd className="text-base font-medium leading-6 text-muted-foreground">
-                                            <time dateTime={date}>
-                                                {formatDate(date, siteMetadata.locale)}
-                                            </time>
-                                        </dd>
-                                    </dl>
+                                <article className="space-y-2 xl:grid xl:grid-cols-5 xl:gap-4 xl:items-start xl:space-y-0">
+                                    <div className="xl:col-span-2">
+                                        <Image
+                                            src={thumbnail || ''}
+                                            alt={`${title} thumbnail`}
+                                            height="0"
+                                            width="0"
+                                            className="w-full h-fit mb-4 rounded-md"
+                                            unoptimized
+                                        />
+                                    </div>
                                     <div className="space-y-3 xl:col-span-3">
                                         <div>
-                                            <h3 className="text-2xl font-bold leading-8 tracking-tight">
+                                            <h3 className="text-2xl font-bold leading-8 tracking-tight mb-2">
                                                 <Link href={`/${path}`} className="text-foreground">
                                                     {title}
                                                 </Link>
@@ -130,6 +133,16 @@ export default function ListLayout({
                                         </div>
                                         <div className="prose prose-sm max-w-none text-muted-foreground">
                                             {summary}
+                                        </div>
+                                        <div>
+                                            <dl>
+                                                <dt className="sr-only">Published on</dt>
+                                                <dd className="text-base font-medium leading-6 text-muted-foreground">
+                                                    <time dateTime={date}>
+                                                        {formatDate(date, siteMetadata.locale)}
+                                                    </time>
+                                                </dd>
+                                            </dl>
                                         </div>
                                     </div>
                                 </article>
