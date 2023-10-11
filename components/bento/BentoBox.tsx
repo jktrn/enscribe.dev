@@ -189,7 +189,7 @@ const BentoBox = ({ posts }) => {
                             unoptimized
                         />
                     </SilhouetteHover>
-                    <ExternalLink href={posts[0].path} />
+                    <ExternalLink href={posts[0].path} newTab={false} />
                 </div>
                 <div key="image-2">
                     <Image
