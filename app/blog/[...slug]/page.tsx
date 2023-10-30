@@ -11,6 +11,7 @@ import 'katex/dist/katex.css'
 import { Metadata } from 'next'
 import { MDXLayoutRenderer } from 'pliny/mdx-components'
 import { allCoreContent, coreContent, sortPosts } from 'pliny/utils/contentlayer'
+import { ReportView } from "./view";
 
 const defaultLayout = 'PostLayout'
 const layouts = {
@@ -121,6 +122,7 @@ export default async function Page({ params }: { params: { slug: string[] } }) {
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
             />
+            <ReportView slug={slug} />
             <Layout content={mainContent} authorDetails={authorDetails} next={next} prev={prev}>
                 <MDXLayoutRenderer code={post.body.code} components={components} toc={post.toc} />
             </Layout>
