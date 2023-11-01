@@ -13,6 +13,7 @@ import NextImage from 'next/image'
 import { CoreContent } from 'pliny/utils/contentlayer'
 import { formatDate } from 'pliny/utils/formatDate'
 import { ReactNode, useState } from 'react'
+import { Redis } from "@upstash/redis"
 
 interface LayoutProps {
     content: CoreContent<Blog>
@@ -22,8 +23,13 @@ interface LayoutProps {
     prev?: { path: string; title: string }
 }
 
-export default function PostLayout({ content, authorDetails, next, prev, children }: LayoutProps) {
+const redis = Redis.fromEnv()
+
+export const revalidate = 60
+
+export default async function PostLayout({ content, authorDetails, next, prev, children }: LayoutProps) {
     const { path, slug, tags, date, title, thumbnail } = content
+    const views = (await redis.get<number>(["pageviews", "projects", slug].join(":"))) ?? 0;
     const displayThumbnail = thumbnail ? thumbnail : '/static/images/twitter-card.png'
     const [isLoading, setIsLoading] = useState(true)
 
@@ -61,6 +67,14 @@ export default function PostLayout({ content, authorDetails, next, prev, childre
                                         <time dateTime={date}>
                                             {formatDate(date, siteMetadata.locale)}
                                         </time>
+                                        {views > 0 && (
+                                            <span className="ml-2">
+                                                <span className="text-primary">
+                                                    {views.toLocaleString()}
+                                                </span>{" "}
+                                                views
+                                            </span>
+                                        )}
                                     </dd>
                                 </div>
                             </dl>
