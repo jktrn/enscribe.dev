@@ -11,6 +11,7 @@ import 'katex/dist/katex.css'
 import { Metadata } from 'next'
 import { MDXLayoutRenderer } from 'pliny/mdx-components'
 import { allCoreContent, coreContent, sortPosts } from 'pliny/utils/contentlayer'
+
 import { ReportView } from './view'
 
 const defaultLayout = 'PostLayout'
