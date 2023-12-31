@@ -179,6 +179,10 @@ article[style*='--react-activity-calendar-level-0:#ebebeb'] {
     @apply hidden;
 }
 
+svg[width='1372'] {
+    @apply hidden;
+}
+
 /* <Box> styling */
 .my-6.rounded-lg.p-4.bg-secondary.text-center ul {
     @apply m-0;

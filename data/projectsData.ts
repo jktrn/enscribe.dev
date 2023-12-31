@@ -16,12 +16,20 @@ const projectsData = [
         href: 'https://github.com/jktrn/azusawas-gacha-world',
     },
     {
-        title: 'Screenshot Impact',
+        title: 'Catenary Maps',
+        tags: ['Web Development', 'Next.js', 'TypeScript', 'Tailwind'],
+        description:
+            'An ad-free, open-source tool for seamless public transport navigation, ingesting millions of realtime data points to streamline the public transit experience. Currently contributing frontend/UX!',
+        imgSrc: '/static/images/misc/catenary-maps.png',
+        href: 'https://github.com/CatenaryMaps',
+    },
+    {
+        title: 'abystare',
         tags: ['Web Development', 'Next.js', 'Python', 'BeautifulSoup', 'Selenium'],
         description:
-            'A WIP Next.js webapp which facilitates calculating, theorycrafting, and optimizing character builds in Genshin Impact. Includes a fleshed-out public API for data scraped from Honey Impact!',
-        imgSrc: '/static/images/misc/screenshot-impact.png',
-        href: 'https://github.com/jktrn/screenshot-impact',
+            'A WIP Next.js webapp which facilitates calculating, theorycrafting, and perfecting character builds in Genshin Impact. Includes a fleshed-out public API for data scraped from Honey Impact!',
+        imgSrc: '/static/images/misc/abystare.png',
+        href: 'https://github.com/jktrn/abystare',
     },
     {
         title: 'next.wanderer.moe',

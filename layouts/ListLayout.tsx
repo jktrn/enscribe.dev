@@ -3,13 +3,14 @@
 import Image from '@/components/Image'
 import Link from '@/components/Link'
 import Tag from '@/components/Tag'
+import { Skeleton } from '@/components/shadcn/skeleton'
 import siteMetadata from '@/data/siteMetadata'
 import type { Blog } from 'contentlayer/generated'
 import { Search } from 'lucide-react'
 import { usePathname } from 'next/navigation'
 import { CoreContent } from 'pliny/utils/contentlayer'
 import { formatDate } from 'pliny/utils/formatDate'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 interface PaginationProps {
     totalPages: number
@@ -73,10 +74,35 @@ export default function ListLayout({
     pagination,
 }: ListLayoutProps) {
     const [searchValue, setSearchValue] = useState('')
+    const [pageViews, setPageViews] = useState<Record<string, number | undefined>>({})
+
     const filteredBlogPosts = posts.filter((post) => {
         const searchContent = post.title + post.summary + post.tags?.join(' ')
         return searchContent.toLowerCase().includes(searchValue.toLowerCase())
     })
+
+    useEffect(() => {
+        posts.forEach((post) => {
+            const slug = post.slug
+            if (slug && !(slug in pageViews)) {
+                // Assume undefined means loading
+                setPageViews((prevPageViews) => ({
+                    ...prevPageViews,
+                    [slug]: undefined,
+                }))
+
+                fetch(`/api/pageviews?slug=${encodeURIComponent(slug)}`)
+                    .then((response) => response.json())
+                    .then((data) => {
+                        setPageViews((prevPageViews) => ({
+                            ...prevPageViews,
+                            [slug]: data.pageViewCount,
+                        }))
+                    })
+                    .catch((error) => console.error('Error fetching page views:', error))
+            }
+        })
+    }, [posts])
 
     // If initialDisplayPosts exist, display it if no searchValue is specified
     const displayPosts =
@@ -106,7 +132,8 @@ export default function ListLayout({
                 <ul>
                     {!filteredBlogPosts.length && 'No posts found.'}
                     {displayPosts.map((post) => {
-                        const { path, date, title, summary, tags, thumbnail } = post
+                        const { slug, path, date, title, summary, tags, thumbnail } = post
+                        const isLoadingViewCount = pageViews[slug] === undefined
                         return (
                             <li key={path} className="py-4">
                                 <article className="space-y-2 xl:grid xl:grid-cols-5 xl:gap-4 xl:items-start xl:space-y-0">
@@ -137,7 +164,20 @@ export default function ListLayout({
                                         <div>
                                             <dl>
                                                 <dt className="sr-only">Published on</dt>
-                                                <dd className="text-base font-medium leading-6 text-muted-foreground">
+                                                <dd className="flex gap-1 text-base font-medium leading-6 text-muted-foreground">
+                                                    {isLoadingViewCount ? (
+                                                        <span className="flex items-center justify-center gap-2">
+                                                            <Skeleton className="w-12 h-6" />
+                                                            <span> views</span>
+                                                        </span>
+                                                    ) : (
+                                                        <span>
+                                                            {pageViews[slug]?.toLocaleString() ||
+                                                                '...'}{' '}
+                                                            views
+                                                        </span>
+                                                    )}
+                                                    <span>・</span>
                                                     <time dateTime={date}>
                                                         {formatDate(date, siteMetadata.locale)}
                                                     </time>

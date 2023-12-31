@@ -24,9 +24,11 @@ This is a list of the various technologies used to build this website:
 | Framework           | [Next.js](https://nextjs.org/)                                            |
 | Deployment          | [Vercel](https://vercel.com)                                              |
 | Content             | [MDX](https://mdxjs.com/) + [Contentlayer](https://www.contentlayer.dev/) |
-| Analytics           | [Vercel Analytics](https://vercel.com/docs/analytics)                     |
+| Database            | [Upstash Redis](https://upstash.com/)                                     |
+| Components          | [shadcn/ui](https://ui.shadcn.com/)                                       |
 | Styling             | [Tailwind](https://tailwindcss.com)                                       |
 | Syntax Highlighting | [Prism](https://prismjs.com/)                                             |
+| Analytics           | [Vercel Analytics](https://vercel.com/docs/analytics)                     |
 | Graphics            | [Figma](https://www.figma.com/)                                           |
 
 ---
@@ -55,7 +57,7 @@ All such code in this repository is licensed under the **Apache License 2.0**:
 > you may not use this file except in compliance with the License.
 > You may obtain a copy of the License at
 >
->   http://www.apache.org/licenses/LICENSE-2.0
+> http://www.apache.org/licenses/LICENSE-2.0
 >
 > Unless required by applicable law or agreed to in writing, software
 > distributed under the License is distributed on an "AS IS" BASIS,
@@ -71,4 +73,3 @@ Any content not defined above as code, which includes but is not limited to MDX 
 [Next.js]: https://img.shields.io/github/package-json/dependency-version/jktrn/enscribe.dev/next?color=463f37&logo=next.js&logoColor=fff&style=for-the-badge
 [License]: https://img.shields.io/github/license/jktrn/enscribe.dev?color=5d5449&logo=github&logoColor=fff&style=for-the-badge
 [Non-Code License]: https://img.shields.io/badge/non--code%20license-CC%20BY--NC--ND%204.0-756a5b?style=for-the-badge&logo=creativecommons&logoColor=fff
-

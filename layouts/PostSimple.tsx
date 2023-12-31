@@ -1,6 +1,5 @@
 'use client'
 
-import Comments from '@/components/Comments'
 import Image from '@/components/Image'
 import Link from '@/components/Link'
 import PageTitle from '@/components/PageTitle'
@@ -12,7 +11,7 @@ import type { Authors, Blog } from 'contentlayer/generated'
 import NextImage from 'next/image'
 import { CoreContent } from 'pliny/utils/contentlayer'
 import { formatDate } from 'pliny/utils/formatDate'
-import { ReactNode, useState } from 'react'
+import { ReactNode, useEffect, useState } from 'react'
 
 interface LayoutProps {
     content: CoreContent<Blog>
@@ -26,6 +25,31 @@ export default function PostLayout({ content, authorDetails, next, prev, childre
     const { path, slug, tags, date, title, thumbnail } = content
     const displayThumbnail = thumbnail ? thumbnail : '/static/images/twitter-card.png'
     const [isLoading, setIsLoading] = useState(true)
+    const [pageViews, setPageViews] = useState({
+        isLoading: true,
+        count: null,
+    })
+
+    useEffect(() => {
+        setPageViews((prev) => ({ ...prev, isLoading: true }))
+        if (slug) {
+            fetch(`/api/pageviews?slug=${encodeURIComponent(slug)}`)
+                .then((response) => response.json())
+                .then((data) => {
+                    setPageViews({
+                        isLoading: false,
+                        count: data.pageViewCount.toLocaleString(),
+                    })
+                })
+                .catch((error) => {
+                    console.error('Error fetching page views:', error)
+                    setPageViews({
+                        isLoading: false,
+                        count: null,
+                    })
+                })
+        }
+    }, [slug])
 
     return (
         <>
@@ -57,7 +81,20 @@ export default function PostLayout({ content, authorDetails, next, prev, childre
                             <dl className="relative pt-10">
                                 <div>
                                     <dt className="sr-only">Published on</dt>
-                                    <dd className="text-base font-medium leading-6 text-muted-foreground">
+                                    <dd className="flex items-center justify-center text-base font-medium leading-6 text-muted-foreground">
+                                        {pageViews !== null && (
+                                            <span className="text-muted-foreground">
+                                                {pageViews.isLoading ? (
+                                                    <span className="flex items-center justify-center gap-2">
+                                                        <Skeleton className="w-12 h-6" />
+                                                        <span> views</span>
+                                                    </span>
+                                                ) : (
+                                                    `${pageViews.count} views`
+                                                )}
+                                            </span>
+                                        )}
+                                        <span className="mx-2">・</span>
                                         <time dateTime={date}>
                                             {formatDate(date, siteMetadata.locale)}
                                         </time>
