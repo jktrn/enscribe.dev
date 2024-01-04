@@ -24,12 +24,12 @@ const projectsData = [
         href: 'https://github.com/CatenaryMaps',
     },
     {
-        title: 'abystare',
+        title: 'abystar',
         tags: ['Web Development', 'Next.js', 'Python', 'BeautifulSoup', 'Selenium'],
         description:
             'A WIP Next.js webapp which facilitates calculating, theorycrafting, and perfecting character builds in Genshin Impact. Includes a fleshed-out public API for data scraped from Honey Impact!',
-        imgSrc: '/static/images/misc/abystare.png',
-        href: 'https://github.com/jktrn/abystare',
+        imgSrc: '/static/images/misc/abystar.png',
+        href: 'https://github.com/jktrn/abystar',
     },
     {
         title: 'next.wanderer.moe',
