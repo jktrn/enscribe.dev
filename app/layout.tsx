@@ -87,8 +87,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <link rel="manifest" href="/static/favicons/site.webmanifest" />
             <link rel="mask-icon" href="/static/favicons/safari-pinned-tab.svg" color="#5bbad5" />
             <meta name="msapplication-TileColor" content="#000000" />
-            <meta name="theme-color" media="(prefers-color-scheme: light)" content="#fff" />
-            <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#000" />
+            <meta name="theme-color" media="(prefers-color-scheme: light)" content="#E9D3B6" />
+            <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#E9D3B6" />
             <link rel="alternate" type="application/rss+xml" href="/feed.xml" />
             <body className="bg-background text-black antialiased dark:text-white">
                 <ThemeProviders>
