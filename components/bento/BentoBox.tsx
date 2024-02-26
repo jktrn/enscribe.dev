@@ -2,7 +2,6 @@
 
 import { lgLayout, mdLayout, smLayout } from '@/scripts/utils/bento-layouts'
 import React, { useEffect, useState } from 'react'
-import GitHubCalendar from 'react-github-calendar'
 import { Responsive, WidthProvider } from 'react-grid-layout'
 import { FaGithub, FaTwitter } from 'react-icons/fa'
 import { useLanyard } from 'react-use-lanyard'
@@ -11,6 +10,7 @@ import Image from '../Image'
 import { Skeleton } from '../shadcn/skeleton'
 import DiscordPresence from './DiscordPresence'
 import ExternalLink from './ExternalLink'
+import GithubCalendar from './GithubCalendar'
 import SilhouetteHover from './SilhouetteHover'
 import SpotifyPresence from './SpotifyPresence'
 
@@ -64,19 +64,6 @@ const BentoBox = ({ posts }) => {
             }
         }
     }, [])
-
-    const DAYS_TO_SHOW = 133
-
-    const selectLastNDays = (contributions) => {
-        const today = new Date()
-        const startDate = new Date(today)
-        startDate.setDate(today.getDate() - DAYS_TO_SHOW)
-
-        return contributions.filter((activity) => {
-            const activityDate = new Date(activity.date)
-            return activityDate >= startDate && activityDate <= today
-        })
-    }
 
     return (
         <ResponsiveGridLayout
@@ -282,27 +269,17 @@ const BentoBox = ({ posts }) => {
                     silhouetteAlt="Bento GitHub Contributions Silhouette"
                     mainSrc="/static/images/bento/bento-contributions.svg"
                     mainAlt="Bento GitHub Contributions"
-                    className="rounded-3xl object-cover z-[2]"
-                />
-                {/* i'm too lazy to make an onLoad for this */}
-                <div className={isSpotifyLoaded ? 'visible' : 'invisible'}>
-                    <GitHubCalendar
+                    className="rounded-3xl object-cover z-[2] flex items-center justify-center p-4"
+                >
+                    <GithubCalendar
                         username="jktrn"
-                        transformData={selectLastNDays}
-                        theme={{
-                            dark: ['#1A1A1A', '#E9D3B6'],
-                        }}
                         hideColorLegend
                         hideTotalCount
                         blockMargin={6}
                         blockSize={20}
                         blockRadius={7}
-                        style={{
-                            margin: '1rem',
-                            zIndex: 1,
-                        }}
                     />
-                </div>
+                </SilhouetteHover>
             </div>
         </ResponsiveGridLayout>
     )

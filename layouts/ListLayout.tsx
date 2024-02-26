@@ -91,7 +91,7 @@ export default function ListLayout({
                     [slug]: undefined,
                 }))
 
-                fetch(`/api/pageviews?slug=${encodeURIComponent(slug)}`)
+                fetch(`/api/page-views?slug=${encodeURIComponent(slug)}`)
                     .then((response) => response.json())
                     .then((data) => {
                         setPageViews((prevPageViews) => ({
