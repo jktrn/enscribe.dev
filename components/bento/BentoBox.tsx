@@ -31,7 +31,7 @@ const BentoBox = ({ posts }) => {
 
     const handleWidthChange = (width) => {
         if (width <= 500) {
-            setRowHeight(158)
+            setRowHeight(162)
         } else if (width <= 1100) {
             setRowHeight(180)
         } else {
@@ -85,12 +85,12 @@ const BentoBox = ({ posts }) => {
                 handleDragStop(element)
             }
         >
-            <div key="intro">
+            <div key="intro" className="aspect-square">
                 <Image
                     src="/static/images/bento/bento-intro-silhouette.svg"
                     alt="Bento Intro Silhouette"
                     fill
-                    className={`rounded-3xl object-cover transition-opacity duration-300 ${
+                    className={`hidden bento-md:block rounded-3xl object-cover transition-opacity duration-300 ${
                         introSilhouette ? 'opacity-100' : 'opacity-0 delay-75'
                     }`}
                     skeletonClassName="rounded-3xl"
@@ -102,7 +102,31 @@ const BentoBox = ({ posts }) => {
                     src="/static/images/bento/bento-intro.svg"
                     alt="Bento Intro"
                     fill
-                    className={`rounded-3xl object-cover transition-opacity duration-300 ${
+                    className={`hidden bento-md:block rounded-3xl object-cover transition-opacity duration-300 ${
+                        introSilhouette ? 'opacity-0 delay-75' : 'opacity-100'
+                    }`}
+                    skeletonClassName="rounded-3xl"
+                    noRelative
+                    unoptimized
+                    priority
+                />
+                <Image
+                    src="/static/images/bento/bento-intro-square-silhouette.svg"
+                    alt="Bento Intro Silhouette"
+                    fill
+                    className={`block bento-md:hidden rounded-3xl object-cover transition-opacity duration-300 ${
+                        introSilhouette ? 'opacity-100' : 'opacity-0 delay-75'
+                    }`}
+                    skeletonClassName="rounded-3xl"
+                    noRelative
+                    unoptimized
+                    priority
+                />
+                <Image
+                    src="/static/images/bento/bento-intro-square.svg"
+                    alt="Bento Intro"
+                    fill
+                    className={`block bento-md:hidden rounded-3xl object-cover transition-opacity duration-300 ${
                         introSilhouette ? 'opacity-0 delay-75' : 'opacity-100'
                     }`}
                     skeletonClassName="rounded-3xl"
@@ -159,14 +183,14 @@ const BentoBox = ({ posts }) => {
                     silhouetteAlt="Bento Latest Post Silhouette"
                     mainSrc="/static/images/bento/bento-latest-post.svg"
                     mainAlt="Bento Latest Post"
-                    className="rounded-3xl object-cover"
+                    className="rounded-3xl object-cover flex items-center bento-md:pl-1 bento-lg:pl-3"
                 >
                     <Image
                         src={posts[0].images[0]}
                         alt={posts[0].title}
                         width={0}
                         height={0}
-                        className="m-2 w-[80%] rounded-2xl border border-border md:m-3 lg:m-4"
+                        className="m-2 w-[80%] rounded-2xl border border-border"
                         skeletonClassName="rounded-3xl"
                         noRelative
                         unoptimized

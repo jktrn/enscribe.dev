@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import React, { FunctionComponent, useCallback, useEffect, useState } from 'react'
 import Calendar, { type Props as ActivityCalendarProps } from 'react-activity-calendar'
 
@@ -43,7 +44,20 @@ const GithubCalendar: FunctionComponent<Props> = ({ username, ...props }) => {
     useEffect(fetchData, [fetchData])
 
     if (error) {
-        return <div>Fetch failed! Contact @jktrn immediately.</div>
+        return (
+            <div className="flex flex-col items-center justify-center gap-4">
+                <Image
+                    src="/static/images/bento/bento-discord-futon.svg"
+                    alt="Error"
+                    width={0}
+                    height={0}
+                    className="w-24 bento-lg:w-48 h-auto"
+                />
+                <p className="text-center w-48 bento-lg:w-64 text-muted-foreground text-sm">
+                    This component is down. Please email me!
+                </p>
+            </div>
+        )
     }
 
     if (loading || !data) {
