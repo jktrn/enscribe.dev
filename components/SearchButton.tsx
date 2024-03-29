@@ -18,6 +18,7 @@ const SearchButton = () => {
                 aria-label="Search"
                 variant="ghost"
                 className="px-2"
+                title="Search"
                 onClick={() => query.toggle()}
             >
                 <Search />

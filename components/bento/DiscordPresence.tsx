@@ -33,7 +33,7 @@ const DiscordPresence = ({ lanyard, onLoad }) => {
 
     return (
         <>
-            <div className="hidden bento-lg:relative w-full h-full bento-lg:flex flex-col">
+            <div className="flex bento-md:hidden bento-lg:relative bento-lg:flex w-full h-full flex-col">
                 <div className="absolute top-5 left-4">
                     <div className="relative">
                         <Image
@@ -69,7 +69,7 @@ const DiscordPresence = ({ lanyard, onLoad }) => {
                 <div className="bg-tertiary/50 w-full h-[80px] rounded-t-3xl flex-shrink-0" />
                 <div className="m-3 flex flex-col h-full gap-3">
                     <div className="h-6 flex-shrink-0">
-                        <div className="bg-tertiary/50 rounded-lg w-[40%] h-full ml-auto">
+                        <div className="bg-tertiary/50 rounded-lg w-fit h-full ml-auto flex items-center">
                             <Image
                                 src="/static/images/bento/bento-discord-badges.svg"
                                 alt="Discord Badges"
@@ -124,7 +124,7 @@ const DiscordPresence = ({ lanyard, onLoad }) => {
                                 </div>
                             </>
                         ) : (
-                            <div className="flex flex-col items-center justify-center w-full h-full">
+                            <div className="flex flex-col items-center justify-center w-full h-full gap-1">
                                 <Image
                                     src="/static/images/bento/bento-discord-futon.svg"
                                     alt="No Status Image"
@@ -132,18 +132,19 @@ const DiscordPresence = ({ lanyard, onLoad }) => {
                                     height={0}
                                     className="h-full w-fit rounded-lg"
                                 />
+                                <div className="text-[10px] text-muted-foreground">No status!</div>
                             </div>
                         )}
                     </div>
                 </div>
             </div>
-            <div className="relative w-full h-full flex flex-col bento-lg:hidden">
+            <div className="hidden bento-md:flex bento-md:relative bento-lg:hidden w-full h-full flex-col">
                 <div className="flex flex-col h-full gap-2 m-2 justify-between">
                     <div className="flex gap-2 items-center">
                         <div className="flex-shrink-0">
                             <div className="relative">
                                 <Image
-                                    className="bento-sm:w-[55px] bento-sm:h-[55px] bento-md:w-[70px] bento-md:h-[70px] rounded-full grayscale"
+                                    className="w-[55px] h-[55px] bento-md:w-[70px] bento-md:h-[70px] rounded-full grayscale"
                                     src={`https://api.lanyard.rest/${lanyard.data.discord_user.id}.png`}
                                     alt="Discord Avatar"
                                     width={96}
@@ -233,6 +234,7 @@ const DiscordPresence = ({ lanyard, onLoad }) => {
                                     height={0}
                                     className="h-full w-fit rounded-lg"
                                 />
+                                <div className="text-[10px] text-muted-foreground">No status!</div>
                             </div>
                         )}
                     </div>
