@@ -58,7 +58,7 @@ const CodeBlock: FC<CodeBlockProps> = ({
     const { code, loading } = useFetchData(src)
     const textInput = useRef(null)
     const [hovered, onEnter, onExit] = useHover()
-    const [copied, onCopy] = useCopy(textInput)
+    const [copied, onCopy] = useCopy(code)
 
     const preStyles: React.CSSProperties = {
         ...(scrollable ? { maxHeight: '500px', overflowY: 'auto' } : {}),
@@ -250,11 +250,11 @@ const useHover = (): [
     return [hovered, onEnter, onExit]
 }
 
-const useCopy = (textInput) => {
+const useCopy = (code) => {
     const [copied, setCopied] = useState(false)
     const onCopy = () => {
         setCopied(true)
-        navigator.clipboard.writeText(textInput.current.textContent)
+        navigator.clipboard.writeText(code)
         setTimeout(() => {
             setCopied(false)
         }, 2000)
