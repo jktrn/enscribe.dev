@@ -14,11 +14,17 @@ images: ['/static/images/picoctf-2022/buffer-overflow/banner.webp']
 layout: PostSimple
 ---
 
-### Intro
+## Intro
 
 This is a writeup for the buffer overflow series during the **picoCTF 2022** competition. This was arguably my favorite set of challenges, as beforehand I'd never stepped into the realm of binary exploitation/pwn. I learned a lot from this, so I highly recommend solving it by yourself before referencing this document. Cheers!
 
 ---
+
+<div className="invisible !h-0">
+
+## Buffer overflow 0
+
+</div>
 
 <Challenge
     title="Buffer overflow 0"
@@ -72,7 +78,7 @@ Let's check out our source code:
 
 In the `vuln()` function, we see that once again, the `gets()` function is being used. However, instead of triggering a segmentation fault like Buffer overflow 0, we will instead utilize its vulnerability to write our own addresses onto the stack, changing the return address to `win()` instead.
 
-### I: Explaining the Stack 💬
+### I: Explaining the Stack
 
 Before we get into the code, we need to figure out how to write our own addresses to the stack. Let's start with a visual:
 
@@ -86,7 +92,7 @@ We can "smash the stack" by exploiting the `gets()` function. If we pass in a la
 
 If we are deliberate of the characters we pass into `gets()`, we will be able to insert a new address to overwrite the return address to `win()`. Let's try!
 
-### II: Smashing the Stack 🔨
+### II: Smashing the Stack
 
 To start, we first need to figure out our "offset". The offset is the distance, in characters, between the beginning of the buffer and the position of the `$eip`. This can be visualized with the `gdb-gef` utility by setting a breakpoint (a place to pause the runtime) in the `main()` function:
 
@@ -98,7 +104,7 @@ Analyzing this breakpoint, if we look at the arrow on the assembly code, we can 
 
 Look what happened: our program threw a SIGSEGV (segmentation) fault, as it is trying to reference the address `0x41414141`, which doesn't exist! This is because our `$eip` was overwritten by all our `A`s (`0x41` in hex = `A` in ASCII).
 
-### III: Finessing the Stack 🛠️
+### III: Finessing the Stack
 
 Although we've managed to smash the stack, we still don't know the offset (**how many** `A`s we need to pass in order to reach the `$eip`). To solve this problem, we can use the pwntools `cyclic` command, which creates a string with a recognizable cycling pattern for it to identify:
 
@@ -131,7 +137,7 @@ Let's try running the script on the server:
 
 We have completed our first `ret2win` buffer overflow on a x32 binary! Yet, this is just the beginning. How about we spice things up a little bit?
 
-### IV: Automating the Stack 🔧
+### IV: Automating the Stack
 
 Although the concept of buffer overflows can seem daunting to newcomers, experienced pwners will often find these sorts of challenges trivial, and don't want to spend the effort manually finding offsets and addresses just to send the same type of payload. This is where our best friend comes in: **pwntools** helper functions and automation! Let's start with the first part - the `$eip` offset for x32 binaries.
 
@@ -168,6 +174,12 @@ We've successfully automated a solve on a simple x32 buffer overflow!
 
 ---
 
+<div className="invisible !h-0">
+
+## Buffer overflow 2
+
+</div>
+
 <Challenge
     title="Buffer overflow 2"
     authors={['Sanjay C.', 'Palash Oswal']}
@@ -197,7 +209,7 @@ Looking at the `win()` function, we can see that two arguments are required that
 
 The goal is simple: call `win(0xCAFEF00D, 0xF00DF00D)`! We'll be doing it the hard way (for a learning experience), in addition to a more advanced easy way. Let's get started.
 
-### I: The Hard Way 🐢
+### I: The Hard Way
 
 We can apply a lot from what we learned in Buffer overflow 1. The first thing we should do is find the offset, which requires no hassle with pwntools helpers! Although we'll get actual number here, I won't include it in the final script for the sake of not leaving out any steps. Simply segfault the process with a cyclic string, read the core dump's fault address (`$eip`) and throw it into `cyclic_find()`:
 
@@ -215,7 +227,7 @@ Let's run it on the remote server:
 
 <CodeBlock src="picoctf-2022/buffer-overflow/bo2-run" rawHTML terminal />
 
-### II: The Easy Way 🐇
+### II: The Easy Way
 
 But... what if you wanted to be an even **more** lazy pwner? Well, you're in luck, because I present to you: the **[pwntools ROP object](https://docs.pwntools.com/en/stable/rop/rop.html)**! By throwing our elf object into `ROP()` it transforms, and we can use it to automatically call functions and build chains! Here it is in action:
 
@@ -228,6 +240,12 @@ Let's run it on the remote server:
 We've successfully called a function with arguments through buffer overflow!
 
 ---
+
+<div className="invisible !h-0">
+
+## Buffer overflow 3
+
+</div>
 
 <Challenge
     title="Buffer overflow 3"
@@ -246,7 +264,7 @@ We've successfully called a function with arguments through buffer overflow!
 
 <CodeBlock src="picoctf-2022/buffer-overflow/bo3-checksec" rawHTML terminal />
 
-### I: Finding the Canary 🐦
+### I: Finding the Canary
 
 So, Dr. Oswal apparently implemented a [stack canary](https://www.sans.org/blog/stack-canaries-gingerly-sidestepping-the-cage/), which is just a **dynamic value** appended to binaries during compilation. It helps detect and mitigate stack smashing attacks, and programs can terminate if they detect the canary being overwritten. Yet, `checksec` didn't find a canary. That's a bit suspicious... but let's check out our source code first:
 
@@ -266,7 +284,7 @@ However, if we theoretically overwrite the canary with a single correct byte, `m
 
 ![memcmp2](/static/images/picoctf-2022/buffer-overflow/memcmp2.svg)
 
-### II: Bypassing the Canary 💨
+### II: Bypassing the Canary
 
 We can now start writing our script! My plan is to loop through all printable characters for each canary byte, which can be imported from `string`. Let's include that in our pwn boilerplate alongside a simple function that allows us to swap between a local and remote instance:
 

@@ -57,6 +57,7 @@
         "remark-gfm": "^3.0.1",
         "remark-html": "^16.0.1",
         "remark-math": "^5.1.1",
+        "slugify": "^1.6.6",
         "tailwind-merge": "^1.14.0",
         "tailwindcss": "^3.3.3",
         "tailwindcss-animate": "^1.0.7",

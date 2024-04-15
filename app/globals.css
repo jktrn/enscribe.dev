@@ -187,3 +187,28 @@ svg[width='1372'] {
 .my-6.rounded-lg.p-4.bg-secondary.text-center ul {
     @apply m-0;
 }
+
+/* Table of Contents styling */
+/* Courtesy Gilles Castel (castel.dev) */
+.toc {
+    @apply hidden xl:block sticky top-16 h-0 ml-4 text-xs;
+    transform: translateX(calc(-100% - 2em)) translateY(2em);
+    width: calc(-4em - 340px + 50vw);
+}
+
+.toc ul {
+    list-style-type: none;
+    @apply mt-0;
+}
+
+.toc ul li a {
+    @apply !no-underline !text-muted-foreground;
+}
+
+.active-header {
+    @apply brightness-200 font-bold;
+}
+
+h1, h2, h3 {
+    scroll-margin-top: 6rem;
+}

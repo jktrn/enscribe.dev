@@ -10,7 +10,7 @@ authors: ['enscribe']
 layout: PostSimple
 ---
 
-### Intro
+## Intro
 
 This blog post details my design process for a beginner-friendly reverse-engineering challenge that I authored this year for [SekaiCTF 2023](https://ctftime.org/event/1923/)——a fully functional, hackable replica of Project Sekai's "gacha" system. Here is a snippet of the challenge, featured in the CTF's first teaser:
 
@@ -71,7 +71,7 @@ Learning from feedback in our survey last year, we ([Project SEKAI CTF](https://
 
 Combined with the fact we occasionally attract players from the Project Sekai community (a community which has absolutely nothing to do with cybersecurity), we decided that it would be best to design a beginner-friendly, eye-candy challenge that would attract a newer playerbase to register for our CTF and try the introductory challenges. This was a perfect opportunity for us to clone an aspect of the game that inspired our entire CTF theme, and to implement it in a way that would be engaging and educational for newer players. A Unity reverse engineering challenge would be the perfect fit, as plenty of Unity game-hacking resources exist online, and compiled Unity bundles are trivial to reverse-engineer and modify.
 
-### Designing the Challenge: Brainstorming
+## Designing the Challenge: Brainstorming
 
 Although "cloning" the game and its functionality might not be too brain-rotting of a process, we still have to design the challenge to be reverse-engineerable. Me and [@sahuang](https://twitter.com/sahuang97) ended up creating a design document which overviewed the challenge's functionality, and the general path needed to take in order to solve it; here's a TL;DR of the key points with some visuals.
 
@@ -113,7 +113,7 @@ Here's a verbose `curl` which demonstrates the request and response (of course, 
 
 This was all of the planning and designing that went into the actual challenge structure itself. It's purposefully simple to make the reverse-engineering process as straightforward as possible, and to make the challenge more beginner-friendly. We can now go over how I created the backend server for the challenge.
 
-### Implementing the Challenge: Backend
+## Implementing the Challenge: Backend
 
 Since I'm really comfortable with vanilla TypeScript, I decided that it'd be best to use it to write the backend server (contrary to the typical Python Flask server in CTFs).
 
@@ -165,7 +165,7 @@ Beautiful! We finished off the backend by deploying to [Cloudzy](https://cloudzy
 
 Let's talk about the Unity graphics next.
 
-### Replicating UI Elements with Figma
+## Replicating UI Elements with Figma
 
 I wanted to make the game look as polished and as similar to the real product as possible, so I began by recreating and grabbing all of the assets that the game used in the gacha page. I found a bunch of YouTube videos which provided a nice overview of what the in-game screen looked like:
 
@@ -202,7 +202,7 @@ Of course, the [Internet Archive](https://archive.org/download/Fontworks/) has a
 
 All elements that I were unable to recreate due to complexity (like the character attribute icons, star rarities, banner logos, etc.) I grabbed from online wikis (e.g. [Fandom](https://projectsekai.fandom.com/wiki/Project_SEKAI_Wiki), [Sekaipedia](https://www.sekaipedia.org/wiki/Category:Game_assets)) of the game. With this undoubtedly important step out of the way, let's talk about the Unity game itself.
 
-### Implementing the Challenge: Unity
+## Implementing the Challenge: Unity
 
 Of course, I'm no professional Unity game developer——I've only ever made a few major 2D projects in the past, and I've only touched the engine's 3D components before once (my Unity challenge from last year, [reverse/Perfect Match X-treme](https://github.com/project-sekai-ctf/sekaictf-2022/tree/main/reverse/perfect-match-xtreme/Challenge)). However, I was confident that I would be able to emulate the appearance and functionality of the gacha system with a bit of graphic design knowledge and some janky code.
 
@@ -446,7 +446,7 @@ These two scripts were adopted from the [`wmjoers/CameraScaler`](https://github.
 
 Since we have a lot of context now on how the game is made and the various scripts that we need to exploit/manipulate, we can now trivially reverse-engineer the game and hack in the 4\* character. Let's get started!
 
-### Writeup
+## Writeup
 
 We're initially provided with a `dist/` folder with the following structure:
 
@@ -529,7 +529,7 @@ After fixing some minor errors, we can recompile the DLL and save it over the or
 
 ---
 
-### Afterword
+## Afterword
 
 That's about all there is left to cover in terms of the Unity project! Honestly, for a 1\* (baby difficulty) reverse-engineering challenge which could probably be solved in less than 5 minutes by an experienced reverse player, a lot of sweat and tears were put into this entire process——a total of 29 hours (via [WakaTime](https://wakatime.com/)) over the course of 3 weeks were spent designing, programming, and polishing. I'm really proud of the final product that I've created; you can genuinely see the overall growth from last year's challenge. I hope you enjoyed reading about the process as much as I enjoyed making it!
 
