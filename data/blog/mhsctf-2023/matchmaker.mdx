@@ -10,11 +10,17 @@ images: ['/static/images/mhsctf-2023/banner.png']
 layout: PostSimple
 ---
 
-### Intro
+## Intro
 
 I was recently invited by the academic team "DN" (the name, surprisingly, has no inappropriate connotation) to compete in Mentor High School's second CTF iteration, [MHSCTF 2023](https://ctftime.org/event/1861). Although the competition ran for 15 days, we maxed out their 11 challenges in **just under 16 hours** (ignoring solve resets) and managed to take first place. This writeup was part of the verification process, which came with prize-receiving — enjoy!
 
 ---
+
+<div className="invisible !h-0">
+
+## Matchmaker
+
+</div>
 
 <Challenge
     title="Matchmaker"
@@ -81,12 +87,20 @@ We can do a bit of analysis on what we've received so far.
 
 <div className="flex">
     <div className="flex-1">
-        The first line, `86 60 67...`, can be translated into: - Student 0 -&gt; Student 1 = 86 -
-        Student 0 -&gt; Student 2 = 60 - Student 0 -&gt; Student 3 = 67
+        The first line, `86 60 67...`, can be translated into:
+        <ul>
+            <li>Student 0 -&gt; Student 1 = 86</li>
+            <li>Student 0 -&gt; Student 2 = 60</li>
+            <li>Student 0 -&gt; Student 3 = 67</li>
+        </ul>
     </div>
     <div className="flex-1">
-        Let's do the same thing for the second line, `76 0 74...`: - Student 1 -&gt; Student 0 = 76
-        - Student 1 -&gt; Student 2 = 0 - Student 1 -&gt; Student 3 = 74
+        Let's do the same thing for the second line, `76 0 74...`:
+        <ul>
+            <li>Student 1 -&gt; Student 0 = 76</li>
+            <li>Student 1 -&gt; Student 2 = 0</li>
+            <li>Student 1 -&gt; Student 3 = 74</li>
+        </ul>
     </div>
 </div>
 
@@ -250,7 +264,7 @@ Like any other reasonable person would do if they were stuck, I asked ChatGPT-4 
         <div className="bg-green-700/25 float-right rounded p-4 text-sm relative max-h-[500px] overflow-auto">
         <p className="m-0">
 
-<p className="mt-0">
+<p className="-mt-4">
     Alright! Let's start with a simple analogy before diving into the specifics of the primal-dual
     method:
 </p>
@@ -448,7 +462,7 @@ Running the script:
 
 We've successfully performed a maximum weight matching utilizing the blossom algorithm and the primal-dual method!
 
-### Afterword
+## Afterword
 
 Wow, this challenge was definitely a rabbit hole. Even though the author never actually intended for us to go this deep into the math behind it (and for me to skip out on my Calculus classes to learn graph theory and discrete math), I really don't like ignoring concepts (or in this case, a wrapper function) simply because their prerequisite knowledge floors are either too high or too intimidating. Obviously I was a lost sheep when I was initially researching the blossom algorithm (as this is my first algo challenge, ever), but I just love the feeling when you tear through all the layers abstractions and finally get to the juicy, low-level bits.
 

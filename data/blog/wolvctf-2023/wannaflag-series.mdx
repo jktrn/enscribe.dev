@@ -10,13 +10,19 @@ authors: ['enscribe']
 layout: PostSimple
 ---
 
-### Intro
+## Intro
 
 Over the last weekend, I played in WolvSec's second CTF iteration with [Project Sekai](https://sekai.team/) — [WolvCTF 2023](https://ctftime.org/event/1866). We placed first in the open division, and throughout the solving process I became intrigued by a specific series of challenges placed under the OSINT category: **WannaFlag**. Telling a story of a supposed ransomware group which had been terrorizing the CTF community for the past several months, these series of challenges offered an opportunity for players to track down this group's means of operation. Ultimately, the goal was to find WannaFlag's kingpin through all possible methods.
 
 Project Sekai was the first to blood the entire series. Here was our thought process, notes, and conclusions.
 
 ---
+
+<div className="invisible !h-0">
+
+## Wannaflag I: An Introduction
+
+</div>
 
 <Challenge
     title="WannaFlag I: An Introduction"
@@ -85,6 +91,12 @@ A simple [base64 decode](https://www.base64decode.org/) of the exfiltrated strin
 
 ---
 
+<div className="invisible !h-0">
+
+## Wannaflag II: Payments
+
+</div>
+
 <Challenge
     title="WannaFlag II: Payments"
     authors="dree"
@@ -137,6 +149,12 @@ If you're lost, I made a visualization of the transactions which took place, hig
 
 ---
 
+<div className="invisible !h-0">
+
+## Wannaflag III: Infiltration
+
+</div>
+
 <Challenge
     title="WannaFlag III: Infiltration"
     solvers="jktrn"
@@ -177,6 +195,12 @@ We've managed to recover the flag from the first OSINT challenge, but it's actua
 <Box text="**WannaFlag III: Infiltration**: `wctf{sp1nnnNn_tH3_cUb333e3E}`" type="flag" />
 
 ---
+
+<div className="invisible !h-0">
+
+## Wannaflag IV: Exfiltration
+
+</div>
 
 <Challenge
     title="WannaFlag IV: Exfiltration"
@@ -275,6 +299,12 @@ The password is `Great_Falls_city_60506`, which we can now use to open the sprea
 <Box text="**WannaFlag IV: Exfiltration**: `wctf{y0ur_fl4gS_b3l0nG_t0_m3_;)}`" type="flag" />
 
 ---
+
+<div className="invisible !h-0">
+
+## Wannaflag V: The Mastermind
+
+</div>
 
 <Challenge
     title="WannaFlag V: The Mastermind"
@@ -378,7 +408,7 @@ A [base64 decode](https://www.base64decode.org/) reveals our final flag:
 
 ---
 
-### Afterword
+## Afterword
 
 This was an extraordinarily well-designed challenge. A lot of OSINT nowadays isn't creative at all, and doesn't employ any sort of "out-of-the-box" thinking. The WannaFlag series, however, was my breath of fresh air — it brought in some really wacky and unique stuff, like the TF2 map/Steam (the Excel password cracking bit was more forensics, but that's just part of the nature of OSINT in general). I hope to see more of these types of challenges in the future. Here is a compiled list of tools that I used throughout the challenge — I hope you find them useful:
 
