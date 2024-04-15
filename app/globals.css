@@ -137,16 +137,16 @@ span[style*='background-color: rgba(255, 0, 0, 0.1)'] > span > .linenumber:after
 } */
 
 .react-grid-item {
-    @apply flex select-none items-center rounded-3xl border border-border bg-secondary !duration-500 hover:scale-[1.025] bento-md:hover:cursor-grab bento-md:hover:shadow-lg;
-    transition:
+    @apply flex select-none items-center rounded-3xl border border-border bg-secondary;
+    /* transition:
         transform 200ms cubic-bezier(0.34, 1.56, 0.64, 1),
-        all 200ms ease;
-    transition-property: transform, left, top, width, height;
+        all 200ms ease; */
+    /* transition-property: transform, left, top, width, height; */
 }
 
-.react-draggable-dragging {
+/* .react-draggable-dragging {
     @apply !cursor-grabbing;
-}
+} */
 
 .react-grid-placeholder {
     @apply !bg-primary/75 !duration-500;
@@ -202,7 +202,7 @@ svg[width='1372'] {
 }
 
 .toc ul li a {
-    @apply !no-underline !text-muted-foreground;
+    @apply !no-underline !text-muted-foreground transition-all duration-200;
 }
 
 .active-header {
@@ -210,5 +210,5 @@ svg[width='1372'] {
 }
 
 h1, h2, h3 {
-    scroll-margin-top: 6rem;
+    @apply scroll-mt-24;
 }

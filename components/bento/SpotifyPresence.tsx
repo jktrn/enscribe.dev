@@ -58,27 +58,33 @@ const SpotifyPresence = ({ lanyard, onLoad }) => {
                     className="mb-2 w-[55%] rounded-xl border border-border grayscale"
                     unoptimized
                 />
-                <div className="flex flex-col">
-                    <span className="mb-2 flex gap-2">
-                        <Image
-                            src="/static/images/bento/bento-now-playing.svg"
-                            alt="Now playing"
-                            width={16}
-                            height={16}
-                        />
-                        {lanyard.data.listening_to_spotify ? (
-                            <span className="text-sm text-primary">Now playing...</span>
-                        ) : (
-                            <span className="text-sm text-primary">Last played...</span>
-                        )}
-                    </span>
-                    <span className="text-md mb-2 line-clamp-2 font-bold leading-none">{song}</span>
-                    <span className="line-clamp-1 w-[85%] text-xs text-muted-foreground">
-                        <span className="text-secondary-foreground font-semibold">by</span> {artist}
-                    </span>
-                    <span className="line-clamp-1 w-[85%] text-xs text-muted-foreground">
-                        <span className="text-secondary-foreground font-semibold">on</span> {album}
-                    </span>
+                <div className="overflow-scroll bento-md:overflow-hidden">
+                    <div className="flex flex-col">
+                        <span className="mb-2 flex gap-2">
+                            <Image
+                                src="/static/images/bento/bento-now-playing.svg"
+                                alt="Now playing"
+                                width={16}
+                                height={16}
+                            />
+                            {lanyard.data.listening_to_spotify ? (
+                                <span className="text-sm text-primary">Now playing...</span>
+                            ) : (
+                                <span className="text-sm text-primary">Last played...</span>
+                            )}
+                        </span>
+                        <span className="text-md mb-2 line-clamp-2 font-bold leading-none">
+                            {song}
+                        </span>
+                        <span className="line-clamp-1 w-[85%] text-xs text-muted-foreground">
+                            <span className="text-secondary-foreground font-semibold">by</span>{' '}
+                            {artist}
+                        </span>
+                        <span className="line-clamp-1 w-[85%] text-xs text-muted-foreground">
+                            <span className="text-secondary-foreground font-semibold">on</span>{' '}
+                            {album}
+                        </span>
+                    </div>
                 </div>
             </div>
             <div className="hidden bento-md:flex z-[1] bento-lg:hidden h-full w-full px-4 items-center gap-4">

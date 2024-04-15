@@ -31,7 +31,13 @@ const BentoBox = ({ posts }) => {
 
     const handleWidthChange = (width) => {
         if (width <= 500) {
-            setRowHeight(162)
+            // LOL
+            const container = document.querySelector('.react-grid-layout')
+            if (container) {
+                const containerWidth = container.clientWidth
+                const rowHeight = containerWidth / 2 - 32
+                setRowHeight(rowHeight)
+            }
         } else if (width <= 1100) {
             setRowHeight(180)
         } else {
@@ -73,6 +79,7 @@ const BentoBox = ({ posts }) => {
             breakpoints={{ lg: 1199, md: 799, sm: 374 }}
             cols={{ lg: 4, md: 4, sm: 2 }}
             rowHeight={rowHeight}
+            isDraggable={false}
             isResizable={false}
             onWidthChange={handleWidthChange}
             isBounded
@@ -142,7 +149,7 @@ const BentoBox = ({ posts }) => {
                 onMouseLeave={() => setIntroSilhouette(false)}
             >
                 <div className="relative flex h-full w-full items-center justify-center rounded-lg">
-                    <FaGithub className="absolute z-[1] text-primary w-20 h-20 bento-md:w-24 bento-md:h-24" />
+                    <FaGithub className="absolute z-[1] text-primary w-1/2 h-1/2 bento-md:w-24 bento-md:h-24" />
                     <SilhouetteHover
                         silhouetteSrc="/static/images/bento/bento-github-silhouette.svg"
                         silhouetteAlt="Bento Github Silhouette"
@@ -231,7 +238,7 @@ const BentoBox = ({ posts }) => {
                 onMouseLeave={() => setIntroSilhouette(false)}
             >
                 <div className="relative flex h-full w-full items-center justify-center rounded-lg">
-                    <FaTwitter className="absolute z-[1] text-primary w-20 h-20 bento-md:w-24 bento-md:h-24" />
+                    <FaTwitter className="absolute z-[1] text-primary w-1/2 h-1/2 bento-md:w-24 bento-md:h-24" />
                     <SilhouetteHover
                         silhouetteSrc="/static/images/bento/bento-twitter-silhouette.svg"
                         silhouetteAlt="Bento Twitter Silhouette"
