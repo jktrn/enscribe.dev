@@ -37,11 +37,12 @@ const DiscordPresence = ({ lanyard, onLoad }) => {
                 <div className="absolute top-5 left-4">
                     <div className="relative">
                         <Image
-                            className="rounded-full grayscale"
+                            className="rounded-full grayscale w-24 h-24"
                             src={`https://api.lanyard.rest/${lanyard.data.discord_user.id}.png`}
                             alt="Discord Avatar"
-                            width={96}
-                            height={96}
+                            width={0}
+                            height={0}
+                            unoptimized
                         />
                         {lanyard.data.discord_status === 'online' && (
                             <div className="absolute bottom-0 right-0 w-6 h-6 flex items-center justify-center rounded-full bg-primary border-4 border-background" />
@@ -67,7 +68,7 @@ const DiscordPresence = ({ lanyard, onLoad }) => {
                     <FaDiscord size={50} className="text-secondary p-1" />
                 </div>
                 <div className="bg-tertiary/50 w-full h-[80px] rounded-t-3xl flex-shrink-0" />
-                <div className="m-3 flex flex-col h-full gap-3">
+                <div className="m-3 flex flex-col h-full gap-3 overflow-scroll bento-md:overflow-hidden">
                     <div className="h-6 flex-shrink-0">
                         <div className="bg-tertiary/50 rounded-lg w-fit h-full ml-auto flex items-center">
                             <Image
