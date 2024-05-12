@@ -172,7 +172,7 @@ export default function PostLayout({
                     <div className="grid-rows-[auto_1fr] divide-y divide-muted-foreground pb-8 dark:divide-muted xl:divide-y-0">
                         <div className="divide-y divide-accent-foreground dark:divide-accent xl:col-span-3 xl:row-span-2 xl:pb-0">
                             <div className="prose prose-sm max-w-none pb-8 pt-10 dark:prose-invert">
-                                <div className="toc">
+                                <div className="toc not-prose">
                                     <TOCInline toc={toc} />
                                 </div>
                                 <div>{children}</div>

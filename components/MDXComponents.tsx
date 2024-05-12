@@ -1,6 +1,6 @@
+import TOCInline from '@/components/TOCInline'
 import type { MDXComponents } from 'mdx/types'
 import Pre from 'pliny/ui/Pre'
-import TOCInline from '@/components/TOCInline'
 
 import Box from './Box'
 import Challenge from './Challenge'
