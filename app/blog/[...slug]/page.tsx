@@ -124,7 +124,13 @@ export default async function Page({ params }: { params: { slug: string[] } }) {
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
             />
             <ReportView slug={slug} />
-            <Layout content={mainContent} authorDetails={authorDetails} toc={post.toc} next={next} prev={prev}>
+            <Layout
+                content={mainContent}
+                authorDetails={authorDetails}
+                toc={post.toc}
+                next={next}
+                prev={prev}
+            >
                 <MDXLayoutRenderer code={post.body.code} components={components} toc={post.toc} />
             </Layout>
         </>

@@ -191,37 +191,29 @@ svg[width='1372'] {
 /* Table of Contents styling */
 /* Courtesy Gilles Castel (castel.dev) */
 .toc {
-    @apply hidden xl:block sticky top-16 h-0 text-xs w-[calc(50vw-50%-4em)] break-words;
+    @apply sticky top-16 hidden h-0 w-[calc(50vw-50%-4em)] break-words text-xs xl:block;
     transform: translateX(calc(-100% - 2em)) translateY(2em);
 }
 
 .tocr {
-    @apply hidden xl:block sticky top-16 h-0 ml-auto mr-6 text-xs w-[calc(50vw-50%-4em)] break-words text-right;
+    @apply sticky top-16 ml-auto hidden h-0 w-[calc(50vw-50%-4em)] break-words text-right text-xs xl:block;
     transform: translateX(calc(100% + 2em)) translateY(2em);
 }
 
-.toc ul {
-    list-style-type: none;
-    @apply mt-0;
-}
-
 .toc ul li a {
-    @apply !no-underline !text-muted-foreground transition-all duration-200;
-}
-
-.tocr ul {
-    list-style-type: none;
-    @apply mt-0;
+    @apply !text-muted-foreground !no-underline transition-all duration-200;
 }
 
 .tocr ul li a {
-    @apply !no-underline !text-muted-foreground transition-all duration-200;
+    @apply !text-muted-foreground !no-underline transition-all duration-200;
 }
 
 .active-header {
-    @apply brightness-200 font-bold;
+    @apply font-bold brightness-200;
 }
 
-h1, h2, h3 {
+h1,
+h2,
+h3 {
     @apply scroll-mt-24;
 }

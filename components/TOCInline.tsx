@@ -1,5 +1,6 @@
 'use client'
 
+import { cn } from '@/scripts/utils/tailwind-helpers'
 import { Toc } from 'pliny/mdx-plugins/remark-toc-headings'
 import React, { useEffect, useState } from 'react'
 
@@ -20,6 +21,7 @@ export interface TOCInlineProps {
     collapse?: boolean
     ulClassName?: string
     liClassName?: string
+    rightAlign?: boolean
 }
 
 export interface NestedTocItem extends TocItem {
@@ -58,6 +60,7 @@ const TOCInline = ({
     collapse = false,
     ulClassName = '',
     liClassName = '',
+    rightAlign = false,
 }: TOCInlineProps) => {
     const [activeId, setActiveId] = useState<string | null>(null)
 
@@ -95,25 +98,33 @@ const TOCInline = ({
         }
     }, [])
 
-    const createList = (items: NestedTocItem[] | undefined) => {
+    const createList = (items: NestedTocItem[] | undefined, level = 0) => {
         if (!items || items.length === 0) {
             return null
         }
         return (
-            <ul className={ulClassName}>
+            <ul
+                className={ulClassName}
+                style={{
+                    [rightAlign ? 'marginRight' : 'marginLeft']: `${
+                        level == 0 ? level + 1.5 : level
+                    }rem`,
+                }}
+            >
                 {items.map((item, index) => (
                     <li key={index} className={liClassName}>
                         <a
                             href={item.url}
-                            className={
-                                item.url.substring(1, item.url.length) === activeId || item.active
-                                    ? 'active-header'
-                                    : ''
-                            }
+                            className={cn(
+                                'inline-block mb-1',
+                                (item.url.substring(1, item.url.length) === activeId ||
+                                    item.active) &&
+                                    'active-header'
+                            )}
                         >
                             {item.value}
                         </a>
-                        {createList(item.children)}
+                        {createList(item.children, level + 1)}
                     </li>
                 ))}
             </ul>
@@ -124,13 +135,25 @@ const TOCInline = ({
 
     return (
         <>
-            {!asDisclosure && <div className="ml-6 pb-2 pt-2 text-base font-bold">{title}</div>}
+            {!asDisclosure && (
+                <div
+                    className={`pb-2 pt-2 text-base font-bold ${
+                        rightAlign ? 'mr-6 text-right' : 'ml-6'
+                    }`}
+                >
+                    {title}
+                </div>
+            )}
             {asDisclosure ? (
                 <details open={!collapse}>
-                    <summary className="ml-6 pb-2 pt-2 text-xl font-bold">
+                    <summary
+                        className={`pb-2 pt-2 text-xl font-bold ${
+                            rightAlign ? 'mr-6 text-right' : 'ml-6'
+                        }`}
+                    >
                         Table of Contents
                     </summary>
-                    <div className="ml-6">{createList(nestedList)}</div>
+                    <div className={rightAlign ? 'mr-6' : 'ml-6'}>{createList(nestedList)}</div>
                 </details>
             ) : (
                 createList(nestedList)
