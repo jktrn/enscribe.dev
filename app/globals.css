@@ -191,9 +191,13 @@ svg[width='1372'] {
 /* Table of Contents styling */
 /* Courtesy Gilles Castel (castel.dev) */
 .toc {
-    @apply hidden xl:block sticky top-16 h-0 ml-4 text-xs;
+    @apply hidden xl:block sticky top-16 h-0 text-xs w-[calc(50vw-50%-4em)] break-words;
     transform: translateX(calc(-100% - 2em)) translateY(2em);
-    width: calc(-4em - 340px + 50vw);
+}
+
+.tocr {
+    @apply hidden xl:block sticky top-16 h-0 ml-auto mr-6 text-xs w-[calc(50vw-50%-4em)] break-words text-right;
+    transform: translateX(calc(100% + 2em)) translateY(2em);
 }
 
 .toc ul {
@@ -202,6 +206,15 @@ svg[width='1372'] {
 }
 
 .toc ul li a {
+    @apply !no-underline !text-muted-foreground transition-all duration-200;
+}
+
+.tocr ul {
+    list-style-type: none;
+    @apply mt-0;
+}
+
+.tocr ul li a {
     @apply !no-underline !text-muted-foreground transition-all duration-200;
 }
 

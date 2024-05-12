@@ -1,16 +1,18 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
 import { Toc } from 'pliny/mdx-plugins/remark-toc-headings'
+import React, { useEffect, useState } from 'react'
 
 type TocItem = {
     value: string
     url: string
     depth: number
+    active?: boolean
 }
 
 export interface TOCInlineProps {
     toc: Toc
+    title?: string
     fromHeading?: number
     toHeading?: number
     asDisclosure?: boolean
@@ -48,6 +50,7 @@ const createNestedList = (items: TocItem[]): NestedTocItem[] => {
 
 const TOCInline = ({
     toc,
+    title = 'Table of Contents',
     fromHeading = 1,
     toHeading = 6,
     asDisclosure = false,
@@ -102,7 +105,11 @@ const TOCInline = ({
                     <li key={index} className={liClassName}>
                         <a
                             href={item.url}
-                            className={item.url === `#${activeId}` ? 'active-header' : ''}
+                            className={
+                                item.url.substring(1, item.url.length) === activeId || item.active
+                                    ? 'active-header'
+                                    : ''
+                            }
                         >
                             {item.value}
                         </a>
@@ -117,12 +124,12 @@ const TOCInline = ({
 
     return (
         <>
-            {!asDisclosure && (
-                <div className="ml-6 pb-2 pt-2 text-base font-bold">Table of Contents</div>
-            )}
+            {!asDisclosure && <div className="ml-6 pb-2 pt-2 text-base font-bold">{title}</div>}
             {asDisclosure ? (
                 <details open={!collapse}>
-                    <summary className="ml-6 pb-2 pt-2 text-xl font-bold">Table of Contents</summary>
+                    <summary className="ml-6 pb-2 pt-2 text-xl font-bold">
+                        Table of Contents
+                    </summary>
                     <div className="ml-6">{createList(nestedList)}</div>
                 </details>
             ) : (
