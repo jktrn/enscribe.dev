@@ -1,7 +1,7 @@
 import { components } from '@/components/MDXComponents'
 import PageTitle from '@/components/PageTitle'
 import siteMetadata from '@/data/siteMetadata'
-import PostBanner from '@/layouts/PostBanner'
+import PostBare from '@/layouts/PostBare'
 import PostLayout from '@/layouts/PostLayout'
 import PostSimple from '@/layouts/PostSimple'
 import type { Authors, Blog } from 'contentlayer/generated'
@@ -18,7 +18,7 @@ const defaultLayout = 'PostLayout'
 const layouts = {
     PostSimple,
     PostLayout,
-    PostBanner,
+    PostBare,
 }
 
 export async function generateMetadata({
