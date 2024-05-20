@@ -21,7 +21,7 @@ const projectsData = [
         description:
             'An ad-free, open-source tool for seamless public transport navigation, ingesting millions of realtime data points to streamline the public transit experience. Currently contributing frontend/UX!',
         imgSrc: '/static/images/misc/catenary-maps.png',
-        href: 'https://github.com/CatenaryMaps',
+        href: 'https://github.com/CatenaryTransit',
     },
     {
         title: 'abystar',
