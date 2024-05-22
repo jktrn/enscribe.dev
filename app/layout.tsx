@@ -90,7 +90,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <meta name="theme-color" media="(prefers-color-scheme: light)" content="#E9D3B6" />
             <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#E9D3B6" />
             <link rel="alternate" type="application/rss+xml" href="/feed.xml" />
-            <body className="bg-background text-black antialiased dark:text-white">
+            <body className="bg-background pl-[calc(100vw-100%)] text-black antialiased dark:text-white">
                 <ThemeProviders>
                     <Analytics />
                     <SectionContainer>

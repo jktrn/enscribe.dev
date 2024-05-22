@@ -1,12 +1,12 @@
 import Image from 'next/image'
-import React, { useEffect } from 'react'
+import React, { useCallback, useEffect, useMemo } from 'react'
 import { FaSpotify } from 'react-icons/fa'
 import { set } from 'react-use-lanyard'
 
 import ExternalLink from './ExternalLink'
 
 const SpotifyPresence = ({ lanyard, onLoad }) => {
-    const setLastPlayed = async () => {
+    const setLastPlayed = useCallback(async () => {
         try {
             await set({
                 apiKey: process.env.NEXT_PUBLIC_LANYARD_KV_KEY!,
@@ -17,7 +17,17 @@ const SpotifyPresence = ({ lanyard, onLoad }) => {
         } catch (error) {
             console.error('Error setting KV pair:', error)
         }
-    }
+    }, [lanyard.data.spotify])
+
+    const displayData = useMemo(() => {
+        if (lanyard.data.spotify) {
+            return lanyard.data.spotify
+        }
+        if (lanyard.data.kv.spotify_last_played) {
+            return JSON.parse(lanyard.data.kv.spotify_last_played)
+        }
+        return null
+    }, [lanyard.data.spotify, lanyard.data.kv.spotify_last_played])
 
     useEffect(() => {
         if (
@@ -30,12 +40,8 @@ const SpotifyPresence = ({ lanyard, onLoad }) => {
         lanyard.data.spotify,
         lanyard.data.listening_to_spotify,
         lanyard.data.kv.spotify_last_played,
+        setLastPlayed,
     ])
-
-    let displayData = lanyard.data.spotify
-    if (!displayData && lanyard.data.kv.spotify_last_played) {
-        displayData = JSON.parse(lanyard.data.kv.spotify_last_played)
-    }
 
     useEffect(() => {
         if (displayData && onLoad) {
@@ -58,7 +64,7 @@ const SpotifyPresence = ({ lanyard, onLoad }) => {
                     className="mb-2 w-[55%] rounded-xl border border-border grayscale"
                     unoptimized
                 />
-                <div className="overflow-scroll bento-md:overflow-hidden">
+                <div className="overflow-visible">
                     <div className="flex flex-col">
                         <span className="mb-2 flex gap-2">
                             <Image
@@ -73,7 +79,7 @@ const SpotifyPresence = ({ lanyard, onLoad }) => {
                                 <span className="text-sm text-primary">Last played...</span>
                             )}
                         </span>
-                        <span className="text-md mb-2 line-clamp-2 font-bold leading-none">
+                        <span className="text-md mb-2 line-clamp-1 font-bold leading-none">
                             {song}
                         </span>
                         <span className="line-clamp-1 w-[85%] text-xs text-muted-foreground">

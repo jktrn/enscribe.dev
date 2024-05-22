@@ -1,6 +1,6 @@
-import { ComputedFields, defineDocumentType, makeSource } from 'contentlayer/source-files'
+import { ComputedFields, defineDocumentType, makeSource } from 'contentlayer2/source-files'
 import { writeFileSync } from 'fs'
-import GithubSlugger from 'github-slugger'
+import { slug } from 'github-slugger'
 import path from 'path'
 import {
     extractTocHeadings,
@@ -51,7 +51,7 @@ function createTagCount(allBlogs) {
     allBlogs.forEach((file) => {
         if (file.tags && (!isProduction || file.draft !== true)) {
             file.tags.forEach((tag) => {
-                const formattedTag = GithubSlugger.slug(tag)
+                const formattedTag = slug(tag)
                 if (formattedTag in tagCount) {
                     tagCount[formattedTag] += 1
                 } else {
@@ -145,6 +145,7 @@ export default makeSource({
             remarkImgToJsx,
         ],
         rehypePlugins: [
+            // @ts-ignore
             rehypeSlug,
             rehypeAutolinkHeadings,
             rehypeKatex,

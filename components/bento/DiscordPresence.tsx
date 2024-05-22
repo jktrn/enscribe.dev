@@ -1,29 +1,21 @@
 import Image from 'next/image'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { FaDiscord } from 'react-icons/fa'
 
 const DiscordPresence = ({ lanyard, onLoad }) => {
-    const mainActivity = lanyard.data.activities.filter(
-        (activity) => activity.type === 0 && activity.assets
-    )[0]
+    const mainActivity = useMemo(() => {
+        return lanyard.data.activities.filter(
+            (activity) => activity.type === 0 && activity.assets
+        )[0]
+    }, [lanyard.data.activities])
 
-    const hasMainActivity = !!mainActivity
+    const hasMainActivity = useMemo(() => !!mainActivity, [mainActivity])
 
-    const [elapsedTime, setElapsedTime] = useState<string>(
-        mainActivity && mainActivity.timestamps && mainActivity.timestamps.start
+    const elapsedTime = useMemo(() => {
+        return mainActivity && mainActivity.timestamps && mainActivity.timestamps.start
             ? getElapsedTime(mainActivity.timestamps.start)
             : ''
-    )
-
-    useEffect(() => {
-        if (mainActivity && mainActivity.timestamps && mainActivity.timestamps.start) {
-            const interval = setInterval(() => {
-                setElapsedTime(getElapsedTime(mainActivity.timestamps.start))
-            }, 1000)
-
-            return () => clearInterval(interval)
-        }
-    }, [mainActivity, mainActivity?.timestamps?.start])
+    }, [mainActivity])
 
     useEffect(() => {
         if (hasMainActivity && onLoad) {
