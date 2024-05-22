@@ -1,6 +1,5 @@
-const { withContentlayer } = require('next-contentlayer')
+const { withContentlayer } = require('next-contentlayer2')
 const redirects = require('./data/redirects.js')
-
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
     enabled: process.env.ANALYZE === 'true',
 })
@@ -16,7 +15,6 @@ const ContentSecurityPolicy = `
   font-src 'self' fonts.gstatic.com;
   frame-src giscus.app www.youtube.com;
 `
-
 const securityHeaders = [
     // https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP
     {
@@ -236,7 +234,6 @@ module.exports = () => {
                 test: /\.svg$/,
                 use: ['@svgr/webpack'],
             })
-
             return config
         },
     })

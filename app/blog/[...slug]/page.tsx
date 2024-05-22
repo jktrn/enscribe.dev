@@ -9,6 +9,7 @@ import { allAuthors, allBlogs } from 'contentlayer/generated'
 import 'css/prism.css'
 import 'katex/dist/katex.css'
 import { Metadata } from 'next'
+import { notFound } from 'next/navigation'
 import { MDXLayoutRenderer } from 'pliny/mdx-components'
 import { allCoreContent, coreContent, sortPosts } from 'pliny/utils/contentlayer'
 
@@ -86,16 +87,7 @@ export default async function Page({ params }: { params: { slug: string[] } }) {
     const sortedCoreContents = allCoreContent(sortPosts(allBlogs))
     const postIndex = sortedCoreContents.findIndex((p) => p.slug === slug)
     if (postIndex === -1) {
-        return (
-            <div className="mt-24 text-center">
-                <PageTitle>
-                    Under Construction{' '}
-                    <span role="img" aria-label="roadwork sign">
-                        🚧
-                    </span>
-                </PageTitle>
-            </div>
-        )
+        return notFound()
     }
 
     const prev = sortedCoreContents[postIndex + 1]
