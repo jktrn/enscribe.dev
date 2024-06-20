@@ -31,7 +31,10 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
         const hash = await generateHash(ip)
         const dedupKey = `deduplicate:${hash}:${slug}`
-        const isNew = await redis.set(dedupKey, true, { nx: true, ex: 24 * 60 * 60 })
+        const isNew = await redis.set(dedupKey, true, {
+            nx: true,
+            ex: 24 * 60 * 60,
+        })
 
         if (!isNew) {
             return new NextResponse('Duplicate request', { status: 202 })

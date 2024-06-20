@@ -96,7 +96,7 @@ export default function PostLayout({
                                             <span className="text-muted-foreground">
                                                 {pageViews.isLoading ? (
                                                     <span className="flex items-center justify-center gap-2">
-                                                        <Skeleton className="w-12 h-6" />
+                                                        <Skeleton className="h-6 w-12" />
                                                         <span> views</span>
                                                     </span>
                                                 ) : (

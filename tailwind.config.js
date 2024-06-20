@@ -24,6 +24,7 @@ module.exports = {
         extend: {
             screens: {
                 'bento-sm': '374px',
+                xs: '475px',
                 'bento-md': '799px',
                 'bento-lg': '1199px',
             },

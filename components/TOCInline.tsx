@@ -116,7 +116,7 @@ const TOCInline = ({
                         <a
                             href={item.url}
                             className={cn(
-                                'inline-block mb-1',
+                                'mb-1 inline-block',
                                 (item.url.substring(1, item.url.length) === activeId ||
                                     item.active) &&
                                     'active-header'

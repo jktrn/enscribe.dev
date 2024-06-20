@@ -43,7 +43,7 @@ export default function Footer() {
                         Homepage assets by{' '}
                         <Link
                             href="https://freepik.com"
-                            className="underline text-muted-foreground/75"
+                            className="text-muted-foreground/75 underline"
                         >
                             Freepik
                         </Link>

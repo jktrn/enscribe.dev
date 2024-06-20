@@ -217,3 +217,11 @@ h2,
 h3 {
     @apply scroll-mt-24;
 }
+
+#intro {
+    @apply bg-blue-300;
+}
+
+#bento-box:has(> #detail:hover) > #intro {
+    @apply bg-red-300;
+}
