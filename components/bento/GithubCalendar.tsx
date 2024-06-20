@@ -51,9 +51,9 @@ const GithubCalendar: FunctionComponent<Props> = ({ username, ...props }) => {
                     alt="Error"
                     width={0}
                     height={0}
-                    className="w-24 bento-lg:w-48 h-auto"
+                    className="h-auto w-24 bento-lg:w-48"
                 />
-                <p className="text-center w-48 bento-lg:w-64 text-muted-foreground text-sm">
+                <p className="w-48 text-center text-sm text-muted-foreground bento-lg:w-64">
                     This component is down. Please email me!
                 </p>
             </div>

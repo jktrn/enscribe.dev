@@ -123,7 +123,7 @@ export default function ListLayout({
                                 type="text"
                                 onChange={(e) => setSearchValue(e.target.value)}
                                 placeholder="Search articles"
-                                className="block w-full rounded-md border border-muted-foreground bg-secondary px-4 py-2 text-muted-foreground focus:border-primary focus:ring-primary dark:border-muted placeholder-muted-foreground"
+                                className="block w-full rounded-md border border-muted-foreground bg-secondary px-4 py-2 text-muted-foreground placeholder-muted-foreground focus:border-primary focus:ring-primary dark:border-muted"
                             />
                         </label>
                         <Search className="absolute right-3 top-3 h-5 w-5 text-muted-foreground" />
@@ -136,7 +136,7 @@ export default function ListLayout({
                         const isLoadingViewCount = pageViews[slug] === undefined
                         return (
                             <li key={path} className="py-4">
-                                <article className="space-y-2 xl:grid xl:grid-cols-5 xl:gap-4 xl:items-start xl:space-y-0">
+                                <article className="space-y-2 xl:grid xl:grid-cols-5 xl:items-start xl:gap-4 xl:space-y-0">
                                     <div className="xl:col-span-2">
                                         <Link href={`/${path}`}>
                                             <div className="aspect-w-16 aspect-h-9">
@@ -145,7 +145,7 @@ export default function ListLayout({
                                                     alt={`${title} thumbnail`}
                                                     height="0"
                                                     width="0"
-                                                    className="w-full h-fit mb-4 rounded-md"
+                                                    className="mb-4 h-fit w-full rounded-md"
                                                     unoptimized
                                                 />
                                             </div>
@@ -153,7 +153,7 @@ export default function ListLayout({
                                     </div>
                                     <div className="space-y-3 xl:col-span-3">
                                         <div>
-                                            <h3 className="text-2xl font-bold leading-8 tracking-tight mb-2">
+                                            <h3 className="mb-2 text-2xl font-bold leading-8 tracking-tight">
                                                 <Link href={`/${path}`} className="text-foreground">
                                                     {title}
                                                 </Link>
@@ -171,7 +171,7 @@ export default function ListLayout({
                                                 <dd className="flex gap-1 text-base font-medium leading-6 text-muted-foreground">
                                                     {isLoadingViewCount ? (
                                                         <span className="flex items-center justify-center gap-2">
-                                                            <Skeleton className="w-12 h-6" />
+                                                            <Skeleton className="h-6 w-12" />
                                                             <span> views</span>
                                                         </span>
                                                     ) : (
