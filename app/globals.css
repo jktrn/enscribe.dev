@@ -159,7 +159,7 @@
     }
 
     @media (min-width: 1280px) {
-        .bento:hover > .first:not(:hover) .silhouette {
+        .bento:hover > .first:not(:hover) .overlay {
             opacity: 1;
         }
     }
