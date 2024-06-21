@@ -24,11 +24,10 @@ const DiscordPresence = ({ lanyard }) => {
                     <div className="relative">
                         <Image
                             className="size-24 rounded-full grayscale"
-                            src="/static/images/avatar.png"
+                            src="/static/images/avatar.webp"
                             alt="Discord Avatar"
-                            width={0}
-                            height={0}
-                            unoptimized
+                            width={96}
+                            height={96}
                         />
                         {lanyard.data.discord_status === 'online' && (
                             <div className="absolute bottom-0 right-0 flex size-6 items-center justify-center rounded-full border-4 border-background bg-primary" />
@@ -60,8 +59,8 @@ const DiscordPresence = ({ lanyard }) => {
                             <Image
                                 src="/static/images/bento/bento-discord-badges.svg"
                                 alt="Discord Badges"
-                                width={0}
-                                height={0}
+                                width={104}
+                                height={24}
                                 className="w-full rounded-lg grayscale"
                             />
                         </div>
@@ -79,18 +78,16 @@ const DiscordPresence = ({ lanyard }) => {
                                     <Image
                                         src={`https://cdn.discordapp.com/app-assets/${mainActivity.application_id}/${mainActivity.assets.large_image}.png`}
                                         alt="Discord Activity Image"
-                                        width={0}
-                                        height={0}
+                                        width={80}
+                                        height={80}
                                         className="w-20 rounded-lg grayscale"
-                                        unoptimized
                                     />
                                     <Image
                                         src={`https://cdn.discordapp.com/app-assets/${mainActivity.application_id}/${mainActivity.assets.small_image}.png`}
                                         alt="Now Playing"
-                                        width={0}
-                                        height={0}
+                                        width={24}
+                                        height={24}
                                         className="absolute -bottom-1 -right-1 size-6 rounded-full border-2 border-border grayscale"
-                                        unoptimized
                                     />
                                 </div>
                                 <div className="flex flex-col">
@@ -115,8 +112,8 @@ const DiscordPresence = ({ lanyard }) => {
                                 <Image
                                     src="/static/images/bento/bento-discord-futon.svg"
                                     alt="No Status Image"
-                                    width={0}
-                                    height={0}
+                                    width={64}
+                                    height={64}
                                     className="h-full w-fit rounded-lg"
                                 />
                                 <div className="text-[10px] text-muted-foreground">No status!</div>

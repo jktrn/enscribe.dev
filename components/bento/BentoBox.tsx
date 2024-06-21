@@ -4,12 +4,12 @@ import React from 'react'
 import { FaGithub, FaTwitter } from 'react-icons/fa'
 import { useLanyard } from 'react-use-lanyard'
 
-import Image from '../Image'
+import NextImage from 'next/image'
 import DiscordPresence from './DiscordPresence'
 import ExternalLink from './ExternalLink'
 import GithubCalendar from './GithubCalendar'
 import SpotifyPresence from './SpotifyPresence'
-import Link from 'next/link'
+import { Skeleton } from '../shadcn/skeleton'
 
 const BentoBox = ({ posts }) => {
     const lanyard = useLanyard({
@@ -26,6 +26,7 @@ const BentoBox = ({ posts }) => {
                     className="first grid-item-a aspect-square rounded-3xl border bg-cover bg-center bg-no-repeat sm:aspect-[2.1/1] xl:aspect-auto"
                     role="img"
                     aria-label="Introduction"
+                    rel="preload"
                 >
                     <div className="overlay grid-item-a-silhouette size-full rounded-3xl bg-cover bg-center bg-no-repeat opacity-0 transition-opacity duration-200" />
                     <p className="sr-only">
@@ -47,20 +48,21 @@ const BentoBox = ({ posts }) => {
                 <div className="grid-item-c aspect-[1/2.1] xl:aspect-auto" aria-hidden="true" />
 
                 <div className="grid-item-d sm:aspect-square">
-                    {lanyard.data && !lanyard.isValidating && (
+                    {lanyard.data && !lanyard.isValidating ? (
                         <DiscordPresence lanyard={lanyard.data} />
+                    ) : (
+                        <Skeleton className="h-full w-full rounded-3xl" />
                     )}
                 </div>
 
                 <div className="grid-item-e relative flex aspect-[6/5] items-start overflow-hidden p-4 sm:aspect-[2.1/1] sm:items-center xl:aspect-auto">
                     <div className="overlay grid-item-e-overlay absolute inset-0 size-full rounded-3xl bg-cover bg-center bg-no-repeat transition-opacity duration-200 xl:opacity-0" />
-                    <Image
+                    <NextImage
                         src={posts[0].images[0]}
                         alt={`Featured image for the latest post: ${posts[0].title}`}
                         width={477}
                         height={251}
                         className="w-full rounded-2xl border border-border sm:ml-2 sm:w-[80%]"
-                        noRelative
                     />
                     <ExternalLink
                         href={posts[0].path}
@@ -76,8 +78,10 @@ const BentoBox = ({ posts }) => {
 
                 <div className="grid-item-g relative aspect-square">
                     <div className="overlay grid-item-g-overlay absolute inset-0 z-0 size-full rounded-3xl bg-cover bg-center bg-no-repeat transition-opacity duration-200 xl:opacity-0" />
-                    {lanyard.data && !lanyard.isValidating && (
+                    {lanyard.data && !lanyard.isValidating ? (
                         <SpotifyPresence lanyard={lanyard.data} />
+                    ) : (
+                        <Skeleton className="h-full w-full rounded-3xl" />
                     )}
                 </div>
 
@@ -95,10 +99,12 @@ const BentoBox = ({ posts }) => {
                     />
                 </div>
 
-                <div
-                    className="grid-item-j aspect-square"
-                    aria-label="Technologies used (in order of comfort): NextJS, Tailwind CSS, React, Hexo, TypeScript, Unity, C#, Python, Svelte, Astro, JavaScript, Vercel"
-                />
+                <div className="grid-item-j aspect-square">
+                    <p className="sr-only">
+                        Technologies used (in order of comfort): NextJS, Tailwind CSS, React, Hexo,
+                        TypeScript, Unity, C#, Python, Svelte, Astro, JavaScript, Vercel
+                    </p>
+                </div>
 
                 <div className="grid-item-k relative flex aspect-square items-center justify-center">
                     <div className="overlay grid-item-k-overlay absolute inset-0 size-full rounded-3xl bg-cover bg-center bg-no-repeat transition-opacity duration-200 xl:opacity-0" />
