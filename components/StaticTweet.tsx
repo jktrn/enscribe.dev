@@ -12,7 +12,6 @@ const StaticTweet = ({ avatar, username, handle, date, text, src, media, video }
                     <span className="group flex items-center gap-3">
                         <Image
                             className="!m-0 rounded-full"
-                            skeletonClassName="rounded-full"
                             src={avatar}
                             alt={`${username}'s avatar`}
                             width={48}

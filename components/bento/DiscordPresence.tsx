@@ -1,8 +1,8 @@
-import Image from 'next/image'
-import React, { useEffect, useMemo, useState } from 'react'
+import Image from '../Image'
+import React, { useMemo } from 'react'
 import { FaDiscord } from 'react-icons/fa'
 
-const DiscordPresence = ({ lanyard, onLoad }) => {
+const DiscordPresence = ({ lanyard }) => {
     const mainActivity = useMemo(() => {
         return lanyard.data.activities.filter(
             (activity) => activity.type === 0 && activity.assets
@@ -17,222 +17,109 @@ const DiscordPresence = ({ lanyard, onLoad }) => {
             : ''
     }, [mainActivity])
 
-    useEffect(() => {
-        if (hasMainActivity && onLoad) {
-            onLoad()
-        }
-    }, [hasMainActivity, onLoad])
-
     return (
         <>
-            <div className="flex bento-md:hidden bento-lg:relative bento-lg:flex w-full h-full flex-col">
-                <div className="absolute top-5 left-4">
+            <div className="relative flex h-full w-full flex-col">
+                <div className="absolute left-4 top-5">
                     <div className="relative">
                         <Image
-                            className="rounded-full grayscale w-24 h-24"
-                            src={`https://api.lanyard.rest/${lanyard.data.discord_user.id}.png`}
+                            className="size-24 rounded-full grayscale"
+                            src="/static/images/avatar.webp"
                             alt="Discord Avatar"
-                            width={0}
-                            height={0}
-                            unoptimized
+                            width={96}
+                            height={96}
                         />
                         {lanyard.data.discord_status === 'online' && (
-                            <div className="absolute bottom-0 right-0 w-6 h-6 flex items-center justify-center rounded-full bg-primary border-4 border-background" />
+                            <div className="absolute bottom-0 right-0 flex size-6 items-center justify-center rounded-full border-4 border-background bg-primary" />
                         )}
                         {lanyard.data.discord_status === 'idle' && (
-                            <div className="absolute bottom-0 right-0 w-6 h-6 rounded-full bg-primary border-4 border-background">
-                                <div className="bg-background w-[10px] h-[10px] rounded-full" />
+                            <div className="absolute bottom-0 right-0 size-6 rounded-full border-4 border-background bg-primary">
+                                <div className="size-[10px] rounded-full bg-background" />
                             </div>
                         )}
                         {lanyard.data.discord_status === 'dnd' && (
-                            <div className="absolute bottom-0 right-0 w-6 h-6 rounded-full bg-destructive flex items-center justify-center border-4 border-background">
-                                <div className="bg-background w-[11px] h-[4px] rounded-full" />
+                            <div className="absolute bottom-0 right-0 flex size-6 items-center justify-center rounded-full border-4 border-background bg-destructive">
+                                <div className="h-[4px] w-[11px] rounded-full bg-background" />
                             </div>
                         )}
                         {lanyard.data.discord_status === 'offline' && (
-                            <div className="absolute bottom-0 right-0 w-6 h-6 rounded-full bg-muted-foreground flex items-center justify-center border-4 border-background">
-                                <div className="bg-background w-2 h-2 rounded-full" />
+                            <div className="absolute bottom-0 right-0 flex size-6 items-center justify-center rounded-full border-4 border-background bg-muted-foreground">
+                                <div className="size-2 rounded-full bg-background" />
                             </div>
                         )}
                     </div>
                 </div>
-                <div className="absolute right-0 top-0 z-[1] w-14 h-14 flex items-center justify-center m-3 rounded-full bg-primary">
-                    <FaDiscord size={50} className="text-secondary p-1" />
+                <div className="absolute right-0 top-0 z-[1] m-3 flex size-14 items-center justify-center rounded-full bg-primary">
+                    <FaDiscord size={50} className="p-1 text-secondary" />
                 </div>
-                <div className="bg-tertiary/50 w-full h-[80px] rounded-t-3xl flex-shrink-0" />
-                <div className="m-3 flex flex-col h-full gap-3 overflow-scroll bento-md:overflow-hidden">
+                <div className="h-[80px] w-full flex-shrink-0 rounded-t-3xl bg-tertiary/50" />
+                <div className="m-3 flex h-full flex-col gap-3">
                     <div className="h-6 flex-shrink-0">
-                        <div className="bg-tertiary/50 rounded-lg w-fit h-full ml-auto flex items-center">
+                        <div className="ml-auto flex h-full w-fit items-center rounded-lg bg-tertiary/50">
                             <Image
                                 src="/static/images/bento/bento-discord-badges.svg"
                                 alt="Discord Badges"
-                                width={0}
-                                height={0}
+                                width={104}
+                                height={24}
                                 className="w-full rounded-lg grayscale"
                             />
                         </div>
                     </div>
-                    <div className="text-sm h-fit px-2 py-1 rounded-lg bg-tertiary/50 leading-snug">
-                        <div>{lanyard.data.discord_user.display_name}</div>
-                        <div className="text-[10px] text-muted-foreground">
+                    <div className="h-fit rounded-lg bg-tertiary/50 p-2 text-sm leading-snug">
+                        <div className="text-base">{lanyard.data.discord_user.display_name}</div>
+                        <div className="text-xs text-muted-foreground">
                             @{lanyard.data.discord_user.username}
                         </div>
                     </div>
-                    <div className="flex h-full p-2 rounded-lg bg-tertiary/50 leading-snug gap-2 items-center">
+                    <div className="flex h-full items-center gap-2 rounded-lg bg-tertiary/50 p-2 leading-snug">
                         {hasMainActivity ? (
                             <>
-                                <div className="relative">
+                                <div className="relative shrink-0">
                                     <Image
                                         src={`https://cdn.discordapp.com/app-assets/${mainActivity.application_id}/${mainActivity.assets.large_image}.png`}
                                         alt="Discord Activity Image"
-                                        width={0}
-                                        height={0}
-                                        className="w-16 rounded-lg grayscale"
-                                        unoptimized
+                                        width={80}
+                                        height={80}
+                                        className="w-20 rounded-lg grayscale"
+                                        quality={80}
                                     />
                                     <Image
                                         src={`https://cdn.discordapp.com/app-assets/${mainActivity.application_id}/${mainActivity.assets.small_image}.png`}
                                         alt="Now Playing"
-                                        width={0}
-                                        height={0}
-                                        className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full border-2 border-border grayscale"
-                                        unoptimized
+                                        width={24}
+                                        height={24}
+                                        className="absolute -bottom-1 -right-1 size-6 rounded-full border-2 border-border grayscale"
                                     />
                                 </div>
                                 <div className="flex flex-col">
-                                    <div className="text-xs leading-relaxed line-clamp-1">
+                                    <div className="line-clamp-1 text-xs leading-relaxed">
                                         {mainActivity.name}
                                     </div>
-                                    <div className="text-[10px] text-muted-foreground line-clamp-1">
+                                    <div className="line-clamp-1 text-[10px] text-muted-foreground">
                                         {mainActivity.details}
                                     </div>
-                                    <div className="text-[10px] text-muted-foreground line-clamp-1">
+                                    <div className="line-clamp-1 text-[10px] text-muted-foreground">
                                         {mainActivity.state}
                                     </div>
                                     {elapsedTime && (
-                                        <div className="text-[10px] text-muted-foreground">
+                                        <div className="text-[11px] text-muted-foreground">
                                             {elapsedTime}
                                         </div>
                                     )}
                                 </div>
                             </>
                         ) : (
-                            <div className="flex flex-col items-center justify-center w-full h-full gap-1">
+                            <div className="flex size-full flex-col items-center justify-center gap-1">
                                 <Image
                                     src="/static/images/bento/bento-discord-futon.svg"
                                     alt="No Status Image"
-                                    width={0}
-                                    height={0}
+                                    width={64}
+                                    height={64}
                                     className="h-full w-fit rounded-lg"
                                 />
                                 <div className="text-[10px] text-muted-foreground">No status!</div>
                             </div>
                         )}
-                    </div>
-                </div>
-            </div>
-            <div className="hidden bento-md:flex bento-md:relative bento-lg:hidden w-full h-full flex-col">
-                <div className="flex flex-col h-full gap-2 m-2 justify-between">
-                    <div className="flex gap-2 items-center">
-                        <div className="flex-shrink-0">
-                            <div className="relative">
-                                <Image
-                                    className="w-[55px] h-[55px] bento-md:w-[70px] bento-md:h-[70px] rounded-full grayscale"
-                                    src={`https://api.lanyard.rest/${lanyard.data.discord_user.id}.png`}
-                                    alt="Discord Avatar"
-                                    width={96}
-                                    height={96}
-                                    unoptimized
-                                />
-                                {lanyard.data.discord_status === 'online' && (
-                                    <div className="absolute -bottom-0 right-0 w-5 h-5 flex items-center justify-center rounded-full bg-primary border-4 border-background" />
-                                )}
-                                {lanyard.data.discord_status === 'idle' && (
-                                    <div className="absolute bottom-0 right-0 w-5 h-5 rounded-full bg-primary border-4 border-background">
-                                        <div className="bg-background w-[7px] h-[7px] rounded-full" />
-                                    </div>
-                                )}
-                                {lanyard.data.discord_status === 'dnd' && (
-                                    <div className="absolute bottom-0 right-0 w-5 h-5 rounded-full bg-destructive flex items-center justify-center border-4 border-background">
-                                        <div className="bg-background w-2 h-1 rounded-full" />
-                                    </div>
-                                )}
-                                {lanyard.data.discord_status === 'offline' && (
-                                    <div className="absolute bottom-0 right-0 w-5 h-5 rounded-full bg-muted-foreground flex items-center justify-center border-4 border-background">
-                                        <div className="bg-background w-[6px] h-[6px] rounded-full" />
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                        <div className="flex flex-col">
-                            <div className="text-sm leading-snug ml-1">
-                                <div>{lanyard.data.discord_user.display_name}</div>
-                                <div className="text-[10px] text-muted-foreground">
-                                    @{lanyard.data.discord_user.username}
-                                </div>
-                            </div>
-                            <Image
-                                src="/static/images/bento/bento-discord-badges.svg"
-                                alt="Discord Badges"
-                                width={0}
-                                height={0}
-                                className="h-full w-full rounded-md grayscale"
-                            />
-                        </div>
-                    </div>
-                    <div className="flex h-full py-1 px-2 bento-md:p-2 bg-tertiary/50 leading-snug gap-2 items-center rounded-2xl">
-                        {hasMainActivity ? (
-                            <>
-                                <div className="relative flex-shrink-0">
-                                    <Image
-                                        src={`https://cdn.discordapp.com/app-assets/${mainActivity.application_id}/${mainActivity.assets.large_image}.png`}
-                                        alt="Discord Activity Image"
-                                        width={0}
-                                        height={0}
-                                        className="w-16 rounded-lg grayscale"
-                                        unoptimized
-                                    />
-                                    <Image
-                                        src={`https://cdn.discordapp.com/app-assets/${mainActivity.application_id}/${mainActivity.assets.small_image}.png`}
-                                        alt="Now Playing"
-                                        width={0}
-                                        height={0}
-                                        className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full border-2 border-border grayscale"
-                                        unoptimized
-                                    />
-                                </div>
-                                <div className="flex flex-col w-full">
-                                    <div className="text-xs leading-relaxed line-clamp-1">
-                                        {mainActivity.name}
-                                    </div>
-                                    <div className="text-[10px] text-muted-foreground line-clamp-1">
-                                        {mainActivity.details}
-                                    </div>
-                                    <div className="text-[10px] text-muted-foreground line-clamp-1">
-                                        {mainActivity.state}
-                                    </div>
-                                    {elapsedTime && (
-                                        <div className="text-[10px] text-muted-foreground">
-                                            {elapsedTime}
-                                        </div>
-                                    )}
-                                </div>
-                            </>
-                        ) : (
-                            <div className="flex flex-col items-center justify-center w-full h-full">
-                                <Image
-                                    src="/static/images/bento/bento-discord-futon.svg"
-                                    alt="No Status Image"
-                                    width={0}
-                                    height={0}
-                                    className="h-full w-fit rounded-lg"
-                                />
-                                <div className="text-[10px] text-muted-foreground">No status!</div>
-                            </div>
-                        )}
-                    </div>
-                    <div className="absolute right-0 top-0 w-14 h-14 flex items-center justify-center m-3 rounded-full bg-primary">
-                        <FaDiscord size={50} className="text-secondary p-1" />
                     </div>
                 </div>
             </div>
@@ -253,9 +140,9 @@ function getElapsedTime(unixTimestamp: number): string {
 
     const seconds = Math.floor(difference / 1000)
 
-    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds
+    return `${hours.toString().padStart(2, '0')}:${minutes
         .toString()
-        .padStart(2, '0')} elapsed`
+        .padStart(2, '0')}:${seconds.toString().padStart(2, '0')} elapsed`
 }
 
 export default DiscordPresence

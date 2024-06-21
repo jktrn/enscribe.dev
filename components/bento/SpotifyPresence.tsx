@@ -1,11 +1,11 @@
-import Image from 'next/image'
+import Image from '../Image'
 import React, { useCallback, useEffect, useMemo } from 'react'
 import { FaSpotify } from 'react-icons/fa'
 import { set } from 'react-use-lanyard'
 
 import ExternalLink from './ExternalLink'
 
-const SpotifyPresence = ({ lanyard, onLoad }) => {
+const SpotifyPresence = ({ lanyard }) => {
     const setLastPlayed = useCallback(async () => {
         try {
             await set({
@@ -43,26 +43,20 @@ const SpotifyPresence = ({ lanyard, onLoad }) => {
         setLastPlayed,
     ])
 
-    useEffect(() => {
-        if (displayData && onLoad) {
-            onLoad()
-        }
-    }, [displayData, onLoad])
-
     if (!displayData) return <p>Something absolutely horrible has gone wrong</p>
 
     const { song, artist, album, album_art_url, track_id } = displayData
 
     return (
         <>
-            <div className="flex bento-md:hidden z-[1] bento-lg:flex h-full w-full flex-col justify-between p-6">
+            <div className="relative flex h-full w-full flex-col justify-between p-6">
                 <Image
                     src={album_art_url}
                     alt="Album art"
-                    width={0}
-                    height={0}
+                    width={128}
+                    height={128}
                     className="mb-2 w-[55%] rounded-xl border border-border grayscale"
-                    unoptimized
+                    quality={80}
                 />
                 <div className="overflow-visible">
                     <div className="flex flex-col">
@@ -83,54 +77,23 @@ const SpotifyPresence = ({ lanyard, onLoad }) => {
                             {song}
                         </span>
                         <span className="line-clamp-1 w-[85%] text-xs text-muted-foreground">
-                            <span className="text-secondary-foreground font-semibold">by</span>{' '}
+                            <span className="font-semibold text-secondary-foreground">by</span>{' '}
                             {artist}
                         </span>
                         <span className="line-clamp-1 w-[85%] text-xs text-muted-foreground">
-                            <span className="text-secondary-foreground font-semibold">on</span>{' '}
+                            <span className="font-semibold text-secondary-foreground">on</span>{' '}
                             {album}
                         </span>
                     </div>
                 </div>
             </div>
-            <div className="hidden bento-md:flex z-[1] bento-lg:hidden h-full w-full px-4 items-center gap-4">
-                <Image
-                    src={album_art_url}
-                    alt="Album art"
-                    width={0}
-                    height={0}
-                    className="w-32 rounded-xl border border-border grayscale"
-                    unoptimized
-                />
-                <div className="flex flex-col w-[42%]">
-                    <span className="mb-2 flex gap-2">
-                        <Image
-                            src="/static/images/bento/bento-now-playing.svg"
-                            alt="Now playing"
-                            width={16}
-                            height={16}
-                        />
-                        {lanyard.data.listening_to_spotify ? (
-                            <span className="text-sm text-primary">Now playing...</span>
-                        ) : (
-                            <span className="text-sm text-primary">Last played...</span>
-                        )}
-                    </span>
-                    <span className="text-md mb-2 line-clamp-3 font-bold leading-none">{song}</span>
-                    <span className="line-clamp-2 w-[85%] text-xs text-muted-foreground">
-                        <span className="text-secondary-foreground font-semibold">by</span> {artist}
-                    </span>
-                    <span className="line-clamp-2 w-[85%] text-xs text-muted-foreground">
-                        <span className="text-secondary-foreground font-semibold">on</span> {album}
-                    </span>
-                </div>
-            </div>
-            <div className="absolute right-0 top-0 z-[1] m-3 text-primary">
+            <div className="absolute right-0 top-0 m-3 text-primary">
                 <FaSpotify size={56} />
             </div>
             <ExternalLink
                 href={`https://open.spotify.com/track/${track_id}`}
-                className="z-[1] block"
+                aria-label="Open in Spotify"
+                title="Open in Spotify"
             />
         </>
     )

@@ -17,6 +17,8 @@ export default function Footer() {
                         <a
                             href={siteMetadata.twitter}
                             className="text-muted-foreground hover:brightness-125 dark:hover:brightness-125"
+                            aria-label="Twitter"
+                            title="Twitter (@enscry)"
                         >
                             <Twitter size={24} />
                         </a>
@@ -25,6 +27,8 @@ export default function Footer() {
                         <a
                             href={`mailto:${siteMetadata.email}`}
                             className="text-muted-foreground hover:brightness-125 dark:hover:brightness-125"
+                            aria-label="Email"
+                            title="Email (jason -at- enscribe -dot- dev)"
                         >
                             <Mail size={24} />
                         </a>
@@ -33,17 +37,19 @@ export default function Footer() {
                         <a
                             href={siteMetadata.github}
                             className="text-muted-foreground hover:brightness-125 dark:hover:brightness-125"
+                            aria-label="GitHub"
+                            title="GitHub (/jktrn)"
                         >
                             <Github size={24} />
                         </a>
                     )}
                 </div>
                 {pathName == '/' && (
-                    <div className="mb-2 text-xs text-muted-foreground/50">
+                    <div className="mb-2 text-xs text-muted-foreground">
                         Homepage assets by{' '}
                         <Link
                             href="https://freepik.com"
-                            className="underline text-muted-foreground/75"
+                            className="text-muted-foreground/75 underline"
                         >
                             Freepik
                         </Link>

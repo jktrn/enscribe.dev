@@ -48,7 +48,7 @@ const Card = ({ title, description, imgSrc, href, tags = [] }: CardProps) => (
                     {tags.map((tag, index) => (
                         <Badge
                             key={tag}
-                            className="mr-2 mb-2"
+                            className="mb-2 mr-2"
                             variant={index === 0 ? 'default' : 'outline'}
                         >
                             {tag}
