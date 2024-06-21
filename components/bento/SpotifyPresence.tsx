@@ -1,4 +1,4 @@
-import Image from 'next/image'
+import Image from '../Image'
 import React, { useCallback, useEffect, useMemo } from 'react'
 import { FaSpotify } from 'react-icons/fa'
 import { set } from 'react-use-lanyard'

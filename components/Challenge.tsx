@@ -79,7 +79,6 @@ const Challenge = ({
                             src={userAvatars[solver]}
                             alt={`${solver}'s avatar`}
                             className="!m-0 inline-block h-4 w-4 rounded-full align-middle"
-                            skeletonClassName="rounded-full"
                             width={16}
                             height={16}
                         />
@@ -137,7 +136,6 @@ const Challenge = ({
                                         src={userAvatars[solvers]}
                                         alt={`${solvers}'s avatar`}
                                         className="!m-0 inline-block h-4 w-4 rounded-full align-middle"
-                                        skeletonClassName="rounded-full"
                                         width={16}
                                         height={16}
                                     />

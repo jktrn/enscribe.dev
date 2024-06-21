@@ -40,7 +40,7 @@ const Header = () => {
                 <div className="mx-auto flex h-[60px] w-full items-center justify-between">
                     <div>
                         <Link href="/" aria-label={siteMetadata.headerTitle}>
-                            <div className="flex items-center justify-between">
+                            <div className="flex items-center justify-between rounded-full">
                                 <NextImage
                                     src="/static/images/logo.webp"
                                     alt="Logo"

@@ -1,8 +1,9 @@
 'use client'
 
-import Image from 'next/image'
+import Image from '../Image'
 import React, { FunctionComponent, useCallback, useEffect, useState } from 'react'
 import Calendar, { type Props as ActivityCalendarProps } from 'react-activity-calendar'
+import { Skeleton } from '../shadcn/skeleton'
 
 // Adopted from https://github.com/grubersjoe/react-github-calendar
 // Copyright (c) 2019 Jonathan Gruber, MIT License
@@ -27,9 +28,10 @@ async function fetchCalendarData(username: string): Promise<ApiResponse> {
 
     return data as ApiResponse
 }
+
 const GithubCalendar: FunctionComponent<Props> = ({ username, ...props }) => {
     const [data, setData] = useState<ApiResponse | null>(null)
-    const [loading, setLoading] = useState(false)
+    const [loading, setLoading] = useState(true)
     const [error, setError] = useState<Error | null>(null)
 
     const fetchData = useCallback(() => {
@@ -61,17 +63,18 @@ const GithubCalendar: FunctionComponent<Props> = ({ username, ...props }) => {
     }
 
     if (loading || !data) {
-        return
+        return <Skeleton className="size-full" />
     }
 
     return (
         <>
-            <div className="hidden sm:block">
+            <div className="m-4 hidden sm:block">
                 <Calendar
                     data={selectLastNDays(data.contributions, 133)}
                     theme={{
                         dark: ['#1A1A1A', '#E9D3B6'],
                     }}
+                    colorScheme="dark"
                     blockSize={20}
                     blockMargin={6}
                     blockRadius={7}
@@ -80,15 +83,16 @@ const GithubCalendar: FunctionComponent<Props> = ({ username, ...props }) => {
                     maxLevel={4}
                 />
             </div>
-            <div className="sm:hidden">
+            <div className="m-4 sm:hidden">
                 <Calendar
                     data={selectLastNDays(data.contributions, 60)}
                     theme={{
                         dark: ['#1A1A1A', '#E9D3B6'],
                     }}
-                    blockSize={40}
-                    blockMargin={10}
-                    blockRadius={14}
+                    colorScheme="dark"
+                    blockSize={20}
+                    blockMargin={6}
+                    blockRadius={7}
                     {...props}
                     // @ts-expect-error
                     maxLevel={4}

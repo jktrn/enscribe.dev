@@ -139,14 +139,12 @@ export default function ListLayout({
                                 <article className="space-y-2 xl:grid xl:grid-cols-5 xl:items-start xl:gap-4 xl:space-y-0">
                                     <div className="xl:col-span-2">
                                         <Link href={`/${path}`}>
-                                            <div className="aspect-w-16 aspect-h-9">
+                                            <div className="relative aspect-video">
                                                 <Image
                                                     src={thumbnail || ''}
                                                     alt={`${title} thumbnail`}
-                                                    height="0"
-                                                    width="0"
-                                                    className="mb-4 h-fit w-full rounded-md"
-                                                    unoptimized
+                                                    fill
+                                                    className="mb-4 h-fit w-full rounded-md object-contain"
                                                 />
                                             </div>
                                         </Link>
