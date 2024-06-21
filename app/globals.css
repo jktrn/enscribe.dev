@@ -259,7 +259,7 @@
             opacity: 1;
         }
         .grid-item-a-silhouette {
-            background-image: url('/static/images/bento/about-square-silhouette.webp');
+            background-image: url('/static/images/bento/about-silhouette.webp');
         }
 
         .grid-item-b {
