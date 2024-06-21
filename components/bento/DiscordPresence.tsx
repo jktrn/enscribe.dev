@@ -24,7 +24,7 @@ const DiscordPresence = ({ lanyard }) => {
                     <div className="relative">
                         <Image
                             className="size-24 rounded-full grayscale"
-                            src={`https://api.lanyard.rest/${lanyard.data.discord_user.id}.png`}
+                            src="/static/images/avatar.png"
                             alt="Discord Avatar"
                             width={0}
                             height={0}

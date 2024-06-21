@@ -27,7 +27,7 @@ const BentoBox = ({ posts }) => {
                     role="img"
                     aria-label="Introduction"
                 >
-                    <div className="overlay grid-item-a-silhouette size-full rounded-3xl opacity-0 transition-opacity duration-200" />
+                    <div className="overlay grid-item-a-silhouette size-full rounded-3xl bg-cover bg-center bg-no-repeat opacity-0 transition-opacity duration-200" />
                     <p className="sr-only">
                         Hey, I'm Jason! I'm a freelance frontend web developer and cybersecurity CTF
                         player from Los Angeles, and I go by aliases enscribe and jktrn online. I'm
