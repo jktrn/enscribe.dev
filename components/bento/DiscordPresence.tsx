@@ -1,4 +1,4 @@
-import Image from 'next/image'
+import Image from '../Image'
 import React, { useMemo } from 'react'
 import { FaDiscord } from 'react-icons/fa'
 
@@ -81,6 +81,7 @@ const DiscordPresence = ({ lanyard }) => {
                                         width={80}
                                         height={80}
                                         className="w-20 rounded-lg grayscale"
+                                        quality={80}
                                     />
                                     <Image
                                         src={`https://cdn.discordapp.com/app-assets/${mainActivity.application_id}/${mainActivity.assets.small_image}.png`}

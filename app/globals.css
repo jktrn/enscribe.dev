@@ -164,19 +164,43 @@
         }
     }
 
-    /* Grid Items */
     .grid-item-a {
         grid-area: a;
-        background-image: url('/static/images/bento/about-square.webp');
     }
-
-    .grid-item-a-silhouette {
-        background-image: url('/static/images/bento/about-square-silhouette.webp');
-    }
-
     .grid-item-b {
         grid-area: b;
-        background-image: url('/static/images/bento/details-silhouette.webp');
+    }
+    .grid-item-c {
+        grid-area: c;
+    }
+    .grid-item-d {
+        grid-area: d;
+    }
+    .grid-item-e {
+        grid-area: e;
+    }
+    .grid-item-f {
+        grid-area: f;
+    }
+    .grid-item-g {
+        grid-area: g;
+    }
+    .grid-item-h {
+        grid-area: h;
+    }
+    .grid-item-i {
+        grid-area: i;
+    }
+    .grid-item-j {
+        grid-area: j;
+    }
+    .grid-item-k {
+        grid-area: k;
+    }
+
+    /* Grid Items */
+    .grid-item-a {
+        background-image: url('/static/images/bento/about-square.webp');
     }
 
     .grid-item-b-overlay {
@@ -184,35 +208,15 @@
     }
 
     .grid-item-c {
-        grid-area: c;
         background-image: url('/static/images/bento/image-1.webp');
-    }
-
-    .grid-item-d {
-        grid-area: d;
-    }
-
-    .grid-item-e {
-        grid-area: e;
-        background-image: url('/static/images/bento/blog-square-silhouette.webp');
     }
 
     .grid-item-e-overlay {
         background-image: url('/static/images/bento/blog-square.webp');
     }
 
-    .grid-item-f {
-        grid-area: f;
-        background-image: url('/static/images/bento/contributions-square-silhouette.webp');
-    }
-
     .grid-item-f-overlay {
         background-image: url('/static/images/bento/contributions-square.webp');
-    }
-
-    .grid-item-g {
-        grid-area: g;
-        background-image: url('/static/images/bento/spotify-silhouette.webp');
     }
 
     .grid-item-g-overlay {
@@ -220,13 +224,7 @@
     }
 
     .grid-item-h {
-        grid-area: h;
         background-image: url('/static/images/bento/image-2.webp');
-    }
-
-    .grid-item-i {
-        grid-area: i;
-        background-image: url('/static/images/bento/github-silhouette.webp');
     }
 
     .grid-item-i-overlay {
@@ -234,13 +232,7 @@
     }
 
     .grid-item-j {
-        grid-area: j;
         background-image: url('/static/images/bento/technologies.webp');
-    }
-
-    .grid-item-k {
-        grid-area: k;
-        background-image: url('/static/images/bento/twitter-silhouette.webp');
     }
 
     .grid-item-k-overlay {
@@ -253,20 +245,8 @@
             background-image: url('/static/images/bento/about.webp');
         }
 
-        .grid-item-a-silhouette {
-            background-image: url('/static/images/bento/about-silhouette.webp');
-        }
-
-        .grid-item-e {
-            background-image: url('/static/images/bento/blog-silhouette.webp');
-        }
-
         .grid-item-e-overlay {
             background-image: url('/static/images/bento/blog.webp');
-        }
-
-        .grid-item-f {
-            background-image: url('/static/images/bento/contributions-silhouette.webp');
         }
 
         .grid-item-f-overlay {
@@ -278,12 +258,39 @@
         .bento:hover > *:not(.first):hover .overlay {
             opacity: 1;
         }
+        .grid-item-a-silhouette {
+            background-image: url('/static/images/bento/about-square-silhouette.webp');
+        }
+
+        .grid-item-b {
+            background-image: url('/static/images/bento/details-silhouette.webp');
+        }
+
+        .grid-item-e {
+            background-image: url('/static/images/bento/blog-silhouette.webp');
+        }
+
+        .grid-item-f {
+            background-image: url('/static/images/bento/contributions-silhouette.webp');
+        }
+
+        .grid-item-g {
+            background-image: url('/static/images/bento/spotify-silhouette.webp');
+        }
+
+        .grid-item-i {
+            background-image: url('/static/images/bento/github-silhouette.webp');
+        }
+
+        .grid-item-k {
+            background-image: url('/static/images/bento/twitter-silhouette.webp');
+        }
     }
 }
 
 @layer utilities {
     .react-activity-calendar {
-        @apply p-4 sm:scale-110;
+        @apply size-full scale-150 p-4 sm:scale-110;
     }
 
     /* Overwriting pliny/search kbar */
@@ -316,9 +323,9 @@
     }
 
     /* Hiding the react-activity-calendar skeleton */
-    article[style*='--react-activity-calendar-level-0:#ebebeb'] {
+    /* article[style*='--react-activity-calendar-level-0:#ebebeb'] {
         @apply hidden;
-    }
+    } */
 
     /* <Box> styling */
     .my-6.rounded-lg.p-4.bg-secondary.text-center ul {

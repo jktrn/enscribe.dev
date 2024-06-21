@@ -9,7 +9,6 @@ import Tag from '@/components/Tag'
 import { Skeleton } from '@/components/shadcn/skeleton'
 import siteMetadata from '@/data/siteMetadata'
 import type { Authors, Blog } from 'contentlayer/generated'
-import NextImage from 'next/image'
 import { Toc } from 'pliny/mdx-plugins'
 import { CoreContent } from 'pliny/utils/contentlayer'
 import { formatDate } from 'pliny/utils/formatDate'
@@ -33,15 +32,13 @@ export default function PostLayout({
     children,
 }: LayoutProps) {
     const { path, slug, tags, date, title, thumbnail } = content
-    const displayThumbnail = thumbnail ? thumbnail : '/static/images/twitter-card.png'
-    const [isLoading, setIsLoading] = useState(true)
+    const displayThumbnail = thumbnail || '/static/images/twitter-card.png'
     const [pageViews, setPageViews] = useState({
         isLoading: true,
         count: null,
     })
 
     useEffect(() => {
-        setPageViews((prev) => ({ ...prev, isLoading: true }))
         if (slug) {
             fetch(`/api/page-views?slug=${encodeURIComponent(slug)}`)
                 .then((response) => response.json())
@@ -71,20 +68,14 @@ export default function PostLayout({
                             <div className="w-full">
                                 <div className="relative -mx-6 mt-6 md:-mx-8">
                                     <div className="relative aspect-[1.91/1] w-full rounded-md">
-                                        <NextImage
+                                        <Image
                                             src={displayThumbnail}
                                             alt={title}
-                                            fill
-                                            className={`rounded-md object-contain ${
-                                                isLoading ? 'hidden' : ''
-                                            }`}
+                                            width={784}
+                                            height={410}
+                                            className="rounded-md"
                                             priority
-                                            unoptimized
-                                            onLoad={() => setIsLoading(false)}
                                         />
-                                        {isLoading && (
-                                            <Skeleton className="absolute left-0 top-0 h-full w-full rounded-md object-contain" />
-                                        )}
                                     </div>
                                 </div>
                             </div>
@@ -92,18 +83,14 @@ export default function PostLayout({
                                 <div>
                                     <dt className="sr-only">Published on</dt>
                                     <dd className="flex items-center justify-center text-base font-medium leading-6 text-muted-foreground">
-                                        {pageViews !== null && (
-                                            <span className="text-muted-foreground">
-                                                {pageViews.isLoading ? (
-                                                    <span className="flex items-center justify-center gap-2">
-                                                        <Skeleton className="h-6 w-12" />
-                                                        <span> views</span>
-                                                    </span>
-                                                ) : (
-                                                    `${pageViews.count} views`
-                                                )}
+                                        {pageViews.isLoading ? (
+                                            <span className="flex items-center justify-center gap-2">
+                                                <Skeleton className="h-6 w-12" />
+                                                <span> views</span>
                                             </span>
-                                        )}
+                                        ) : pageViews.count !== null ? (
+                                            <span>{pageViews.count} views</span>
+                                        ) : null}
                                         <span className="mx-2">・</span>
                                         <time dateTime={date}>
                                             {formatDate(date, siteMetadata.locale)}
@@ -139,7 +126,6 @@ export default function PostLayout({
                                                         height={38}
                                                         alt="avatar"
                                                         className="h-10 w-10 rounded-full"
-                                                        skeletonClassName="rounded-full"
                                                     />
                                                 )}
                                                 <dl className="whitespace-nowrap text-sm font-medium leading-5">
@@ -178,14 +164,6 @@ export default function PostLayout({
                                 <div>{children}</div>
                             </div>
                         </div>
-                        {/* {siteMetadata.comments && (
-                            <div
-                                className="pb-6 pt-6 text-center text-muted-foreground"
-                                id="comment"
-                            >
-                                <Comments slug={slug} />
-                            </div>
-                        )} */}
                         <footer>
                             <div className="flex flex-col text-sm font-medium sm:flex-row sm:justify-between sm:text-base">
                                 {prev && prev.path && (
