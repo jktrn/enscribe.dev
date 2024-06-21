@@ -1,7 +1,6 @@
 'use client'
 
 import headerNavLinks from '@/data/headerNavLinks'
-import Logo from '@/data/logo.png'
 import siteMetadata from '@/data/siteMetadata'
 import { cn } from '@/scripts/utils/tailwind-helpers'
 import NextImage from 'next/image'
@@ -43,7 +42,7 @@ const Header = () => {
                         <Link href="/" aria-label={siteMetadata.headerTitle}>
                             <div className="flex items-center justify-between">
                                 <NextImage
-                                    src={Logo}
+                                    src="/static/images/logo.webp"
                                     alt="Logo"
                                     width="40"
                                     height="40"
