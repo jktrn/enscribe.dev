@@ -5,7 +5,7 @@ import { set } from 'react-use-lanyard'
 
 import ExternalLink from './ExternalLink'
 
-const SpotifyPresence = ({ lanyard, onLoad }) => {
+const SpotifyPresence = ({ lanyard }) => {
     const setLastPlayed = useCallback(async () => {
         try {
             await set({
@@ -43,19 +43,13 @@ const SpotifyPresence = ({ lanyard, onLoad }) => {
         setLastPlayed,
     ])
 
-    useEffect(() => {
-        if (displayData && onLoad) {
-            onLoad()
-        }
-    }, [displayData, onLoad])
-
     if (!displayData) return <p>Something absolutely horrible has gone wrong</p>
 
     const { song, artist, album, album_art_url, track_id } = displayData
 
     return (
         <>
-            <div className="z-[1] flex h-full w-full flex-col justify-between p-6">
+            <div className="relative flex h-full w-full flex-col justify-between p-6">
                 <Image
                     src={album_art_url}
                     alt="Album art"
@@ -93,13 +87,10 @@ const SpotifyPresence = ({ lanyard, onLoad }) => {
                     </div>
                 </div>
             </div>
-            <div className="absolute right-0 top-0 z-[1] m-3 text-primary">
+            <div className="absolute right-0 top-0 m-3 text-primary">
                 <FaSpotify size={56} />
             </div>
-            <ExternalLink
-                href={`https://open.spotify.com/track/${track_id}`}
-                className="z-[1] block"
-            />
+            <ExternalLink href={`https://open.spotify.com/track/${track_id}`} className="block" />
         </>
     )
 }

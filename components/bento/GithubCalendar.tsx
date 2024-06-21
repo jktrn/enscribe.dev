@@ -65,15 +65,36 @@ const GithubCalendar: FunctionComponent<Props> = ({ username, ...props }) => {
     }
 
     return (
-        <Calendar
-            data={selectLastNDays(data.contributions)}
-            theme={{
-                dark: ['#1A1A1A', '#E9D3B6'],
-            }}
-            {...props}
-            // @ts-expect-error
-            maxLevel={4}
-        />
+        <>
+            <div className="hidden sm:block">
+                <Calendar
+                    data={selectLastNDays(data.contributions, 133)}
+                    theme={{
+                        dark: ['#1A1A1A', '#E9D3B6'],
+                    }}
+                    blockSize={20}
+                    blockMargin={6}
+                    blockRadius={7}
+                    {...props}
+                    // @ts-expect-error
+                    maxLevel={4}
+                />
+            </div>
+            <div className="sm:hidden">
+                <Calendar
+                    data={selectLastNDays(data.contributions, 60)}
+                    theme={{
+                        dark: ['#1A1A1A', '#E9D3B6'],
+                    }}
+                    blockSize={40}
+                    blockMargin={10}
+                    blockRadius={14}
+                    {...props}
+                    // @ts-expect-error
+                    maxLevel={4}
+                />
+            </div>
+        </>
     )
 }
 
@@ -95,12 +116,10 @@ interface ApiErrorResponse {
     error: string
 }
 
-const DAYS_TO_SHOW = 133
-
-const selectLastNDays = (contributions) => {
+const selectLastNDays = (contributions, days) => {
     const today = new Date()
     const startDate = new Date(today)
-    startDate.setDate(today.getDate() - DAYS_TO_SHOW)
+    startDate.setDate(today.getDate() - days)
 
     return contributions.filter((activity) => {
         const activityDate = new Date(activity.date)
