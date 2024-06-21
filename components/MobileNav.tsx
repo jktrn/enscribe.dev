@@ -18,7 +18,7 @@ const MobileNav = () => {
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
                 <Button
-                    className="flex size-9 items-center justify-center p-2 md:hidden"
+                    className="flex size-9 items-center justify-center p-2 sm:hidden"
                     type="button"
                     aria-label="Toggle menu"
                     variant="ghost"
