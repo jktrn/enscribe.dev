@@ -90,7 +90,11 @@ const SpotifyPresence = ({ lanyard }) => {
             <div className="absolute right-0 top-0 m-3 text-primary">
                 <FaSpotify size={56} />
             </div>
-            <ExternalLink href={`https://open.spotify.com/track/${track_id}`} className="block" />
+            <ExternalLink
+                href={`https://open.spotify.com/track/${track_id}`}
+                aria-label="Open in Spotify"
+                title="Open in Spotify"
+            />
         </>
     )
 }
