@@ -247,10 +247,6 @@
         background-image: url('/static/images/bento/bento-twitter.svg');
     }
 
-    .overlay {
-        @apply bg-cover bg-center bg-no-repeat;
-    }
-
     /* Responsive Adjustments */
     @media (min-width: 640px) {
         .grid-item-a {
