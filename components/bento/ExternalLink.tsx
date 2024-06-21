@@ -6,7 +6,6 @@ interface ExternalLinkProps {
     href: string
     newTab?: boolean
     className?: string
-    [key: string]: any
 }
 
 const ExternalLink = ({ href, newTab = true, className, ...props }: ExternalLinkProps) => {
