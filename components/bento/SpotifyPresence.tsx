@@ -53,10 +53,10 @@ const SpotifyPresence = ({ lanyard }) => {
                 <Image
                     src={album_art_url}
                     alt="Album art"
-                    width={0}
-                    height={0}
+                    width={128}
+                    height={128}
                     className="mb-2 w-[55%] rounded-xl border border-border grayscale"
-                    unoptimized
+                    quality={80}
                 />
                 <div className="overflow-visible">
                     <div className="flex flex-col">

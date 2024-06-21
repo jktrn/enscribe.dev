@@ -57,11 +57,10 @@ const BentoBox = ({ posts }) => {
                     <Image
                         src={posts[0].images[0]}
                         alt={`Featured image for the latest post: ${posts[0].title}`}
-                        width={0}
-                        height={0}
+                        width={477}
+                        height={251}
                         className="w-full rounded-2xl border border-border sm:ml-2 sm:w-[80%]"
                         noRelative
-                        unoptimized
                     />
                     <ExternalLink
                         href={posts[0].path}
