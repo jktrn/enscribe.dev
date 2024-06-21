@@ -68,6 +68,7 @@ const BentoBox = ({ posts }) => {
                         href={posts[0].path}
                         newTab={false}
                         aria-label={`Read the latest post: ${posts[0].title}`}
+                        title="Read the latest post"
                     />
                 </div>
 
@@ -96,6 +97,7 @@ const BentoBox = ({ posts }) => {
                     <ExternalLink
                         href="https://github.com/jktrn"
                         aria-label="Visit enscribe's GitHub profile"
+                        title="GitHub Profile"
                     />
                 </div>
 
@@ -115,6 +117,7 @@ const BentoBox = ({ posts }) => {
                     <ExternalLink
                         href="https://twitter.com/enscry"
                         aria-label="Visit enscribe's Twitter profile"
+                        title="Twitter Profile"
                     />
                 </div>
             </section>

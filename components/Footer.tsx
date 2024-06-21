@@ -18,6 +18,7 @@ export default function Footer() {
                             href={siteMetadata.twitter}
                             className="text-muted-foreground hover:brightness-125 dark:hover:brightness-125"
                             aria-label="Twitter"
+                            title="Twitter (@enscry)"
                         >
                             <Twitter size={24} />
                         </a>
@@ -27,6 +28,7 @@ export default function Footer() {
                             href={`mailto:${siteMetadata.email}`}
                             className="text-muted-foreground hover:brightness-125 dark:hover:brightness-125"
                             aria-label="Email"
+                            title="Email (jason -at- enscribe -dot- dev)"
                         >
                             <Mail size={24} />
                         </a>
@@ -36,6 +38,7 @@ export default function Footer() {
                             href={siteMetadata.github}
                             className="text-muted-foreground hover:brightness-125 dark:hover:brightness-125"
                             aria-label="GitHub"
+                            title="GitHub (/jktrn)"
                         >
                             <Github size={24} />
                         </a>
