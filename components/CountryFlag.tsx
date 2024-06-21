@@ -10,7 +10,7 @@ export default function CountryFlag({ country }: CountryFlagProps) {
         <img
             src={`https://flagcdn.com/20x15/${country}.png`}
             alt={country}
-            className="inline-block align-text-middle !m-0 !mr-1 rounded-none border-none"
+            className="align-text-middle !m-0 !mr-1 inline-block rounded-none border-none"
         />
     )
 }

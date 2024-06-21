@@ -1,8 +1,9 @@
 'use client'
 
-import Image from 'next/image'
+import Image from '../Image'
 import React, { FunctionComponent, useCallback, useEffect, useState } from 'react'
 import Calendar, { type Props as ActivityCalendarProps } from 'react-activity-calendar'
+import { Skeleton } from '../shadcn/skeleton'
 
 // Adopted from https://github.com/grubersjoe/react-github-calendar
 // Copyright (c) 2019 Jonathan Gruber, MIT License
@@ -27,9 +28,10 @@ async function fetchCalendarData(username: string): Promise<ApiResponse> {
 
     return data as ApiResponse
 }
+
 const GithubCalendar: FunctionComponent<Props> = ({ username, ...props }) => {
     const [data, setData] = useState<ApiResponse | null>(null)
-    const [loading, setLoading] = useState(false)
+    const [loading, setLoading] = useState(true)
     const [error, setError] = useState<Error | null>(null)
 
     const fetchData = useCallback(() => {
@@ -51,9 +53,9 @@ const GithubCalendar: FunctionComponent<Props> = ({ username, ...props }) => {
                     alt="Error"
                     width={0}
                     height={0}
-                    className="w-24 bento-lg:w-48 h-auto"
+                    className="h-auto w-24 bento-lg:w-48"
                 />
-                <p className="text-center w-48 bento-lg:w-64 text-muted-foreground text-sm">
+                <p className="w-48 text-center text-sm text-muted-foreground bento-lg:w-64">
                     This component is down. Please email me!
                 </p>
             </div>
@@ -61,19 +63,42 @@ const GithubCalendar: FunctionComponent<Props> = ({ username, ...props }) => {
     }
 
     if (loading || !data) {
-        return
+        return <Skeleton className="size-full" />
     }
 
     return (
-        <Calendar
-            data={selectLastNDays(data.contributions)}
-            theme={{
-                dark: ['#1A1A1A', '#E9D3B6'],
-            }}
-            {...props}
-            // @ts-expect-error
-            maxLevel={4}
-        />
+        <>
+            <div className="m-4 hidden sm:block">
+                <Calendar
+                    data={selectLastNDays(data.contributions, 133)}
+                    theme={{
+                        dark: ['#1A1A1A', '#E9D3B6'],
+                    }}
+                    colorScheme="dark"
+                    blockSize={20}
+                    blockMargin={6}
+                    blockRadius={7}
+                    {...props}
+                    // @ts-expect-error
+                    maxLevel={4}
+                />
+            </div>
+            <div className="m-4 sm:hidden">
+                <Calendar
+                    data={selectLastNDays(data.contributions, 60)}
+                    theme={{
+                        dark: ['#1A1A1A', '#E9D3B6'],
+                    }}
+                    colorScheme="dark"
+                    blockSize={20}
+                    blockMargin={6}
+                    blockRadius={7}
+                    {...props}
+                    // @ts-expect-error
+                    maxLevel={4}
+                />
+            </div>
+        </>
     )
 }
 
@@ -95,12 +120,10 @@ interface ApiErrorResponse {
     error: string
 }
 
-const DAYS_TO_SHOW = 133
-
-const selectLastNDays = (contributions) => {
+const selectLastNDays = (contributions, days) => {
     const today = new Date()
     const startDate = new Date(today)
-    startDate.setDate(today.getDate() - DAYS_TO_SHOW)
+    startDate.setDate(today.getDate() - days)
 
     return contributions.filter((activity) => {
         const activityDate = new Date(activity.date)

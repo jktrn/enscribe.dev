@@ -72,9 +72,7 @@
 
         --radius: 0.5rem;
     }
-}
 
-@layer base {
     * {
         @apply border-border;
     }
@@ -83,137 +81,254 @@
     }
 }
 
-/* Targeting inserted/removed lines in codeblocks */
-span[style*='background-color: rgba(233, 211, 182, 0.05)'] > span > .linenumber {
-    visibility: hidden;
-}
+@layer components {
+    /* Targeting inserted/removed lines in codeblocks */
+    span[style*='background-color: rgba(233, 211, 182, 0.05)'] > span > .linenumber {
+        visibility: hidden;
+    }
 
-span[style*='background-color: rgba(233, 211, 182, 0.05)'] > span > .linenumber:after {
-    visibility: visible;
-    content: '+';
-}
+    span[style*='background-color: rgba(233, 211, 182, 0.05)'] > span > .linenumber:after {
+        visibility: visible;
+        content: '+';
+    }
 
-span[style*='background-color: rgba(255, 0, 0, 0.1)'] > span > .linenumber {
-    visibility: hidden;
-}
+    span[style*='background-color: rgba(255, 0, 0, 0.1)'] > span > .linenumber {
+        visibility: hidden;
+    }
 
-span[style*='background-color: rgba(255, 0, 0, 0.1)'] > span > .linenumber:after {
-    visibility: visible;
-    content: '-';
-}
+    span[style*='background-color: rgba(255, 0, 0, 0.1)'] > span > .linenumber:after {
+        visibility: visible;
+        content: '-';
+    }
 
-/* Overwriting pliny/search kbar */
-.bg-gray-300\/50.p-4.backdrop-blur.backdrop-filter {
-    @apply z-[2];
-}
+    /* Skeleton animation */
+    @keyframes skeleton {
+        0%,
+        100% {
+            @apply bg-muted;
+        }
+        50% {
+            @apply bg-secondary;
+        }
+    }
 
-.bg-primary-600 {
-    @apply !bg-primary/25;
-}
+    /* Table of Contents styling */
+    /* Courtesy Gilles Castel, rest in peace (castel.dev) */
+    .toc {
+        @apply sticky top-16 hidden h-0 w-[calc(50vw-50%-4em)] break-words text-xs xl:block;
+        transform: translateX(calc(-100% - 2em)) translateY(2em);
+    }
 
-.bg-gray-300\/50 .overflow-hidden.rounded-2xl.border.border-gray-100 {
-    @apply rounded-lg border-border bg-background;
-}
+    /* Right-aligned TOC */
+    .tocr {
+        @apply sticky top-16 ml-auto hidden h-0 w-[calc(50vw-50%-4em)] break-words text-right text-xs xl:block;
+        transform: translateX(calc(100% + 2em)) translateY(2em);
+    }
 
-.bg-gray-300\/50 .space-x-4.p-4 > input {
-    @apply rounded-md text-foreground placeholder-muted-foreground;
-}
+    .toc ul li a {
+        @apply !text-muted-foreground !no-underline transition-all duration-200;
+    }
 
-.bg-gray-300\/50 .space-x-4.p-4 > input:focus {
-    @apply border-primary ring-transparent;
-}
+    .tocr ul li a {
+        @apply !text-muted-foreground !no-underline transition-all duration-200;
+    }
 
-.bg-gray-300\/50 .space-x-4.p-4 > kbd {
-    @apply border-border text-muted-foreground;
-}
+    /* Highlights the current section in the viewport within the TOC */
+    .active-header {
+        @apply font-bold brightness-200;
+    }
 
-.overflow-hidden.rounded-2xl.border.border-gray-100 .block.border-t.border-gray-100 {
-    @apply border-t-border text-muted-foreground;
-}
+    /* Applies offset when jumping to internal headers */
+    h1,
+    h2,
+    h3 {
+        @apply scroll-mt-24;
+    }
 
-/* Custom react-grid-container */
-/* .react-grid-container {
-    @apply mx-auto max-w-[1200px];
-} */
+    /* Bento box layouts */
+    .grid-mobile-layout {
+        grid-template-areas: 'a a' 'a a' 'b b' 'b b' 'e e' 'h i' 'h c' 'k c' 'd d' 'd d' 'g g' 'g g' 'f f' 'j j' 'j j';
+    }
 
-.react-grid-item {
-    @apply flex select-none items-center rounded-3xl border border-border bg-secondary;
-    /* transition:
-        transform 200ms cubic-bezier(0.34, 1.56, 0.64, 1),
-        all 200ms ease; */
-    /* transition-property: transform, left, top, width, height; */
-}
+    .grid-sm-layout {
+        grid-template-areas: 'a a' 'b d' 'e e' 'j g' 'h i' 'h c' 'k c' 'f f';
+    }
 
-/* .react-draggable-dragging {
-    @apply !cursor-grabbing;
-} */
+    .grid-xl-layout {
+        grid-template-areas: 'a a b c' 'd e e c' 'h f f g' 'h i j k';
+    }
 
-.react-grid-placeholder {
-    @apply !bg-primary/75 !duration-500;
-}
+    @media (min-width: 1280px) {
+        .bento:hover > .first:not(:hover) .overlay {
+            opacity: 1;
+        }
+    }
 
-/* @media (max-width: 1200px) {
-    .react-grid-container {
-        @apply w-[800px];
+    .grid-item-a {
+        grid-area: a;
+    }
+    .grid-item-b {
+        grid-area: b;
+    }
+    .grid-item-c {
+        grid-area: c;
+    }
+    .grid-item-d {
+        grid-area: d;
+    }
+    .grid-item-e {
+        grid-area: e;
+    }
+    .grid-item-f {
+        grid-area: f;
+    }
+    .grid-item-g {
+        grid-area: g;
+    }
+    .grid-item-h {
+        grid-area: h;
+    }
+    .grid-item-i {
+        grid-area: i;
+    }
+    .grid-item-j {
+        grid-area: j;
+    }
+    .grid-item-k {
+        grid-area: k;
+    }
+
+    /* Grid Items */
+    .grid-item-a {
+        background-image: url('/static/images/bento/about-square.webp');
+    }
+
+    .grid-item-b-overlay {
+        background-image: url('/static/images/bento/details.webp');
+    }
+
+    .grid-item-c {
+        background-image: url('/static/images/bento/image-1.webp');
+    }
+
+    .grid-item-e-overlay {
+        background-image: url('/static/images/bento/blog-square.webp');
+    }
+
+    .grid-item-f-overlay {
+        background-image: url('/static/images/bento/contributions-square.webp');
+    }
+
+    .grid-item-g-overlay {
+        background-image: url('/static/images/bento/spotify.webp');
+    }
+
+    .grid-item-h {
+        background-image: url('/static/images/bento/image-2.webp');
+    }
+
+    .grid-item-i-overlay {
+        background-image: url('/static/images/bento/github.webp');
+    }
+
+    .grid-item-j {
+        background-image: url('/static/images/bento/technologies.webp');
+    }
+
+    .grid-item-k-overlay {
+        background-image: url('/static/images/bento/twitter.webp');
+    }
+
+    /* Responsive Adjustments */
+    @media (min-width: 640px) {
+        .grid-item-a {
+            background-image: url('/static/images/bento/about.webp');
+        }
+
+        .grid-item-e-overlay {
+            background-image: url('/static/images/bento/blog.webp');
+        }
+
+        .grid-item-f-overlay {
+            background-image: url('/static/images/bento/contributions.webp');
+        }
+    }
+
+    @media (min-width: 1280px) {
+        .bento:hover > *:not(.first):hover .overlay {
+            opacity: 1;
+        }
+        .grid-item-a-silhouette {
+            background-image: url('/static/images/bento/about-silhouette.webp');
+        }
+
+        .grid-item-b {
+            background-image: url('/static/images/bento/details-silhouette.webp');
+        }
+
+        .grid-item-e {
+            background-image: url('/static/images/bento/blog-silhouette.webp');
+        }
+
+        .grid-item-f {
+            background-image: url('/static/images/bento/contributions-silhouette.webp');
+        }
+
+        .grid-item-g {
+            background-image: url('/static/images/bento/spotify-silhouette.webp');
+        }
+
+        .grid-item-i {
+            background-image: url('/static/images/bento/github-silhouette.webp');
+        }
+
+        .grid-item-k {
+            background-image: url('/static/images/bento/twitter-silhouette.webp');
+        }
     }
 }
 
-@media (max-width: 800px) {
-    .react-grid-container {
-        @apply w-[375px];
+@layer utilities {
+    .react-activity-calendar {
+        @apply size-full scale-150 p-4 sm:scale-110;
     }
-} */
 
-@keyframes skeleton {
-    0%,
-    100% {
-        @apply bg-muted;
+    /* Overwriting pliny/search kbar */
+    .bg-gray-300\/50.p-4.backdrop-blur.backdrop-filter {
+        @apply z-[2];
     }
-    50% {
-        @apply bg-secondary;
+
+    .bg-primary-600 {
+        @apply !bg-primary/25;
     }
-}
 
-/* Hiding the react-activity-calendar skeleton */
-article[style*='--react-activity-calendar-level-0:#ebebeb'] {
-    @apply hidden;
-}
+    .bg-gray-300\/50 .overflow-hidden.rounded-2xl.border.border-gray-100 {
+        @apply rounded-lg border-border bg-background;
+    }
 
-svg[width='1372'] {
-    @apply hidden;
-}
+    .bg-gray-300\/50 .space-x-4.p-4 > input {
+        @apply rounded-md text-foreground placeholder-muted-foreground;
+    }
 
-/* <Box> styling */
-.my-6.rounded-lg.p-4.bg-secondary.text-center ul {
-    @apply m-0;
-}
+    .bg-gray-300\/50 .space-x-4.p-4 > input:focus {
+        @apply border-primary ring-transparent;
+    }
 
-/* Table of Contents styling */
-/* Courtesy Gilles Castel (castel.dev) */
-.toc {
-    @apply sticky top-16 hidden h-0 w-[calc(50vw-50%-4em)] break-words text-xs xl:block;
-    transform: translateX(calc(-100% - 2em)) translateY(2em);
-}
+    .bg-gray-300\/50 .space-x-4.p-4 > kbd {
+        @apply border-border text-muted-foreground;
+    }
 
-.tocr {
-    @apply sticky top-16 ml-auto hidden h-0 w-[calc(50vw-50%-4em)] break-words text-right text-xs xl:block;
-    transform: translateX(calc(100% + 2em)) translateY(2em);
-}
+    .overflow-hidden.rounded-2xl.border.border-gray-100 .block.border-t.border-gray-100 {
+        @apply border-t-border text-muted-foreground;
+    }
 
-.toc ul li a {
-    @apply !text-muted-foreground !no-underline transition-all duration-200;
-}
+    /* Hiding the react-activity-calendar skeleton */
+    /* article[style*='--react-activity-calendar-level-0:#ebebeb'] {
+        @apply hidden;
+    } */
 
-.tocr ul li a {
-    @apply !text-muted-foreground !no-underline transition-all duration-200;
-}
-
-.active-header {
-    @apply font-bold brightness-200;
-}
-
-h1,
-h2,
-h3 {
-    @apply scroll-mt-24;
+    /* <Box> styling */
+    .my-6.rounded-lg.p-4.bg-secondary.text-center ul {
+        @apply m-0;
+    }
 }
