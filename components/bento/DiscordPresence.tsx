@@ -53,7 +53,7 @@ const DiscordPresence = ({ lanyard }) => {
                     <FaDiscord size={50} className="p-1 text-secondary" />
                 </div>
                 <div className="h-[80px] w-full flex-shrink-0 rounded-t-3xl bg-tertiary/50" />
-                <div className="m-3 flex h-full flex-col gap-3 overflow-scroll sm:overflow-hidden">
+                <div className="m-3 flex h-full flex-col gap-3">
                     <div className="h-6 flex-shrink-0">
                         <div className="ml-auto flex h-full w-fit items-center rounded-lg bg-tertiary/50">
                             <Image
