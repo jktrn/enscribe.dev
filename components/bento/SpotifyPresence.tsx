@@ -6,34 +6,27 @@ import { set } from 'react-use-lanyard'
 import ExternalLink from './ExternalLink'
 
 const SpotifyPresence = ({ lanyard }) => {
-    const setLastPlayed = useCallback(async () => {
-        try {
-            await set({
-                apiKey: process.env.NEXT_PUBLIC_LANYARD_KV_KEY!,
-                userId: '747519888347627550',
-                key: 'spotify_last_played',
-                value: JSON.stringify(lanyard.data.spotify),
-            })
-        } catch (error) {
-            console.error('Error setting KV pair:', error)
-        }
+    const setLastPlayed = useCallback(() => {
+        set({
+            apiKey: process.env.NEXT_PUBLIC_LANYARD_KV_KEY!,
+            userId: '747519888347627550',
+            key: 'spotify_last_played',
+            value: JSON.stringify(lanyard.data.spotify),
+        }).catch((error) => console.error('Error setting KV pair:', error))
     }, [lanyard.data.spotify])
 
     const displayData = useMemo(() => {
-        if (lanyard.data.spotify) {
-            return lanyard.data.spotify
-        }
-        if (lanyard.data.kv.spotify_last_played) {
-            return JSON.parse(lanyard.data.kv.spotify_last_played)
-        }
-        return null
+        return (
+            lanyard.data.spotify ||
+            (lanyard.data.kv.spotify_last_played &&
+                JSON.parse(lanyard.data.kv.spotify_last_played)) ||
+            null
+        )
     }, [lanyard.data.spotify, lanyard.data.kv.spotify_last_played])
 
     useEffect(() => {
-        if (
-            JSON.parse(lanyard.data.kv.spotify_last_played) !== lanyard.data.spotify &&
-            lanyard.data.listening_to_spotify
-        ) {
+        const lastPlayed = JSON.parse(lanyard.data.kv.spotify_last_played)
+        if (lanyard.data.listening_to_spotify && lastPlayed !== lanyard.data.spotify) {
             setLastPlayed()
         }
     }, [
@@ -67,11 +60,11 @@ const SpotifyPresence = ({ lanyard }) => {
                                 width={16}
                                 height={16}
                             />
-                            {lanyard.data.listening_to_spotify ? (
-                                <span className="text-sm text-primary">Now playing...</span>
-                            ) : (
-                                <span className="text-sm text-primary">Last played...</span>
-                            )}
+                            <span className="text-sm text-primary">
+                                {lanyard.data.listening_to_spotify
+                                    ? 'Now playing...'
+                                    : 'Last played...'}
+                            </span>
                         </span>
                         <span className="text-md mb-2 line-clamp-1 font-bold leading-none">
                             {song}
