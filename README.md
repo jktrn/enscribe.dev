@@ -1,15 +1,15 @@
-![tailwind-nextjs-banner](/public/static/images/twitter-card.png)
+![Showcase Card](/public/static/images/showcase-card.png)
 
 <div align="center">
 
 ## enscribe.dev
 
 [![CodeFactor]](https://www.codefactor.io/repository/github/jktrn/enscribe.dev)
-[![Next.js]](https://hexo.io)
+[![Next.js]](https://nextjs.org/)
 [![License]](LICENSE)
 [![Non-Code License]](https://creativecommons.org/licenses/by-nc-nd/4.0/)
 
-[enscribe.dev](https://enscribe.dev) is my personal information-security blog—built with [Next.js](https://nextjs.org/), [Tailwind CSS](https://tailwindcss.com/), TypeScript, and deployed on [Vercel](https://vercel.com/). Based off the [timlrx/tailwind-nextjs-starter-blog](https://github.com/timlrx/tailwind-nextjs-starter-blog/) blogging template.
+[enscribe.dev](https://enscribe.dev) is my personal information security blog—built with [Next.js](https://nextjs.org/), [Tailwind CSS](https://tailwindcss.com/), TypeScript, and deployed on [Vercel](https://vercel.com/). Based on the [timlrx/tailwind-nextjs-starter-blog](https://github.com/timlrx/tailwind-nextjs-starter-blog/) blogging template.
 
 </div>
 
@@ -37,9 +37,9 @@ This is a list of the various technologies used to build this website:
 
 Thanks for taking a look at my blog!
 
-While the licenses provided grant specific legal permissions for the use of my code and content, I'd like to make an ethical request: please refrain from cloning this repository to use the theme or its contents as your own. The theme, design, graphics, and all blog content are personal to my brand. While, of course, you have rights to use them (within the boundaries of the licenses), I would sincerely appreciate it if they remain unique to this site out of respect for the effort and originality put into them.
+While the licenses provided grant specific legal permissions for the use of my code and content, please refrain from cloning this repository to use the theme or its contents as your own. The theme, design, graphics, and all blog content are personal to my brand (i.e. everything licensed under [CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/)). While, of course, you have the right to use them (within the boundaries of the licenses), I would sincerely appreciate it if they remain unique to this site out of respect for the love that I've poured into this project.
 
-I'm thrilled that my work is open-source and hope that it serves as a learning tool, a reference, or a source of inspiration for your projects. **Embracing originality not only fosters personal growth but also nurtures innovation and uniqueness**. I'm always open for chats, discussions, or collaborations. Feel free to reach out if you have any questions about this project, or if you just want to share your thoughts. Cheers!
+My work is purposefully open-source in hopes that it serves as a learning tool, a reference, and/or a source of inspiration for your projects. Embrace your originality and individuality on a human level. I'm always open for chats, discussions, or collaborations (depending on interest)—feel free to reach out via socials if you have any questions about this project, or if you just want to share your thoughts.
 
 ---
 
@@ -51,7 +51,7 @@ For the purposes of this license, "code" refers to the software components, conf
 
 All such code in this repository is licensed under the **Apache License 2.0**:
 
-> [enscribe.dev](https://enscribe.dev) © 2023 by enscribe
+> [enscribe.dev](https://enscribe.dev) © 2024 by enscribe
 >
 > Licensed under the Apache License, Version 2.0 (the "License");
 > you may not use this file except in compliance with the License.
