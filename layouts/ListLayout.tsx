@@ -2,7 +2,8 @@
 
 import Image from '@/components/Image'
 import Link from '@/components/Link'
-import Tag from '@/components/Tag'
+import { slug as githubSlugger } from 'github-slugger'
+import { Badge } from '@/components/shadcn/badge'
 import { Skeleton } from '@/components/shadcn/skeleton'
 import siteMetadata from '@/data/siteMetadata'
 import type { Blog } from 'contentlayer/generated'
@@ -139,14 +140,13 @@ export default function ListLayout({
                                 <article className="space-y-2 xl:grid xl:grid-cols-5 xl:items-start xl:gap-4 xl:space-y-0">
                                     <div className="xl:col-span-2">
                                         <Link href={`/${path}`}>
-                                            <div className="relative aspect-video">
-                                                <Image
-                                                    src={thumbnail || ''}
-                                                    alt={`${title} thumbnail`}
-                                                    fill
-                                                    className="mb-4 h-fit w-full rounded-md object-contain"
-                                                />
-                                            </div>
+                                            <Image
+                                                src={thumbnail || ''}
+                                                alt={`${title} thumbnail`}
+                                                width={1200}
+                                                height={630}
+                                                className="mb-4 h-fit w-full rounded-md object-contain"
+                                            />
                                         </Link>
                                     </div>
                                     <div className="space-y-3 xl:col-span-3">
@@ -156,8 +156,21 @@ export default function ListLayout({
                                                     {title}
                                                 </Link>
                                             </h3>
-                                            <div className="flex flex-wrap space-x-3">
-                                                {tags?.map((tag) => <Tag key={tag} text={tag} />)}
+                                            <div className="flex flex-wrap">
+                                                {tags?.map((tag) => (
+                                                    <Badge
+                                                        key={tag}
+                                                        className="mr-2"
+                                                        variant={'outline'}
+                                                    >
+                                                        <Link
+                                                            href={`/tags/${githubSlugger(tag)}`}
+                                                            className="text-sm font-medium uppercase text-primary hover:brightness-125 dark:hover:brightness-125"
+                                                        >
+                                                            {tag.split(' ').join('-')}
+                                                        </Link>
+                                                    </Badge>
+                                                ))}
                                             </div>
                                         </div>
                                         <div className="prose prose-sm max-w-none text-muted-foreground">

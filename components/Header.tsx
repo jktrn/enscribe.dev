@@ -9,7 +9,6 @@ import { useEffect, useState } from 'react'
 import Link from './Link'
 import MobileNav from './MobileNav'
 import SearchButton from './SearchButton'
-import ThemeSwitch from './ThemeSwitch'
 import { Button } from './shadcn/button'
 
 const Header = () => {
@@ -60,7 +59,6 @@ const Header = () => {
                                         className="px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground"
                                     >
                                         <Link
-                                            // className="rounded px-3 py-2 text-sm font-medium text-muted-foreground transition-all duration-300 hover:bg-secondary hover:brightness-125"
                                             href={link.href}
                                         >
                                             {link.title}
@@ -70,7 +68,6 @@ const Header = () => {
                             ))}
                         </ul>
                         <SearchButton />
-                        {/* <ThemeSwitch /> */}
                         <MobileNav />
                     </div>
                 </div>

@@ -1,7 +1,7 @@
 'use client'
 
 import { getLanguageIcon } from '@/scripts/utils/language-icons.tsx'
-import React, { FC, useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
 import createElement from 'react-syntax-highlighter/dist/cjs/create-element'
 
@@ -13,7 +13,7 @@ interface LineProps {
     showLineNumbers: boolean
 }
 
-const Line: FC<LineProps> = ({ lineNumber, children, showLineNumbers }) => (
+const Line = ({ lineNumber, children, showLineNumbers }: LineProps) => (
     <span className="flex">
         {showLineNumbers && (
             <span className="linenumber inline-block min-w-[2.75em] select-none pr-[1em] text-right text-muted-foreground">
@@ -40,7 +40,7 @@ interface CodeBlockProps {
     removedLines?: [number, number][]
 }
 
-const CodeBlock: FC<CodeBlockProps> = ({
+const CodeBlock = ({
     src,
     title,
     range,
@@ -54,7 +54,7 @@ const CodeBlock: FC<CodeBlockProps> = ({
     skipLines = [],
     addedLines = [],
     removedLines = [],
-}) => {
+}: CodeBlockProps) => {
     const { code, loading } = useFetchData(src)
     const textInput = useRef(null)
     const [hovered, onEnter, onExit] = useHover()
@@ -124,7 +124,6 @@ const CodeBlock: FC<CodeBlockProps> = ({
                     )
                 ) {
                     lineStyle.backgroundColor = 'rgba(233, 211, 182, 0.05)'
-                    // lineStyle.width = '100%'
                 } else if (
                     removedLines.some(
                         ([removedStart, removedEnd]) =>
@@ -132,7 +131,6 @@ const CodeBlock: FC<CodeBlockProps> = ({
                     )
                 ) {
                     lineStyle.backgroundColor = 'rgba(255, 0, 0, 0.1)'
-                    // lineStyle.width = '100%'
                     removedCount++
                 }
                 return (
@@ -163,7 +161,6 @@ const CodeBlock: FC<CodeBlockProps> = ({
             ref={textInput}
         >
             {loading ? (
-                // Loading circle using Tailwind
                 <div className="flex h-40 items-center justify-center">
                     <div className="h-12 w-12 animate-spin rounded-full border-t-2 border-border"></div>
                 </div>
@@ -225,18 +222,18 @@ const fetchData = async (src: string): Promise<string> => {
 
 const useFetchData = (src?: string) => {
     const [code, setCode] = useState<string>('')
-    const [loading, setLoading] = useState<boolean>(false) // Add a loading state
+    const [loading, setLoading] = useState<boolean>(false)
 
     useEffect(() => {
         if (src) {
-            setLoading(true) // Set loading to true before fetching
+            setLoading(true)
             fetchData(src)
                 .then(setCode)
-                .finally(() => setLoading(false)) // Set loading to false after fetching
+                .finally(() => setLoading(false))
         }
     }, [src])
 
-    return { code, loading } // Return the loading state along with the code
+    return { code, loading }
 }
 
 const useHover = (): [

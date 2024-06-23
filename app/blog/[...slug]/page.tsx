@@ -1,9 +1,7 @@
 import { components } from '@/components/MDXComponents'
-import PageTitle from '@/components/PageTitle'
 import siteMetadata from '@/data/siteMetadata'
 import PostBare from '@/layouts/PostBare'
 import PostLayout from '@/layouts/PostLayout'
-import PostSimple from '@/layouts/PostSimple'
 import type { Authors, Blog } from 'contentlayer/generated'
 import { allAuthors, allBlogs } from 'contentlayer/generated'
 import 'css/prism.css'
@@ -17,7 +15,6 @@ import { ReportView } from './view'
 
 const defaultLayout = 'PostLayout'
 const layouts = {
-    PostSimple,
     PostLayout,
     PostBare,
 }

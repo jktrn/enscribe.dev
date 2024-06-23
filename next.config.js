@@ -1,5 +1,4 @@
 const { withContentlayer } = require('next-contentlayer')
-const redirects = require('./data/redirects.js')
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
     enabled: process.env.ANALYZE === 'true',
 })
