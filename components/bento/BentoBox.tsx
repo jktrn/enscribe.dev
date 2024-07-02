@@ -37,7 +37,11 @@ const BentoBox = ({ posts }) => {
                     </p>
                 </div>
 
-                <div className="grid-item-b aspect-square" role="img" aria-label="CTF Information">
+                <div
+                    className="grid-item-b has-overlay aspect-square"
+                    role="img"
+                    aria-label="CTF Information"
+                >
                     <div className="overlay grid-item-b-overlay size-full rounded-3xl bg-cover bg-center bg-no-repeat transition-opacity duration-200 xl:opacity-0" />
                     <p className="sr-only">
                         I currently play cybersecurity capture-the-flags with Project Sekai. Hosted
@@ -55,7 +59,7 @@ const BentoBox = ({ posts }) => {
                     )}
                 </div>
 
-                <div className="grid-item-e relative flex aspect-[6/5] items-start overflow-hidden p-4 hover:bg-none sm:aspect-[2.1/1] sm:items-center xl:aspect-auto">
+                <div className="grid-item-e has-overlay relative flex aspect-[6/5] items-start overflow-hidden p-4 hover:bg-none sm:aspect-[2.1/1] sm:items-center xl:aspect-auto">
                     <div className="overlay grid-item-e-overlay absolute inset-0 size-full rounded-3xl bg-cover bg-center bg-no-repeat transition-opacity duration-200 xl:opacity-0" />
                     <Image
                         src={posts[0].images[0]}
@@ -72,12 +76,12 @@ const BentoBox = ({ posts }) => {
                     />
                 </div>
 
-                <div className="grid-item-f relative flex aspect-square items-center justify-center overflow-hidden hover:bg-none sm:aspect-[2.1/1] xl:aspect-auto">
+                <div className="grid-item-f has-overlay relative flex aspect-square items-center justify-center overflow-hidden hover:bg-none sm:aspect-[2.1/1] xl:aspect-auto">
                     <div className="overlay grid-item-f-overlay absolute inset-0 z-[1] size-full rounded-3xl bg-cover bg-center bg-no-repeat transition-opacity duration-200 xl:opacity-0" />
                     <GithubCalendar username="jktrn" hideColorLegend hideTotalCount />
                 </div>
 
-                <div className="grid-item-g relative aspect-square hover:bg-none">
+                <div className="grid-item-g has-overlay relative aspect-square hover:bg-none">
                     <div className="overlay grid-item-g-overlay absolute inset-0 z-0 size-full rounded-3xl bg-cover bg-center bg-no-repeat transition-opacity duration-200 xl:opacity-0" />
                     {lanyard.data && !lanyard.isValidating ? (
                         <SpotifyPresence lanyard={lanyard.data} />
@@ -88,7 +92,7 @@ const BentoBox = ({ posts }) => {
 
                 <div className="grid-item-h aspect-[1/2.1] xl:aspect-auto" aria-hidden="true" />
 
-                <div className="grid-item-i relative flex aspect-square items-center justify-center hover:bg-none">
+                <div className="grid-item-i has-overlay relative flex aspect-square items-center justify-center hover:bg-none">
                     <div className="overlay grid-item-i-overlay absolute inset-0 size-full rounded-3xl bg-cover bg-center bg-no-repeat transition-opacity duration-200 xl:opacity-0" />
                     <FaGithub
                         className="absolute z-[1] size-1/2 text-primary sm:size-24"
@@ -108,7 +112,7 @@ const BentoBox = ({ posts }) => {
                     </p>
                 </div>
 
-                <div className="grid-item-k relative flex aspect-square items-center justify-center hover:bg-none">
+                <div className="grid-item-k has-overlay relative flex aspect-square items-center justify-center hover:bg-none">
                     <div className="overlay grid-item-k-overlay absolute inset-0 size-full rounded-3xl bg-cover bg-center bg-no-repeat transition-opacity duration-200 xl:opacity-0" />
                     <FaTwitter
                         className="absolute z-[1] size-1/2 text-primary sm:size-24"

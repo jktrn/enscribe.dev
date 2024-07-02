@@ -159,7 +159,7 @@
     }
 
     @media (min-width: 1280px) {
-        .bento:hover > .first:not(:hover) .overlay {
+        .bento:hover:has(> .has-overlay:hover) > .first > .overlay {
             opacity: 1;
         }
     }
