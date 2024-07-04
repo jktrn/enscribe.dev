@@ -79,6 +79,16 @@
     body {
         @apply bg-background text-foreground;
     }
+
+    ::-moz-selection {
+        background: rgba(233, 211, 182, 0.5);
+        color: white;
+    }
+
+    ::selection {
+        background: rgba(233, 211, 182, 0.5);
+        color: white;
+    }
 }
 
 @layer components {
