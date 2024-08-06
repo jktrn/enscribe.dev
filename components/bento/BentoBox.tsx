@@ -10,6 +10,7 @@ import ExternalLink from './ExternalLink'
 import GithubCalendar from './GithubCalendar'
 import SpotifyPresence from './SpotifyPresence'
 import { Skeleton } from '../shadcn/skeleton'
+import WakatimeGraph from './WakatimeGraph'
 
 const BentoBox = ({ posts }) => {
     const lanyard = useLanyard({
@@ -105,11 +106,13 @@ const BentoBox = ({ posts }) => {
                     />
                 </div>
 
-                <div className="grid-item-j aspect-square">
-                    <p className="sr-only">
-                        Technologies used (in order of comfort): NextJS, Tailwind CSS, React, Hexo,
-                        TypeScript, Unity, C#, Python, Svelte, Astro, JavaScript, Vercel
-                    </p>
+                <div className="grid-item-j relative aspect-square">
+                    <WakatimeGraph username="jktrn" />
+                    <ExternalLink
+                        href="https://wakatime.com/@jktrn"
+                        aria-label="View enscribe's Wakatime profile"
+                        title="Wakatime Profile"
+                    />
                 </div>
 
                 <div className="grid-item-k has-overlay relative flex aspect-square items-center justify-center hover:bg-none">
