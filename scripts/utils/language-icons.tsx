@@ -7,6 +7,7 @@ import {
     SiHtml5,
     SiJavascript,
     SiJson,
+    SiLatex,
     SiMarkdown,
     SiMdx,
     SiPython,
@@ -21,12 +22,13 @@ export const languageIcons: { [key: string]: IconType } = {
     python: SiPython,
     c: SiC,
     'c++': SiCplusplus,
-    cs: SiCsharp,
+    'c#': SiCsharp,
     typescript: SiTypescript,
     markdown: SiMarkdown,
     mdx: SiMdx,
     json: SiJson,
     yaml: SiYaml,
+    tex: SiLatex,
 }
 
 export const getLanguageIcon = (language: string): JSX.Element | null => {
