@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
         }
 
         const data = await response.json()
-        const topLanguages: Language[] = data.data.languages.map((lang: any) => ({
+        const topLanguages: Language[] = data.data.languages.map((lang) => ({
             name: lang.name,
             hours: (lang.total_seconds / 3600).toFixed(2),
         }))

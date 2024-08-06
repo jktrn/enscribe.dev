@@ -83,7 +83,7 @@ const WakatimeGraph = ({ username, omitLanguages = [] }: Props) => {
         fetchData()
     }, [fetchData])
 
-    const CustomYAxisTick = useCallback((props: any) => {
+    const CustomYAxisTick = useCallback((props) => {
         const { x, y, payload } = props
         const icon = getLanguageIcon(payload.value.toLowerCase())
         return (
