@@ -33,11 +33,11 @@ This is a list of the various technologies used to build this website:
 
 ## Licensing
 
-This project uses a multi-tiered licensing approach to differentiate between various components. Please refer to the full [LICENSE.md](LICENSE.md) file for details.
+This project uses a multi-tiered licensing approach to differentiate between various components:
 
 ### Original Template
 
-From [LICENSE.md](LICENSE.md):
+From the [Original Template License](LICENSE.md#original-template-license) section within the license:
 
 > This website is based on [astro-erudite](https://github.com/jktrn/astro-erudite), which was loosely derived from an MIT-licensed project, [trevortylerlee/astro-micro](https://github.com/trevortylerlee/astro-micro).
 
@@ -49,7 +49,7 @@ The original MIT license is included in the full [LICENSE.md](LICENSE.md) file f
 
 All modifications and custom implementations made to the original template are proprietary and all rights are reserved. The code is publicly available for viewing and reference only. Modification, redistribution, or commercial use requires explicit permission from the copyright holder.
 
-From the [Website Code License](LICENSE.md#website-code-license) section within the license:
+From the [Website Code License](LICENSE.md#website-code-license) section:
 
 > This license applies specifically to the custom modifications made to the [jktrn/astro-erudite](https://github.com/jktrn/astro-erudite) template. It does not extend to the original template code, which remains under its original MIT license.
 
@@ -61,9 +61,13 @@ From the [Disclaimer](LICENSE.md#disclaimer) section:
 
 [![Content License]](LICENSE.content.md)
 
-All website content (text, images, graphics, MDX files/components, etc.) is licensed under the [Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License](LICENSE.content.md).
+From the [Website Content License](LICENSE.md#website-content-license) section:
 
-For full license details and permission requests, please refer to the [LICENSE](LICENSE.md) file in this repository or contact [jason@enscribe.dev](mailto:jason@enscribe.dev).
+> The content of this website, including but not limited to text, images, graphics, MDX files/components, and any other materials (excluding code and design elements covered under the Website Code License above), is licensed under the Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License (CC BY-NC-ND 4.0).
+>
+> To view a copy of this license, visit http://creativecommons.org/licenses/by-nc-nd/4.0/ or view [LICENSE.content.md](./LICENSE.content.md).
+
+For full license details and permission requests, please refer to the [LICENSE.md](LICENSE.md) file in this repository or contact [jason@enscribe.dev](mailto:jason@enscribe.dev).
 
 ---
 
@@ -74,5 +78,5 @@ Made with ♥ by [enscribe](https://enscribe.dev)!
 
 [CodeFactor]: https://img.shields.io/codefactor/grade/github/jktrn/enscribe.dev?color=2f2a24&logo=codefactor&logoColor=fff&style=for-the-badge
 [Stargazers]: https://img.shields.io/github/stars/jktrn/enscribe.dev?color=463f37&logo=github&logoColor=fff&style=for-the-badge
-[Code License]: https://img.shields.io/badge/license-proprietary-5d5449?style=for-the-badge&logo=github&logoColor=fff
+[Code License]: https://img.shields.io/badge/code%20license-proprietary-5d5449?style=for-the-badge&logo=github&logoColor=fff
 [Content License]: https://img.shields.io/badge/content%20license-CC%20BY--NC--ND%204.0-756a5b?style=for-the-badge&logo=creativecommons&logoColor=fff
