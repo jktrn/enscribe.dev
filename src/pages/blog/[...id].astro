@@ -3,6 +3,7 @@ import Breadcrumbs from '@/components/Breadcrumbs.astro'
 import Link from '@/components/Link.astro'
 import PostNavigation from '@/components/PostNavigation.astro'
 import TableOfContents from '@/components/TableOfContents.astro'
+import TableOfContentsPrebuilt from '@/components/TableOfContentsPrebuilt.astro'
 import { badgeVariants } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
@@ -14,9 +15,7 @@ import { Image } from 'astro:assets'
 import { type CollectionEntry, getCollection, render } from 'astro:content'
 
 export async function getStaticPaths() {
-  const posts = (await getCollection('blog'))
-    .filter((post) => !post.data.draft)
-    .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  const posts = await getCollection('blog', ({ data }) => !data.draft)
   return posts.map((post) => ({
     params: { id: post.id },
     props: post,
@@ -155,10 +154,20 @@ const authors = await parseAuthors(post.data.authors ?? [])
     {headings.length > 0 && <TableOfContents headings={headings} />}
 
     <article
-      class="prose prose-sm prose-neutral col-start-2 max-w-none dark:prose-invert"
+      class="prose prose-sm prose-neutral col-start-2 max-w-none dark:prose-invert [&>:first-child>*]:mt-0"
     >
       <Content />
     </article>
+
+    {
+      post.data.secondary_headings && (
+        <TableOfContentsPrebuilt
+          headings={post.data.secondary_headings}
+          activeSlug={post.data.secondary_active_slug}
+          title={post.data.secondary_title}
+        />
+      )
+    }
 
     <PostNavigation prevPost={prevPost} nextPost={nextPost} />
   </section>

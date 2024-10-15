@@ -23,7 +23,11 @@ const { author } = Astro.props
 const allPosts = await getCollection('blog')
 const authorPosts = allPosts
   .filter((post) => {
-    return post.data.authors && post.data.authors.includes(author.id)
+    return (
+      post.data.authors &&
+      post.data.authors.includes(author.id) &&
+      !post.data.hidden
+    )
   })
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
 ---
