@@ -1,2 +1,0 @@
-<span style="color:#DC3958">$</span> python3 file.pyc 
-Usage: ./wallet password

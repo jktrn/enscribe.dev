@@ -1,0 +1,38 @@
+---
+import Container from '@/components/Container.astro'
+import Link from '@/components/Link.astro'
+import MobileMenu from '@/components/ui/mobile-menu'
+import { ModeToggle } from '@/components/ui/mode-toggle'
+import { NAV_LINKS } from '@/consts'
+import { Image } from 'astro:assets'
+import logo from '../../public/static/logo.webp'
+---
+
+<header
+  class="sticky top-0 z-10 bg-background/50 backdrop-blur-md"
+  transition:persist
+>
+  <Container>
+    <div class="flex flex-wrap items-center justify-between gap-4 py-4">
+      <Link href="/">
+        <Image src={logo} alt="Logo" class="size-8" />
+      </Link>
+      <div class="flex items-center gap-2 sm:gap-4">
+        <nav class="hidden items-center gap-4 text-sm sm:flex sm:gap-6">
+          {
+            NAV_LINKS.map((item) => (
+              <Link
+                href={item.href}
+                class="capitalize text-foreground/60 transition-colors hover:text-foreground/80"
+              >
+                {item.label}
+              </Link>
+            ))
+          }
+        </nav>
+        <MobileMenu client:load transition:persist />
+        <!-- <ModeToggle client:load transition:persist /> -->
+      </div>
+    </div>
+  </Container>
+</header>

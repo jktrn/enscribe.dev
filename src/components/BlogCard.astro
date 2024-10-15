@@ -1,0 +1,87 @@
+---
+import AvatarComponent from '@/components/ui/avatar'
+import { Badge } from '@/components/ui/badge'
+import { Separator } from '@/components/ui/separator'
+import { formatDate, parseAuthors, readingTime } from '@/lib/utils'
+import { Image } from 'astro:assets'
+import type { CollectionEntry } from 'astro:content'
+import Link from './Link.astro'
+
+type Props = {
+  entry: CollectionEntry<'blog'>
+}
+
+const { entry } = Astro.props as {
+  entry: CollectionEntry<'blog'>
+}
+
+const formattedDate = formatDate(entry.data.date)
+const readTime = readingTime(entry.body)
+const authors = await parseAuthors(entry.data.authors ?? [])
+---
+
+<div
+  class="not-prose rounded-xl border p-4 transition-colors duration-300 ease-in-out hover:bg-secondary/50"
+>
+  <Link
+    href={`/${entry.collection}/${entry.slug}`}
+    class="flex flex-col gap-4 sm:flex-row"
+  >
+    {
+      entry.data.image && (
+        <div class="max-w-[275px] sm:flex-shrink-0">
+          <Image
+            src={entry.data.image}
+            alt={entry.data.title}
+            width={1200}
+            height={630}
+            class="object-cover"
+          />
+        </div>
+      )
+    }
+    <div class="flex-grow">
+      <h3 class="mb-1 text-lg font-semibold">
+        {entry.data.title}
+      </h3>
+      <p class="mb-2 text-sm text-muted-foreground">
+        {entry.data.description}
+      </p>
+      <div
+        class="mb-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground"
+      >
+        {
+          authors.length > 0 && (
+            <>
+              {authors.map((author) => (
+                <div class="flex items-center gap-x-1.5">
+                  <AvatarComponent
+                    client:load
+                    src={author.avatar}
+                    alt={author.name}
+                    fallback={author.name[0]}
+                    className="size-5 rounded-full"
+                  />
+                  <span>{author.name}</span>
+                </div>
+              ))}
+              <Separator orientation="vertical" className="h-4" />
+            </>
+          )
+        }
+        <span>{formattedDate}</span>
+        <Separator orientation="vertical" className="h-4" />
+        <span>{readTime}</span>
+      </div>
+      {
+        entry.data.tags && (
+          <div class="flex flex-wrap gap-2">
+            {entry.data.tags.map((tag: string) => (
+              <Badge variant="secondary">{tag}</Badge>
+            ))}
+          </div>
+        )
+      }
+    </div>
+  </Link>
+</div>

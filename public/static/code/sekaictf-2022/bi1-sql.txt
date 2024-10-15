@@ -1,1 +1,0 @@
-SELECT url FROM 'moz_places' WHERE URL like '%paste%'

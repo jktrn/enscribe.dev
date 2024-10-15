@@ -1,0 +1,17 @@
+---
+interface Props {
+  country: string
+}
+
+const { country } = Astro.props
+---
+
+{
+  country && (
+    <img
+      src={`https://flagcdn.com/20x15/${country}.png`}
+      alt={country}
+      class="align-text-middle !m-0 inline-block rounded-none border-none"
+    />
+  )
+}

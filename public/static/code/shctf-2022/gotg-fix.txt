@@ -1,3 +1,0 @@
-<span style="color:#DC3958">$</span> touch flag.txt && echo "FLAGHERE" > flag.txt
-<span style="color:#DC3958">$</span> ./guardians
-Does Quill manage to win the dance battle?

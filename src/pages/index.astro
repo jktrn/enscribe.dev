@@ -1,0 +1,171 @@
+---
+import DiscordPresence from '@/components/bento/DiscordPresence.tsx'
+import GithubCalendar from '@/components/bento/GithubCalendar.tsx'
+import SpotifyPresence from '@/components/bento/SpotifyPresence.tsx'
+import WakatimeGraph from '@/components/bento/WakatimeGraph.tsx'
+import Link from '@/components/Link.astro'
+import { SITE, SOCIAL_LINKS } from '@/consts'
+import Layout from '@/layouts/Layout.astro'
+import { Icon } from 'astro-icon/components'
+import { getCollection } from 'astro:content'
+
+const latestPost = await getCollection('blog').then((posts) =>
+  posts
+    .sort(
+      (a, b) =>
+        new Date(b.data.date).getTime() - new Date(a.data.date).getTime(),
+    )
+    .at(0),
+)
+---
+
+<Layout title="Home" description={SITE.DESCRIPTION}>
+  <section
+    class="mx-auto grid max-w-[375px] grid-cols-2 gap-4 px-4 [grid-template-areas:'a_a'_'a_a'_'b_b'_'b_b'_'e_e'_'h_i'_'h_c'_'k_c'_'d_d'_'d_d'_'g_g'_'g_g'_'f_f'_'j_j'_'j_j'] *:rounded-3xl *:border *:bg-secondary/25 *:bg-cover *:bg-center *:bg-no-repeat sm:max-w-screen-sm sm:[grid-template-areas:'a_a'_'b_d'_'e_e'_'j_g'_'h_i'_'h_c'_'k_c'_'f_f'] xl:max-w-screen-xl xl:grid-cols-4 xl:[grid-template-areas:'a_a_b_c'_'d_e_e_c'_'h_f_f_g'_'h_i_j_k'] xl:[&:hover:has(>.has-overlay:hover)>.first>.overlay]:opacity-100 xl:[&:hover>*:not(.first):hover_.overlay]:opacity-100"
+    aria-label="Personal information and activity grid"
+  >
+    <div
+      class="first aspect-square rounded-3xl border bg-[url('/static/bento/about-square.webp')] bg-cover bg-center bg-no-repeat [grid-area:a] sm:aspect-[2.1/1] sm:bg-[url('/static/bento/about.webp')] xl:aspect-auto"
+      role="img"
+      aria-label="Introduction"
+    >
+      <div
+        class="overlay size-full rounded-3xl bg-[url('/static/bento/about-silhouette.webp')] bg-cover bg-center bg-no-repeat opacity-0 transition-opacity duration-200"
+      >
+      </div>
+    </div>
+
+    <div
+      class="has-overlay aspect-square [grid-area:b] xl:bg-[url('/static/bento/details-silhouette.webp')]"
+      role="img"
+      aria-label="CTF Information"
+    >
+      <div
+        class="overlay size-full rounded-3xl bg-[url('/static/bento/details.webp')] bg-cover bg-center bg-no-repeat transition-opacity duration-200 xl:opacity-0"
+      >
+      </div>
+    </div>
+
+    <div
+      class="aspect-[1/2.1] bg-[url('/static/bento/image-1.webp')] [grid-area:c] xl:aspect-auto"
+      aria-hidden="true"
+    >
+    </div>
+
+    <div class="relative overflow-hidden [grid-area:d] sm:aspect-square">
+      <DiscordPresence client:load />
+    </div>
+
+    <div
+      class="has-overlay relative flex aspect-[6/5] items-start overflow-hidden p-4 [grid-area:e] hover:bg-none sm:aspect-[2.1/1] sm:items-center xl:aspect-auto xl:bg-[url('/static/bento/blog-silhouette.webp')]"
+    >
+      <div
+        class="overlay absolute inset-0 size-full rounded-3xl bg-[url('/static/bento/blog-square.webp')] bg-cover bg-center bg-no-repeat transition-opacity duration-200 sm:bg-[url('/static/bento/blog.webp')] xl:opacity-0"
+      >
+      </div>
+      {
+        latestPost && (
+          <>
+            <img
+              src={latestPost.data.image?.src ?? '#'}
+              alt={`Featured image for the latest post: ${latestPost.data.title}`}
+              width={477}
+              height={251}
+              class="w-full rounded-2xl border border-border sm:ml-2 sm:w-[80%]"
+            />
+            <Link
+              href={`/blog/${latestPost.slug}`}
+              aria-label={`Read latest blog post: ${latestPost.data.title}`}
+              title={`Read latest blog post: ${latestPost.data.title}`}
+            >
+              <div class="absolute bottom-0 right-0 m-3 flex w-fit items-end rounded-full border bg-secondary/50 p-3 text-primary transition-all duration-300 hover:rotate-12 hover:ring-1 hover:ring-primary">
+                <Icon name="lucide:move-up-right" size={16} />
+              </div>
+            </Link>
+          </>
+        )
+      }
+    </div>
+
+    <div
+      class="has-overlay relative flex aspect-square items-center justify-center overflow-hidden [grid-area:f] hover:bg-none sm:aspect-[2.1/1] xl:aspect-auto xl:bg-[url('/static/bento/contributions-silhouette.webp')]"
+    >
+      <div
+        class="overlay absolute inset-0 z-[1] size-full rounded-3xl bg-[url('/static/bento/contributions-square.webp')] bg-cover bg-center bg-no-repeat transition-opacity duration-200 sm:bg-[url('/static/bento/contributions.webp')] xl:opacity-0"
+      >
+      </div>
+      <GithubCalendar username="jktrn" client:load />
+    </div>
+
+    <div
+      class="has-overlay relative aspect-square [grid-area:g] hover:bg-none xl:bg-[url('/static/bento/spotify-silhouette.webp')]"
+    >
+      <div
+        class="overlay absolute inset-0 z-0 size-full rounded-3xl bg-[url('/static/bento/spotify.webp')] bg-cover bg-center bg-no-repeat transition-opacity duration-200 xl:opacity-0"
+      >
+      </div>
+      <SpotifyPresence client:load />
+    </div>
+
+    <div
+      class="aspect-[1/2.1] bg-[url('/static/bento/image-2.webp')] [grid-area:h] xl:aspect-auto"
+      aria-hidden="true"
+    >
+    </div>
+
+    <div
+      class="has-overlay relative flex aspect-square items-center justify-center [grid-area:i] hover:bg-none xl:bg-[url('/static/bento/github-silhouette.webp')]"
+    >
+      <div
+        class="overlay absolute inset-0 size-full rounded-3xl bg-[url('/static/bento/github.webp')] bg-cover bg-center bg-no-repeat transition-opacity duration-200 xl:opacity-0"
+      >
+      </div>
+      <Icon
+        name="mdi:github"
+        class="absolute z-[1] size-1/2 text-primary sm:size-24"
+        aria-hidden="true"
+      />
+      <Link
+        href={SOCIAL_LINKS.find((link) => link.label === 'GitHub')?.href || '#'}
+        title="Visit my GitHub profile"
+        aria-label="Visit my GitHub profile"
+      >
+        <div
+          class="absolute bottom-0 right-0 m-3 flex w-fit items-end rounded-full border bg-secondary/50 p-3 text-primary transition-all duration-300 hover:rotate-12 hover:ring-1 hover:ring-primary"
+        >
+          <Icon name="lucide:move-up-right" size={16} />
+        </div>
+      </Link>
+    </div>
+
+    <div class="aspect-square [grid-area:j]">
+      <WakatimeGraph omitLanguages={['Markdown', 'JSON']} client:load />
+    </div>
+
+    <div
+      class="has-overlay relative flex aspect-square items-center justify-center [grid-area:k] hover:bg-none xl:bg-[url('/static/bento/twitter-silhouette.webp')]"
+    >
+      <div
+        class="overlay absolute inset-0 size-full rounded-3xl bg-[url('/static/bento/twitter.webp')] bg-cover bg-center bg-no-repeat transition-opacity duration-200 xl:opacity-0"
+      >
+      </div>
+      <Icon
+        name="mdi:twitter"
+        class="absolute z-[1] size-1/2 text-primary sm:size-24"
+        aria-hidden="true"
+      />
+      <Link
+        href={SOCIAL_LINKS.find((link) => link.label === 'Twitter')?.href ||
+          '#'}
+        title="Visit my Twitter profile"
+        aria-label="Visit my Twitter profile"
+      >
+        <div
+          class="absolute bottom-0 right-0 m-3 flex w-fit items-end rounded-full border bg-secondary/50 p-3 text-primary transition-all duration-300 hover:rotate-12 hover:ring-1 hover:ring-primary"
+        >
+          <Icon name="lucide:move-up-right" size={16} />
+        </div>
+      </Link>
+    </div>
+  </section>
+</Layout>
