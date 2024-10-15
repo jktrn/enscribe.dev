@@ -1,2 +1,0 @@
-<span style="color:#DC3958">$</span> grep -n cultiris usernames.txt
-378:cultiris

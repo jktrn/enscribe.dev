@@ -1,0 +1,237 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: 'JetBrains Mono';
+  src: url('/fonts/JetBrainsMono[wght].woff2') format('woff2-variations');
+  font-weight: 100 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'JetBrains Mono';
+  src: url('/fonts/JetBrainsMono-Italic[wght].woff2') format('woff2-variations');
+  font-weight: 100 800;
+  font-style: italic;
+  font-display: swap;
+}
+
+.styles-module_calendar__sT1ND text {
+  fill: currentColor;
+}
+
+@layer base {
+  :root {
+    --background: 0 0% 3.9%;
+    --foreground: 0 0% 98%;
+    --primary: 34 54% 81%;
+    --primary-foreground: 0 0% 9%;
+    --secondary: 0 0% 14.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 0 0% 14.9%;
+    --muted-foreground: 0 0% 63.9%;
+    --accent: 0 0% 14.9%;
+    --accent-foreground: 0 0% 98%;
+    --additive: 112 50% 36%;
+    --additive-foreground: 0 0% 9%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 14.9%;
+    --ring: 0 0% 83.1%;
+
+    --chart-1: 34 54% 81%;
+    --chart-2: 34 34% 73%;
+    --chart-3: 35 22% 65%;
+    --chart-4: 35 16% 57%;
+    --chart-5: 35 12% 41%;
+    --chart-6: 33 12% 33%;
+    --chart-7: 32 12% 25%;
+  }
+
+  .dark {
+    --background: 0 0% 3.9%;
+    --foreground: 0 0% 98%;
+    --primary: 34 54% 81%;
+    --primary-foreground: 0 0% 9%;
+    --secondary: 0 0% 14.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 0 0% 14.9%;
+    --muted-foreground: 0 0% 63.9%;
+    --accent: 0 0% 14.9%;
+    --accent-foreground: 0 0% 98%;
+    --additive: 112 50% 36%;
+    --additive-foreground: 0 0% 9%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 14.9%;
+    --ring: 0 0% 83.1%;
+
+    --chart-1: 34 54% 81%;
+    --chart-2: 34 34% 73%;
+    --chart-3: 35 22% 65%;
+    --chart-4: 35 16% 57%;
+    --chart-5: 35 12% 41%;
+    --chart-6: 33 12% 33%;
+    --chart-7: 32 12% 25%;
+  }
+
+  *,
+  *::before,
+  *::after {
+    @apply border-border;
+  }
+
+  html {
+    color-scheme: light;
+    @apply bg-background text-foreground;
+
+    &.dark {
+      color-scheme: dark;
+    }
+
+    ::-webkit-scrollbar-corner {
+      @apply bg-transparent;
+    }
+  }
+
+  .disable-transitions,
+  .disable-transitions * {
+    @apply !transition-none;
+  }
+}
+
+@layer components {
+  article {
+    @apply prose-headings:scroll-mt-20 prose-headings:break-words;
+    @apply prose-p:break-words;
+    @apply prose-a:!text-primary prose-a:!decoration-primary/50 prose-a:!underline-offset-[3px] prose-a:transition-colors hover:prose-a:!decoration-inherit;
+    @apply prose-blockquote:!not-italic prose-blockquote:!text-muted-foreground;
+    @apply prose-pre:!px-0;
+    @apply prose-img:mx-auto prose-img:rounded-xl prose-img:border;
+    @apply prose-table:mx-auto prose-table:block prose-table:max-w-fit prose-table:overflow-x-auto prose-td:break-words;
+    @apply sm:prose-table:mx-0 sm:prose-table:table sm:prose-table:max-w-none;
+
+    /* Fixing Katex display */
+    .katex-display {
+      @apply overflow-x-auto overflow-y-hidden py-4;
+    }
+
+    /* Fixing Katex fractions */
+    .frac-line {
+      @apply border-foreground;
+    }
+
+    /* Removes background from <mark> elements */
+    mark {
+      @apply bg-transparent;
+    }
+
+    /* Blanket syntax highlighting */
+    code[data-theme*=' '] {
+      span {
+        color: var(--shiki-light);
+      }
+
+      .dark & span {
+        color: var(--shiki-dark);
+      }
+    }
+
+    /* Inline code */
+    :not(pre) > code {
+      @apply relative rounded bg-muted/50 px-[0.3rem] py-[0.2rem] font-mono text-sm font-medium before:!content-none after:!content-none;
+    }
+
+    /* Code blocks */
+    figure[data-rehype-pretty-code-figure] {
+      @apply relative;
+
+      /* Code block titles */
+      [data-rehype-pretty-code-title] {
+        @apply break-words rounded-t-xl border-x border-t px-4 py-2 text-sm font-medium text-foreground;
+
+        /* Remove top margin from code block if a title is present */
+        & + pre {
+          @apply mt-0 rounded-t-none;
+        }
+      }
+
+      /* Code block styles */
+      pre {
+        @apply static max-h-[600px] overflow-auto rounded-xl border bg-secondary/20 py-4 text-sm leading-loose;
+
+        /* Code block content */
+        > code {
+          @apply whitespace-pre-wrap;
+          counter-reset: line;
+
+          /* For code blocks with line numbers */
+          &[data-line-numbers] {
+            > [data-line]::before {
+              counter-increment: line;
+              content: counter(line);
+              @apply mr-4 inline-block w-4 text-right text-muted-foreground;
+            }
+          }
+
+          /* For each line in the code block */
+          > [data-line] {
+            @apply px-4;
+          }
+
+          /* Highlighted lines */
+          [data-highlighted-line] {
+            @apply bg-foreground/10;
+          }
+
+          /* Highlighted characters */
+          [data-highlighted-chars] > span {
+            @apply bg-muted-foreground/40 py-[7px];
+          }
+
+          .tab {
+            @apply relative;
+          }
+
+          .tab::before {
+            @apply absolute opacity-30;
+            content: '⇥';
+          }
+
+          /* Skip lines */
+          .skip {
+            @apply my-2 bg-foreground/5 text-center text-foreground;
+
+            &::before {
+              content: '' !important;
+            }
+          }
+
+          /* Diff lines */
+          .diff {
+            &.add {
+              @apply bg-additive/15;
+            }
+            &.remove {
+              @apply bg-destructive/15;
+              &::before {
+                content: '-';
+                counter-increment: none;
+              }
+            }
+            &.highlight {
+              @apply bg-foreground/10;
+            }
+          }
+
+          /* Copy button */
+          > button:has(> span) {
+            @apply right-1 top-1 m-0 size-8 rounded-lg bg-secondary p-1 backdrop-blur-none transition-all duration-200;
+          }
+        }
+      }
+    }
+  }
+}

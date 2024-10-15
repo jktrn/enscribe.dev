@@ -1,4 +1,0 @@
-from pwn import *
-
-p = remote('0.cloud.chals.io', [PORT])
-print(p.recvuntilS(b'> '))

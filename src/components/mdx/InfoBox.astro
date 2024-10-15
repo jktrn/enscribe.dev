@@ -1,0 +1,44 @@
+---
+import { Icon } from 'astro-icon/components'
+
+interface Props {
+  type?: 'default' | 'info' | 'warning' | 'flag' | 'destructive'
+}
+
+const { type = 'default' } = Astro.props
+
+const typeMapping = {
+  default: {
+    icon: 'lucide:lightbulb',
+    classes: 'bg-primary/20',
+  },
+  info: {
+    icon: 'lucide:info',
+    classes: 'bg-secondary/50',
+  },
+  warning: {
+    icon: 'lucide:alert-triangle',
+    classes:
+      'border-yellow-200/50 bg-yellow-100/50 dark:border-yellow-800/50 dark:bg-yellow-900/50',
+  },
+  flag: {
+    icon: 'lucide:flag',
+    classes: 'bg-primary/20 justify-center',
+  },
+  destructive: {
+    icon: 'lucide:alert-octagon',
+    classes: 'border-destructive bg-destructive/25',
+  },
+}
+
+const { icon, classes } = typeMapping[type]
+---
+
+<div class={`relative my-6 flex gap-4 rounded-xl border p-4 ${classes}`}>
+  <span class="text-md pointer-events-none select-none">
+    <Icon name={icon} size={20} class="translate-y-0.5" />
+  </span>
+  <div class="-my-4 prose-code:break-all">
+    <slot />
+  </div>
+</div>

@@ -1,0 +1,118 @@
+---
+import { ScrollArea } from '@/components/ui/scroll-area'
+import { Icon } from 'astro-icon/components'
+import TableOfContentsHeading from './TableOfContentsHeading.astro'
+
+export interface Heading {
+  depth: number
+  slug: string
+  text: string
+  subheadings: Heading[]
+}
+
+const { headings } = Astro.props
+const toc = buildToc(headings)
+
+function buildToc(headings: Heading[]): Heading[] {
+  const toc: Heading[] = []
+  const stack: Heading[] = []
+
+  headings.forEach((h) => {
+    const heading = { ...h, subheadings: [] }
+
+    while (stack.length > 0 && stack[stack.length - 1].depth >= heading.depth) {
+      stack.pop()
+    }
+
+    if (stack.length === 0) {
+      toc.push(heading)
+    } else {
+      stack[stack.length - 1].subheadings.push(heading)
+    }
+
+    stack.push(heading)
+  })
+
+  return toc
+}
+---
+
+<details
+  open
+  class="group col-start-2 mx-4 block rounded-xl border p-4 xl:hidden"
+>
+  <summary
+    class="flex cursor-pointer items-center justify-between text-xl font-semibold"
+  >
+    Table of Contents
+    <Icon
+      name="lucide:chevron-down"
+      class="size-5 transition-transform group-open:rotate-180"
+    />
+  </summary>
+  <ScrollArea
+    client:load
+    className="flex max-h-64 flex-col overflow-y-auto"
+    type="always"
+  >
+    <nav>
+      <ul class="pt-3">
+        {toc.map((heading) => <TableOfContentsHeading heading={heading} />)}
+      </ul>
+    </nav>
+  </ScrollArea>
+</details>
+
+<nav
+  class="sticky top-[5.5rem] col-start-1 hidden h-[calc(100vh-5.5rem)] text-xs leading-4 xl:block"
+>
+  <div class="flex justify-end">
+    <ScrollArea client:load className="max-h-[calc(100vh-8rem)]" type="always">
+      <ul
+        class="flex flex-col justify-end gap-y-2 overflow-y-auto px-8"
+        id="toc-container"
+      >
+        <li>
+          <h2 class="mb-2 text-lg font-semibold">Table of Contents</h2>
+        </li>
+        {toc.map((heading) => <TableOfContentsHeading heading={heading} />)}
+      </ul>
+    </ScrollArea>
+  </div>
+</nav>
+
+<script>
+  function setupToc() {
+    const header = document.querySelector('header')
+    const headerHeight = header ? header.offsetHeight : 0
+
+    const observer = new IntersectionObserver(
+      (sections) => {
+        sections.forEach((section) => {
+          const heading = section.target.querySelector('h2, h3, h4, h5, h6')
+          if (!heading) return
+
+          const id = heading.getAttribute('id')
+          const link = document.querySelector(
+            `#toc-container li a[href="#${id}"]`,
+          )
+          if (!link) return
+
+          const addRemove = section.isIntersecting ? 'add' : 'remove'
+          link.classList[addRemove]('text-foreground')
+        })
+      },
+      {
+        rootMargin: `-${headerHeight}px 0px 0px 0px`,
+      },
+    )
+
+    const sections = document.querySelectorAll('.prose section')
+    sections.forEach((section) => {
+      observer.observe(section)
+    })
+  }
+
+  document.addEventListener('astro:page-load', setupToc)
+  document.addEventListener('astro:after-swap', setupToc)
+</script>
