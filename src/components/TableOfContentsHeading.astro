@@ -1,24 +1,40 @@
 ---
+import { cn } from '@/lib/utils'
 import Link from './Link.astro'
 import type { Heading } from './TableOfContents.astro'
 
-const { heading } = Astro.props
+interface Props {
+  heading: Heading
+  activeSlug?: string
+}
+
+const { heading, activeSlug } = Astro.props
+const isActive = heading.slug === activeSlug
 ---
 
 <li
-  class="list-inside list-disc px-4 py-1.5 text-xs text-foreground/60 xl:list-none xl:p-0"
+  class={cn(
+    'list-inside list-disc px-4 py-1.5 text-xs xl:list-none xl:p-0',
+    isActive ? 'text-foreground' : 'text-foreground/60',
+    activeSlug && 'text-right',
+  )}
 >
   <Link
-    href={'#' + heading.slug}
+    href={activeSlug ? heading.slug : '#' + heading.slug}
     class="toc-link underline decoration-transparent underline-offset-[3px] transition-colors duration-200 hover:decoration-inherit"
   >
     {heading.text}
   </Link>
   {
-    heading.subheadings.length > 0 && (
-      <ul class="translate-x-3 xl:ml-4 xl:mt-2 xl:flex xl:translate-x-0 xl:flex-col xl:gap-2">
+    heading.subheadings && heading.subheadings.length > 0 && (
+      <ul
+        class={cn(
+          'translate-x-3 xl:ml-4 xl:mt-2 xl:flex xl:translate-x-0 xl:flex-col xl:gap-2',
+          activeSlug && 'xl:ml-0 xl:mr-4',
+        )}
+      >
         {heading.subheadings.map((subheading: Heading) => (
-          <Astro.self heading={subheading} />
+          <Astro.self heading={subheading} activeSlug={activeSlug} />
         ))}
       </ul>
     )
