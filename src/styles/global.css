@@ -160,15 +160,15 @@
 
       /* Shadcn-like scrollbar */
       pre::-webkit-scrollbar {
-        @apply w-2.5 h-2.5;
+        @apply h-2.5 w-2.5;
       }
 
       pre::-webkit-scrollbar-track {
-        @apply bg-transparent
+        @apply bg-transparent;
       }
 
       pre::-webkit-scrollbar-thumb {
-        @apply rounded-full bg-border p-px bg-clip-padding;
+        @apply rounded-full bg-border bg-clip-padding p-px;
       }
 
       /* Code block styles */
