@@ -74,7 +74,7 @@ const latestPost = await getCollection('blog').then((posts) =>
               class="w-full rounded-2xl border border-border sm:ml-2 sm:w-[80%]"
             />
             <Link
-              href={`/blog/${latestPost.slug}`}
+              href={`/blog/${latestPost.id}`}
               aria-label={`Read latest blog post: ${latestPost.data.title}`}
               title={`Read latest blog post: ${latestPost.data.title}`}
             >

@@ -21,7 +21,7 @@ export function transformerNotationSkip(
     'skip-lines',
     // comment-start             | marker   | range       | comment-end
     /^\s*(?:\/\/|\/\*|<!--|#)\s+\[!code skip:(\d+):(\d+)\]\s*(?:\*\/|-->)?/,
-    function ([_, start, end], _line, comment, lines, index) {
+    function ([_, start, end], _line) {
       _line.children = [{ type: 'text', value: `${start}-${end}` }]
       _line.properties = { style: `counter-set:line ${end}` }
 
