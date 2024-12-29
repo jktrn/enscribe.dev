@@ -23,8 +23,9 @@ export async function getStaticPaths() {
 }
 type Props = CollectionEntry<'blog'>
 
-const posts = (await getCollection('blog'))
-  .filter((post) => !post.data.draft)
+const allPosts = await getCollection('blog')
+const posts = allPosts
+  .filter((post) => !post.data.draft && !post.data.hidden)
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
 
 function getPostIndex(id: string): number {
@@ -33,14 +34,18 @@ function getPostIndex(id: string): number {
 
 function getPrevPost(id: string): Props | null {
   const postIndex = getPostIndex(id)
-  return postIndex !== -1 && postIndex < posts.length - 1
-    ? posts[postIndex + 1]
-    : null
+  if (postIndex < 0 || postIndex >= posts.length - 1) {
+    return null
+  }
+  return posts[postIndex + 1]
 }
 
 function getNextPost(id: string): Props | null {
   const postIndex = getPostIndex(id)
-  return postIndex > 0 ? posts[postIndex - 1] : null
+  if (postIndex <= 0) {
+    return null
+  }
+  return posts[postIndex - 1]
 }
 
 const currentPostId = Astro.params.id
@@ -83,7 +88,7 @@ const authors = await parseAuthors(post.data.authors ?? [])
     </div>
     <section class="col-start-2 flex flex-col gap-y-6 text-center">
       <div class="flex flex-col gap-y-4">
-        <h1 class="text-3xl font-bold tracking-tight sm:text-4xl">
+        <h1 class="text-3xl font-bold tracking-tight sm:text-4xl text-pretty">
           {post.data.title}
         </h1>
 
@@ -148,7 +153,7 @@ const authors = await parseAuthors(post.data.authors ?? [])
         </div>
       </div>
 
-      <PostNavigation prevPost={prevPost} nextPost={nextPost} />
+      {!post.data.secondary_headings && <PostNavigation prevPost={prevPost} nextPost={nextPost} />}
     </section>
 
     {headings.length > 0 && <TableOfContents headings={headings} />}
@@ -169,7 +174,7 @@ const authors = await parseAuthors(post.data.authors ?? [])
       )
     }
 
-    <PostNavigation prevPost={prevPost} nextPost={nextPost} />
+    {!post.data.secondary_headings && <PostNavigation prevPost={prevPost} nextPost={nextPost} />}
   </section>
 
   <Button
