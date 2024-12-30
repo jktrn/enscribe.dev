@@ -56,6 +56,7 @@ const post = Astro.props
 const { Content, headings } = await render(post)
 
 const authors = await parseAuthors(post.data.authors ?? [])
+const isSubpost = !!post.data.tableOfContents
 ---
 
 <Layout
@@ -69,13 +70,25 @@ const authors = await parseAuthors(post.data.authors ?? [])
     <Breadcrumbs
       items={[
         { href: '/blog', label: 'Blog', icon: 'lucide:archive' },
-        { label: post.data.title, icon: 'lucide:file-text' },
+        ...(isSubpost
+          ? [
+              {
+                href: post.data.parentSlug,
+                label: post.data.parentTitle ?? 'Parent Post',
+                icon: 'lucide:file-text',
+              },
+              {
+                label: post.data.title.split(': ')[1] ?? post.data.title,
+                icon: 'lucide:pilcrow',
+              },
+            ]
+          : [{ label: post.data.title, icon: 'lucide:file-text' }]),
       ]}
       class="col-start-2"
     />
     <div class="col-span-full mx-auto w-full max-w-[1000px]">
       {
-        post.data.image && (
+        !isSubpost && post.data.image && (
           <Image
             src={post.data.image}
             alt={post.data.title}
@@ -86,75 +99,73 @@ const authors = await parseAuthors(post.data.authors ?? [])
         )
       }
     </div>
-    <section class="col-start-2 flex flex-col gap-y-6 text-center">
-      <div class="flex flex-col gap-y-4">
-        <h1 class="text-3xl font-bold tracking-tight sm:text-4xl text-pretty">
-          {post.data.title}
-        </h1>
+    {
+      !isSubpost && (
+        <section class="col-start-2 flex flex-col gap-y-6 text-center">
+          <div class="flex flex-col gap-y-4">
+            <h1 class="text-pretty text-3xl font-bold tracking-tight sm:text-4xl">
+              {post.data.title}
+            </h1>
 
-        <div
-          class="flex flex-wrap items-center justify-center gap-2 text-sm text-muted-foreground"
-        >
-          {
-            authors.length > 0 && (
-              <>
-                <div class="flex items-center gap-x-2">
-                  {authors.map((author) => (
-                    <div class="flex items-center gap-x-1.5">
-                      <Image
-                        src={author.avatar}
-                        alt={author.name}
-                        width={24}
-                        height={24}
-                        class="rounded-full"
-                      />
-                      {author.isRegistered ? (
-                        <Link
-                          href={`/authors/${author.id}`}
-                          underline
-                          class="text-foreground"
-                        >
+            <div class="flex flex-wrap items-center justify-center gap-2 text-sm text-muted-foreground">
+              {authors.length > 0 && (
+                <>
+                  <div class="flex items-center gap-x-2">
+                    {authors.map((author) => (
+                      <div class="flex items-center gap-x-1.5">
+                        <Image
+                          src={author.avatar}
+                          alt={author.name}
+                          width={24}
+                          height={24}
+                          class="rounded-full"
+                        />
+                        {author.isRegistered ? (
+                          <Link
+                            href={`/authors/${author.id}`}
+                            underline
+                            class="text-foreground"
+                          >
+                            <span>{author.name}</span>
+                          </Link>
+                        ) : (
                           <span>{author.name}</span>
-                        </Link>
-                      ) : (
-                        <span>{author.name}</span>
-                      )}
-                    </div>
-                  ))}
-                </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                  <Separator orientation="vertical" className="h-4" />
+                </>
+              )}
+              <div class="flex items-center gap-2">
+                <span>{formatDate(post.data.date)}</span>
                 <Separator orientation="vertical" className="h-4" />
-              </>
-            )
-          }
-          <div class="flex items-center gap-2">
-            <span>{formatDate(post.data.date)}</span>
-            <Separator orientation="vertical" className="h-4" />
-            <span>{readingTime(post.body!)}</span>
+                <span>{readingTime(post.body!)}</span>
+              </div>
+            </div>
+            <div class="flex flex-wrap justify-center gap-2">
+              {post.data.tags && post.data.tags.length > 0 ? (
+                post.data.tags.map((tag: string) => (
+                  <a
+                    href={`/tags/${tag}`}
+                    class={badgeVariants({ variant: 'secondary' })}
+                  >
+                    <Icon name="lucide:hash" class="size-3 -translate-x-0.5" />
+                    {tag}
+                  </a>
+                ))
+              ) : (
+                <span class="text-sm text-muted-foreground">
+                  No tags available
+                </span>
+              )}
+            </div>
           </div>
-        </div>
-        <div class="flex flex-wrap justify-center gap-2">
-          {
-            post.data.tags && post.data.tags.length > 0 ? (
-              post.data.tags.map((tag: string) => (
-                <a
-                  href={`/tags/${tag}`}
-                  class={badgeVariants({ variant: 'secondary' })}
-                >
-                  <Icon name="lucide:hash" class="size-3 -translate-x-0.5" />
-                  {tag}
-                </a>
-              ))
-            ) : (
-              <span class="text-sm text-muted-foreground">
-                No tags available
-              </span>
-            )
-          }
-        </div>
-      </div>
 
-      {!post.data.secondary_headings && <PostNavigation prevPost={prevPost} nextPost={nextPost} />}
-    </section>
+          <PostNavigation prevPost={prevPost} nextPost={nextPost} />
+        </section>
+      )
+    }
 
     {headings.length > 0 && <TableOfContents headings={headings} />}
 
@@ -165,16 +176,16 @@ const authors = await parseAuthors(post.data.authors ?? [])
     </article>
 
     {
-      post.data.secondary_headings && (
+      isSubpost && (
         <TableOfContentsPrebuilt
-          headings={post.data.secondary_headings}
-          activeSlug={post.data.secondary_active_slug}
-          title={post.data.secondary_title}
+          headings={post.data.tableOfContents ?? []}
+          activeSlug={post.data.activeSlug}
+          title={post.data.tableOfContentsTitle}
         />
       )
     }
 
-    {!post.data.secondary_headings && <PostNavigation prevPost={prevPost} nextPost={nextPost} />}
+    {!isSubpost && <PostNavigation prevPost={prevPost} nextPost={nextPost} />}
   </section>
 
   <Button

@@ -13,8 +13,9 @@ const blog = defineCollection({
       authors: z.array(z.string()).optional(),
       draft: z.boolean().optional(),
       hidden: z.boolean().optional(),
-      secondary_title: z.string().optional(),
-      secondary_headings: z
+      parentTitle: z.string().optional(),
+      parentSlug: z.string().optional(),
+      tableOfContents: z
         .array(
           z.object({
             depth: z.number(),
@@ -33,7 +34,8 @@ const blog = defineCollection({
           }),
         )
         .optional(),
-      secondary_active_slug: z.string().optional(),
+      tableOfContentsTitle: z.string().optional(),
+      activeSlug: z.string().optional(),
     }),
 })
 
