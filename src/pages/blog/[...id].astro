@@ -14,6 +14,24 @@ import { Icon } from 'astro-icon/components'
 import { Image } from 'astro:assets'
 import { type CollectionEntry, getCollection, render } from 'astro:content'
 
+type Props = CollectionEntry<'blog'>
+type Post = CollectionEntry<'blog'>
+
+const allPosts = await getCollection('blog')
+const posts = allPosts
+  .filter((post) => !post.data.draft)
+  .sort((a, b) => a.data.date.valueOf() - b.data.date.valueOf())
+const visiblePosts = posts.filter((post) => !post.data.hidden)
+
+function getAdjacentPosts(currentId: string, postList: Post[]) {
+  const index = postList.findIndex((post) => post.id === currentId)
+  return {
+    prev: index > 0 ? postList[index - 1] : null,
+    next:
+      index >= 0 && index < postList.length - 1 ? postList[index + 1] : null,
+  }
+}
+
 export async function getStaticPaths() {
   const posts = await getCollection('blog', ({ data }) => !data.draft)
   return posts.map((post) => ({
@@ -21,42 +39,29 @@ export async function getStaticPaths() {
     props: post,
   }))
 }
-type Props = CollectionEntry<'blog'>
-
-const allPosts = await getCollection('blog')
-const posts = allPosts
-  .filter((post) => !post.data.draft && !post.data.hidden)
-  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
-
-function getPostIndex(id: string): number {
-  return posts.findIndex((post) => post.id === id)
-}
-
-function getPrevPost(id: string): Props | null {
-  const postIndex = getPostIndex(id)
-  if (postIndex < 0 || postIndex >= posts.length - 1) {
-    return null
-  }
-  return posts[postIndex + 1]
-}
-
-function getNextPost(id: string): Props | null {
-  const postIndex = getPostIndex(id)
-  if (postIndex <= 0) {
-    return null
-  }
-  return posts[postIndex - 1]
-}
-
-const currentPostId = Astro.params.id
-const nextPost = getNextPost(currentPostId)
-const prevPost = getPrevPost(currentPostId)
 
 const post = Astro.props
-const { Content, headings } = await render(post)
-
-const authors = await parseAuthors(post.data.authors ?? [])
+const currentPostId = Astro.params.id
 const isSubpost = !!post.data.tableOfContents
+
+const { prev: prevPost, next: nextPost } = isSubpost
+  ? getAdjacentPosts(
+      currentPostId,
+      posts
+        .filter((p) => p.data.parentTitle === post.data.parentTitle)
+        .sort((a, b) => a.data.date.valueOf() - b.data.date.valueOf()),
+    )
+  : getAdjacentPosts(currentPostId, visiblePosts)
+
+const { Content, headings } = await render(post)
+const authors = await parseAuthors(post.data.authors ?? [])
+
+const stripCodeBlocks = (text: string) => text.replace(/```[\s\S]*?```/g, '')
+const subposts = allPosts.filter((p) => p.data.parentTitle === post.data.title)
+const totalBody = [post.body!, ...subposts.map((p) => p.body!)]
+  .map(stripCodeBlocks)
+  .join('')
+const readTime = readingTime(totalBody)
 ---
 
 <Layout
@@ -88,7 +93,7 @@ const isSubpost = !!post.data.tableOfContents
     />
     <div class="col-span-full mx-auto w-full max-w-[1000px]">
       {
-        !isSubpost && post.data.image && (
+        post.data.image && (
           <Image
             src={post.data.image}
             alt={post.data.title}
@@ -99,10 +104,10 @@ const isSubpost = !!post.data.tableOfContents
         )
       }
     </div>
-    {
-      !isSubpost && (
-        <section class="col-start-2 flex flex-col gap-y-6 text-center">
-          <div class="flex flex-col gap-y-4">
+    <section class="col-start-2 flex flex-col gap-y-6">
+      {
+        !isSubpost && (
+          <div class="flex flex-col gap-y-4 text-center">
             <h1 class="text-pretty text-3xl font-bold tracking-tight sm:text-4xl">
               {post.data.title}
             </h1>
@@ -140,11 +145,11 @@ const isSubpost = !!post.data.tableOfContents
               <div class="flex items-center gap-2">
                 <span>{formatDate(post.data.date)}</span>
                 <Separator orientation="vertical" className="h-4" />
-                <span>{readingTime(post.body!)}</span>
+                <span>{readTime}</span>
               </div>
             </div>
             <div class="flex flex-wrap justify-center gap-2">
-              {post.data.tags && post.data.tags.length > 0 ? (
+              {post.data.tags?.length ? (
                 post.data.tags.map((tag: string) => (
                   <a
                     href={`/tags/${tag}`}
@@ -161,11 +166,11 @@ const isSubpost = !!post.data.tableOfContents
               )}
             </div>
           </div>
+        )
+      }
 
-          <PostNavigation prevPost={prevPost} nextPost={nextPost} />
-        </section>
-      )
-    }
+      <PostNavigation prevPost={prevPost} nextPost={nextPost} />
+    </section>
 
     {headings.length > 0 && <TableOfContents headings={headings} />}
 
@@ -185,7 +190,7 @@ const isSubpost = !!post.data.tableOfContents
       )
     }
 
-    {!isSubpost && <PostNavigation prevPost={prevPost} nextPost={nextPost} />}
+    <PostNavigation prevPost={prevPost} nextPost={nextPost} />
   </section>
 
   <Button
