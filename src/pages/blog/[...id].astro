@@ -67,7 +67,7 @@ const readTime = readingTime(totalBody)
 <Layout
   title={post.data.title}
   description={post.data.description}
-  image={post.data.image?.src ?? '/static/1200x630.png'}
+  image={post.data.image?.src ?? '/static/twitter-card.png'}
 >
   <section
     class="grid grid-cols-[minmax(0px,1fr)_min(768px,100%)_minmax(0px,1fr)] gap-y-6 *:px-4"
@@ -91,19 +91,17 @@ const readTime = readingTime(totalBody)
       ]}
       class="col-start-2"
     />
-    <div class="col-span-full mx-auto w-full max-w-[1000px]">
-      {
-        post.data.image && (
-          <Image
-            src={post.data.image}
-            alt={post.data.title}
-            width={1200}
-            height={630}
-            class="rounded-xl object-cover"
-          />
-        )
-      }
-    </div>
+    {!isSubpost && post.data.image && (
+      <div class="col-span-full mx-auto w-full max-w-[1000px]">
+        <Image
+          src={post.data.image}
+          alt={post.data.title}
+          width={1200}
+          height={630}
+          class="rounded-xl object-cover"
+        />
+      </div>
+    )}
     <section class="col-start-2 flex flex-col gap-y-6">
       {
         !isSubpost && (
