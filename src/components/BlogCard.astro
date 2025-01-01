@@ -6,18 +6,26 @@ import { parseAuthors } from '@/lib/server-utils'
 import { formatDate, readingTime } from '@/lib/utils'
 import { Image } from 'astro:assets'
 import type { CollectionEntry } from 'astro:content'
+import { getCollection } from 'astro:content'
 import Link from './Link.astro'
 
-type Props = {
+interface Props {
   entry: CollectionEntry<'blog'>
 }
 
-const { entry } = Astro.props as {
-  entry: CollectionEntry<'blog'>
-}
+const { entry } = Astro.props
 
 const formattedDate = formatDate(entry.data.date)
-const readTime = readingTime(entry.body!)
+const allPosts = await getCollection('blog')
+
+// Calculate total reading time including subposts
+const stripCodeBlocks = (text: string) => text.replace(/```[\s\S]*?```/g, '')
+const subposts = allPosts.filter((p) => p.data.parentTitle === entry.data.title)
+const totalBody = [entry.body!, ...subposts.map((p) => p.body!)]
+  .map(stripCodeBlocks)
+  .join('')
+const readTime = readingTime(totalBody)
+
 const authors = await parseAuthors(entry.data.authors ?? [])
 ---
 

@@ -1,0 +1,41 @@
+---
+import { ScrollArea } from '@/components/ui/scroll-area'
+import TableOfContentsHeading from './TableOfContentsHeading.astro'
+
+export interface Heading {
+  depth: number
+  slug: string
+  text: string
+  subheadings: Heading[]
+}
+
+interface Props {
+  headings: Heading[]
+  title?: string
+  activeSlug?: string
+}
+
+const { headings, title = 'Table of Contents', activeSlug } = Astro.props
+---
+
+<nav
+  class="sticky top-[5.5rem] col-start-3 hidden h-[calc(100vh-5.5rem)] text-xs leading-4 xl:block"
+>
+  <div class="flex justify-start">
+    <ScrollArea client:load className="max-h-[calc(100vh-8rem)]" type="always">
+      <ul
+        class="flex flex-col justify-end gap-y-2 overflow-y-auto px-8"
+        id="toc-container"
+      >
+        <li>
+          <h2 class="mb-2 text-right text-lg font-semibold">{title}</h2>
+        </li>
+        {
+          headings.map((heading) => (
+            <TableOfContentsHeading heading={heading} activeSlug={activeSlug} />
+          ))
+        }
+      </ul>
+    </ScrollArea>
+  </div>
+</nav>

@@ -15,6 +15,7 @@ const latestPost = await getCollection('blog').then((posts) =>
       (a, b) =>
         new Date(b.data.date).getTime() - new Date(a.data.date).getTime(),
     )
+    .filter((post) => !post.data.hidden && !post.data.draft)
     .at(0),
 )
 ---

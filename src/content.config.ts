@@ -12,6 +12,30 @@ const blog = defineCollection({
       tags: z.array(z.string()).optional(),
       authors: z.array(z.string()).optional(),
       draft: z.boolean().optional(),
+      hidden: z.boolean().optional(),
+      parentTitle: z.string().optional(),
+      parentSlug: z.string().optional(),
+      tableOfContents: z
+        .array(
+          z.object({
+            depth: z.number(),
+            slug: z.string(),
+            text: z.string(),
+            subheadings: z.lazy(() =>
+              z.array(
+                z.object({
+                  depth: z.number(),
+                  slug: z.string(),
+                  text: z.string(),
+                  subheadings: z.array(z.any()),
+                }),
+              ),
+            ),
+          }),
+        )
+        .optional(),
+      tableOfContentsTitle: z.string().optional(),
+      activeSlug: z.string().optional(),
     }),
 })
 
