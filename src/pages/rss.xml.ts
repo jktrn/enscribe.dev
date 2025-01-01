@@ -6,7 +6,7 @@ import { getCollection } from 'astro:content'
 export async function GET(context: APIContext) {
   try {
     const blog = (await getCollection('blog')).filter(
-      (post) => !post.data.draft,
+      (post) => !post.data.draft && !post.data.hidden,
     )
 
     // Sort posts by date

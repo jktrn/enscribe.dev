@@ -16,7 +16,8 @@ type Props = {
 const { tag, posts } = Astro.props
 
 export async function getStaticPaths() {
-  const posts = await getCollection('blog')
+  const allPosts = await getCollection('blog')
+  const posts = allPosts.filter((post) => !post.data.draft && !post.data.hidden)
   const tags = posts.flatMap((post) => post.data.tags || [])
   const uniqueTags = Array.from(
     new Set(tags.filter((tag): tag is string => typeof tag === 'string')),

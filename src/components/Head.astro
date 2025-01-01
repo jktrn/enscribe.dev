@@ -35,6 +35,7 @@ const { title, description, image = '/static/twitter-card.png' } = Astro.props
 <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#121212" />
 <meta name="msapplication-TileColor" content="#121212" />
 <meta name="theme-color" content="#E9D3B6" />
+<meta name="color-scheme" content="dark">
 
 <meta property="og:type" content="website" />
 <meta property="og:url" content={Astro.url} />
@@ -50,39 +51,3 @@ const { title, description, image = '/static/twitter-card.png' } = Astro.props
 <meta property="twitter:image" content={new URL(image, Astro.url)} />
 
 <ClientRouter />
-
-<script is:inline>
-  function setDarkMode(document) {
-    const getThemePreference = () => {
-      if (
-        typeof localStorage !== 'undefined' &&
-        localStorage.getItem('theme')
-      ) {
-        return localStorage.getItem('theme')
-      }
-      return window.matchMedia('(prefers-color-scheme: dark)').matches
-        ? 'dark'
-        : 'theme-light'
-    }
-    const isDark = getThemePreference() === 'dark'
-    document.documentElement.classList[isDark ? 'add' : 'remove']('dark')
-
-    if (typeof localStorage !== 'undefined') {
-      const observer = new MutationObserver(() => {
-        const isDark = document.documentElement.classList.contains('dark')
-        localStorage.setItem('theme', isDark ? 'dark' : 'theme-light')
-      })
-      observer.observe(document.documentElement, {
-        attributes: true,
-        attributeFilter: ['class'],
-      })
-    }
-  }
-
-  setDarkMode(document)
-
-  document.addEventListener('astro:before-swap', (ev) => {
-    // Pass the incoming document to set the theme on it
-    setDarkMode(ev.newDocument)
-  })
-</script>

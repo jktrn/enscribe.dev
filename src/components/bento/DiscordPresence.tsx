@@ -117,7 +117,7 @@ const DiscordPresence = () => {
             {hasMainActivity && mainActivity && mainActivity.assets ? (
               <div className="flex w-full items-center gap-x-3">
                 <div
-                  className="relative aspect-square h-full w-auto flex-shrink-0 rounded-md bg-contain grayscale invert dark:invert-0"
+                  className="relative aspect-square h-full w-auto flex-shrink-0 rounded-md bg-contain grayscale invert"
                   style={{
                     backgroundImage: `url('https://cdn.discordapp.com/app-assets/${mainActivity.application_id}/${mainActivity.assets.large_image}.png')`,
                   }}
@@ -128,7 +128,7 @@ const DiscordPresence = () => {
                       alt="Now Playing"
                       width={20}
                       height={20}
-                      className="absolute -bottom-1 -right-1 rounded-full border-2 grayscale invert dark:invert-0"
+                      className="absolute -bottom-1 -right-1 rounded-full border-2 grayscale invert"
                     />
                   )}
                 </div>

@@ -84,12 +84,8 @@
   }
 
   html {
-    color-scheme: light;
-    @apply bg-background text-foreground;
-
-    &.dark {
-      color-scheme: dark;
-    }
+    color-scheme: dark;
+    @apply forced-color-adjust-none bg-background text-foreground;
 
     ::-webkit-scrollbar-corner {
       @apply bg-transparent;
