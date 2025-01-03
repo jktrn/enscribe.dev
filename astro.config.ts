@@ -55,7 +55,7 @@ export default defineConfig({
         rehypePrettyCode,
         {
           theme: {
-            light: 'everforest-light',
+            light: 'everforest-dark',
             dark: 'everforest-dark',
           },
           transformers: [
