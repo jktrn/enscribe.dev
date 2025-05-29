@@ -156,10 +156,10 @@ const DiscordLayout = memo<{
     </p>
     <div className="grid size-full grid-rows-4">
       <div className="bg-border/50" />
-      <div className="bg-muted row-span-3 flex min-h-0 flex-col gap-3 p-3">
+      <div className="bg-muted row-span-3 flex flex-col gap-3 p-3">
         <AvatarSection statusIndicator={statusIndicator} />
         <UserInfo />
-        <div className="bg-border/50 flex h-full min-h-0 p-3">
+        <div className="bg-border/50 flex-1 p-3">
           {activityContent}
         </div>
       </div>
@@ -194,7 +194,7 @@ const ActivityDisplay = memo<{
 
   return (
     <div className="flex size-full items-center gap-x-2 sm:gap-x-3">
-      <div className="relative aspect-square h-full max-h-12 shrink-0 sm:max-h-none">
+      <div className="relative aspect-square h-full max-h-12 shrink-0 sm:max-h-16">
         <div
           style={{ backgroundImage: `url('${activityImageUrl}')` }}
           className="absolute inset-0 bg-contain bg-center bg-no-repeat grayscale sepia-50"
@@ -211,7 +211,7 @@ const ActivityDisplay = memo<{
           </div>
         )}
       </div>
-      <div className="my-1 flex min-w-0 flex-1 flex-col gap-y-1 overflow-hidden">
+      <div className="flex flex-1 flex-col gap-y-1 py-1">
         {displayActivity.name && (
           <div className="mb-0.5 truncate text-xs leading-none">
             {displayActivity.name}
