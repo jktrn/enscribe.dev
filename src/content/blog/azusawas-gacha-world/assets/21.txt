@@ -1,0 +1,12 @@
+	// Token: 0x06000016 RID: 22 RVA: 0x0000259C File Offset: 0x0000079C
+	private UnityWebRequest CreateGachaWebRequest(string json)
+	{
+		byte[] bytes = Encoding.UTF8.GetBytes(json);
+		string s = "aHR0cDovLzE3Mi44Ni42NC44OTozMDAwL2dhY2hh";
+		UnityWebRequest unityWebRequest = new UnityWebRequest(Encoding.UTF8.GetString(Convert.FromBase64String(s)), "POST");
+		unityWebRequest.uploadHandler = new UploadHandlerRaw(bytes);
+		unityWebRequest.downloadHandler = new DownloadHandlerBuffer();
+		unityWebRequest.SetRequestHeader("Content-Type", "application/json");
+		unityWebRequest.SetRequestHeader("User-Agent", "SekaiCTF");
+		return unityWebRequest;
+	}

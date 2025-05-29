@@ -1,0 +1,25 @@
+[0;33mgef➤ [0m r
+Starting program: /home/kali/ctfs/pico22/buffer-overflow-1/vuln
+Please enter your string:
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+Okay, time to return... Fingers Crossed... Jumping to 0x41414141
+
+Program received signal SIGSEGV, Segmentation fault.
+[0;34m0x41414141[0m in [0;33m??[0m ()
+[ Legend: [0;31mModified register[0m | [0;31mCode[0m | [0;32mHeap[0m | [0;35mStack[0m | [0;33mString[0m ]
+[0;90m──────────────────────────────────────────────────────────────────── [0m[0;36mregisters[0m[0;90m ────[0m
+[0;31m$eax   [0m: 0x41
+[0;31m$ebx   [0m: 0x41414141 ("[0;33mAAAA[0m"?)
+[0;31m$ecx   [0m: 0x41
+[0;31m$edx   [0m: 0xffffffff
+[0;31m$esp   [0m: [0;35m0xffffd130[0m  →  [0;33m"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"[0m
+[0;31m$ebp   [0m: 0x41414141 ("[0;33mAAAA[0m"?)
+[0;31m$esi   [0m: 0x1
+[0;31m$edi   [0m: [0;31m0x80490e0[0m  →  [0;90m<_start+0> endbr32 [0m
+[0;31m$eip   [0m: 0x41414141 ("[0;33mAAAA[0m"?)
+[0;34m$cs[0m: 0x23 [0;34m$ss[0m: 0x2b [0;34m$ds[0m: 0x2b [0;34m$es[0m: 0x2b [0;34m$fs[0m: 0x00 [0;31m$gs[0m: 0x63
+[0;90m────────────────────────────────────────────────────────────────── [0m[0;36mcode:x86:32[0m[0;90m ────[0m
+[0;31m[!][0m Cannot disassemble from $PC
+[0;31m[!][0m Cannot access memory at address 0x41414141
+[0;90m────────────────────────────────────────────────────────────────────── [0m[0;36mthreads[0m[0;90m ────[0m
+[[0;36m#0[0m] Id 1, Name: "vuln", [0;31mstopped[0m [0;34m0x41414141[0m in [0;33m??[0m (), reason: [0;35mSIGSEGV[0m

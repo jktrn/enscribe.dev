@@ -1,0 +1,3 @@
+[0;33m$[0m nc saturn.picoctf.net 65535
+Input: aaaaaaaaaaaaaaaaaaaaaaaaaaa
+picoCTF{ov3rfl0ws_ar3nt_that_bad_[0;90m[REDACTED][0m}

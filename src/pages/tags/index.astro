@@ -1,40 +1,30 @@
 ---
+import Badge from '@/components/Badge.astro'
 import Breadcrumbs from '@/components/Breadcrumbs.astro'
-import Container from '@/components/Container.astro'
 import Link from '@/components/Link.astro'
-import { badgeVariants } from '@/components/ui/badge'
+import PageHead from '@/components/PageHead.astro'
 import Layout from '@/layouts/Layout.astro'
-import { Icon } from 'astro-icon/components'
-import { getCollection } from 'astro:content'
+import { getSortedTags } from '@/lib/data-utils'
 
-const blog = (await getCollection('blog')).filter(
-  (post) => !post.data.draft && !post.data.hidden,
-)
-
-const tags = blog
-  .flatMap((post) => post.data.tags)
-  .filter((tag, index, self) => self.indexOf(tag) === index)
+const sortedTags = await getSortedTags()
 ---
 
-<Layout title="Tags" description="A list of all tags used in blog posts">
-  <Container class="flex flex-col gap-y-6">
-    <Breadcrumbs items={[{ label: 'Tags', icon: 'lucide:tags' }]} />
+<Layout>
+  <PageHead slot="head" title="Tags" />
+  <Breadcrumbs items={[{ label: 'Tags', icon: 'lucide:tags' }]} />
 
-    <div class="flex flex-col gap-4">
-      <h1 class="text-3xl font-semibold">Tags</h1>
-      <div class="flex flex-wrap gap-2">
-        {
-          tags.map((tag) => (
-            <Link
-              href={`/tags/${tag}`}
-              class={badgeVariants({ variant: 'secondary' })}
-            >
-              <Icon name="lucide:hash" class="size-3 -translate-x-0.5" />
+  <div class="flex flex-col gap-4">
+    <div class="flex flex-wrap gap-2">
+      {
+        sortedTags.map(({ tag, count }) => (
+          <Link href={`/tags/${tag}`}>
+            <Badge text={tag}>
               {tag}
-            </Link>
-          ))
-        }
-      </div>
+              <span class="text-muted-foreground ml-1.5">({count})</span>
+            </Badge>
+          </Link>
+        ))
+      }
     </div>
-  </Container>
+  </div>
 </Layout>

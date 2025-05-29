@@ -1,0 +1,15 @@
+socket.onopen = function() {
+    console.log("[+] Connected!");
+    // Converts object to string
+    socket.send(JSON.stringify({
+        "type": "START_GAME",
+        "level": 1
+    }));
+    // Sends steer command after one second
+    setTimeout(() => {
+        socket.send(JSON.stringify({
+            "type": "SHIP_STEER",
+            "shipId": 0
+        }));
+    }, 5000);
+};

@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { Bar, BarChart, CartesianGrid, LabelList, XAxis, YAxis } from 'recharts'
+import { Bar, BarChart, LabelList, XAxis, YAxis } from 'recharts'
 import {
   type ChartConfig,
   ChartContainer,
@@ -21,7 +21,7 @@ interface Props {
   omitLanguages?: string[]
 }
 
-const colors = [
+const CHART_COLORS = [
   'hsl(var(--chart-1))',
   'hsl(var(--chart-2))',
   'hsl(var(--chart-3))',
@@ -29,17 +29,23 @@ const colors = [
   'hsl(var(--chart-5))',
   'hsl(var(--chart-6))',
   'hsl(var(--chart-7))',
-]
+] as const
+
+const WAKATIME_API_URL =
+  'https://wakatime.com/share/@jktrn/ef6e633b-589d-44f2-9ae6-0eb93445cf2a.json'
+const MAX_LANGUAGES = 7
+const ICON_SIZE = 20
+const CIRCLE_RADIUS = 16
 
 const chartConfig: ChartConfig = {
   hours: {
     label: 'Hours',
-    color: 'hsl(var(--primary))',
+    color: 'var(--primary)',
   },
   label: {
-    color: 'hsl(var(--muted-foreground))',
+    color: 'var(--muted-foreground)',
   },
-  ...colors.reduce(
+  ...CHART_COLORS.reduce(
     (acc, color, index) => ({
       ...acc,
       [`language${index}`]: { label: `Language ${index + 1}`, color },
@@ -48,84 +54,124 @@ const chartConfig: ChartConfig = {
   ),
 }
 
-const WakatimeGraph = ({ omitLanguages = [] }: Props) => {
+const CustomYAxisTick = ({ x, y, payload }: any) => {
+  const icon = getLanguageIcon(payload.value.toLowerCase())
+  const centerX = x - 15
+  const centerY = y
+
+  return (
+    <g transform={`translate(${centerX},${centerY})`}>
+      <title>{payload.value}</title>
+      <rect
+        x={-CIRCLE_RADIUS}
+        y={-CIRCLE_RADIUS}
+        width={CIRCLE_RADIUS * 2}
+        height={CIRCLE_RADIUS * 2}
+        fill="var(--border)"
+        fillOpacity="0.5"
+      />
+      <foreignObject
+        width={ICON_SIZE}
+        height={ICON_SIZE}
+        x={-ICON_SIZE / 2}
+        y={-ICON_SIZE / 2}
+      >
+        <div className="flex h-full w-full items-center justify-center p-0.5">
+          {icon ? (
+            React.cloneElement(
+              icon as React.ReactElement,
+              {
+                size: ICON_SIZE - 2,
+                className: 'text-foreground',
+              } as any,
+            )
+          ) : (
+            <span className="text-foreground text-sm font-medium">
+              {payload.value.charAt(0).toUpperCase()}
+            </span>
+          )}
+        </div>
+      </foreignObject>
+    </g>
+  )
+}
+
+const LoadingSkeleton = () => (
+  <div className="size-full rounded-3xl p-6">
+    <div className="space-y-1.5">
+      {Array.from({ length: MAX_LANGUAGES }).map((_, index) => (
+        <div key={index} className="flex items-center gap-x-2">
+          <Skeleton className="size-8" />
+          <div className="flex-1">
+            <Skeleton
+              className="h-8"
+              style={{ width: `${100 * Math.pow(0.75, index)}%` }}
+            />
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+)
+
+const useWakatimeData = (omitLanguages: string[]) => {
   const [languages, setLanguages] = useState<Language[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    fetch(
-      'https://wakatime.com/share/@jktrn/ef6e633b-589d-44f2-9ae6-0eb93445cf2a.json',
-    )
-      .then((response) => {
-        if (!response.ok) throw new Error('Failed to fetch data')
-        return response.json()
-      })
-      .then((data) => {
-        const filteredLanguages = data.data
+    const fetchData = async () => {
+      try {
+        const response = await fetch(WAKATIME_API_URL)
+        if (!response.ok) {
+          throw new Error(`Failed to fetch data: ${response.statusText}`)
+        }
+
+        const data = await response.json()
+        const processedLanguages = data.data
           .filter(
             (lang: { name: string }) => !omitLanguages.includes(lang.name),
           )
-          .slice(0, 7)
+          .slice(0, MAX_LANGUAGES)
           .map((lang: { name: string; hours: number }, index: number) => ({
             name: lang.name,
             hours: Number(lang.hours.toFixed(2)),
-            fill: colors[index % colors.length],
+            fill: CHART_COLORS[index % CHART_COLORS.length],
           }))
-        setLanguages(filteredLanguages)
-        setIsLoading(false)
-      })
-      .catch((err) => {
-        setError(err instanceof Error ? err.message : 'An error occurred')
-        setIsLoading(false)
-      })
-  }, [])
 
-  const CustomYAxisTick = ({ x, y, payload }: any) => {
-    const icon = getLanguageIcon(payload.value.toLowerCase())
-    return (
-      <g transform={`translate(${x},${y})`}>
-        <title>{payload.value}</title>
-        <circle cx="-18" cy="0" r="14" fill="#1A1A1A" />
-        <foreignObject width={16} height={16} x={-26} y={-8}>
-          {icon ? (
-            React.cloneElement(icon, { size: 16, color: '#E9D3B6' })
-          ) : (
-            <text
-              x={8}
-              y={12}
-              fill="#E9D3B6"
-              fontSize="12"
-              textAnchor="middle"
-              dominantBaseline="central"
-            >
-              {payload.value.charAt(0).toUpperCase()}
-            </text>
-          )}
-        </foreignObject>
-      </g>
-    )
-  }
+        setLanguages(processedLanguages)
+      } catch (err) {
+        setError(
+          err instanceof Error ? err.message : 'An unexpected error occurred',
+        )
+      } finally {
+        setIsLoading(false)
+      }
+    }
 
-  if (isLoading)
+    fetchData()
+  }, [omitLanguages])
+
+  return { languages, isLoading, error }
+}
+
+const WakatimeGraph = ({ omitLanguages = [] }: Props) => {
+  const { languages, isLoading, error } = useWakatimeData(omitLanguages)
+
+  if (isLoading) return <LoadingSkeleton />
+  if (error) {
     return (
-      <div className="size-full rounded-3xl p-4">
-        <div className="space-y-1.5">
-          {[...Array(7)].map((_, index) => (
-            <div key={index} className="flex items-center gap-x-4">
-              <Skeleton className="size-7 rounded-full" />
-              <div className="flex-1">
-                <Skeleton
-                  className="h-8 w-full rounded-lg"
-                  style={{ width: `${100 * Math.pow(0.6, index)}%` }}
-                />
-              </div>
-            </div>
-          ))}
+      <div className="flex h-full items-center justify-center rounded-3xl p-4">
+        <div className="text-center">
+          <p className="text-destructive">Error loading data</p>
+          <p className="text-muted-foreground text-sm">Please email me!</p>
         </div>
       </div>
     )
-  if (error) return <div>Error: {error}</div>
+  }
+
+  const maxHours = Math.max(...languages.map((lang) => lang.hours))
+  const rightMargin = Math.max(40, String(Math.round(maxHours)).length * 8 + 15)
 
   return (
     <ChartContainer config={chartConfig} className="h-full w-full p-4">
@@ -133,31 +179,30 @@ const WakatimeGraph = ({ omitLanguages = [] }: Props) => {
         accessibilityLayer
         data={languages}
         layout="vertical"
-        margin={{ left: -10, right: 10 }}
+        margin={{
+          left: 0,
+          right: rightMargin,
+          top: 5,
+          bottom: 5,
+        }}
       >
-        <CartesianGrid horizontal={false} />
         <YAxis
           dataKey="name"
           type="category"
           tickLine={false}
           axisLine={false}
-          width={50}
+          width={45}
           tick={<CustomYAxisTick />}
         />
         <XAxis type="number" hide />
         <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
-        <Bar
-          dataKey="hours"
-          fill="var(--color-hours)"
-          radius={[8, 8, 8, 8]}
-          isAnimationActive={false}
-        >
+        <Bar dataKey="hours" radius={[0, 0, 0, 0]} isAnimationActive={false}>
           <LabelList
             dataKey="hours"
             position="right"
             formatter={(value: number) => `${Math.round(value)}h`}
-            className="fill-foreground"
-            fontSize={12}
+            className="fill-foreground/80 font-medium"
+            fontSize={13}
           />
         </Bar>
       </BarChart>

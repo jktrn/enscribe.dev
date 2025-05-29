@@ -1,0 +1,8 @@
+            else
+            {
+                uiManager.GenericModalHandler(
+                    uiManager.failedConnectionModal,
+                    uiManager.failedConnectionModalCloseButton
+                );
+                AudioController.Instance.PlaySFX("Open");
+            }

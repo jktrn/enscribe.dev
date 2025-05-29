@@ -1,0 +1,96 @@
+let hasRotated = {
+    0: false,
+    1: false,
+    2: false,
+    3: false,
+    4: false,
+    5: false
+}
+// Pretend there's stuff here
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Checks if ship should turn 180°
+function check(ship, obstacle, direction) {
+    if (!hasRotated[ship.id] &&                         // Check 1
+        Math.abs(ship.topLeft.y - obstacle.y) < 75 &&   // Check 2
+        Math.abs(ship.topLeft.x - obstacle.x) < 75 &&   // Check 2
+        ship.direction == direction) {                  // Check 3
+        hasRotated[ship.id] = true;
+        turn180(ship.id);
+        // Sets hasRotated[ship.id] back to false in 1 second asynchronously
+        setTimeout(() => {
+            hasRotated[ship.id] = false
+        }, "1000");
+    }
+}

@@ -1,0 +1,23 @@
+[0;36m$[0m curl -v -X POST -H "Content-Type: application/json" -H "User-Agent: SekaiCTF" -d '{"crystals": 3000, "pulls": 10, "numPulls": 10}' http://172.86.64.89:3000/gacha
+[0;33mNote: Unnecessary use of -X or --request, POST is already inferred.[0m
+[0;34m*   Trying 172.86.64.89:3000...[0m
+[0;34m* Connected to 172.86.64.89 (172.86.64.89) port 3000 (#0)[0m
+[0;32m> POST /gacha HTTP/1.1
+> Host: 172.86.64.89:3000
+> Accept: */*
+> Content-Type: application/json
+> User-Agent: SekaiCTF
+> Content-Length: 47[0m
+[0;32m>[0m
+[0;34m* Mark bundle as not supporting multiuse[0m
+[0;31m< HTTP/1.1 200 OK
+< Content-Type: application/json
+< Date: Mon, 21 Aug 2023 03:48:32 GMT
+< Connection: keep-alive
+< Keep-Alive: timeout=5
+< Content-Length: 1729[0m
+[0;31m<[0m
+[0;35m{"characters":[{"name":"こはね 小豆沢","cardName":"あったかキャンプスタイル","rarity":"2*","attribute":"Cute","splashArt":"warm-camping-style","avatar":"warm-camping-style-icon"},{"name":"こはね 小豆沢","cardName":"憂いの夜","rarity":"3*","attribute":"Pure","splashArt":"gloomy-night","avatar":"gloomy-night-icon"},{"name":"こはね 小豆沢","cardName":"プリティ
+ブライズメイド","rarity":"2*","attribute":"Happy","splashArt":"pretty-bridesmaid","avatar":"pretty-bridesmaid-icon"},{"name":"こはね 小豆沢","cardName":"Vivid BAD SQUAD","rarity":"2*","attribute":"Mysterious","splashArt":"vivid-bad-squad","avatar":"vivid-bad-squad-icon"},{"name":"こはね 小豆沢","cardName":"あったかキャンプスタイル","rarity":"2*","attribute":"Cute","splashArt":"warm-camping-style","avatar":"warm-camping-style-icon"},{"name":"こはね 小豆沢","cardName":"プリティブライズメイド","rarity":"2*","attribute":"Happy","splashArt":"pretty-bridesmaid","avatar":"pretty-[0m
+[0;34m* Connection #0 to host 172.86.64.89 left intact[0m
+[0;35mbridesmaid-icon"},{"name":"こはね 小豆沢","cardName":"Vivid BAD SQUAD","rarity":"2*","attribute":"Mysterious","splashArt":"vivid-bad-squad","avatar":"vivid-bad-squad-icon"},{"name":"こはね 小豆沢","cardName":"あったかキャンプスタイル","rarity":"2*","attribute":"Cute","splashArt":"warm-camping-style","avatar":"warm-camping-style-icon"},{"name":"こはね 小豆沢","cardName":"Vivid BAD SQUAD","rarity":"2*","attribute":"Mysterious","splashArt":"vivid-bad-squad","avatar":"vivid-bad-squad-icon"},{"name":"こはね 小豆沢","cardName":"あったかキャンプスタイル","rarity":"2*","attribute":"Cute","splashArt":"warm-camping-style","avatar":"warm-camping-style-icon"}]}[0m

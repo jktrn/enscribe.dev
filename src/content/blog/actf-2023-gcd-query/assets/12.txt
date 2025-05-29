@@ -1,0 +1,5 @@
+# Generate the 256th primorial
+N = 2**8
+# Generate the 1024th primorial
+N = 2**10
+primorial = primorial(N)

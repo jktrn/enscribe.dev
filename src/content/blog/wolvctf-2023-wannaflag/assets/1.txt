@@ -1,0 +1,127 @@
+[0;33m$[0m nc wanna-flag-i.wolvctf.io 1337
+== proof-of-work: disabled ==
+Good job finding the Cube! It's a favorite destination among UofM students!
+Anyways here is the flag:
+wctf{sp1n
+Huh???? Where did the rest of the flag g
+                       ______
+                    .-"      "-.
+                   /            \
+       _          |              |          _
+      ( \         |,  .-.  .-.  ,|         / )
+       > "=._     | )(__/  \__)( |     _.=" <
+      (_/"=._"=._ |/     /\     \| _.="_.="\_)
+             "=._ (_     ^^     _)"_.="
+                 "=\__|IIIIII|__/="")
+                _.="| \IIIIII/ |"=._
+      _     _.="_.="\          /"=._"=._     _
+     ( \_.="_.="     `--------`     "=._"=._/ )
+      > _.="                            "=._ <
+     (_/                                    \_)
+                       ______
+                    .-"      "-.
+                   /            \
+       _          |              |          _
+      ( \         |,  .-.  .-.  ,|         / )
+       > "=._     | )(__/  \__)( |     _.=" <
+      (_/"=._"=._ |/     /\     \| _.="_.="\_)
+             "=._ (_     ^^     _)"_.="
+                 "=\__|IIIIII|__/="")
+                _.="| \IIIIII/ |"=._
+      _     _.="_.="\          /"=._"=._     _
+     ( \_.="_.="     `--------`     "=._"=._/ )
+      > _.="                            "=._ <
+     (_/                                    \_)
+                       ______
+                    .-"      "-.
+                   /            \
+       _          |              |          _
+      ( \         |,  .-.  .-.  ,|         / )
+       > "=._     | )(__/  \__)( |     _.=" <
+      (_/"=._"=._ |/     /\     \| _.="_.="\_)
+             "=._ (_     ^^     _)"_.="
+                 "=\__|IIIIII|__/="")
+                _.="| \IIIIII/ |"=._
+      _     _.="_.="\          /"=._"=._     _
+     ( \_.="_.="     `--------`     "=._"=._/ )
+      > _.="                            "=._ <
+     (_/                                    \_)
+██╗    ██╗ █████╗ ███╗   ██╗███╗   ██╗ █████╗ ███████╗██╗      █████╗  ██████╗
+██║    ██║██╔══██╗████╗  ██║████╗  ██║██╔══██╗██╔════╝██║     ██╔══██╗██╔════╝
+██║ █╗ ██║███████║██╔██╗ ██║██╔██╗ ██║███████║█████╗  ██║     ███████║██║  ███╗
+██║███╗██║██╔══██║██║╚██╗██║██║╚██╗██║██╔══██║██╔══╝  ██║     ██╔══██║██║   ██║
+╚███╔███╔╝██║  ██║██║ ╚████║██║ ╚████║██║  ██║██║     ███████╗██║  ██║╚██████╔╝
+ ╚══╝╚══╝ ╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝  ╚═══╝╚═╝  ╚═╝╚═╝     ╚══════╝╚═╝  ╚═╝ ╚═════╝
+HAHAHHAHAHHAHA Ohhhhh man what an easy CTF to pwn
+
+And I mean also really?? At least make a geo-osint KIND of difficult
+The CTF is HOSTED by UofM where else would that dumb cube be????
+
+Oh man ok well organizers if you want your "challenge" back or flags or whatever send 500,000 Goerli here:
+0x08f5AF98610aE4B93cD0A856682E6319bF1be8a6
+
+Who knows maybe we'll take more flags if you don't pay in time >:)
+#YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs
+#YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs
+#YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs #YourFlagsBelongToUs
+                       ______
+                    .-"      "-.
+                   /            \
+       _          |              |          _
+      ( \         |,  .-.  .-.  ,|         / )
+       > "=._     | )(__/  \__)( |     _.=" <
+      (_/"=._"=._ |/     /\     \| _.="_.="\_)
+             "=._ (_     ^^     _)"_.="
+                 "=\__|IIIIII|__/="")
+                _.="| \IIIIII/ |"=._
+      _     _.="_.="\          /"=._"=._     _
+     ( \_.="_.="     `--------`     "=._"=._/ )
+      > _.="                            "=._ <
+     (_/                                    \_)
+                       ______
+                    .-"      "-.
+                   /            \
+       _          |              |          _
+      ( \         |,  .-.  .-.  ,|         / )
+       > "=._     | )(__/  \__)( |     _.=" <
+      (_/"=._"=._ |/     /\     \| _.="_.="\_)
+             "=._ (_     ^^     _)"_.="
+                 "=\__|IIIIII|__/="")
+                _.="| \IIIIII/ |"=._
+      _     _.="_.="\          /"=._"=._     _
+     ( \_.="_.="     `--------`     "=._"=._/ )
+      > _.="                            "=._ <
+     (_/                                    \_)
+                       ______
+                    .-"      "-.
+                   /            \
+       _          |              |          _
+      ( \         |,  .-.  .-.  ,|         / )
+       > "=._     | )(__/  \__)( |     _.=" <
+      (_/"=._"=._ |/     /\     \| _.="_.="\_)
+             "=._ (_     ^^     _)"_.="
+                 "=\__|IIIIII|__/="")
+                _.="| \IIIIII/ |"=._
+      _     _.="_.="\          /"=._"=._     _
+     ( \_.="_.="     `--------`     "=._"=._/ )
+      > _.="                            "=._ <
+     (_/                                    \_)
+██╗    ██╗ █████╗ ███╗   ██╗███╗   ██╗ █████╗ ███████╗██╗      █████╗  ██████╗
+██║    ██║██╔══██╗████╗  ██║████╗  ██║██╔══██╗██╔════╝██║     ██╔══██╗██╔════╝
+██║ █╗ ██║███████║██╔██╗ ██║██╔██╗ ██║███████║█████╗  ██║     ███████║██║  ███╗
+██║███╗██║██╔══██║██║╚██╗██║██║╚██╗██║██╔══██║██╔══╝  ██║     ██╔══██║██║   ██║
+╚███╔███╔╝██║  ██║██║ ╚████║██║ ╚████║██║  ██║██║     ███████╗██║  ██║╚██████╔╝
+ ╚══╝╚══╝ ╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝  ╚═══╝╚═╝  ╚═╝╚═╝     ╚══════╝╚═╝  ╚═╝ ╚═════╝
+██╗    ██╗ █████╗ ███╗   ██╗███╗   ██╗ █████╗ ███████╗██╗      █████╗  ██████╗
+██║    ██║██╔══██╗████╗  ██║████╗  ██║██╔══██╗██╔════╝██║     ██╔══██╗██╔════╝
+██║ █╗ ██║███████║██╔██╗ ██║██╔██╗ ██║███████║█████╗  ██║     ███████║██║  ███╗
+██║███╗██║██╔══██║██║╚██╗██║██║╚██╗██║██╔══██║██╔══╝  ██║     ██╔══██║██║   ██║
+╚███╔███╔╝██║  ██║██║ ╚████║██║ ╚████║██║  ██║██║     ███████╗██║  ██║╚██████╔╝
+ ╚══╝╚══╝ ╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝  ╚═══╝╚═╝  ╚═╝╚═╝     ╚══════╝╚═╝  ╚═╝ ╚═════╝
+██╗    ██╗ █████╗ ███╗   ██╗███╗   ██╗ █████╗ ███████╗██╗      █████╗  ██████╗
+██║    ██║██╔══██╗████╗  ██║████╗  ██║██╔══██╗██╔════╝██║     ██╔══██╗██╔════╝
+██║ █╗ ██║███████║██╔██╗ ██║██╔██╗ ██║███████║█████╗  ██║     ███████║██║  ███╗
+██║███╗██║██╔══██║██║╚██╗██║██║╚██╗██║██╔══██║██╔══╝  ██║     ██╔══██║██║   ██║
+╚███╔███╔╝██║  ██║██║ ╚████║██║ ╚████║██║  ██║██║     ███████╗██║  ██║╚██████╔╝
+ ╚══╝╚══╝ ╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝  ╚═══╝╚═╝  ╚═╝╚═╝     ╚══════╝╚═╝  ╚═╝ ╚═════╝
+Also all of you John OSINTs on twitter need to leave us alone

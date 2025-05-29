@@ -1,0 +1,164 @@
+---
+title: 'Level 5'
+description: 'Play a JSON-controlled strategy game through WebSocket——this is the Hacky Holidays 2022 programming challenge “Port Authority.”'
+date: 2022-07-27
+authors: ['enscribe']
+order: 5
+---
+
+import { Code } from 'astro-expressive-code/components'
+import Challenge from '@/components/mdx/Challenge.astro'
+import Flag5Video from './assets/solve-cut.mp4'
+
+<div class="invisible h-0! [&+*]:mt-0 [&+*_*]:mt-0">
+## Level 5
+</div>
+
+<Challenge
+  title="Level 5"
+  solvers={[{
+    name: 'enscribe',
+    href: 'https://github.com/jktrn',
+    avatar: 'https://github.com/jktrn.png',
+  }, {
+    name: 'sahuang',
+    href: 'https://github.com/sahuang',
+    avatar: 'https://github.com/sahuang.png',
+  }]}
+  points={200}
+  flag="CTF{CaPT41n-j4Ck-sp4rR0w}"
+>
+  A huge influx of ships is coming our way - can you lead them safely to the port?
+</Challenge>
+
+Oh boy...
+
+![Level 5](assets/level5.gif)
+
+### Improving the Stable Game State
+
+Level five gives us a large increase in rocks, a tiny harbor, and six total ships to work with at max speed. Unfortunately, there's not enough room for the ships to loop around in circles, so the solution to levels 3 and 4 won't work. We'll have to figure out something else.
+
+Luckily, during some experimenation on level 1 I found out that you can actually do a full 180° turn by calling two consecutive turns in the code. In doing so, the ship won't hit any of the objects in its surroundings as compared to if it rotated 90° twice. We can observe this phenomenon below:
+
+import Code22 from './assets/22.txt?raw'
+
+<div className="align-center flex flex-col sm:flex-row gap-4 w-fit [&_*]:my-0 mx-auto">
+  <div>
+    <Code code={Code22} lang="js" title="solve.js" startLineNumber={142} />
+  </div>
+  <div>
+    ![180° Turn](assets/180.gif)
+  </div>
+</div>
+
+Also, if you noticed in the first GIF, the ships are spawning at around the same locations every time. With this, we can come up with a plan: create "obstacles" with x-y coordinates that will cause any ship that comes into the region to turn 180°. We'll create separate "lanes" for each ship that spawns, therefore stabilizing the playfield and allowing for a feasible manual solve:
+
+![Lanes](assets/obstacles.png)
+
+Now, how are these checks going to work? After a lot of experimenting I found that **three** total criteria should be met:
+
+1. The ship is travelling in the same the direction passed as an argument when the `check()` function is called
+2. The absolute difference between the x and y values of the object and the ship's top-left is less than a certain threshold (I chose 75px)
+3. The global variable to determine whether or not the ship has been rotated 180° yet is false (`hasRotated`)
+
+Here's a visual I drew in case you're lost. The red/green squares on the left indicate the status of each check during different stages of the turn:
+
+![Check Visual](assets/checkvisual.svg)
+
+We can now begin programming by creating an Obstacle class and manually placing them down throughout the map. This was just a lot of trial and error, so don't worry about these coordinates feeling random:
+
+import Code23 from './assets/23.txt?raw'
+
+<Code code={Code23} lang="js" title="solve.js" startLineNumber={48} />
+
+Next, let's create the aforementioned `hasRotated` object alongside the `check()` function, which will implement the three criteria:
+
+import Code24 from './assets/24.txt?raw'
+
+<Code code={Code24} lang="js" title="solve.js" startLineNumber={70} collapse="9-82" />
+
+Finally, let's call the `check(){:js}` function for each index in the `ships{:js}` array. Each tick, _every single_ ship will go through these twelve checks. Although this might seem redundant, we have no way of assigning lanes to specific ships, as the IDs are randomized every time based on the order they're meant to dock. This method simply generalizes all of them, and shouldn't cause issues performance-wise:
+
+import Code25 from './assets/25.txt?raw'
+
+<Code code={Code25} lang="js" title="solve.js" startLineNumber={86} />
+
+In theory, these checks should cause the ships to bounce back and forth in their specific lanes. Let's check it out:
+
+![Lanes](assets/lanes.gif)
+
+Yes! We've managed to stabilize level 5 completely! Now, we need to be able to toggle the lanes off to manually solve the challenge. Let's add more checkboxes to the HTML and adjust the JS accordingly:
+
+import Code26 from './assets/26.txt?raw'
+
+<Code code={Code26} lang="html" title="index.html" startLineNumber={21} ins={{range: "10-27"}} />
+
+import Code27 from './assets/27.txt?raw'
+
+<Code code={Code27} lang="js" title="solve.js" startLineNumber={80} ins={{range: "1,17,20-21,24-25,28-29,32-33,36-37"}} />
+
+### Solving with Pure Mechanics
+
+Now, we can strategize on how to solve the challenge manually. Our team deduced that the most ideal order for ships would look something like this:
+
+![Strategy](assets/obstacles2.svg)
+
+This order allows for the first ship to enter the port within two turns, and provides plenty of space for the second and third ships to work with. Although it would require a lot of restarting (as the order is always random), it's worth it to ease the difficulty of the challenge.
+
+#### Auto-docking
+
+Moving on, we began work on the manual solve process. It was super tedious and involved a lot of mess-ups, especially around the port area. We discovered that the window to turn into the port was extraordinarily small, leading to many runs dying to something like this:
+
+<div className="flex flex-col sm:flex-row gap-4 w-fit [&_*]:my-0 mx-auto">
+    <div>
+        ![Death 1](assets/death1.png)
+    </div>
+    <div>
+        ![Death 2](assets/death2.png)
+    </div>
+</div>
+
+We decided it'd be best if we added another obstacle to perfectly turn us into the dock every time. This time around, it would have to be a 90° turn utlizing the middle of the ship instead of the top-left, as each ship is a different length and would therefore turn at different points when within the obstacles's hitbox:
+
+![90 Turn](assets/90turn.svg)
+
+Here is its implementation:
+
+import Code28 from './assets/28.txt?raw'
+
+<Code code={Code28} lang="js" title="solve.js" startLineNumber={65} ins={{range: "139-155"}} collapse="6-52,57-138" />
+
+When you turn a ship through those rocks into the obstacle, the ship will now automatically turn to enter the dock perfectly:
+
+![Autodock](assets/autodock.gif)
+
+**NOW IT'S TIME TO SOLVE THE CHALLENGE MANUALLY!** It took multiple hours across several days, and included some chokes as tragic as this one:
+
+![Choke](assets/choke.png)
+
+But, finally, I got the solve run clipped here, with a small reaction 🤣:
+
+<video controls>
+  <source src={Flag5Video} type="video/mp4" />
+  <track kind="captions" />
+  Your browser does not support the video tag.
+</video>
+
+Here is the final script:
+
+import Code29 from './assets/29.txt?raw'
+
+<Code code={Code29} lang="js" title="solve.js" />
+
+## Afterword
+
+If you made it to this point of the writeup, I want to sincerely thank you for reading. This writeup genuinely took longer to create than it took to solve the challenge (about 30 hours across two weeks), as I had to recreate, record, crop, and optimize every aspect of the solve. I had to create my own multi-hundred-line plugins to implement custom code blocks specifically for this writeup. Everything from the line numbers in highlighted diffs of code to the diagrams were hand-done, as this is my passion: to create for people to learn in a concise, aesthetically pleasing manner. This is also an entry for the Hacky Holidays writeup competition, so wish me luck! 🤞
+
+\- enscribe
+
+---
+
+Update: There I am! 🎉 Thanks for the support, everybody.
+
+![Leaderboard](assets/leaderboard.png)

@@ -1,0 +1,24 @@
+// Make sure you install WebSocket with "npm i ws"!
+const WebSocket = require('ws')
+// Regex so that I can freely paste the URL when the instance is changed
+const url = 'https://[REDACTED].challenge.hackazon.org/'
+// Opens WebSocket connection
+const socket = new WebSocket(`wss://${url.replace(/^https?:\/\//, '')}ws`)
+
+// Runs on socket open, equivalent to .addEventListener()
+socket.onopen = function () {
+  console.log('[+] Connected!')
+  // Converts object to string
+  socket.send(
+    JSON.stringify({
+      type: 'START_GAME',
+      level: 1,
+    }),
+  )
+}
+
+// Runs when output from server is received
+socket.onmessage = function (event) {
+  // Output is received in event
+  console.log(`[-] ${event.data}`)
+}

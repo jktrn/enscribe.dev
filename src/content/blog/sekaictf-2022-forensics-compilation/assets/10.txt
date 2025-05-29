@@ -1,0 +1,20 @@
+import os
+import binascii
+
+files = os.listdir('Pictures')
+header = binascii.unhexlify(b'89504E470D0A1A0A0000000D49484452')
+os.system('wget -q https://raw.githubusercontent.com/scangeo/xor-files/master/binaries/x86_64/xor-files')
+
+for file in files:
+    path = 'Pictures/'+file
+    f = open(path,'rb').read()
+    first_16_bytes = f[:16]
+    key = b''
+    for i in range(len(header)):
+        key += chr(header[i]^first_16_bytes[i]).encode('iso-8859-1')
+    with open('key.txt','wb') as k:
+        k.write(key)
+    os.system('xor-files -r '+path+' '+path+' key.txt')
+
+os.system('rm key.txt')
+os.system('rm xor-files')

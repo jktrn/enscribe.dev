@@ -1,0 +1,13 @@
+#!/usr/bin/env python3
+from pwn import *
+from string import printable
+
+elf = context.binary = ELF("./vuln", checksec=False)
+host, port = "saturn.picoctf.net", [PORT]
+offset = 64
+
+def new_process():
+    if args.LOCAL:
+        return process(elf.path)
+    else:
+        return remote(host, port)

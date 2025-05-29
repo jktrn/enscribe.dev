@@ -1,0 +1,8 @@
+[0;33m$[0m checksec vuln
+[[0;34m*[0m] '/home/kali/ctfs/pico22/buffer-overflow-1/vuln'
+    Arch:     i386-32-little
+    RELRO:    [0;33mPartial RELRO[0m
+    Stack:    [0;31mNo canary found[0m
+    NX:       [0;31mNX disabled[0m
+    PIE:      [0;31mNo PIE (0x8048000)[0m
+    RWX:      [0;31mHas RWX segments[0m

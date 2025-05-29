@@ -1,0 +1,22 @@
+[0;33m$[0m git ls-tree -r --name-only HEAD | tree --fromfile
+.
+├── .editorconfig
+├── .eslintignore
+├── .eslintrc.json
+├── .gitignore
+├── .prettierrc
+├── Dockerfile
+├── [0;34m__tests__[0m
+│   └── main.test.ts
+├── cleanup.sh
+├── jest.config.js
+├── package-lock.json
+├── package.json
+├── [0;34msrc[0m
+│   ├── [0;35mflag.png[0m
+│   ├── gacha.json
+│   └── interfaces.ts
+│   └── main.ts
+├── start.sh
+├── tsconfig.json
+└── tsconfig.release.json

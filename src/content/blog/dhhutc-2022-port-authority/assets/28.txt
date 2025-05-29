@@ -1,0 +1,155 @@
+    new Obstacle(1070, 350), //10
+    new Obstacle(1530, 200), //11
+    new Obstacle(1730, 300), //12
+    new Obstacle(232, 575) //13
+]
+// Pretend there's stuff here
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            if (!checkList[5].checked) {
+                check(s, obstacles[8], "LEFT");
+                check(s, obstacles[10], "RIGHT");
+            }
+// Pretend there's stuff here
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function check90(s, o, d) {
+    // Calculates middle of ship in coordinates
+    let mid = Math.abs(Math.floor(s.topLeft.x + s.bottomRight.x) / 2);
+    if (!hasRotated[s.id] &&
+        Math.abs(s.topLeft.y - o.y) < 400 && // Large y for legroom
+        Math.abs(mid - o.x) < 20 && // Small x for accuracy
+        s.direction == d) {
+        hasRotated[s.id] = true;
+        socket.send(JSON.stringify({
+            type: "SHIP_STEER",
+            shipId: s.id
+        }));
+        setTimeout(() => {
+            hasRotated[s.id] = false
+        }, "1000");
+    }
+}

@@ -1,0 +1,9 @@
+const passwords = [{
+        level: 1,
+        password: ""
+    },
+    {
+        level: 2,
+        password: "CTF{CapTA1n-cRUCh}"
+    }
+];

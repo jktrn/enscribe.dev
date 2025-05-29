@@ -1,0 +1,131 @@
+import * as http from 'http'
+import * as url from 'url'
+import * as fs from 'fs'
+import { GachaResponse } from './interfaces.js'
+
+const PORT = 3000
+
+const data = JSON.parse(fs.readFileSync('src/gacha.json', 'utf8'))
+const characters = data.characters
+const probabilities = [0, 0.915, 0.085, 0]
+
+const server = http.createServer((req, res) => {
+  if (req.url === undefined) {
+    res.statusCode = 400
+    res.setHeader('Content-Type', 'text/plain')
+    res.end('Invalid URL')
+    return
+  }
+
+  const reqUrl = url.parse(req.url, true)
+
+  if (req.method === 'POST' && reqUrl.pathname === '/gacha') {
+    if (req.headers['user-agent'] !== 'SekaiCTF') {
+      res.statusCode = 400
+      res.setHeader('Content-Type', 'text/plain')
+      res.end('Invalid User-Agent')
+      return
+    }
+
+    let body = ''
+    req.on('data', (chunk) => {
+      body += chunk.toString()
+    })
+
+    req.on('end', () => {
+      const { crystals, pulls, numPulls } = JSON.parse(body)
+      if (
+        typeof crystals !== 'number' ||
+        typeof pulls !== 'number' ||
+        typeof numPulls !== 'number'
+      ) {
+        res.statusCode = 400
+        res.setHeader('Content-Type', 'application/json')
+        res.end(JSON.stringify({ error: 'ERROR: Invalid request body!' }))
+        return
+      }
+
+      const costPerPull = 100
+      const totalCost = costPerPull * numPulls
+      if (crystals < totalCost) {
+        res.statusCode = 400
+        res.setHeader('Content-Type', 'application/json')
+        res.end(JSON.stringify({ error: 'ERROR: Not enough crystals!' }))
+        return
+      }
+
+      if (numPulls !== 1 && numPulls !== 10) {
+        res.statusCode = 400
+        res.setHeader('Content-Type', 'application/json')
+        res.end(
+          JSON.stringify({
+            error: 'ERROR: numPulls can only be 1 or 10!',
+          }),
+        )
+        return
+      }
+
+      const result: GachaResponse = {
+        characters: [],
+      }
+
+      let totalPulls = pulls % 1000000
+
+      for (let i = 0; i < numPulls; i++) {
+        let rarity = 0
+
+        totalPulls += 1
+
+        if (totalPulls >= 1000000) {
+          rarity = 4
+          totalPulls -= 1000000
+
+          const pool = characters.filter(
+            (character) => character.rarity === `${rarity}*`,
+          )
+
+          const characterIndex = Math.floor(Math.random() * pool.length)
+
+          const imageBuffer = fs.readFileSync('src/flag.png')
+
+          result.characters.push({
+            ...pool[characterIndex],
+            flag: imageBuffer.toString('base64'),
+          })
+
+          continue
+        } else {
+          let rand = Math.random()
+          let index = 0
+          while (rand > probabilities[index]) {
+            rand -= probabilities[index]
+            index++
+          }
+          rarity = index + 1
+        }
+
+        const pool = characters.filter(
+          (character) => character.rarity === `${rarity}*`,
+        )
+
+        const characterIndex = Math.floor(Math.random() * pool.length)
+
+        result.characters.push(pool[characterIndex])
+      }
+
+      res.statusCode = 200
+      res.setHeader('Content-Type', 'application/json')
+      res.end(JSON.stringify(result))
+    })
+  } else {
+    res.statusCode = 404
+    res.setHeader('Content-Type', 'text/plain')
+    res.end('Not Found')
+  }
+})
+
+server.listen(PORT, () => {
+  console.log(`Server listening on port ${PORT}`)
+})
+
+export default server

@@ -1,0 +1,4 @@
+[0;36mgef➤[0m pattern search 0x6161616c
+[0;34m[+][0m Searching for '0x6161616c'
+[0;36m[+][0m Found at offset 44 (little-endian search) [0;31mlikely[0m
+[0;36m[+][0m Found at offset 41 (big-endian search)

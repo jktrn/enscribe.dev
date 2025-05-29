@@ -1,0 +1,21 @@
+class Obstacle {
+    constructor(x, y) {
+        this.x = x
+        this.y = y
+    }
+}
+
+let obstacles = [
+    new Obstacle(450, 1060),    //1
+    new Obstacle(750, 1060),    //2
+    new Obstacle(1200, 1060),   //3
+    new Obstacle(1600, 1060),   //4
+    new Obstacle(604, 700),     //5
+    new Obstacle(1070, 600),    //6
+    new Obstacle(1730, 650),    //7
+    new Obstacle(604, 70),      //8
+    new Obstacle(674, 200),     //9
+    new Obstacle(1070, 350),    //10
+    new Obstacle(1530, 200),    //11
+    new Obstacle(1730, 300),    //12
+]

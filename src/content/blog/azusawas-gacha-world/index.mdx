@@ -1,0 +1,844 @@
+---
+title: 'A Hackable Unity Implementation of Project Sekai’s Gacha System'
+description: 'I created a fully functional, hackable replica of Project Sekai’s gacha system for SekaiCTF 2023. This was my design process.'
+date: 2023-08-15
+tags: ['ctf', 'reverse', 'unity', 'game-hacking']
+image: 'assets/banner.png'
+authors: ['enscribe']
+---
+
+import { Code } from 'astro-expressive-code/components'
+import Challenge from '@/components/mdx/Challenge.astro'
+import StaticTweet from '@/components/mdx/StaticTweet.astro'
+import VideoPreview from './assets/preview.mp4'
+
+## Introduction
+
+This blog post details my design process for a beginner-friendly reverse-engineering challenge that I authored this year for [SekaiCTF 2023](https://ctftime.org/event/1923/)——a fully functional, hackable replica of Project Sekai's "gacha" system. Here is a snippet of the challenge, featured in the CTF's first teaser:
+
+<StaticTweet
+  avatar="https://pbs.twimg.com/profile_images/1516810637858545668/UKYxlCqh_400x400.jpg"
+  username="Project Sekai CTF"
+  handle="ProjectSEKAIctf"
+  date="August 7, 2023"
+  src="https://twitter.com/ProjectSEKAIctf/status/1688745825504268288"
+  video={VideoPreview}
+>
+  Come play SekaiCTF 2023, where we have... Wait, this is a CTF challenge?!
+  [#SekaiCTF](https://twitter.com/hashtag/SekaiCTF)
+  [#Teaser](https://twitter.com/hashtag/Teaser)
+</StaticTweet>
+
+Dubbed "Azusawa's Gacha World," this challenge took heavy theming inspiration from a team friend with the handle [@stypr](https://github.com/stypr), who singlehandedly spent around USD$20,000 on [Project Sekai](https://projectsekai.fandom.com/wiki/Project_SEKAI_COLORFUL_STAGE!) (the mobile rhythm game). He also runs a website called [azusawa.world](https://azusawa.world), which features his experiences with a character named [Kohane Azsuawa](https://projectsekai.fandom.com/wiki/Azusawa_Kohane) (小豆沢こはね)——this challenge is part of the recurring meme with the character.
+
+However, before we get into the challenge itself, let's talk first about the game and genre that inspired it.
+
+### The "Gacha Game" Model
+
+In the context of video games, a **gacha game** is a model which implements a "random vending machine" mechanic as a method of obtaining rare characters, cards, or other collectible items (collectively referred to as "**drops**" for the rest of this blog post, for brevity). The name originates from the Japanese word _gashapon_ (ガチャポン), an onomatopoeia for the act of cranking the vending machine's handle (and Bandai's trademark name). The term is also used as a verb to describe the act of "rolling" or "pulling" for a desired drop (e.g. "I'm going to gacha for this character").
+
+The gacha mechanic is most commonly found in free-to-play mobile games, and is often implemented as a monetization strategy. Players are incentivized to exchange their in-game currency to "pull," "spin," "roll," etc. on specific "banners" which feature a particular **pool** of drops. In most cases, drops are assigned various tiers of arbitrary rarity, with the highest tier rarities having the lowest percentage drop rates. This creates opportunity for players to spend money on in-game currency for the highest chance of obtaining the rarest items.
+
+Gacha pools often look something like this, with similar semantic colors representing each of the rarities:
+
+![Gacha Pool](assets/gacha-pool.svg)
+
+Rolling on this banner provides a chance to receive a drop from each of the rarity tiers:
+
+![Gacha Model](assets/gacha-model.svg)
+
+This transformation from a simple toy capsule game catered towards younger children into a fully fledged business model has been subject to countless scrutiny and controversy, mainly due to its predatory monetization system and potential to develop gambling addictions within its playerbase. Many legal jurisdictions require gacha games to disclose the probability of obtaining each rarity tier (which will be important later in the challenge).
+
+### The Mechanics of "Pity"
+
+Let's also explain an important aspect of my challenge that's a common pattern in gacha games: "pity."
+
+In a multitude of different gacha games, a "guaranteed drop" mechanic, colloquially referred to as a "pity," exists for unlucky players who have rolled a certain amount of times without obtaining their desired drop. There are three types of pity systems that are typically used in gacha games: **soft pity**, **hard pity**, and **soft/hard pity**. In soft pity, the chance to obtain a drop of the highest rarity increases with each pull. In hard pity, the player is guaranteed to obtain a drop of the highest rarity once the pull counter reaches a certain threshold. Soft/hard pity is a hybrid of both of these mechanics.
+
+Let's take the gacha system of a popular gacha game as of writing, [Genshin Impact](https://en.wikipedia.org/wiki/Genshin_Impact), as an example. As banners in this game utilize the soft/hard pity system, the player is guaranteed to obtain a 5-star character after 90 pulls (hard pity), and the chance to obtain a 5-star character increases with each pull after 74 pulls (soft pity):
+
+![Genshin Impact Pity](assets/genshin-pity.svg)
+
+By increasing the chance to obtain a 5-star character with each pull, the player is more likely to obtain a 5-star character before the hard pity threshold is reached.
+
+However, Project Sekai doesn't utilize this system. It uses the simple "hard pity" system, with a small change: your pulls add to a "gacha bonus points" counter, which guarantees a 4-star and "pick-up" (featured character) 4-star at 50 and 100 pulls, respectively. You get 0.5 points for a pull using free currency, and 1 point for a pull using paid currency, illustrated as such in this diagram:
+
+![Project Sekai Gacha](assets/project-sekai-gacha.svg)
+
+For the sake of simplicity within the challenge, I decided to implement a **pure hard pity** system, where the rate of rolling characters is static, and a 4-star character is guaranteed after a certain amount of pulls.
+
+### Considering Challenge Difficulty
+
+Learning from feedback in our survey last year, we ([Project SEKAI CTF](https://sekai.team/)) discovered that a lot of our players were actually beginners——over half of the playerbase that took the survey had less than 5 CTFs worth of experience under their belt:
+
+![SekaiCTF 2022 Pie Chart](assets/2022-pie-chart.svg)
+
+Combined with the fact we occasionally attract players from the Project Sekai community (a community which has absolutely nothing to do with cybersecurity), we decided that it would be best to design a beginner-friendly, eye-candy challenge that would attract a newer playerbase to register for our CTF and try the introductory challenges. This was a perfect opportunity for us to clone an aspect of the game that inspired our entire CTF theme, and to implement it in a way that would be engaging and educational for newer players. A Unity reverse engineering challenge would be the perfect fit, as plenty of Unity game-hacking resources exist online, and compiled Unity bundles are trivial to reverse-engineer and modify.
+
+## Challenge Brainstorming & Design
+
+Although "cloning" the game and its functionality might not be too brain-rotting of a process, we still have to design the challenge to be reverse-engineerable. Me and [@sahuang](https://twitter.com/sahuang97) ended up creating a design document which overviewed the challenge's functionality, and the general path needed to take in order to solve it; here's a TL;DR of the key points with some visuals.
+
+> The challenge will provide users with a Unity game bundle. The game will be a Project Sekai gacha emulator, and the goal is to pull a special 4\* card (`Happy Birthday！！2023 - こはね 小豆沢`) to receive the flag.
+
+![Brainstorming I](assets/brainstorming-1.svg)
+
+> Here are some basic details:
+>
+> 1. When starting the gacha, the player will have 100 crystals. There are two options available for the player to pick, but only one is available to them: the one-pull and the ten-pull (the available one being the former).
+> 2. All of the characters available in the gacha pool will be the 2* and 3* variations of Kohane Azusawa.
+> 3. The player can "hack" the game by modifying the crystal amount to continue rolling. However, the desired drop (`Happy Birthday！！2023 - こはね 小豆沢`) is **rigged to be 0%**. The only way to get the character is to pull 1,000,000 (one million) times to guarantee a drop through the "hard pity" system. Since this is evidently a time-inefficient process, they will need to find a way to change their pity counter.
+
+![Brainstorming II](assets/brainstorming-2.svg)
+
+> There will be a secret endpoint IP (obfuscated through simple base64) in one of the C# scripts. Each gacha 10-pull will actually send a `POST` request to the server with a payload. The players will need to both recognize this obfuscation and realize that a `POST` request is being made through reading the code.
+> The generic structure of the request includes:
+>
+> - A custom agent `SekaiCTF`
+> - The following JSON data:
+>
+> ```json
+> {
+>   "crystals": 5000, // number of in-hand crystals
+>   "pulls": 2, // number of pulls made in this game instance
+>   "numPulls": 10 // meaning the user has selected a ten-pull
+> }
+> ```
+>
+> The endpoint will return:
+>
+> - A key-value pair `characters` containing an array of ten characters
+> - If the character is the four-star rate-up character, an additional `flag: "[FLAG_IMAGE_HERE]"` key-value pair will be sent, containing a base64 encoding of an image containing the flag
+
+Here's a verbose `curl` which demonstrates the request and response (of course, made after the challenge was deployed for the sake of demonstration):
+
+import Code1 from './assets/1.txt?raw'
+
+<Code code={Code1} lang="ansi" />
+
+> We will hint in the description that a million pulls is needed to achieve the goal through a "pity" system. To complete the challenge, the player can do either of these strategies:
+>
+> - Change the client-side value of either `pulls` or `crystals` to hit the 1,000,000 pity counter on the server
+> - Send a `POST` request themselves to the obfuscated endpoint with the appropriate structure
+>
+> The flag will be printed on the screen after a million pulls, regardless of whether or not the user modified the JSON or actually pulled a million times. If the user sends a `POST` request on their own, they will need to decode the image themselves.
+
+This was all of the planning and designing that went into the actual challenge structure itself. It's purposefully simple to make the reverse-engineering process as straightforward as possible, and to make the challenge more beginner-friendly. We can now go over how I created the backend server for the challenge.
+
+## Backend Implementation
+
+Since I'm really comfortable with vanilla TypeScript, I decided that it'd be best to use it to write the backend server (contrary to the typical Python Flask server in CTFs).
+
+I created a `gacha.json`, which contains the entire pool of characters that we used. Since the entire challenge is themed around Kohane Azusawa, I utilized the pool from her 2023 birthday banner——the drop rates and characters are fully available on [sekai.best](https://sekai.best/gacha/302)'s entry of the banner:
+
+![Sekai.best Pool](assets/sekai-best-pool.gif)
+
+Manually going through every entry listed in the database, I created the following JSON file:
+
+import Code2 from './assets/2.txt?raw'
+
+<Code code={Code2} lang="json" title="gacha.json" />
+
+The new TypeScript project I made utilized the [`jsynowiec/node-typescript-boilerplate`](https://github.com/jsynowiec/node-typescript-boilerplate) repository, which (after some of my own additions and removals) resulted in this project structure:
+
+import Code3 from './assets/3.txt?raw'
+
+<Code code={Code3} lang="ansi" />
+
+Here is `src/main.ts`, the main entrypoint of the server and the place where the pity system, gacha pool, and endpoint are implemented:
+
+import Code4 from './assets/4.txt?raw'
+
+<Code code={Code4} lang="ts" title="src/main.ts" />
+
+We can see that at exactly the one millionth pull sent to the server, the flag is sent back to the client in the form of a key-value pair (containing an image encoded with base64) within the special rate-up character's object.
+
+Testing this endpoint was made buttery smooth with the help of [Jest](https://jestjs.io/); I made a test suite in `__tests__/main.test.ts` which sent a variety of different inputs, and made sure that a correct response was being outputted:
+
+import Code5 from './assets/5.txt?raw'
+
+<Code code={Code5} lang="ts" title="__tests__/main.test.ts" />
+
+These tests were a godsend after breaking changes to ensure code functionality was as expected:
+
+import Code6 from './assets/6.txt?raw'
+
+<Code code={Code6} lang="ansi" />
+
+Beautiful! We finished off the backend by deploying to [Cloudzy](https://cloudzy.com/) (our captain had an egregious sum of free credits), which gave us a suspicious raw IP that surely would draw attention while looking through the challenge files.
+
+Let's talk about the Unity graphics next.
+
+## Replicating UI Elements with Figma
+
+I wanted to make the game look as polished and as similar to the real product as possible, so I began by recreating and grabbing all of the assets that the game used in the gacha page. I found a bunch of YouTube videos which provided a nice overview of what the in-game screen looked like:
+
+![Example Screen](assets/example-screen.png)
+
+Unfortunately, there weren't any datamines/rips of Project Sekai that I could find which contained my desired UI elements, and I had to remake them from scratch in graphic design software——I used [Figma](https://figma.com) throughout this entire process.
+
+Since this project was meant to replicate, not innovate, a lot of the design process was just me eyeballing the elements and trying to recreate them as accurately as possible——the hardest part, honestly, was finding the fonts which were used in-game. I scoured the internet for any available resources regarding this to no avail, and used various font detection/scanning software on in-game screenshots (which, of course, yielded incorrect results).
+
+Luckily, [@blueset](https://github.com/blueset), my team's co-founder, happens to be a massive typography enjoyer, and quickly directed me to one of his old tweets:
+
+<StaticTweet
+  avatar="https://pbs.twimg.com/profile_images/1340744369976930304/tVcKoFVd_400x400.jpg"
+  username="Eana Hufwe"
+  handle="blueset"
+  date="August 30, 2021"
+  media="https://pbs.twimg.com/media/E-Fh71rXoAADJ4b?format=png&name=900x900"
+>
+
+今回
+[#プロセカ](https://twitter.com/hashtag/%E3%83%97%E3%83%AD%E3%82%BB%E3%82%AB)
+の 1.9.0
+アップデートで追加された新機能カスタムプロフィールで使用可能なフォントを調べてみました。全
+10 種類、どれも Fontworks の書体です。  
+[fontworks.co.jp](https://fontworks.co.jp)
+
+> **Translation**: I checked out the fonts available for the new Custom Profile feature added in the 1.9.0 update of [#Proseka](https://twitter.com/hashtag/%E3%83%97%E3%83%AD%E3%82%BB%E3%82%AB). There are 10 typefaces in total, all from Fontworks.  
+> [fontworks.co.jp](https://fontworks.co.jp)
+
+</StaticTweet>
+
+The first font on this list, ロダン NTLG DB (Rodin New Type Labo Gothic), was the font used for nearly all UI-based text elements in-game:
+
+![Rodin Font](assets/rodin-font.png)
+
+Of course, the [Internet Archive](https://archive.org/download/Fontworks/) has a directory listing of almost every Fontworks font, which I used to grab Rodin's `.otf`. With this knowledge in-hand, I was able to recreate the UI elements with ease:
+
+![Figma Screenshot](assets/figma-screenshot.png)
+
+![Figma Project](assets/figma-project.png)
+
+All elements that I were unable to recreate due to complexity (like the character attribute icons, star rarities, banner logos, etc.) I grabbed from online wikis (e.g. [Fandom](https://projectsekai.fandom.com/wiki/Project_SEKAI_Wiki), [Sekaipedia](https://www.sekaipedia.org/wiki/Category:Game_assets)) of the game. With this undoubtedly important step out of the way, let's talk about the Unity game itself.
+
+## Unity Implementation
+
+Of course, I'm no professional Unity game developer——I've only ever made a few major 2D projects in the past, and I've only touched the engine's 3D components before once (my Unity challenge from last year, [reverse/Perfect Match X-treme](https://github.com/project-sekai-ctf/sekaictf-2022/tree/main/reverse/perfect-match-xtreme/Challenge)). However, I was confident that I would be able to emulate the appearance and functionality of the gacha system with a bit of graphic design knowledge and some janky code.
+
+My Unity 2D (2021.3.29f1) project was honestly just a bunch of Canvas elements layered on top of each other. Of course, there's a million better ways to do this (e.g. the new Unity UI Toolkit with dynamic modals/buttons), but since this challenge was never meant to be long-term/scalable I didn't want to overcomplexify. Here is the hierarchy structure from within the editor:
+
+![Unity Hierarchy](assets/unity-hierarchy.png)
+
+You can easily observe which GameObjects become visible/invisible throughout play; I created a GIF to demonstrate this in action:
+
+![Unity Layers](assets/unity-layers.gif)
+
+For this section of the blog post, I'll be going over each individual script located within `Assets/Scripts`——conveniently, structuring the post in this manner actually fleshes out a lot of my challenge's functionality, and places the various scripts in context for later when we talk about reverse-engineering. Each script will have its own dedicated section, ordered by how important I believe they are. Let's get started!
+
+---
+
+### GachaManager.cs
+
+Of course, in order for the entire gacha system to function, we needed a script which would facilitate interacting with the backend server. This script is responsible for crafting and sending the proper `POST` request to the server, and delegating the parsed response to the `UIManager.cs` script for display. We first define a `RequestClasses{:cs}` namespace, which defines the structure of the JSON payloads that we will be sending/receiving:
+
+import Code7 from './assets/7.txt?raw'
+
+<Code code={Code7} lang="cs" title="Assets/Scripts/RequestClasses.cs" />
+
+We can utilize these in the main script to create a new `GachaRequest{:cs}` object, which will be converted into a `UnityWebRequest{:cs}` and properly handled:
+
+import Code8 from './assets/8.txt?raw'
+
+<Code code={Code8} lang="cs" title="Assets/Scripts/GachaManager.cs" />
+
+Notice this extremely suspicious string near the bottom of the script:
+
+import Code9 from './assets/9.txt?raw'
+
+<Code
+  code={Code9}
+  lang="cs"
+  title="Assets/Scripts/GachaManager.cs"
+  mark={4}
+  startLineNumber={57}
+/>
+
+This obvious base64 obfuscation is the endpoint IP that we talked about earlier, which is decoded before being passed into the `new UnityWebRequest{:cs}`. This is particularly catered towards newer players——it's honestly like a sore thumb sticking out of the script, meant to be noticed and questioned.
+
+Other than this, the script is pretty straightforward——if the request fails (due to bad internet, downed server, malformed payload, etc.), `uiManager.GenericModalHandler(){:cs}` is called and displays `failedConnectionModal{:cs}`:
+
+import Code10 from './assets/10.txt?raw'
+
+<Code
+  code={Code10}
+  lang="cs"
+  title="Assets/Scripts/GachaManager.cs"
+  startLineNumber={46}
+/>
+
+![Error Modal](assets/error-modal.png)
+
+> 接続エラー： サーバーに接続できませんでした (または不正なペイロー ドが送信されました!) 通貨は使われていません。  
+> Connection Error: could not connect to the server (or an invalid payload was sent)! No currency was spent.
+
+Otherwise, if the request succeeds, responsibility for the data is delegated to the `uiManager.DisplaySplashArt(){:cs}` coroutine:
+
+import Code11 from './assets/11.txt?raw'
+
+<Code
+  code={Code11}
+  lang="cs"
+  title="Assets/Scripts/GachaManager.cs"
+  startLineNumber={38}
+  mark={7}
+  collapse="9-36"
+/>
+
+---
+
+### GameState.cs
+
+Although bite-sized in comparison to the other scripts, this script is responsible for maintaining the state of the game——the amount of crystals the player has and the amount of pulls they've made in the current session:
+
+import Code12 from './assets/12.txt?raw'
+
+<Code code={Code12} lang="cs" title="Assets/Scripts/GameState.cs" />
+
+Think about it: how will the player be able to manipulate the in-game pity counter? More to come.
+
+---
+
+### UIManager.cs
+
+It is with honor I introduce to you this 549-line BEHEMOTH of a script!
+
+import Code13 from './assets/13.txt?raw'
+
+<Code code={Code13} lang="cs" title="Assets/Scripts/UIManager.cs" />
+
+I know this looks intensely overwhelming, but it's just because all of these different, uncorrelated methods are all thrown into single file because they all have to do with UI; it's not actually that bad if you chunk it up to make it more digestible. I'll attempt to briefly explain each of these methods with a table (which is just... sheer ridiculousness 🤣):
+
+<table>
+<thead>
+<tr>
+<th>Method Name</th>
+<th>Functionality</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+
+`public void Start(){:cs}`
+
+</td>
+<td>
+
+We can totally ignore [`MonoBehaviour.Start(){:cs}`](https://docs.unity3d.com/ScriptReference/MonoBehaviour.Start.html) because it just consists of a bunch of `AddListener(){:cs}` calls to the various buttons in the game. I could have mitigated this by using the Unity GUI's `OnClick(){:cs}` functionality for buttons to directly call the appropriate methods, but out of personal preference I chose to do it this way.
+
+</td>
+</tr>
+<tr>
+<td>
+
+`public void UpdateUI(){:cs}`
+
+</td>
+<td>
+
+Genuinely just a one-liner. The only reason why it's its own public method is because `GachaManager{:cs}` calls it when it finishes up a successful request.
+
+</td>
+</tr>
+<tr>
+<td>
+
+`public void MusicVolume(){:cs}`
+
+</td>
+<td>
+
+Used in the volume sliders in `menuModal{:cs}`. Utilizes the `AudioController{:cs}` (which we'll go over later) to adjust sounds: ![Volume Sliders](assets/volume-sliders.png) Also plays a little sound effect which changes pitch depending on the direction the slider is moving. Of course, since we don't want the sound effect to be spammed per tick of the slider, I added a cooldown.
+
+</td>
+</tr>
+<tr>
+<td>
+
+`public void SFXVolume(){:cs}`
+
+</td>
+<td>
+
+Same thing as `MusicVolume(){:cs}` except for SFX.
+
+</td>
+</tr>
+<tr>
+<td>
+
+`public void ExitGame(){:cs}`
+
+</td>
+<td>
+
+Also a one-liner: `Application.Quit(){:cs}`.
+
+</td>
+</tr>
+<tr>
+<td>
+
+`public void OnPullButtonClick(){:cs}`
+
+</td>
+<td>
+
+**Parameters**: `int cost{:cs}`, `int numPulls{:cs}`
+
+Opens the `pullConfirmationModal{:cs}` and changes the various TextMeshPro objects inside to be accurate (changes the color of `currentCrystalsText{:cs}` to red and disables `pullConfirmationContinueButton{:cs}` if the user doesn't have enough crystals): ![Confirmation Modal](assets/confirmation-modal.png)
+
+</td>
+</tr>
+<tr>
+<td>
+
+`public void GenericModalHandler(){:cs}`
+
+</td>
+<td>
+
+**Parameters**: `GameObject modal{:cs}`, `Button closeButton{:cs}`
+
+Plays the default zoom-in/zoom-out animations, sound effects, and enables darkened background whenever a modal is opened via button: ![Modal Handler](assets/modal-handler.gif)
+
+</td>
+</tr>
+<tr>
+<td>
+
+`public IEnumerator DisplaySplashArt(){:cs}`
+
+</td>
+<td>
+
+**Parameters**: `Character[] characters{:cs}`
+
+Whenever you pull for characters in Project Sekai, a "carousel" of "splash art" representing each character appears one-by-one on your screen until you've cycled through everything you've pulled. This method handles the entire process by cycling through the `Character[]{:cs}` array and calling the following `Display____StarCharacter(){:cs}` coroutines (will be referred to as "splash art coroutines" from here for brevity). It pauses the iteration through the loop (via `WaitUntil(() => CheckForSkipOrClick(characters, i)){:cs}`) until the user clicks after the aforementioned coroutine is completed.
+
+</td>
+</tr>
+<tr>
+<td>
+
+`private IEnumerator DisplayTwoStarCharacter(){:cs}`
+
+</td>
+<td>
+
+**Parameters**: `Character character{:cs}`
+
+Handles the animations and sound effects for a two-star splash art. Since I chose to animate using the seriously outdated legacy Animation component (I was too lazy to learn the new Animator), I had to trigger the animations through code. It's seriously ugly, but for such a small use case like this I didn't find it necessary: ![Two Star Animation](assets/two-star-animation.gif) The script replaces every pixel in the initial splash art with a static color representing the character (Kohane's is `#FF679A{:cs}`) to create a silhouette, and uses a moving mask to achieve a "wiping" animation on top of the silhouette. The silhouette then moves diagonally to create a shadow. The background triangle movement was achieved using the `BackgroundScroller.cs{:cs}` file, which will be overviewed later.
+
+</td>
+</tr>
+<tr>
+<td>
+
+`private IEnumerator DisplayThreeStarCharacter(){:cs}`
+
+</td>
+<td>
+
+**Parameters**: `Character character{:cs}`
+
+Handles three-star splash art. Since splash art for this rarity takes up the entire screen instead of using a small silhouette, I had to give it different treatment (and therefore different animations): ![Three Star Animation](assets/three-star-animation.gif)
+
+</td>
+</tr>
+<tr>
+<td>
+
+`private IEnumerator DisplayFourStarCharacter(){:cs}`
+
+</td>
+<td>
+
+**Parameters**: `Character character{:cs}`
+
+Will be revealed when solving the challenge!
+
+</td>
+</tr>
+<tr>
+<td>
+
+`private IEnumerator SetInactiveAfterDelay(){:cs}`
+
+</td>
+<td>
+
+**Parameters**: `GameObject gameObject{:cs}`, `float delay{:cs}`
+
+Just a simple utility method which is typically called when closing a modal. Since we want the closing animation to play (rather than disabling the modal immediately), we wait a little bit before setting it to inactive.
+
+</td>
+</tr>
+<tr>
+<td>
+
+`private void UpdateSplashArtImage(){:cs}`
+
+</td>
+<td>
+
+**Parameters**: `string splashArt{:cs}`, `Image image{:cs}`
+
+Changes the image after each iteration through the splash art carousel, called at the beginning of every splash art coroutine.
+
+</td>
+</tr>
+<tr>
+<td>
+
+`private void UpdateSilhouetteImage(){:cs}`
+
+</td>
+<td>
+
+**Parameters**: `string splashArt{:cs}`
+
+Replaces each pixel within a splash art to create a silhouette of solid color. Called in `DisplayTwoStarCharacter(){:cs}`.
+
+</td>
+</tr>
+<tr>
+<td>
+
+`private void DisplayAvatars(){:cs}`
+
+</td>
+<td>
+
+**Parameters**: `Character[] characters{:cs}`
+
+Handles the instantiation/destruction of `avatarImages{:cs}` within the Grid Layout Group component of `gachaOverviewCanvas{:cs}`: ![Gacha Overview](assets/gacha-overview.gif)
+
+</td>
+</tr>
+<tr>
+<td>
+
+`private void SetImageOpacity(){:cs}`
+
+</td>
+<td>
+
+**Parameters**: `MaskableGraphic image{:cs}`, `float targetOpacity{:cs}`
+
+Utility method exclusively for `ResetAnimations(){:cs}`. Used to set transparency to 0 when resetting animations.
+
+</td>
+</tr>
+<tr>
+<td>
+
+`private void DisplayGachaOverview(){:cs}`
+
+</td>
+<td>
+
+Disables and enables all the appropriate layers and plays the correct sound effects during the transition to the gacha overview page (the grid layout screen with avatars of all the characters you've pulled). Fades the looping music in the background into a different song.
+
+</td>
+</tr>
+<tr>
+<td>
+
+`private void OnSkipButtonClick(){:cs}`
+
+</td>
+<td>
+
+Skips the splash art carousel (via `StopAllCoroutines(){:cs}`) and goes straight to the gacha overview screen.
+
+</td>
+</tr>
+<tr>
+<td>
+
+`private void OnNextButtonClick(){:cs}`
+
+</td>
+<td>
+
+A one-liner which disables the gacha overview once the user is finished observing it.
+
+</td>
+</tr>
+<tr>
+<td>
+
+`private void OnPullAgainButtonClick(){:cs}`
+
+</td>
+<td>
+
+Starts the entire backend request -> splash art carousel event chain once again, as long as the user has enough crystals. Is disabled/greyed out if otherwise.
+
+</td>
+</tr>
+<tr>
+<td>
+
+`private void OnGachaDetailsButtonClick(){:cs}`
+
+</td>
+<td>
+
+Dedicated listener for the `gachaDetailsModal{:cs}` instead of using `GenericModalHandler(){:cs}`. For some reason, the Scroll Rect component's area was bugging out whenever it interacted with my zoom-in/zoom-out animations, with the scrollable area seemingly moving on its own whenever the modal is opened/closed. This method resets the `verticalNormalizedPosition{:cs}` of the Scroll Rect each time to prevent this.
+
+</td>
+</tr>
+<tr>
+<td>
+
+`private void ResetAnimations(){:cs}`
+
+</td>
+<td>
+
+Resets every animation at the start of each iteration (e.g. moving the mask back to its place, changing opacities/colors back to normal).
+
+</td>
+</tr>
+<tr>
+<td>
+
+`private bool CheckForSkipOrClick(){:cs}`
+
+</td>
+<td>
+
+**Parameters**: `Character[] characters{:cs}`, `int index{:cs}`
+
+An isolated part of the `DisplaySplashArt(){:cs}` coroutine, which checks to see if the user has clicked on the screen to iterate through the carousel.
+
+</td>
+</tr>
+</tbody>
+</table>
+
+And we're done! See, it wasn't _too_ bad, right?
+
+---
+
+### AudioController.cs
+
+An extremely undervalued aspect of video games which give them that beautiful polish is sound design. Of course, I'm not the one creating the sound effects themselves; that's an entirely different universe. For sound effects in this challenge, I scoured through some online asset rips of the official game: [sekai.best](https://sekai.best/asset_viewer/sound/system/)'s asset viewer, and the [pjsek.ai](https://pjsek.ai/assets) database:
+
+![Sekai.best Asset Viewer](assets/sekai-best-asset-viewer.png)
+
+![PJSekai Database](assets/pjsekai-database.png)
+
+Any SFX assets I weren't able to find I ended up taking from the game itself——I ended up taking a screen recording of me pulling the gacha and cutting out the various sound effects I heard (with the music volume at 0%). From this, alongside recordings of people fiddling with the gacha system on YouTube, I was able to deduce which sound effects needed to be triggered when. I finished off the recordings with a bit of post-processing in Audacity:
+
+![Audacity](assets/audacity.png)
+
+The `AudioController.cs` itself first needs a class `Sound{:cs}`, which defines an `AudioClip{:cs}` with a name:
+
+import Code14 from './assets/14.txt?raw'
+
+<Code code={Code14} lang="cs" title="Assets/Scripts/Sound.cs" />
+
+We can now define the audio controller to take an array of `Sound[]{:cs}`s and two floats for their respective volumes. The audio controller will have a plethora of useful methods to call throughout our other scripts:
+
+import Code15 from './assets/15.txt?raw'
+
+<Code code={Code15} lang="cs" title="Assets/Scripts/AudioController.cs" />
+
+With this, we can now freely drag audio clips into the audio controller, rename them, and call them on a whim from any of our other scripts, like our `UIManager.cs`:
+
+![Audio Inspector](assets/audio-inspector.png)
+
+import Code16 from './assets/16.txt?raw'
+
+<Code
+  code={Code16}
+  lang="cs"
+  title="Assets/Scripts/UIManager.cs"
+  startLineNumber={433}
+  mark={[14, 16]}
+  collapse="3-12"
+/>
+
+---
+
+### BackgroundScroller.cs
+
+This script is responsible for the diagonal movement in the background of the splash art carousel and the gacha overview screen. It's a simple script which moves the background `RawImage{:cs}`'s UV Rect diagonally:
+
+import Code17 from './assets/17.txt?raw'
+
+<Code code={Code17} lang="cs" title="Assets/Scripts/BackgroundScroller.cs" />
+
+![Background Scroll](assets/background-scroll.gif)
+
+This only works if the image asset itself has a Wrap Mode of "Repeat" (instead of "Clamp").
+
+---
+
+### ShrinkButton.cs
+
+The [Prefab](https://docs.unity3d.com/Manual/Prefabs.html) system was utilized to create a reusable component for every button, containing interactive transition colors and a script which handled the button's shrinking/expanding animations on-click:
+
+![Unity Prefab](assets/unity-prefab.png)
+
+import Code18 from './assets/18.txt?raw'
+
+<Code code={Code18} lang="cs" title="Assets/Scripts/ShrinkButton.cs" />
+
+This is the resulting behavior:
+
+![Shrink Button](assets/shrink-button.gif)
+
+---
+
+### CameraScaler.cs, FullscreenHandler.cs
+
+These two scripts were adopted from the [`wmjoers/CameraScaler`](https://github.com/wmjoers/CameraScaler) repository, which provided fixes to bad aspect ratios on standalone 2D unity bundles. Think of it as converting an image in CSS from `object-fit: cover{:css}` to `object-fit: contain{:css}`, so that the game camera itself preserves its aspect ratio even when the game window is altered:
+
+![Fullscreen Fix](assets/fullscreen-fix.gif)
+
+import Code19 from './assets/19.txt?raw'
+
+<Code code={Code19} lang="cs" title="Assets/Scripts/CameraScaler.cs" />
+
+import Code20 from './assets/20.txt?raw'
+
+<Code code={Code20} lang="cs" title="Assets/Scripts/FullscreenHandler.cs" />
+
+---
+
+Since we have a lot of context now on how the game is made and the various scripts that we need to exploit/manipulate, we can now trivially reverse-engineer the game and hack in the 4\* character. Let's get started!
+
+## Writeup
+
+<Challenge
+  title="Azusawa's Gacha World"
+  authors={["enscribe"]}
+  points={100}
+  category="Reverse"
+  solves={250}
+  files={["dist.zip"]}
+>
+
+**(description on CTF platform)**
+
+> https://azusawa.world/#/2023/03/02
+>
+> ❖ **Note**  
+> The website only contains the challenge description, and is not needed to solve the challenge.
+
+**(description on linked website)**
+
+> Mar 2, 2023: I am completely, utterly, unconditionally infatuated with
+> Kohane Azusawa. Today, her birthday banner just dropped.
+>
+> I've topped out all my credit cards.  
+> I've cashed out on my index funds and sold my car.  
+> I've sacrificed my vitamins, my social life, my sanity—all for a glimpse of that sweet, sweet **「Happy Birthday！！2023 - こはね 小豆沢」** limited-edition birthday card.
+>
+> But alas, it's never enough. The odds are miniscule, the rates are rigged, the gacha system is a predatory sham.
+> It feels like I've pulled a million times and I still haven't gotten her! Do the gacha gods not pity me?!
+>
+> ![In-game screenshot of gacha banner](assets/initial-launch.png)
+
+</Challenge>
+
+We're initially provided with a `dist/` folder with the following structure:
+
+![Initial Folder Structure](assets/initial-folder-structure.svg)
+
+Opening up the executable in Windows will reveal a video game titled "Azusawa's Gacha World", which is revealed to be generated by Unity from the splash image that appears on-load:
+
+![Initial Launch](assets/initial-launch.png)
+
+It's... an entirely Japanese gacha game! We can totally pull on the gacha with our 100 crystals to start off with, but we quickly realize that this entire system is rigged from the second button on the bottom left (which reads ガチャ詳細 -> "Gacha Details"):
+
+![Gacha Details](assets/gacha-details.png)
+
+We can see that we were provided a list of percentages, which indicate the chance that each rarity of character will be dropped. The top rarity, the bow icon, indicates a "special" rarity of character that has a 0% chance of dropping from the pool.
+
+Check out that emphasized text in pink, however. Although players are meant to OCR the text for translation (or just know Japanese), I'll skip the notion and just translate it:
+
+> 注意: このキャラクターは、このピックアップで行う**100 万回目**の引き出しで保証されます。  
+> NOTE: This character is guaranteed on the **1,000,000th** withdrawal made in this pickup.
+
+Of course, this means that we would need to pull a million times to get our desired character. That's no fun——so how are we going to manipulate this game to make it think that we've already pulled a million times?
+
+Let's use [dnSpy v6.1.8](https://github.com/dnSpy/dnSpy) to our advantage here to reverse engineer the game. Since all Unity-compiled C# code goes into an `Assembly-CSharp.dll` within the `dist/Asusawa's Gacha World_Data/Managed` directory, we should be analyzing this file first and foremost. Opening dnSpy and dragging the DLL into the program will reveal the following structure:
+
+![Initial dnSpy](assets/initial-dnspy.png)
+
+Sifting through the code, the most relevant script out of all seems to be a `GachaManager.cs`, which creates `POST` requests to a backend server of some kind. We find a suspicious string near the top of the `CreateGachaWebRequest(){:cs}` method:
+
+![Suspicious String](assets/suspicious-string.png)
+
+Deobfuscating this string with a simple base64 decoder reveals the following IP address, which is the endpoint that the game is sending requests to:
+
+![Decode Base64](assets/decode-base64.png)
+
+Let's figure out the structure that the game is sending to the server. Let's take a closer look at the `CreateGachaWebRequest(){:cs}` method:
+
+import Code21 from './assets/21.txt?raw'
+
+<Code
+  code={Code21}
+  lang="cs"
+  title="Assembly-CSharp.dll"
+  startLineNumber={51}
+  mark={[9, 10]}
+/>
+
+We can see that `SetRequestHeader(){:cs}` is being called to add some custom headers to the web request: `User-Agent: SekaiCTF{:yml}` and `Content-Type: application/json{:yml}`. The contents of the JSON payload itself can be reversed from the `SendGachaRequest(){:cs}` class:
+
+import Code22 from './assets/22.txt?raw'
+
+<Code
+  code={Code22}
+  lang="cs"
+  title="Assembly-CSharp.dll"
+  startLineNumber={27}
+  mark={[4]}
+/>
+
+We can see that a new `GachaRequest{:cs}` is being created with the parameters `this.gameState.crystals{:cs}`, `this.gameState.pulls{:cs}`, and `numPulls{:cs}`. Since we can edit and recompile assemblies with dnSpy, let's change the parameters being sent to `GachaRequest{:cs}` to something static. We can change the `this.gameState.crystals{:cs}` parameter to something large, like 10,000,000, and the `this.gameState.pulls{:cs}` parameter to something close to 1,000,000——let's say 999,999. Right click the method and click "Edit Method (C#)..." to change the parameters:
+
+![Recompiling DLL](assets/recompiling-dll.png)
+
+import Code23 from './assets/23.txt?raw'
+
+<Code
+  code={Code23}
+  lang="cs"
+  title="Assembly-CSharp.dll"
+  ins={14}
+  del={{ range: '13,30-32' }}
+/>
+
+After fixing some minor errors, we can recompile the DLL and save it over the original one, which will successfully modify our in-game parameters. Let's try pulling again:
+
+![Flag GIF](assets/flag.gif)
+
+---
+
+## Afterword
+
+That's about all there is left to cover in terms of the Unity project! Honestly, for a 1\* (baby difficulty) reverse-engineering challenge which could probably be solved in less than 5 minutes by an experienced reverse player, a lot of sweat and tears were put into this entire process——a total of 29 hours (via [WakaTime](https://wakatime.com/)) over the course of 3 weeks were spent designing, programming, and polishing. I'm really proud of the final product that I've created; you can genuinely see the overall growth from last year's challenge. I hope you enjoyed reading about the process as much as I enjoyed making it!
+
+Special thanks to:
+
+- [@sahuang](https://twitter.com/sahuang97) for helping me design the challenge, testing, and deploying backend
+- [@blueset](https://github.com/blueset) for helping me identify fonts and for assets from the [Luna for CTFd](https://1a23.com/works/open-source/luna-for-ctfd/) theme
+- [@stypr](https://twitter.com/brokenpacifist) for graciously allowing us to put the challenge description in his website
+
+Here are the various databases, wikis, and websites I utilized during this challenge:
+
+- [Sekai.best](https://sekai.best/asset_viewer/sound/system/)
+- [PJSekai](https://pjsek.ai/assets)
+- [Sekaipedia](https://www.sekaipedia.org/wiki/Category:Game_assets)
+- [Project Sekai Wiki](https://projectsekai.fandom.com/wiki/Project_SEKAI_Wiki)
+- [Fontworks (Internet Archive)](https://archive.org/download/Fontworks/)

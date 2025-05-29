@@ -1,0 +1,5 @@
+   if (memcmp(canary,global_canary,CANARY_SIZE)) {
+      printf("***** Stack Smashing Detected ***** : Canary Value Corrupt!\n"); // crash immediately
+      fflush(stdout);
+      exit(-1);
+   }

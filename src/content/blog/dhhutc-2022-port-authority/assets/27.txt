@@ -1,0 +1,41 @@
+let checkList = findAll("toggle");
+
+// Runs when output from server is received
+socket.onmessage = function (event) {
+    // Converts server output into object
+    let obj = JSON.parse(event.data);
+    if (obj.type == "TICK") {
+        let ships = [];
+        // For each ship in obj.ships, push class object into ships array
+        for (const i of obj.ships) {
+            ships.push(new Ship(i.id, i.area[0], i.area[1], i.direction));
+        }
+        // Call the string literal getter
+        for (const i of ships) {
+            log(i.printState);
+            // Infinite checks!
+            if (!checkList[0].checked) {
+                check(s, obstacles[0], "LEFT");
+                check(s, obstacles[1], "RIGHT");
+            }
+            if (!checkList[1].checked) {
+                check(s, obstacles[2], "LEFT");
+                check(s, obstacles[3], "RIGHT");
+            }
+            if (!checkList[2].checked) {
+                check(s, obstacles[4], "DOWN");
+                check(s, obstacles[7], "UP");
+            }
+            if (!checkList[3].checked) {
+                check(s, obstacles[5], "DOWN");
+                check(s, obstacles[9], "UP");
+            }
+            if (!checkList[4].checked) {
+                check(s, obstacles[6], "DOWN");
+                check(s, obstacles[11], "UP");
+            }
+            if (!checkList[5].checked) {
+                check(s, obstacles[8], "LEFT");
+                check(s, obstacles[10], "RIGHT");
+            }
+        }

@@ -1,0 +1,16 @@
+void win(unsigned int arg1, unsigned int arg2) {
+    char buf[FLAGSIZE];
+    FILE *f = fopen("flag.txt","r");
+    if (f == NULL) {
+        printf("%s %s", "Please create 'flag.txt' in this directory with your",
+                        "own debugging flag.\n");
+        exit(0);
+    }
+
+    fgets(buf,FLAGSIZE,f);
+    if (arg1 != 0xCAFEF00D)
+        return;
+    if (arg2 != 0xF00DF00D)
+        return;
+    printf(buf);
+}

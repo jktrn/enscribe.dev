@@ -1,0 +1,59 @@
+---
+title: 'Buffer overflow 0'
+description: 'A comprehensive walkthrough of the picoCTF 2022 buffer overflow challenges, exploring stack-based exploitation techniques and binary security fundamentals.'
+date: 2022-06-16
+authors: ['enscribe']
+order: 0
+---
+
+import { Code } from 'astro-expressive-code/components'
+import Challenge from '@/components/mdx/Challenge.astro'
+
+<div class="invisible h-0! [&+*]:mt-0 [&+*_*]:mt-0">
+## Buffer overflow 0
+</div>
+
+<Challenge
+  title="Buffer overflow 0"
+  solvers={[
+    {
+      name: 'enscribe',
+      href: 'https://github.com/jktrn',
+      avatar: 'https://github.com/jktrn.png',
+    },
+  ]}
+  authors={['Alex Fulton', 'Palash Oswal']}
+  category="pwn"
+  points={100}
+  remote="$ nc saturn.picoctf.net [PORT]"
+  files={['vuln', 'vuln.c']}
+  flag="picoCTF{ov3rfl0ws_ar3nt_that_bad_[REDACTED]}"
+>
+  Smash the stack! Let's start off simple: can you overflow the correct buffer?
+</Challenge>
+
+For each of the following challenges, I'll add the output of the `checksec` command, which shows the security settings of the binary:
+
+import Code1 from './assets/1.txt?raw'
+
+<Code code={Code1} lang="ansi" />
+
+Let's now check out our source code:
+
+import Code2 from './assets/2.txt?raw'
+
+<Code code={Code2} lang="c" title="vuln.c" />
+
+The first thing we should do is check how the flag is printed. Looks like it's handled in a `sigsegv_handler(){:c}` function:
+
+import Code3 from './assets/3.txt?raw'
+
+<Code code={Code3} lang="c" title="vuln.c" startLineNumber={10} />
+
+Researching online, a "SIGSEGV" stands for a **segmentation fault**, which is an error raised by memory-protected hardware whenever it tries to access a memory address that is either restricted or does not exist. If the flag `printf(){:c}` resides within `sigsegv_handler(){:c}`, then we can safely assume that we must figure out how to trigger a segmentation fault.
+
+We see that on line 40, the horrible `gets(){:c}` is called, and reads `buf1` (the user input) onto the stack. This function sucks, as it will write the user's input to the stack without regard to its allocated length. The user can simply overflow this length, and the program will pass their input into the `vuln(){:c}` function to trigger a segmentation fault:
+
+import Code4 from './assets/4.txt?raw'
+
+<Code code={Code4} lang="ansi" mark="picoCTF{ov3rfl0ws_ar3nt_that_bad_[REDACTED]}" />

@@ -1,0 +1,61 @@
+---
+title: 'Guardians of the Galaxy'
+description: 'Learn brute-forced format string attacks, blind buffer overflows, and return-oriented programming in this writeup compilation from Space Heroes CTF.'
+date: 2022-04-06
+authors: ['enscribe']
+order: 1
+---
+
+import { Code } from 'astro-expressive-code/components'
+import Challenge from '@/components/mdx/Challenge.astro'
+
+<div class="invisible h-0! [&+*]:mt-0 [&+*_*]:mt-0">
+## Guardians of the Galaxy
+</div>
+
+<Challenge
+  title="Guardians of the Galaxy"
+  solvers={[
+    {
+      name: 'enscribe',
+      href: 'https://github.com/jktrn',
+      avatar: 'https://github.com/jktrn.png',
+    },
+  ]}
+  authors={['GlitchArchetype']}
+  category="pwn"
+  points={100}
+  files={['guardians']}
+  remote="nc 0.cloud.chals.io 12690"
+  flag="shctf{im_distracting_you}"
+>
+  Ronan the Accuser has the Power Stone. Can Starlord find a successful distraction format?  
+</Challenge>
+
+import Code1 from './assets/1.txt?raw'
+
+<Code code={Code1} lang="ansi" />
+
+Let's look at what happens when you run that binary given to us:
+
+import Code2 from './assets/2.txt?raw'
+
+<Code code={Code2} lang="ansi" />
+
+This error is because the binary is probably trying to reference a `flag.txt` within its directory that doesn't exist. Let's create one and run it again:
+
+import Code3 from './assets/3.txt?raw'
+
+<Code code={Code3} lang="ansi" />
+
+There, we got it to work locally. Since we know that this is problem a format string vulnerability from the "find a successful distraction format" part of the description, let's assume that the vulnerability is it writing our input to the stack with `printf(){:c}`. We will need to work our way up the stack with the format `%n$s{:c}`, where `n{:c}` is the decimal index of the argument you want, and `s` is the `printf(){:c}` specifier for a **string of characters**. Here is a Python script used to brute force our way up:
+
+import Code4 from './assets/4.txt?raw'
+
+<Code code={Code4} lang="py" title="solve.py" />
+
+This script will send a UTF-8 encoded format string, with `str(i)` being the iterating variable. If its output contains the flag, the loop breaks and the script will stop. Let's run it:
+
+import Code5 from './assets/5.txt?raw'
+
+<Code code={Code5} lang="ansi" mark={24} />

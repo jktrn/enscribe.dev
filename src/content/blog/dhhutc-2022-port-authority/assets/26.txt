@@ -1,0 +1,19 @@
+            <p>Loop Ships:</p>
+            <div>
+                <input type="checkbox" id="loop0" checked>Loop 0</input>
+                <input type="checkbox" id="loop1" checked>Loop 1</input>
+                <input type="checkbox" id="loop2" checked>Loop 2</input>
+                <input type="checkbox" id="loop3" checked>Loop 3</input>
+                <input type="checkbox" id="loop4" checked>Loop 4</input>
+                <input type="checkbox" id="loop5" checked>Loop 5</input>
+            </div>
+            <p> Disable Obstacles: </p>
+            <div>
+                <input type="checkbox" id="toggle0">1/2</input>
+                <input type="checkbox" id="toggle1">3/4</input>
+                <input type="checkbox" id="toggle2">5/8</input>
+                <input type="checkbox" id="toggle3">6/10</input>
+                <input type="checkbox" id="toggle4">7/12</input>
+                <input type="checkbox" id="toggle5">9/11</input>
+            </div>
+        </fieldset>

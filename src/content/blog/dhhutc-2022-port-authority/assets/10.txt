@@ -1,0 +1,76 @@
+const text = document.getElementById("textarea");
+// Pretend there's stuff here
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        // For each ship in obj.ships, push class object into ships array
+        for(const i of obj.ships) {
+            ships.push(new Ship(i.id, i.area[0], i.area[1], i.direction));
+        }
+        // Call the string literal getter
+        for(const i of ships) {
+            console.log(i.printState);
+            log(i.printState);        
+        }
+    } else {
+      log(JSON.stringify(JSON.parse(event.data)));
+    }
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function log(str) {
+    text.value += "\n" + str;
+    text.value = text.value.substring(text.value.length - 10000);
+    text.scrollTop = text.scrollHeight;
+}

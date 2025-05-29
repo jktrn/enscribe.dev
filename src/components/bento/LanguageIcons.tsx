@@ -33,7 +33,7 @@ export const languageIcons: { [key: string]: IconType } = {
   tex: SiLatex,
 }
 
-export const getLanguageIcon = (language: string): JSX.Element | null => {
+export const getLanguageIcon = (language: string): React.ReactNode | null => {
   const Icon = languageIcons[language]
   return Icon ? <Icon /> : null
 }

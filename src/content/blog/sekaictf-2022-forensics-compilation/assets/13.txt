@@ -1,0 +1,3 @@
+[0;33m$[0m git clone https://github.com/volatilityfoundation/dwarf2json  
+[0;33m$[0m cd dwarf2json 
+[0;33m$[0m go build  

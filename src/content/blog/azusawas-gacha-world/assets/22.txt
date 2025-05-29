@@ -1,0 +1,23 @@
+	// Token: 0x06000015 RID: 21 RVA: 0x00002585 File Offset: 0x00000785
+	public IEnumerator SendGachaRequest(int numPulls)
+	{
+		string json = JsonUtility.ToJson(new GachaRequest(this.gameState.crystals, this.gameState.pulls, numPulls));
+		using (UnityWebRequest request = this.CreateGachaWebRequest(json))
+		{
+			yield return request.SendWebRequest();
+			if (request.result == UnityWebRequest.Result.Success)
+			{
+				this.HandleGachaResponse(request.downloadHandler.text, numPulls);
+				GachaResponse gachaResponse = JsonUtility.FromJson<GachaResponse>(request.downloadHandler.text);
+				base.StartCoroutine(this.uiManager.DisplaySplashArt(gachaResponse.characters));
+			}
+			else
+			{
+				this.uiManager.GenericModalHandler(this.uiManager.failedConnectionModal, this.uiManager.failedConnectionModalCloseButton);
+				AudioController.Instance.PlaySFX("Open");
+			}
+		}
+		UnityWebRequest request = null;
+		yield break;
+		yield break;
+	}

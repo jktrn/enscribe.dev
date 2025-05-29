@@ -1,0 +1,68 @@
+{
+  "characters": [
+    {
+      "name": "こはね 小豆沢",
+      "cardName": "Vivid BAD SQUAD",
+      "rarity": "2*",
+      "attribute": "Mysterious",
+      "splashArt": "vivid-bad-squad",
+      "avatar": "vivid-bad-squad-icon"
+    },
+    {
+      "name": "こはね 小豆沢",
+      "cardName": "想いをこめたシーグラス",
+      "rarity": "2*",
+      "attribute": "Cool",
+      "splashArt": "sea-glass-full-of-feelings",
+      "avatar": "sea-glass-full-of-feelings-icon"
+    },
+    {
+      "name": "こはね 小豆沢",
+      "cardName": "あったかキャンプスタイル",
+      "rarity": "2*",
+      "attribute": "Cute",
+      "splashArt": "warm-camping-style",
+      "avatar": "warm-camping-style-icon"
+    },
+    {
+      "name": "こはね 小豆沢",
+      "cardName": "プリティブライズメイド",
+      "rarity": "2*",
+      "attribute": "Happy",
+      "splashArt": "pretty-bridesmaid",
+      "avatar": "pretty-bridesmaid-icon"
+    },
+    {
+      "name": "こはね 小豆沢",
+      "cardName": "セカイで一息",
+      "rarity": "3*",
+      "attribute": "Cool",
+      "splashArt": "a-quick-breather",
+      "avatar": "a-quick-breather-icon"
+    },
+    {
+      "name": "こはね 小豆沢",
+      "cardName": "憂いの夜",
+      "rarity": "3*",
+      "attribute": "Pure",
+      "splashArt": "gloomy-night",
+      "avatar": "gloomy-night-icon"
+    },
+    {
+      "name": "こはね 小豆沢",
+      "cardName": "レモネードで一休み♪",
+      "rarity": "3*",
+      "attribute": "Happy",
+      "splashArt": "lemonade-break",
+      "avatar": "lemonade-break-icon"
+    },
+    {
+      "name": "こはね 小豆沢",
+      "cardName": "Happy Birthday！！2023",
+      "rarity": "4*",
+      "attribute": "Mysterious",
+      "splashArt": "happy-birthday",
+      "avatar": "happy-birthday-icon"
+    }
+  ]
+}

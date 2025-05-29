@@ -1,0 +1,27 @@
+[0;33m$[0m npm run test
+
+> gacha-backend@0.0.0 test
+> node --experimental-vm-modules node_modules/jest/bin/jest.js
+
+  [0;90mconsole.log[0m
+    Server listening on port 3000
+
+      [0;90mat Server.<anonymous> (src/main.ts:150:13)[0m
+
+[0;32mPASS[0m [0;90m__tests__/[0mmain.test.ts
+  Gacha endpoint
+    [0;32m√[0m [0;90mshould return a valid response for ten pulls (51 ms)[0m
+    [0;32m√[0m [0;90mshould return an array of ten characters if the user has enough gems for ten pulls (6 ms)[0m
+    [0;32m√[0m [0;90mshould show the flag if the user has 1,000,000 pulls (9 ms)[0m
+    [0;32m√[0m [0;90mshould return an error if numPulls is not either 1 or 10 (7 ms)[0m
+    [0;32m√[0m [0;90mshould return an error if the user does not have enough gems for ten pulls (6 ms)[0m
+    [0;32m√[0m [0;90mshould return an error if the return body is incomplete (6 ms)[0m
+    [0;32m√[0m [0;90mshould return a valid response for a single pull (7 ms)[0m
+    [0;32m√[0m [0;90mshould return an array of one character if the user has enough gems for a single pull (5 ms)[0m
+    [0;32m√[0m [0;90mshould return an error if the user does not have enough gems for a single pull (7 ms)[0m
+
+Test Suites: [0;32m1 passed[0m, 1 total
+Tests:       [0;32m9 passed[0m, 9 total
+Snapshots:   0 total
+Time:        2.118 s, estimated 3 s
+[0;90mRan all test suites.[0m

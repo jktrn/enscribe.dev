@@ -1,0 +1,31 @@
+---
+import { Icon } from 'astro-icon/components'
+
+export interface Props {
+  title: string
+  href: string
+}
+
+const { title, href } = Astro.props
+---
+
+<div class="not-prose group mt-6 flex justify-center">
+  <a
+    href={href}
+    class="hover:bg-muted inline-flex w-full items-center justify-between border px-3 py-3 no-underline transition-colors duration-200"
+  >
+    <div class="flex items-center gap-3">
+      <Icon name="lucide:file-text" class="size-4" />
+      <div class="flex flex-col">
+        <div class="text-muted-foreground text-xs">First Subpost</div>
+        <div class="font-medium">
+          {title}
+        </div>
+      </div>
+    </div>
+    <Icon
+      name="lucide:arrow-right"
+      class="size-4 transition-transform duration-200 group-hover:translate-x-1"
+    />
+  </a>
+</div>

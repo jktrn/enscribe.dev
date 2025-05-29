@@ -1,0 +1,15 @@
+[0;31m>>>[0m p = process(elf.path)
+[[0;35mx[0m] Starting local process '/home/kali/ctfs/pico22/buffer-overflow-1/vuln'
+[[0;36m+[0m] Starting local process '/home/kali/ctfs/pico22/buffer-overflow-1/vuln': pid 2219
+[0;31m>>>[0m p.sendline(cyclic(128))
+[0;31m>>>[0m p.wait()
+[[0;34m*[0m] Process '/home/kali/ctfs/pico22/buffer-overflow-1/vuln' stopped with exit code -11 (SIGSEGV) (pid 2219)
+[0;31m>>>[0m exit()
+[0;31m$[0m ls -al
+total 2304
+drwxr-xr-x  3 kali kali    4096 Jun 16 15:35 [0;34m.[0m
+drwxr-xr-x 16 kali kali    4096 Jun 14 17:13 [0;34m..[0m
+-rw-------  1 kali kali 2588672 Jun 16 15:35 core
+-rw-r--r--  1 kali kali     358 Jun 16 03:22 buffer-overflow-1.py
+-rwxr-xr-x  1 kali kali   15704 Mar 15 02:45 [0;36mvuln[0m
+-rw-r--r--  1 kali kali     769 Mar 15 02:45 vuln.c

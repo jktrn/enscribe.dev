@@ -1,0 +1,17 @@
+[34m[*][0m Trying offset 37 for address 0x55f788f1120c
+[32m[+][0m Receiving all data: Done (38B)
+[34m[*][0m Closed connection to 0.cloud.chals.io port 30096
+[32m[+][0m Opening connection to 0.cloud.chals.io on port 30096: Done
+[34m[*][0m Trying offset 38 for address 0x5631d523620c
+[32m[+][0m Receiving all data: Done (38B)
+[34m[*][0m Closed connection to 0.cloud.chals.io port 30096
+[32m[+][0m Opening connection to 0.cloud.chals.io on port 30096: Done
+[34m[*][0m Trying offset 39 for address 0x55980d2d520c
+[32m[+][0m Receiving all data: Done (38B)
+[34m[*][0m Closed connection to 0.cloud.chals.io port 30096
+[32m[+][0m Opening connection to 0.cloud.chals.io on port 30096: Done
+[34m[*][0m Trying offset 40 for address 0x55f0008b520c
+[32m[+][0m Receiving all data: Done (95B)
+[34m[*][0m Closed connection to 0.cloud.chals.io port 30096
+[32m[+][0m Jedi Mind tricks dont work on me >>>
+    shctf{I_will_remov3_th3s3_restraints_and_leave_the_c3ll}

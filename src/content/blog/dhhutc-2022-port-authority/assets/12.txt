@@ -1,0 +1,36 @@
+.flex-container {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: center;
+  gap: 10px;
+}
+
+body {
+  background-color: #1d1f21;
+  color: #c9cacc;
+  font-size: 12px;
+}
+
+fieldset {
+  text-align: center;
+  font-family: 'Trebuchet MS';
+}
+
+textarea {
+  font-family: 'Courier New';
+}
+
+p {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+button {
+  border: none;
+  cursor: pointer;
+  height: 25px;
+  padding: 0px 10px;
+  border-radius: 10px;
+  color: #222;
+  font-size: 11px;
+}

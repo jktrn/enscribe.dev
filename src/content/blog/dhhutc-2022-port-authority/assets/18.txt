@@ -1,0 +1,13 @@
+    <p>Steer Ships:</p>
+    <div>
+        <button id="steer0">Steer 0</button>
+        <button id="steer1">Steer 1</button>
+        <button id="steer2">Steer 2</button>
+    </div>
+    <p>Loop Ships:</p>
+    <div>
+        <input type="checkbox" id="loop0" checked>Loop 0</input>
+        <input type="checkbox" id="loop1" checked>Loop 1</input>
+        <input type="checkbox" id="loop2" checked>Loop 2</input>
+    </div>
+</fieldset>

@@ -1,0 +1,7 @@
+[31m$[0m checksec vader
+[[34m*[0m] '/home/kali/ctfs/shctf/pwn/vader/vader'
+    Arch:     amd64-64-little
+    RELRO:    [33mPartial RELRO[0m
+    Stack:    [31mNo canary found[0m
+    NX:       [32mNX enabled[0m
+    PIE:      [31mNo PIE (0x400000)[0m

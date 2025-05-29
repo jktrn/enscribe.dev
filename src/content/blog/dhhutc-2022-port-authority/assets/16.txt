@@ -1,0 +1,7 @@
+<p>Steer Ships:</p>
+        <div>
+            <button id="steer0">Steer 0</button>
+            <button id="steer1">Steer 1</button>
+            <button id="steer2">Steer 2</button>  
+        </div>
+</fieldset>

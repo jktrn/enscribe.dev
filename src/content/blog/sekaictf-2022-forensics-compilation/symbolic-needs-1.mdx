@@ -1,0 +1,77 @@
+---
+title: 'Symbolic Needs 1'
+description: 'An organizer-written writeup compilation for selected forensics challenges from the SekaiCTF 2022 capture-the-flag competition.'
+date: 2022-11-28
+authors: ['enscribe']
+order: 5
+---
+
+import { Code } from 'astro-expressive-code/components'
+import Callout from '@/components/mdx/Callout.astro'
+import Challenge from '@/components/mdx/Challenge.astro'
+
+<div class="invisible h-0! [&+*]:mt-0 [&+*_*]:mt-0">
+## Symbolic Needs 1
+</div>
+
+<Challenge
+  title="Symbolic Needs 1"
+  authors={["Battlemonger"]}
+  category="Forensics"
+  points={467}
+  solves={24}
+  files={["memdump"]}
+  flag="SEKAI{H0u5T0n_w3_4r3_1n!!!}"
+>
+  We recently got hold of a cryptocurrency scammer and confiscated his laptop.  
+  Analyze the memdump. Submit the string you find wrapped with `SEKAI{}`.
+</Challenge>
+
+Inflating the `.zip`, we are given a `.mem` memory dump of a machine of an unknown operating system. We will be using the [Volatility 3](https://www.volatilityfoundation.org/) framework to analyze it.
+
+Firstly, clone the [repository](https://github.com/volatilityfoundation/volatility3.git) on GitHub:
+
+import Code11 from './assets/11.txt?raw'
+
+<Code code={Code11} lang="ansi" />
+
+Since we'll need to find a debugging package for this memory dump later, we need to run the `banner` command to identify the exact operating system, version and kernel:
+
+import Code12 from './assets/12.txt?raw'
+
+<Code code={Code12} lang="ansi" />
+
+This identifies the following:
+
+-   **OS**: Ubuntu 22.04
+-   **Kernel**: Linux version 5.15.0-43-generic
+
+<Callout>
+  Since these are very recent versions, there were no readily available Volatility profiles. Honestly, I couldn't make Volatility 2 work with Ubuntu 22 even after successful profile creation (`KeyError: 'DW_AT_data_member_location'`). Let me know if you were able to, since everyone's learning! :)
+</Callout>
+
+### Profile Creation + Symbol Table
+
+In order to run Volatility plugins we need to build a [symbol table](https://volatility3.readthedocs.io/en/latest/symbol-tables.html#) in the `.json` format. They can be generated from [DWARF](https://en.wikipedia.org/wiki/DWARF) files using the [dwarf2json](https://github.com/volatilityfoundation/dwarf2json) tool. The hardest part is probably finding the kernel with debugging symbols for Linux version `5.15.0-43-generic`. A complete list is available [here](http://ddebs.ubuntu.com/pool/main/l/linux/), but [`linux-image-unsigned-5.15.0-43-generic-dbgsym_5.15.0-43.46_amd64.ddeb`](http://ddebs.ubuntu.com/pool/main/l/linux/linux-image-unsigned-5.15.0-43-generic-dbgsym_5.15.0-43.46_amd64.ddeb) is the version we need. After inflating the archive, the relevant file we need is the `vmlinux-5.15.0-43-generic` DWARF located in `usr/lib/debug/boot`.
+
+Next, we'll clone the [dwarf2json](https://github.com/volatilityfoundation/dwarf2json) tool from the Volatility repository and build it:
+
+import Code13 from './assets/13.txt?raw'
+
+<Code code={Code13} lang="ansi" />
+
+Finally, we can run:
+
+import Code14 from './assets/14.txt?raw'
+
+<Code code={Code14} lang="ansi" />
+
+Copy the symbol table to `volatility3/volatility3/symbols/linux`, and your profile should be set up!
+
+Once we have a valid `symbols.json`, we can run Volatility 3 plugins. The first one we always run is `linux.bash`, to display bash history:
+
+import Code15 from './assets/15.txt?raw'
+
+<Code code={Code15} lang="ansi" />
+
+Those are easily identifiable as ASCII codes. Convert `72 48 117 53 84 48 110 95 119 51 95 52 114 51 95 49 110 33 33 33` to text and get the flag: `SEKAI{H0u5T0n_w3_4r3_1n!!!}`.

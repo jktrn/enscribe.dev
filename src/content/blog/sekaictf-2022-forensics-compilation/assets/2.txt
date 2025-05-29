@@ -1,0 +1,3 @@
+[0;33m$[0m cat etc/passwd | grep 'bash'
+root:x:0:0:root:/root:/bin/bash
+sekaictf:x:1000:1000:sekaictf,,,:/home/sekaictf:/bin/bash

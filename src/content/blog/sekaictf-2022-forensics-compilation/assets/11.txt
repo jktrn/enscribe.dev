@@ -1,0 +1,2 @@
+[0;33m$[0m git clone https://github.com/volatilityfoundation/volatility3.git
+[0;33m$[0m cd volatility3

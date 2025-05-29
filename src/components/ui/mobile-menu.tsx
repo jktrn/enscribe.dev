@@ -28,15 +28,20 @@ const MobileMenu = () => {
   }, [])
 
   return (
-    <DropdownMenu open={isOpen} onOpenChange={setIsOpen} modal={false}>
-      <DropdownMenuTrigger asChild>
+    <DropdownMenu open={isOpen} onOpenChange={(val) => setIsOpen(val)}>
+      <DropdownMenuTrigger
+        asChild
+        onClick={() => {
+          setIsOpen((val) => !val)
+        }}
+      >
         <Button
-          variant="outline"
+          variant="ghost"
           size="icon"
-          className="sm:hidden"
+          className="size-8 sm:hidden"
           title="Menu"
         >
-          <Menu className="h-5 w-5" />
+          <Menu className="size-5" />
           <span className="sr-only">Toggle menu</span>
         </Button>
       </DropdownMenuTrigger>

@@ -1,0 +1,2 @@
+[0;33m$[0m readelf -h vuln | grep endian
+  Data: 2's complement, little endian

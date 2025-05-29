@@ -1,0 +1,82 @@
+// Make sure you install WebSocket with "npm i ws"!
+const WebSocket = require('ws');
+// Regex so that I can freely paste the URL when the instance is changed
+const url = "https://[REDACTED].challenge.hackazon.org/";
+// Opens WebSocket connection
+const socket = new WebSocket(`wss://${url.replace(/^https?:\/\//, "")}ws`);
+// Object literal for level lookup
+const passwords = [{
+        level: 1,
+        password: ""
+    }
+];
+
+// Runs on socket open, equivalent to .addEventListener()
+socket.onopen = function() {
+    console.log("[+] Connected!");
+    // Converts object to string
+    socket.send(JSON.stringify({
+        "type": "START_GAME",
+        "level": 1
+    }));
+};
+// Pretend there's stuff here
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Assigns onclick listeners for each level button
+findAll("lvl").forEach(function(element, index) {
+    element.onclick = function() {
+        socket.send(JSON.stringify({
+            type: "START_GAME",
+            level: passwords[index].level,
+            password: passwords[index].password
+        }));
+    };
+});
+ 
+// Assigns onclick listeners for each steer button
+findAll("steer").forEach(function(element, index) {
+    element.onclick = function() {
+        socket.send(JSON.stringify({
+            type: "SHIP_STEER",
+            shipId: `${index}`
+        }));
+    };
+});
+ 
+// Creates DOM array for each element with name id + int
+function findAll(id) {
+    let i = 0;
+    let list = [];
+    while (document.getElementById(id + i)) {
+        list[i] = document.getElementById(id + i);
+        i++;
+    }
+    return list;
+}

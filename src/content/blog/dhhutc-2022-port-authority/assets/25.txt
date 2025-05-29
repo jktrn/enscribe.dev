@@ -1,0 +1,23 @@
+    if (obj.type == "TICK") {
+        let ships = [];
+        // For each ship in obj.ships, push class object into ships array
+        for (const i of obj.ships) {
+            ships.push(new Ship(i.id, i.area[0], i.area[1], i.direction));
+        }
+        // Call the string literal getter
+        for (const i of ships) {
+            log(i.printState);
+            // Infinite checks!
+            check(i, obstacles[0], "LEFT");
+            check(i, obstacles[1], "RIGHT");
+            check(i, obstacles[2], "LEFT");
+            check(i, obstacles[3], "RIGHT");
+            check(i, obstacles[4], "DOWN");
+            check(i, obstacles[5], "DOWN");
+            check(i, obstacles[6], "DOWN");
+            check(i, obstacles[7], "UP");
+            check(i, obstacles[8], "LEFT");
+            check(i, obstacles[9], "UP");
+            check(i, obstacles[10], "RIGHT");
+            check(i, obstacles[11], "UP");
+        }

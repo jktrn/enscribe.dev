@@ -1,0 +1,24 @@
+[31m$[0m python3 exp.py
+[[32m+[0m] Opening connection to 0.cloud.chals.io on port 12690: Done
+[[34m*[0m] Trying offset 0...
+[[34m*[0m] Closed connection to 0.cloud.chals.io port 12690
+[[32m+[0m] Opening connection to 0.cloud.chals.io on port 12690: Done
+[[34m*[0m] Trying offset 1...
+[[34m*[0m] Closed connection to 0.cloud.chals.io port 12690
+[[32m+[0m] Opening connection to 0.cloud.chals.io on port 12690: Done
+[[34m*[0m] Trying offset 2...
+[[34m*[0m] Closed connection to 0.cloud.chals.io port 12690
+[[32m+[0m] Opening connection to 0.cloud.chals.io on port 12690: Done
+[[34m*[0m] Trying offset 3...
+[[34m*[0m] Closed connection to 0.cloud.chals.io port 12690
+[[32m+[0m] Opening connection to 0.cloud.chals.io on port 12690: Done
+[[34m*[0m] Trying offset 4...
+[[34m*[0m] Closed connection to 0.cloud.chals.io port 12690
+[[32m+[0m] Opening connection to 0.cloud.chals.io on port 12690: Done
+[[34m*[0m] Trying offset 5...
+[[34m*[0m] Closed connection to 0.cloud.chals.io port 12690
+[[32m+[0m] Opening connection to 0.cloud.chals.io on port 12690: Done
+[[34m*[0m] Trying offset 6...
+[[32m+[0m] Does Quill manage to win the dance battle?
+    Oh no, Ronano has seen through the distraction!
+    shctf{im_distracting_you}

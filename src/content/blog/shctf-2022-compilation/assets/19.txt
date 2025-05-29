@@ -1,0 +1,4 @@
+[31m$[0m python3 rahools-challenge.py
+...
+[32m[+][0m Excellent work, you'll be a cryptarch yet. Here's your flag:
+shctf{c0Me_baCk_s0on_w3_n33d_the_chAll3nge}

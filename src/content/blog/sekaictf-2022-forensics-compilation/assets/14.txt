@@ -1,0 +1,1 @@
+[0;33m$[0m dwarf2json linux --elf vmlinux-5.15.0-43-generic > ubuntu22.json

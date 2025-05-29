@@ -1,0 +1,10 @@
+          function turn180(id) {
+            socket.send(JSON.stringify({
+                type: "SHIP_STEER",
+                shipId: id
+            }));
+            socket.send(JSON.stringify({
+                type: "SHIP_STEER",
+                shipId: id
+            }));
+        }

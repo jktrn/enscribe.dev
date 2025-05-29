@@ -1,0 +1,16 @@
+// Sends steer command after one second
+    setTimeout(() => {
+        socket.send(JSON.stringify({
+            "type": "SHIP_STEER",
+            "shipId": 0
+        }));
+    }, 5000);
+};
+
+// Runs when output from server is received
+socket.onmessage = function(event) {
+    // Output is received in event
+    console.log(`[-] ${event.data}`);
+    // Converts server output into object
+    let obj = JSON.parse(event.data);
+};

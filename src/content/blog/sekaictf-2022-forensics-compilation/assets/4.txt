@@ -1,0 +1,14 @@
+[0;33mhome/sekaictf/Documents$[0m ls
+aes.txt           ippsec.txt       python.txt         warandpeace12.txt
+assignment.txt    jokes.txt        roblox.txt         warandpeace13.txt
+billionaires.txt  joke.txt         robomagellan.txt   warandpeace14.txt
+brainteasers.txt  jsinterview.txt  rsa.txt            warandpeace15.txt
+countries.txt     juggle.txt       science.txt        warandpeace1.txt
+ctfwins.txt       katana.txt       sekai.txt          warandpeace2.txt
+elements.txt      leetcode.txt     shakespeare.txt    warandpeace3.txt
+excuses.txt       loi.txt          song.txt           warandpeace4.txt
+flag.txt          maths.txt        sql.txt            warandpeace5.txt
+fortnite.txt      oscp.txt         tools.txt          warandpeace6.txt
+ginger.txt        overflow.txt     volatility.txt     warandpeace7.txt
+girlfriend.txt    privesc.txt      warandpeace10.txt  warandpeace8.txt
+graphql.txt       program.txt      warandpeace11.txt  warandpeace9.txt

@@ -1,0 +1,5 @@
+[0;33m$[0m python3 matchmaker.py
+[[0;32m+[0m] Opening connection to 0.cloud.chals.io on port [PORT]: Done
+[[0;34m*[0m] Switching to interactive mode
+Congratulations! Here's your valentine: valentine{l0V3_i5_1n_7he_4ir}
+[[0;34m*[0m] Got EOF while reading in interactive

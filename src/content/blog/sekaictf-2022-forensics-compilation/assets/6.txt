@@ -1,0 +1,2 @@
+[0;33m$[0m python3 solve.py
+SEKAI{R3m3b3r_k1Dz_@lway5_84cKUp}

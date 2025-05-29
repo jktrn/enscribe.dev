@@ -1,0 +1,103 @@
+import server from '../src/main.js'
+import * as http from 'http'
+import { GachaResponse } from '../src/interfaces.js'
+
+describe('Gacha endpoint', () => {
+  let req: http.ClientRequest
+
+  afterAll(() => {
+    server.close()
+  })
+
+  afterEach(() => {
+    req.abort()
+  })
+
+  function testGachaEndpoint(
+    crystals: number,
+    pulls: number,
+    numPulls: number,
+  ): Promise<{ res: http.IncomingMessage; data: GachaResponse }> {
+    const postData = JSON.stringify({ crystals, pulls, numPulls })
+    const options = {
+      hostname: 'localhost',
+      port: 3000,
+      path: '/gacha',
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Content-Length': Buffer.byteLength(postData),
+        'User-Agent': 'SekaiCTF',
+      },
+    }
+    return new Promise<{ res: http.IncomingMessage; data: GachaResponse }>(
+      (resolve) => {
+        req = http.request(options, (res) => {
+          let data = ''
+          res.on('data', (chunk) => {
+            data += chunk
+          })
+          res.on('end', () => {
+            resolve({ res, data: JSON.parse(data) })
+          })
+        })
+        req.write(postData)
+        req.end()
+      },
+    )
+  }
+
+  it('should return a valid response for ten pulls', async () => {
+    const { res, data } = await testGachaEndpoint(1000, 0, 10)
+    expect(res.statusCode).toBe(200)
+    expect(data).toBeDefined()
+  })
+
+  it('should return an array of ten characters if the user has enough gems for ten pulls', async () => {
+    const { res, data } = await testGachaEndpoint(1000, 0, 10)
+    expect(res.statusCode).toBe(200)
+    expect(data.characters).toHaveLength(10)
+  })
+
+  it('should show the flag if the user has 1,000,000 pulls', async () => {
+    const { res, data } = await testGachaEndpoint(1000, 999999, 1)
+    expect(res.statusCode).toBe(200)
+    expect(data.characters[0].flag).toBeDefined()
+  })
+
+  it('should return an error if numPulls is not either 1 or 10', async () => {
+    const { res, data } = await testGachaEndpoint(1100, 0, 11)
+    expect(res.statusCode).toBe(400)
+    expect(data.error).toBe('ERROR: numPulls can only be 1 or 10!')
+  })
+
+  it('should return an error if the user does not have enough gems for ten pulls', async () => {
+    const { res, data } = await testGachaEndpoint(999, 0, 10)
+    expect(res.statusCode).toBe(400)
+    expect(data.error).toBe('ERROR: Not enough crystals!')
+  })
+
+  it('should return an error if the return body is incomplete', async () => {
+    const { res, data } = await testGachaEndpoint(1000, undefined, 10)
+    expect(res.statusCode).toBe(400)
+    expect(data.error).toBe('ERROR: Invalid request body!')
+  })
+
+  it('should return a valid response for a single pull', async () => {
+    const { res, data } = await testGachaEndpoint(100, 0, 1)
+    expect(res.statusCode).toBe(200)
+    expect(data).toBeDefined()
+  })
+
+  it('should return an array of one character if the user has enough gems for a single pull', async () => {
+    const { res, data } = await testGachaEndpoint(100, 0, 1)
+    expect(res.statusCode).toBe(200)
+    expect(data.characters).toHaveLength(1)
+  })
+
+  it('should return an error if the user does not have enough gems for a single pull', async () => {
+    const { res, data } = await testGachaEndpoint(99, 0, 1)
+    expect(res.statusCode).toBe(400)
+    expect(data.error).toBe('ERROR: Not enough crystals!')
+  })
+})

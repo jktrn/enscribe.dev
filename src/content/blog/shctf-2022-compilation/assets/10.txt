@@ -1,0 +1,15 @@
+[31m$[0m ropper -f vader | grep "rdi"
+[32m[INFO][0m Load gadgets from cache
+[32m[LOAD][0m loading... [37m100%[0m
+[32m[LOAD][0m removing double gadgets... [37m100%[0m
+[31m0x000000000040145e[0m: [33madd[0m [37mbyte ptr [rax], al[0m[34m; [0m[33mmov[0m [31mrdi[0m, rax[34m; [0m[33mcall[0m [37m0x1030[0m[34m; [0m[33mnop[0m[34m; [0m[33mpop[0m [37mrbp[0m[34m; [0m[33mret[0m[34m; [0m
+[31m0x00000000004011bc[0m: [33madd[0m [37mbyte ptr [rax], al[0m[34m; [0m[33mmov[0m [31mrdi[0m, rax[34m; [0m[33mcall[0m [37m0x1040[0m[34m; [0m[33mnop[0m[34m; [0m[33mpop[0m [37mrbp[0m[34m; [0m[33mret[0m[34m; [0m
+[31m0x00000000004015e9[0m: [33madd[0m [37mbyte ptr [rax], al[0m[34m; [0m[33mmov[0m [31mrdi[0m, rax[34m; [0m[33mcall[0m [37m0x1060[0m[34m; [0m[33mmov[0m [37meax, 0[0m[34m; [0m[33mleave[0m[34m; [0m[33mret[0m[34m; [0m
+[31m0x00000000004010b7[0m: [33mmov[0m [37mecx, 0x401600[0m[34m; [0m[33mmov[0m [31mrdi[0m, 0x4015b5[34m; [0m[33mcall[0m [37mqword ptr [rip + 0x3f26][0m[34m; [0m[33mhlt[0m[34m; [0m[33mnop[0m [37mdword ptr [rax + rax][0m[34m; [0m[33mret[0m[34m; [0m
+[31m0x00000000004010b6[0m: [33mmov[0m [37mrcx, 0x401600[0m[34m; [0m[33mmov[0m [31mrdi[0m, 0x4015b5[34m; [0m[33mcall[0m [37mqword ptr [rip + 0x3f26][0m[34m; [0m[33mhlt[0m[34m; [0m[33mnop[0m [37mdword ptr [rax + rax][0m[34m; [0m[33mret[0m[34m; [0m
+[31m0x00000000004010bd[0m: [33mmov[0m [31mrdi[0m, 0x4015b5[34m; [0m[33mcall[0m [37mqword ptr [rip + 0x3f26][0m[34m; [0m[33mhlt[0m[34m; [0m[33mnop[0m [37mdword ptr [rax + rax][0m[34m; [0m[33mret[0m[34m; [0m
+[31m0x0000000000401460[0m: [33mmov[0m [31mrdi[0m, rax[34m; [0m[33mcall[0m [37m0x1030[0m[34m; [0m[33mnop[0m[34m; [0m[33mpop[0m [37mrbp[0m[34m; [0m[33mret[0m[34m; [0m
+[31m0x00000000004011be[0m: [33mmov[0m [31mrdi[0m, rax[34m; [0m[33mcall[0m [37m0x1040[0m[34m; [0m[33mnop[0m[34m; [0m[33mpop[0m [37mrbp[0m[34m; [0m[33mret[0m[34m; [0m
+[31m0x00000000004015eb[0m: [33mmov[0m [31mrdi[0m, rax[34m; [0m[33mcall[0m [37m0x1060[0m[34m; [0m[33mmov[0m [37meax, 0[0m[34m; [0m[33mleave[0m[34m; [0m[33mret[0m[34m; [0m
+[31m0x00000000004010f6[0m: [33mor[0m [37mdword ptr [[0m[31mrdi[0m + 0x405060], edi[34m; [0m[33mjmp[0m [37mrax[0m[34m; [0m
+[31m0x000000000040165b[0m: [33mpop[0m [31mrdi[0m[34m; [0m[33mret[0m[34m; [0m

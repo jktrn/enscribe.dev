@@ -1,0 +1,9 @@
+[0;33mprocedure[0m [0;91mfind_maximum_matching[0m([0;93mG[0m, [0;93mM[0m)
+    [0;31mP[0m = [0;91mfind_augmenting_path[0m([0;93mG[0m, [0;93mM[0m)
+    [0;33mif[0m  [0;31mP[0m == [] [0;33mthen[0m
+        [0;33mreturn[0m M
+    [0;33melse[0m
+        [0;31mMP[0m = [0;91maugment_matching[0m([0;93mM[0m, [0;31mP[0m)
+        [0;33mreturn[0m [0;91mfind_maximum_matching[0m([0;93mG[0m, [0;31mMP[0m)
+    [0;33mend if[0m
+[0;33mend procedure[0m

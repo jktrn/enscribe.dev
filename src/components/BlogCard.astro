@@ -1,12 +1,17 @@
 ---
+import Badge from '@/components/Badge.astro'
 import AvatarComponent from '@/components/ui/avatar'
-import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
-import { parseAuthors } from '@/lib/server-utils'
-import { formatDate, readingTime } from '@/lib/utils'
+import {
+  getCombinedReadingTime,
+  getSubpostCount,
+  isSubpost,
+  parseAuthors,
+} from '@/lib/data-utils'
+import { formatDate } from '@/lib/utils'
+import { Icon } from 'astro-icon/components'
 import { Image } from 'astro:assets'
 import type { CollectionEntry } from 'astro:content'
-import { getCollection } from 'astro:content'
 import Link from './Link.astro'
 
 interface Props {
@@ -14,23 +19,14 @@ interface Props {
 }
 
 const { entry } = Astro.props
-
 const formattedDate = formatDate(entry.data.date)
-const allPosts = await getCollection('blog')
-
-// Calculate total reading time including subposts
-const stripCodeBlocks = (text: string) => text.replace(/```[\s\S]*?```/g, '')
-const subposts = allPosts.filter((p) => p.data.parentTitle === entry.data.title)
-const totalBody = [entry.body!, ...subposts.map((p) => p.body!)]
-  .map(stripCodeBlocks)
-  .join('')
-const readTime = readingTime(totalBody)
-
+const readTime = await getCombinedReadingTime(entry.id)
 const authors = await parseAuthors(entry.data.authors ?? [])
+const subpostCount = !isSubpost(entry.id) ? await getSubpostCount(entry.id) : 0
 ---
 
 <div
-  class="not-prose rounded-xl border p-4 transition-colors duration-300 ease-in-out hover:bg-secondary/50"
+  class="hover:bg-secondary/50 border p-4 transition-colors duration-300 ease-in-out"
 >
   <Link
     href={`/${entry.collection}/${entry.id}`}
@@ -38,7 +34,7 @@ const authors = await parseAuthors(entry.data.authors ?? [])
   >
     {
       entry.data.image && (
-        <div class="max-w-[275px] sm:flex-shrink-0">
+        <div class="max-w-3xs sm:shrink-0">
           <Image
             src={entry.data.image}
             alt={entry.data.title}
@@ -49,15 +45,13 @@ const authors = await parseAuthors(entry.data.authors ?? [])
         </div>
       )
     }
-    <div class="flex-grow">
-      <h3 class="mb-1 text-lg font-semibold">
-        {entry.data.title}
-      </h3>
-      <p class="mb-2 text-sm text-muted-foreground">
-        {entry.data.description}
-      </p>
+
+    <div class="grow">
+      <h3 class="mb-2 text-lg leading-6 font-medium">{entry.data.title}</h3>
+      <p class="text-muted-foreground mb-2 text-sm">{entry.data.description}</p>
+
       <div
-        class="mb-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground"
+        class="text-muted-foreground mb-2 flex flex-wrap items-center gap-x-2 text-xs"
       >
         {
           authors.length > 0 && (
@@ -69,24 +63,36 @@ const authors = await parseAuthors(entry.data.authors ?? [])
                     src={author.avatar}
                     alt={author.name}
                     fallback={author.name[0]}
-                    className="size-5 rounded-full"
+                    className="size-4 rounded-full"
                   />
                   <span>{author.name}</span>
                 </div>
               ))}
-              <Separator orientation="vertical" className="h-4" />
+              <Separator orientation="vertical" className="h-4!" />
             </>
           )
         }
         <span>{formattedDate}</span>
-        <Separator orientation="vertical" className="h-4" />
+        <Separator orientation="vertical" className="h-4!" />
         <span>{readTime}</span>
+        {
+          subpostCount > 0 && (
+            <>
+              <Separator orientation="vertical" className="h-4!" />
+              <span class="flex items-center gap-1">
+                <Icon name="lucide:file-text" class="size-3" />
+                {subpostCount} subpost{subpostCount === 1 ? '' : 's'}
+              </span>
+            </>
+          )
+        }
       </div>
+
       {
         entry.data.tags && (
           <div class="flex flex-wrap gap-2">
-            {entry.data.tags.map((tag: string) => (
-              <Badge variant="secondary">{tag}</Badge>
+            {entry.data.tags.map((tag) => (
+              <Badge text={tag} />
             ))}
           </div>
         )

@@ -1,0 +1,43 @@
+---
+title: "I don't dream about noodles, dad"
+description: 'We were the only team of 435 to solve all 9 OSINT challenges from BYUCTF 2022. This was the process that led us to victory.'
+date: 2022-05-28
+authors: ['enscribe']
+order: 1
+---
+
+import Challenge from '@/components/mdx/Challenge.astro'
+
+<div class="invisible h-0! [&+*]:mt-0 [&+*_*]:mt-0">
+## I don't dream about noodles, dad
+</div>
+
+<Challenge
+  title="I don't dream about noodles, dad"
+  solvers={[
+    {
+      name: 'enscribe',
+      href: 'https://github.com/jktrn',
+      avatar: 'https://github.com/jktrn.png',
+    },
+  ]}
+  category="OSINT"
+  points={100}
+  files={['po.png']}
+  flag="byuctf{Jason_Turner}"
+>
+  Whose signature is found beneath Po's foot?  
+  Flag format: `byuctf{Firstname_Lastname}`
+  <figure>
+    <div class="max-w-72 mx-auto">![po.png](assets/po1.png)</div>
+    <figcaption class="text-center text-muted-foreground">po.png</figcaption>
+  </figure>
+</Challenge>
+
+I did a quick [Google Lens](https://lens.google/) search with my phone with the keyword "BYU" attached and [this](https://universe.byu.edu/2012/09/27/5-campus-locations-you-didnt-know-existed/) article turned up:
+
+![Credit to *The Daily Universe*](assets/po2.png)
+
+> Jason Turner is a BYU computer science program graduate who works at DreamWorks and created all the data for Po's character. The statue is a tribute to his success, as well as the University's program and alumni.
+
+Since the tribute is for Jason Turner, we can assume the signature is below his foot. The flag is `byuctf{Jason_Turner}`.

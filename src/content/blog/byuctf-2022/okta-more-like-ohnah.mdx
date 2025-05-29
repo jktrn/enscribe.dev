@@ -1,0 +1,55 @@
+---
+title: "Okta? More like OhNah"
+description: 'We were the only team of 435 to solve all 9 OSINT challenges from BYUCTF 2022. This was the process that led us to victory.'
+date: 2022-05-28
+authors: ['enscribe']
+order: 5
+---
+
+import Challenge from '@/components/mdx/Challenge.astro'
+import StaticTweet from '@/components/mdx/StaticTweet.astro'
+
+<div class="invisible h-0! [&+*]:mt-0 [&+*_*]:mt-0">
+## Okta? More like OhNah
+</div>
+
+<Challenge
+  title="Okta? More like OhNah"
+  solvers={[
+    {
+      name: 'Battlemonger',
+      href: 'https://github.com/Battlemonger',
+      avatar: 'https://github.com/Battlemonger.png',
+    },
+    {
+      name: 'enscribe',
+      href: 'https://github.com/jktrn',
+      avatar: 'https://github.com/jktrn.png',
+    },
+  ]}
+  category="OSINT"
+  points={490}
+  flag="byuctf{port_scanning_11:22}"
+>
+  Recently, the group known as LAPSUS$ released indications they breached Microsoft & one of the Largest SSO companies, Okta. In some of their leaks they hinted that "most of the time if you don't do anything like __________, you won't be detected".  
+  Flag format: `byuctf{answer:timestamp in format HH:MM}`, two word answer seperated by an underscore.
+</Challenge>
+
+Looks like a challenge regarding an infamous hacking group. Seeing that the flag asks for a timestamp and the language is pseudo-colloquial, I'd safely assume that this text mentioned somewhere came from a messaging board. I downloaded _Telegram_, their main method of communication with the real world, joining their [announcements board](https://t.me/minsaudebr), yet upon a <kbd>Ctrl</kbd> + <kbd>F</kbd> I couldn't find this message anywhere. Their board mentions a [group chat](https://t.me/saudechat), but it was recently purged and terminated. When the admin confirmed that this wasn't the intended solution, I moved towards looking for screenshots surrounding the Okta leak. Our team found this [tweet from John Hammond](https://twitter.com/_JohnHammond/status/1506166671664463875) after a while:
+
+<StaticTweet
+  avatar="https://pbs.twimg.com/profile_images/1827109099773030400/Lwcaicso_400x400.jpg"
+  username="John Hammond"
+  handle="_JohnHammond"
+  date="March 22, 2022"
+  src="https://twitter.com/_JohnHammond/status/1506166671664463875"
+  media="https://pbs.twimg.com/media/FOb6HHHXwAA3ORe?format=png&name=small"
+>
+  even da big ones [shocked pikachu]
+</StaticTweet>
+
+The flag is `byuctf{port_scanning_11:22}`. A hint was later added to the challenge:
+
+> think screenshots! it is not on telegram but another platform with that same first letter. tweeted by a famous red head i think
+
+It would have been much easier with this information... love you, John Hammond.

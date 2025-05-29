@@ -1,0 +1,52 @@
+---
+title: 'flag Mono'
+description: 'An organizer-written writeup compilation for selected forensics challenges from the SekaiCTF 2022 capture-the-flag competition.'
+date: 2022-11-28
+authors: ['enscribe']
+order: 4
+---
+
+import Callout from '@/components/mdx/Callout.astro'
+import Challenge from '@/components/mdx/Challenge.astro'
+
+<div class="invisible h-0! [&+*]:mt-0 [&+*_*]:mt-0">
+## flag Mono
+</div>
+
+<Challenge
+  title="flag Mono"
+  authors={["blueset"]}
+  category="Forensics"
+  points={368}
+  solves={47}
+  files={["Assignment-broken.xps"]}
+  flag="SEKAI{OpenTypeMagicGSUBIsTuringComplete}"
+>
+  When writing the assignment, Miku used a font called **flag Mono**. Despite it looking just like a regular monospaced font, it claims itself to be **stylistic** in various ways.  
+  "Perhaps there is something special about it", Miku thought.
+</Challenge>
+
+<Callout>
+  This challenge shares the same file as *Broken Converter*.
+</Callout>
+
+If you inspect the font info in [FontForge](https://fontforge.org/) with <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>F</kbd>, you can see in the Lookup tab that four different "Style Sets" have been implemented into this font:
+
+![Inspecting the "Lookup" tab in FontForge](assets/lookup.png)
+
+These are called "OpenType Stylistic Sets." According to its official Microsoft [documentation](https://docs.microsoft.com/en-us/typography/opentype/spec/features_pt#ssxx):
+
+> In addition to, or instead of, stylistic alternatives of individual glyphs [...], some fonts may contain sets of stylistic variant glyphs corresponding to portions of the character set, e.g. multiple variants for lowercase letters in a Latin font.
+
+In FontForge you can actually view the ruleset for these styles with the `Edit Data` button. This is the ruleset for `ss01`:
+
+![Inspecting stylistic set ruleset $2 in FontForge](assets/ruleset.png)
+
+> ampersand quotesingle | a @&lt;Single Substitution lookup 4&gt; | g  
+> | f @&lt;Single Substitution lookup 4&gt; | l a g  
+> ampersand quotesingle parenleft | g @&lt;Multiple Substitution lookup 5&gt; |  
+> ampersand | l @&lt;Single Substitution lookup 4&gt; | a g
+
+Let's test out typing `flag` on [FontDrop!](https://fontdrop.info/) and changing the stylistic set:
+
+![Changing stylistic sets on FontDrop!](assets/mono-flag.gif)

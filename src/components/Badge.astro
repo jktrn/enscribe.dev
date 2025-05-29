@@ -1,0 +1,105 @@
+---
+import { Badge as BadgeComponent } from '@/components/ui/badge'
+import { cn } from '@/lib/utils'
+import { Icon } from 'astro-icon/components'
+
+interface Props {
+  variant?: 'default' | 'secondary' | 'destructive' | 'outline'
+  className?: string
+  children?: any
+  text?: string
+  showIcon?: boolean
+}
+
+const {
+  variant = 'secondary',
+  className = '',
+  children,
+  text,
+  showIcon = true,
+} = Astro.props
+
+const getCategoryStyle = (content: string) => {
+  const lowerContent = content.toLowerCase()
+
+  if (lowerContent.includes('crypto')) {
+    return {
+      color:
+        'bg-yellow-50 text-yellow-700 dark:bg-yellow-950/30 dark:text-yellow-200',
+      icon: 'lucide:key',
+    }
+  } else if (lowerContent.includes('web')) {
+    return {
+      color: 'bg-blue-50 text-blue-700 dark:bg-blue-950/30 dark:text-blue-200',
+      icon: 'lucide:globe',
+    }
+  } else if (lowerContent.includes('reverse') || lowerContent.includes('rev')) {
+    return {
+      color:
+        'bg-orange-50 text-orange-700 dark:bg-orange-950/30 dark:text-orange-200',
+      icon: 'lucide:rotate-ccw',
+    }
+  } else if (
+    lowerContent.includes('pwn') ||
+    lowerContent.includes('binary exploitation')
+  ) {
+    return {
+      color: 'bg-red-50 text-red-700 dark:bg-red-950/30 dark:text-red-200',
+      icon: 'lucide:zap',
+    }
+  } else if (lowerContent.includes('misc')) {
+    return {
+      color:
+        'bg-stone-50 text-stone-700 dark:bg-stone-950/30 dark:text-stone-200',
+      icon: 'lucide:puzzle',
+    }
+  } else if (lowerContent.includes('forensic')) {
+    return {
+      color:
+        'bg-green-50 text-green-700 dark:bg-green-950/30 dark:text-green-200',
+      icon: 'lucide:search',
+    }
+  } else if (lowerContent.includes('osint')) {
+    return {
+      color:
+        'bg-purple-50 text-purple-700 dark:bg-purple-950/30 dark:text-purple-200',
+      icon: 'lucide:eye',
+    }
+  } else if (lowerContent.includes('blockchain')) {
+    return {
+      color: 'bg-teal-50 text-teal-700 dark:bg-teal-950/30 dark:text-teal-200',
+      icon: 'lucide:link',
+    }
+  } else if (
+    lowerContent.includes('ppc') ||
+    lowerContent.includes('programming')
+  ) {
+    return {
+      color:
+        'bg-indigo-50 text-indigo-700 dark:bg-indigo-950/30 dark:text-indigo-200',
+      icon: 'lucide:code',
+    }
+  } else {
+    return null
+  }
+}
+
+const content = text || (typeof children === 'string' ? children : '')
+const categoryStyle = getCategoryStyle(content)
+---
+
+<BadgeComponent
+  variant={categoryStyle ? 'secondary' : variant}
+  className={cn(categoryStyle?.color, className)}
+  client:load
+>
+  {
+    showIcon && (
+      <Icon
+        name={categoryStyle ? categoryStyle.icon : 'lucide:hash'}
+        class="size-3"
+      />
+    )
+  }
+  <slot>{text}</slot>
+</BadgeComponent>

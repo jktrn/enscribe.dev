@@ -1,0 +1,32 @@
+class Ship {
+    // Initializes class object instance
+    constructor(id, topLeft, bottomRight, direction) {
+        this.id = id;
+        this.topLeft = topLeft;
+        this.bottomRight = bottomRight;
+        this.direction = direction;
+    }
+    // Getter + abusing template literals
+    get printState() {
+        return `ID: ${this.id} | (${Math.floor(this.topLeft.x)}, 
+${Math.floor(this.topLeft.y)}) (${Math.floor(this.bottomRight.x)}, 
+${Math.floor(this.bottomRight.y)}) | DIR: ${this.direction}`;
+    }
+}
+
+// Runs when output from server is received
+socket.onmessage = function(event) {
+    // Converts server output into object
+    let obj = JSON.parse(event.data);
+    if(obj.type == "TICK") {
+        let ships = [];
+        // For each ship in obj.ships, push class object into ships array
+        for(const i of obj.ships) {
+            ships.push(new Ship(i.id, i.area[0], i.area[1], i.direction));
+        }
+        // Call the string literal getter
+        for(const i of ships) {
+            console.log(i.printState);
+        }
+    }
+};

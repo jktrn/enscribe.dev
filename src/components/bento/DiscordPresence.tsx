@@ -1,182 +1,304 @@
-import { useMemo, useState, useEffect } from 'react'
+import { useMemo, useState, useEffect, useCallback, memo } from 'react'
 import { FaDiscord } from 'react-icons/fa'
 import { useLanyard } from 'react-use-lanyard'
-import { Skeleton } from '../ui/skeleton'
+import { Skeleton } from '@/components/ui/skeleton'
 import { cn, getElapsedTime } from '@/lib/utils'
 import AvatarComponent from '@/components/ui/avatar'
 
+const DISCORD_USER_ID = '747519888347627550'
+
+interface Activity {
+  type: number
+  name?: string
+  details?: string
+  state?: string
+  application_id?: string
+  assets?: {
+    large_image?: string
+    small_image?: string
+  }
+  timestamps?: {
+    start?: number
+  }
+}
+
+interface LanyardData {
+  discord_status: 'online' | 'idle' | 'dnd' | 'offline'
+  activities?: Activity[]
+}
+
+const STATUS_CONFIGS = {
+  online: {
+    bgClass: 'bg-primary',
+    hasIndicator: false,
+  },
+  idle: {
+    bgClass: 'bg-primary',
+    hasIndicator: true,
+    indicator: <div className="bg-background size-[10px] rounded-full" />,
+  },
+  dnd: {
+    bgClass: 'bg-destructive',
+    hasIndicator: true,
+    indicator: <div className="bg-background h-[4px] w-[11px] rounded-full" />,
+  },
+  offline: {
+    bgClass: 'bg-muted-foreground',
+    hasIndicator: true,
+    indicator: <div className="bg-background size-2 rounded-full" />,
+  },
+} as const
+
+const StatusIndicator = memo<{ status: LanyardData['discord_status'] }>(
+  ({ status }) => {
+    const config = STATUS_CONFIGS[status]
+
+    return (
+      <div
+        className={cn(
+          'ring-muted absolute right-1 bottom-1 size-4 rounded-full ring-6',
+          config.bgClass,
+          config.hasIndicator && 'flex items-center justify-center',
+        )}
+      >
+        {config.hasIndicator && config.indicator}
+      </div>
+    )
+  },
+)
+
+const DecorativeBadges = memo(() => {
+  const badgeStyles = useMemo(
+    () => [
+      'size-3 rounded-full bg-purple-200/75 sepia-50',
+      'size-3 bg-violet-200/75 sepia-50 rounded-xs',
+      'size-3 rounded-xs bg-emerald-200/75 sepia-50',
+      'size-3 bg-fuchsia-200/75 sepia-50',
+      'size-3 rounded-full bg-teal-200/75 sepia-50',
+      'size-3 rounded-full bg-transparent ring-2 ring-sky-200/75 sepia-50 ring-inset',
+    ],
+    [],
+  )
+
+  const clipPaths = useMemo(
+    () => [
+      undefined,
+      'polygon(50% 100%, 100% 50%, 100% 0%, 0% 0%, 0% 50%)',
+      undefined,
+      'polygon(50% 0%, 85% 0%, 100% 35%, 85% 55%, 50% 100%, 15% 55%, 0% 35%, 15% 0%)',
+      undefined,
+      undefined,
+    ],
+    [],
+  )
+
+  return (
+    <div className="bg-border/50 flex items-center gap-1.5 px-2">
+      {badgeStyles.map((style, index) => (
+        <div
+          key={index}
+          className={style}
+          style={clipPaths[index] ? { clipPath: clipPaths[index] } : undefined}
+        />
+      ))}
+    </div>
+  )
+})
+
+const UserInfo = memo(() => (
+  <div className="bg-border/50 flex flex-col gap-y-1 p-3">
+    <span className="text-base leading-none">enscribe</span>
+    <span className="text-muted-foreground text-xs leading-none">
+      @enscribe
+    </span>
+  </div>
+))
+
+const AvatarSection = memo<{
+  statusIndicator: React.ReactNode
+}>(({ statusIndicator }) => (
+  <div className="flex justify-between gap-x-1">
+    <div className="relative">
+      <AvatarComponent
+        src="/static/bento/avatar.webp"
+        alt="Avatar"
+        fallback="e"
+        className="-mt-[4.5rem] aspect-square size-24 rounded-full"
+      />
+      <div
+        className="absolute inset-0 -mt-[4.5rem] aspect-square size-24 rounded-full bg-[url('/static/bento/avatar-foreground.png')] bg-cover bg-center bg-no-repeat opacity-0 transition-opacity duration-200 group-hover/discord:opacity-100"
+        aria-hidden="true"
+      />
+      {statusIndicator}
+    </div>
+    <DecorativeBadges />
+  </div>
+))
+
+const DiscordIcon = memo(() => (
+  <div className="bg-primary absolute top-0 right-0 m-3 flex size-14 items-center justify-center rounded-full">
+    <FaDiscord className="text-background size-10" />
+  </div>
+))
+
+const DiscordLayout = memo<{
+  statusIndicator: React.ReactNode
+  activityContent: React.ReactNode
+}>(({ statusIndicator, activityContent }) => (
+  <div
+    data-trigger
+    className="group/discord relative overflow-hidden sm:aspect-square"
+  >
+    <p className="text-foreground/80 bg-muted absolute top-4 left-30 border p-2 text-xs opacity-0 transition-opacity duration-200 group-hover/discord:opacity-100">
+      Feel free
+      <br />
+      to add me!
+    </p>
+    <div className="grid size-full grid-rows-4">
+      <div className="bg-border/50" />
+      <div className="bg-muted row-span-3 flex flex-col gap-3 p-3">
+        <AvatarSection statusIndicator={statusIndicator} />
+        <UserInfo />
+        <div className="bg-border/50 flex h-full p-3">{activityContent}</div>
+      </div>
+    </div>
+    <DiscordIcon />
+  </div>
+))
+
+const ActivityDisplay = memo<{
+  activity: Activity | null
+  elapsedTime: string
+}>(({ activity, elapsedTime }) => {
+  const activityImageUrl = useMemo(() => {
+    if (!activity?.assets?.large_image || !activity.application_id) {
+      return '/static/bento/bento-discord-futon.svg'
+    }
+    return `https://cdn.discordapp.com/app-assets/${activity.application_id}/${activity.assets.large_image}.png`
+  }, [activity?.assets?.large_image, activity?.application_id])
+
+  const smallImageUrl = useMemo(() => {
+    if (!activity?.assets?.small_image || !activity.application_id) return null
+    return `https://cdn.discordapp.com/app-assets/${activity.application_id}/${activity.assets.small_image}.png`
+  }, [activity?.assets?.small_image, activity?.application_id])
+
+  const displayActivity = activity || {
+    name: 'No status',
+    details: "I'm probably sleeping...",
+    state: 'Enjoy your stay!',
+  }
+
+  const displayElapsedTime = elapsedTime || '∞:00 elapsed'
+
+  return (
+    <div className="flex size-full items-center gap-x-3">
+      <div className="relative aspect-square h-full shrink-0">
+        <div
+          style={{ backgroundImage: `url('${activityImageUrl}')` }}
+          className="absolute inset-0 bg-contain bg-center bg-no-repeat grayscale sepia-50"
+        />
+        {smallImageUrl && (
+          <div className="absolute -right-2 -bottom-2 overflow-hidden rounded-full border-4 border-[#26231f]">
+            <img
+              src={smallImageUrl}
+              alt="Application Icon"
+              width={24}
+              height={24}
+              className="grayscale sepia-50"
+            />
+          </div>
+        )}
+      </div>
+      <div className="my-1 flex flex-col gap-y-1 overflow-hidden">
+        {displayActivity.name && (
+          <div className="mb-0.5 truncate text-xs leading-none">
+            {displayActivity.name}
+          </div>
+        )}
+        {displayActivity.details && (
+          <div className="text-muted-foreground truncate text-[11px] leading-none">
+            {displayActivity.details}
+          </div>
+        )}
+        {displayActivity.state && (
+          <div className="text-muted-foreground truncate text-[11px] leading-none">
+            {displayActivity.state}
+          </div>
+        )}
+        {displayElapsedTime && (
+          <div className="text-muted-foreground text-[11px] leading-none">
+            {displayElapsedTime}
+          </div>
+        )}
+      </div>
+    </div>
+  )
+})
+
+const LoadingSkeleton = memo(() => (
+  <DiscordLayout
+    statusIndicator={
+      <Skeleton className="ring-muted absolute right-1 bottom-1 size-4 rounded-full ring-6" />
+    }
+    activityContent={<Skeleton className="h-full w-full" />}
+  />
+))
+
 const DiscordPresence = () => {
-  const { data: lanyard, isLoading } = useLanyard({
-    userId: '747519888347627550',
+  const {
+    data: lanyard,
+    isLoading,
+    error,
+  } = useLanyard({
+    userId: DISCORD_USER_ID,
   })
 
   const mainActivity = useMemo(() => {
     if (!lanyard?.data?.activities) return null
-    return lanyard.data.activities.find(
-      (activity) => activity.type === 0 && activity.assets,
+    return (
+      lanyard.data.activities.find(
+        (activity) => activity.type === 0 && !!activity.assets,
+      ) || null
     )
   }, [lanyard?.data?.activities])
 
-  const hasMainActivity = !!mainActivity
-
   const [elapsedTime, setElapsedTime] = useState('')
 
-  useEffect(() => {
-    if (!mainActivity?.timestamps?.start) return
+  const updateElapsedTime = useCallback(() => {
+    if (mainActivity?.timestamps?.start) {
+      setElapsedTime(getElapsedTime(mainActivity.timestamps.start))
+    }
+  }, [mainActivity?.timestamps?.start])
 
-    const updateElapsedTime = () => {
-      if (mainActivity.timestamps?.start) {
-        setElapsedTime(getElapsedTime(mainActivity.timestamps.start))
-      }
+  useEffect(() => {
+    if (!mainActivity?.timestamps?.start) {
+      setElapsedTime('')
+      return
     }
 
     updateElapsedTime()
     const intervalId = setInterval(updateElapsedTime, 1000)
-
     return () => clearInterval(intervalId)
-  }, [mainActivity])
+  }, [mainActivity?.timestamps?.start, updateElapsedTime])
 
   if (isLoading) {
-    return (
-      <div className="relative overflow-hidden sm:aspect-square">
-        <div className="grid size-full grid-rows-4">
-          <Skeleton className="bg-secondary/50" />
-          <div className="row-span-3 flex flex-col gap-3 p-3">
-            <div className="flex justify-between gap-x-1">
-              <Skeleton className="-mt-[4.5rem] aspect-square size-24 rounded-full" />
-              <Skeleton className="h-6 w-[104px] rounded-xl" />
-            </div>
-            <Skeleton className="h-14 w-full rounded-xl" />
-            <Skeleton className="flex grow rounded-xl" />
-          </div>
-        </div>
-        <Skeleton className="absolute right-0 top-0 z-[1] m-3 size-14 rounded-full" />
-      </div>
-    )
+    return <LoadingSkeleton />
   }
 
-  if (!lanyard || !lanyard.data) {
+  if (error || !lanyard?.data) {
     return null
   }
 
+  const { discord_status } = lanyard.data
+
   return (
-    <div className="relative overflow-hidden sm:aspect-square">
-      <div className="grid size-full grid-rows-4">
-        <div className="bg-secondary/50"></div>
-        <div className="row-span-3 flex flex-col gap-3 p-3">
-          <div className="flex justify-between gap-x-1">
-            <div className="relative">
-              <AvatarComponent
-                src="/static/avatar.webp"
-                alt="Avatar"
-                fallback="e"
-                className="-mt-[4.5rem] aspect-square size-24 rounded-full"
-              />
-              <div
-                className={cn(
-                  'absolute bottom-0 right-0 size-6 rounded-full border-4 border-background',
-                  {
-                    'flex items-center justify-center bg-primary':
-                      lanyard.data.discord_status === 'online',
-                    'bg-primary': lanyard.data.discord_status === 'idle',
-                    'flex items-center justify-center bg-destructive':
-                      lanyard.data.discord_status === 'dnd',
-                    'flex items-center justify-center bg-muted-foreground':
-                      lanyard.data.discord_status === 'offline',
-                  },
-                )}
-              >
-                {lanyard.data.discord_status === 'idle' && (
-                  <div className="size-[10px] rounded-full bg-background" />
-                )}
-                {lanyard.data.discord_status === 'dnd' && (
-                  <div className="h-[4px] w-[11px] rounded-full bg-background" />
-                )}
-                {lanyard.data.discord_status === 'offline' && (
-                  <div className="size-2 rounded-full bg-background" />
-                )}
-              </div>
-            </div>
-            <div className="flex items-center rounded-xl bg-secondary/50 px-2">
-              <img
-                src="/static/bento/badges.png"
-                alt="Discord Badges"
-                width={104}
-                height={24}
-                className="grayscale"
-              />
-            </div>
-          </div>
-          <div className="flex flex-col gap-y-1 rounded-xl bg-secondary/50 p-3">
-            <span className="text-base leading-none">enscribe</span>
-            <span className="text-xs leading-none text-muted-foreground">
-              @enscribe
-            </span>
-          </div>
-          <div className="flex grow rounded-xl bg-secondary/50 px-3 py-2">
-            {hasMainActivity && mainActivity && mainActivity.assets ? (
-              <div className="flex w-full items-center gap-x-3">
-                <div
-                  className="relative aspect-square h-full w-auto flex-shrink-0 rounded-md bg-contain grayscale invert"
-                  style={{
-                    backgroundImage: `url('https://cdn.discordapp.com/app-assets/${mainActivity.application_id}/${mainActivity.assets.large_image}.png')`,
-                  }}
-                >
-                  {mainActivity.assets.small_image && (
-                    <img
-                      src={`https://cdn.discordapp.com/app-assets/${mainActivity.application_id}/${mainActivity.assets.small_image}.png`}
-                      alt="Now Playing"
-                      width={20}
-                      height={20}
-                      className="absolute -bottom-1 -right-1 rounded-full border-2 grayscale invert"
-                    />
-                  )}
-                </div>
-                <div className="my-2 flex min-w-0 flex-1 flex-col gap-y-1 overflow-hidden">
-                  {mainActivity.name && (
-                    <div className="mb-0.5 truncate text-xs leading-none">
-                      {mainActivity.name}
-                    </div>
-                  )}
-                  {mainActivity.details && (
-                    <div className="truncate text-[10px] leading-none text-muted-foreground">
-                      {mainActivity.details}
-                    </div>
-                  )}
-                  {mainActivity.state && (
-                    <div className="truncate text-[10px] leading-none text-muted-foreground">
-                      {mainActivity.state}
-                    </div>
-                  )}
-                  {elapsedTime && (
-                    <div className="text-[11px] leading-none text-muted-foreground">
-                      {elapsedTime}
-                    </div>
-                  )}
-                </div>
-              </div>
-            ) : (
-              <div className="flex size-full flex-col items-center justify-center gap-1">
-                <img
-                  src="/static/bento/bento-discord-futon.svg"
-                  alt="No Status Image"
-                  width={64}
-                  height={64}
-                  className="h-full w-fit rounded-lg"
-                />
-                <div className="text-[10px] text-muted-foreground">
-                  No status!
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-      <div className="absolute right-0 top-0 z-[1] m-3 flex size-14 items-center justify-center rounded-full bg-primary">
-        <FaDiscord className="size-10 text-background" />
-      </div>
-    </div>
+    <DiscordLayout
+      statusIndicator={<StatusIndicator status={discord_status} />}
+      activityContent={
+        <ActivityDisplay activity={mainActivity} elapsedTime={elapsedTime} />
+      }
+    />
   )
 }
 
-export default DiscordPresence
+export default memo(DiscordPresence)

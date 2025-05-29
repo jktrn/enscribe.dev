@@ -1,0 +1,2 @@
+[0;36m$[0m python3 crt.py
+727
