@@ -123,10 +123,10 @@ const AvatarSection = memo<{
         src="/static/bento/avatar.webp"
         alt="Avatar"
         fallback="e"
-        className="-mt-[4.5rem] aspect-square size-24 rounded-full"
+        className="-mt-12 aspect-square size-16 rounded-full sm:-mt-[4.5rem] sm:size-24"
       />
       <div
-        className="absolute inset-0 -mt-[4.5rem] aspect-square size-24 rounded-full bg-[url('/static/bento/avatar-foreground.png')] bg-cover bg-center bg-no-repeat opacity-0 transition-opacity duration-200 group-hover/discord:opacity-100"
+        className="absolute inset-0 -mt-12 aspect-square size-16 rounded-full bg-cover bg-center bg-no-repeat opacity-0 transition-opacity duration-200 group-hover/discord:opacity-100 sm:-mt-[4.5rem] sm:size-24 sm:bg-[url('/static/bento/avatar-foreground.png')]"
         aria-hidden="true"
       />
       {statusIndicator}
@@ -147,19 +147,21 @@ const DiscordLayout = memo<{
 }>(({ statusIndicator, activityContent }) => (
   <div
     data-trigger
-    className="group/discord relative overflow-hidden sm:aspect-square"
+    className="group/discord relative size-full overflow-hidden"
   >
-    <p className="text-foreground/80 bg-muted absolute top-4 left-30 border p-2 text-xs opacity-0 transition-opacity duration-200 group-hover/discord:opacity-100">
+    <p className="text-foreground/80 bg-muted absolute top-4 left-30 hidden border p-2 text-xs opacity-0 transition-opacity duration-200 group-hover/discord:opacity-100 sm:block">
       Feel free
       <br />
       to add me!
     </p>
     <div className="grid size-full grid-rows-4">
       <div className="bg-border/50" />
-      <div className="bg-muted row-span-3 flex flex-col gap-3 p-3">
+      <div className="bg-muted row-span-3 flex min-h-0 flex-col gap-3 p-3">
         <AvatarSection statusIndicator={statusIndicator} />
         <UserInfo />
-        <div className="bg-border/50 flex h-full p-3">{activityContent}</div>
+        <div className="bg-border/50 flex h-full min-h-0 p-3">
+          {activityContent}
+        </div>
       </div>
     </div>
     <DiscordIcon />
@@ -191,25 +193,25 @@ const ActivityDisplay = memo<{
   const displayElapsedTime = elapsedTime || '∞:00 elapsed'
 
   return (
-    <div className="flex size-full items-center gap-x-3">
-      <div className="relative aspect-square h-full shrink-0">
+    <div className="flex size-full items-center gap-x-2 sm:gap-x-3">
+      <div className="relative aspect-square h-full max-h-12 shrink-0 sm:max-h-none">
         <div
           style={{ backgroundImage: `url('${activityImageUrl}')` }}
           className="absolute inset-0 bg-contain bg-center bg-no-repeat grayscale sepia-50"
         />
         {smallImageUrl && (
-          <div className="absolute -right-2 -bottom-2 overflow-hidden rounded-full border-4 border-[#26231f]">
+          <div className="absolute -right-1 -bottom-1 overflow-hidden rounded-full border-2 border-[#26231f] sm:-right-2 sm:-bottom-2 sm:border-4">
             <img
               src={smallImageUrl}
               alt="Application Icon"
-              width={24}
-              height={24}
-              className="grayscale sepia-50"
+              width={16}
+              height={16}
+              className="grayscale sepia-50 sm:h-6 sm:w-6"
             />
           </div>
         )}
       </div>
-      <div className="my-1 flex flex-col gap-y-1 overflow-hidden">
+      <div className="my-1 flex min-w-0 flex-1 flex-col gap-y-1 overflow-hidden">
         {displayActivity.name && (
           <div className="mb-0.5 truncate text-xs leading-none">
             {displayActivity.name}
