@@ -174,7 +174,7 @@ const WakatimeGraph = ({ omitLanguages = [] }: Props) => {
   const rightMargin = Math.max(40, String(Math.round(maxHours)).length * 8 + 15)
 
   return (
-    <ChartContainer config={chartConfig} className="h-full w-full p-4">
+    <ChartContainer config={chartConfig} className="size-full p-4">
       <BarChart
         accessibilityLayer
         data={languages}
@@ -185,6 +185,8 @@ const WakatimeGraph = ({ omitLanguages = [] }: Props) => {
           top: 5,
           bottom: 5,
         }}
+        width={undefined}
+        height={undefined}
       >
         <YAxis
           dataKey="name"
