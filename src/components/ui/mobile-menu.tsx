@@ -38,7 +38,7 @@ const MobileMenu = () => {
         <Button
           variant="ghost"
           size="icon"
-          className="size-8 sm:hidden"
+          className="-me-2 size-8 sm:hidden"
           title="Menu"
         >
           <Menu className="size-5" />
@@ -50,7 +50,7 @@ const MobileMenu = () => {
           <DropdownMenuItem key={item.href} asChild>
             <a
               href={item.href}
-              className="w-full text-lg font-medium capitalize"
+              className="w-full text-lg font-medium font-mono capitalize"
               onClick={() => setIsOpen(false)}
             >
               {item.label}
