@@ -1,39 +1,35 @@
 ---
+import Badge from '@/components/Badge.astro'
 import Breadcrumbs from '@/components/Breadcrumbs.astro'
 import Link from '@/components/Link.astro'
+import PostHead from '@/components/PostHead.astro'
 import PostNavigation from '@/components/PostNavigation.astro'
-import TableOfContents from '@/components/TableOfContents.astro'
-import TableOfContentsPrebuilt from '@/components/TableOfContentsPrebuilt.astro'
-import { badgeVariants } from '@/components/ui/badge'
+import SubpostsHeader from '@/components/SubpostsHeader.astro'
+import SubpostsSidebar from '@/components/SubpostsSidebar.astro'
+import TOCHeader from '@/components/TOCHeader.astro'
+import TOCSidebar from '@/components/TOCSidebar.astro'
 import { Button } from '@/components/ui/button'
-import { Separator } from '@/components/ui/separator'
 import Layout from '@/layouts/Layout.astro'
-import { parseAuthors } from '@/lib/server-utils'
-import { formatDate, readingTime } from '@/lib/utils'
+import {
+  getAdjacentPosts,
+  getAllPostsAndSubposts,
+  getCombinedReadingTime,
+  getParentId,
+  getParentPost,
+  getPostReadingTime,
+  getSubpostCount,
+  getTOCSections,
+  hasSubposts,
+  isSubpost,
+  parseAuthors,
+} from '@/lib/data-utils'
+import { formatDate } from '@/lib/utils'
 import { Icon } from 'astro-icon/components'
 import { Image } from 'astro:assets'
-import { type CollectionEntry, getCollection, render } from 'astro:content'
-
-type Props = CollectionEntry<'blog'>
-type Post = CollectionEntry<'blog'>
-
-const allPosts = await getCollection('blog')
-const posts = allPosts
-  .filter((post) => !post.data.draft)
-  .sort((a, b) => a.data.date.valueOf() - b.data.date.valueOf())
-const visiblePosts = posts.filter((post) => !post.data.hidden)
-
-function getAdjacentPosts(currentId: string, postList: Post[]) {
-  const index = postList.findIndex((post) => post.id === currentId)
-  return {
-    prev: index > 0 ? postList[index - 1] : null,
-    next:
-      index >= 0 && index < postList.length - 1 ? postList[index + 1] : null,
-  }
-}
+import { render } from 'astro:content'
 
 export async function getStaticPaths() {
-  const posts = await getCollection('blog', ({ data }) => !data.draft)
+  const posts = await getAllPostsAndSubposts()
   return posts.map((post) => ({
     params: { id: post.id },
     props: post,
@@ -42,159 +38,213 @@ export async function getStaticPaths() {
 
 const post = Astro.props
 const currentPostId = Astro.params.id
-const isSubpost = !!post.data.tableOfContents
-
-const { prev: prevPost, next: nextPost } = isSubpost
-  ? getAdjacentPosts(
-      currentPostId,
-      posts
-        .filter((p) => p.data.parentTitle === post.data.parentTitle)
-        .sort((a, b) => a.data.date.valueOf() - b.data.date.valueOf()),
-    )
-  : getAdjacentPosts(currentPostId, visiblePosts)
-
 const { Content, headings } = await render(post)
 const authors = await parseAuthors(post.data.authors ?? [])
 
-const stripCodeBlocks = (text: string) => text.replace(/```[\s\S]*?```/g, '')
-const subposts = allPosts.filter((p) => p.data.parentTitle === post.data.title)
-const totalBody = [post.body!, ...subposts.map((p) => p.body!)]
-  .map(stripCodeBlocks)
-  .join('')
-const readTime = readingTime(totalBody)
+const isCurrentSubpost = isSubpost(currentPostId)
+const navigation = await getAdjacentPosts(currentPostId)
+const parentPost = isCurrentSubpost ? await getParentPost(currentPostId) : null
+
+const hasChildPosts = await hasSubposts(currentPostId)
+const subpostCount = !isCurrentSubpost
+  ? await getSubpostCount(currentPostId)
+  : 0
+const postReadingTime = await getPostReadingTime(currentPostId)
+const combinedReadingTime =
+  hasChildPosts && !isCurrentSubpost
+    ? await getCombinedReadingTime(currentPostId)
+    : null
+
+const tocSections = await getTOCSections(currentPostId)
 ---
 
-<Layout
-  title={post.data.title}
-  description={post.data.description}
-  image={post.data.image?.src ?? '/static/twitter-card.png'}
->
+<Layout>
+  <PostHead slot="head" post={post} />
+  {
+    (hasChildPosts || isCurrentSubpost) && (
+      <SubpostsHeader
+        slot="subposts-navigation"
+        parentId={isCurrentSubpost ? getParentId(currentPostId) : currentPostId}
+      />
+    )
+  }
+  {
+    headings?.length > 0 &&
+      !(
+        isCurrentSubpost &&
+        headings.length === 1 &&
+        headings[0].text === post.data.title
+      ) && <TOCHeader slot="table-of-contents" headings={headings} />
+  }
+
   <section
-    class="grid grid-cols-[minmax(0px,1fr)_min(768px,100%)_minmax(0px,1fr)] gap-y-6 *:px-4"
+    class="relative left-[calc(50%-50vw)] grid w-screen grid-cols-[minmax(0px,1fr)_min(calc(var(--breakpoint-md)-2rem),100%)_minmax(0px,1fr)] gap-y-6 px-4"
   >
-    <Breadcrumbs
-      items={[
-        { href: '/blog', label: 'Blog', icon: 'lucide:archive' },
-        ...(isSubpost
-          ? [
-              {
-                href: post.data.parentSlug,
-                label: post.data.parentTitle ?? 'Parent Post',
-                icon: 'lucide:file-text',
-              },
-              {
-                label: post.data.title.split(': ')[1] ?? post.data.title,
-                icon: 'lucide:pilcrow',
-              },
-            ]
-          : [{ label: post.data.title, icon: 'lucide:file-text' }]),
-      ]}
-      class="col-start-2"
-    />
-    {!isSubpost && post.data.image && (
-      <div class="col-span-full mx-auto w-full max-w-[1000px]">
+    <div class="col-start-2">
+      <Breadcrumbs
+        items={[
+          { href: '/blog', label: 'Blog', icon: 'lucide:library-big' },
+          ...(isCurrentSubpost && parentPost
+            ? [
+                {
+                  href: `/blog/${parentPost.id}`,
+                  label: parentPost.data.title,
+                  icon: 'lucide:book-open',
+                },
+                {
+                  href: `/blog/${currentPostId}`,
+                  label: post.data.title,
+                  icon: 'lucide:file-text',
+                },
+              ]
+            : [
+                {
+                  href: `/blog/${currentPostId}`,
+                  label: post.data.title,
+                  icon: 'lucide:book-open-text',
+                },
+              ]),
+        ]}
+      />
+    </div>
+
+    {
+      post.data.image && (
         <Image
           src={post.data.image}
           alt={post.data.title}
           width={1200}
           height={630}
-          class="rounded-xl object-cover"
-        />
-      </div>
-    )}
-    <section class="col-start-2 flex flex-col gap-y-6">
-      {
-        !isSubpost && (
-          <div class="flex flex-col gap-y-4 text-center">
-            <h1 class="text-pretty text-3xl font-bold tracking-tight sm:text-4xl">
-              {post.data.title}
-            </h1>
-
-            <div class="flex flex-wrap items-center justify-center gap-2 text-sm text-muted-foreground">
-              {authors.length > 0 && (
-                <>
-                  <div class="flex items-center gap-x-2">
-                    {authors.map((author) => (
-                      <div class="flex items-center gap-x-1.5">
-                        <Image
-                          src={author.avatar}
-                          alt={author.name}
-                          width={24}
-                          height={24}
-                          class="rounded-full"
-                        />
-                        {author.isRegistered ? (
-                          <Link
-                            href={`/authors/${author.id}`}
-                            underline
-                            class="text-foreground"
-                          >
-                            <span>{author.name}</span>
-                          </Link>
-                        ) : (
-                          <span>{author.name}</span>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                  <Separator orientation="vertical" className="h-4" />
-                </>
-              )}
-              <div class="flex items-center gap-2">
-                <span>{formatDate(post.data.date)}</span>
-                <Separator orientation="vertical" className="h-4" />
-                <span>{readTime}</span>
-              </div>
-            </div>
-            <div class="flex flex-wrap justify-center gap-2">
-              {post.data.tags?.length ? (
-                post.data.tags.map((tag: string) => (
-                  <a
-                    href={`/tags/${tag}`}
-                    class={badgeVariants({ variant: 'secondary' })}
-                  >
-                    <Icon name="lucide:hash" class="size-3 -translate-x-0.5" />
-                    {tag}
-                  </a>
-                ))
-              ) : (
-                <span class="text-sm text-muted-foreground">
-                  No tags available
-                </span>
-              )}
-            </div>
-          </div>
-        )
-      }
-
-      <PostNavigation prevPost={prevPost} nextPost={nextPost} />
-    </section>
-
-    {headings.length > 0 && <TableOfContents headings={headings} />}
-
-    <article
-      class="prose prose-sm prose-neutral col-start-2 max-w-none prose-invert [&>:first-child>*]:mt-0"
-    >
-      <Content />
-    </article>
-
-    {
-      isSubpost && (
-        <TableOfContentsPrebuilt
-          headings={post.data.tableOfContents ?? []}
-          activeSlug={post.data.activeSlug}
-          title={post.data.tableOfContentsTitle}
+          class="col-span-full mx-auto w-full max-w-5xl object-cover"
         />
       )
     }
 
-    <PostNavigation prevPost={prevPost} nextPost={nextPost} />
+    <section class="col-start-2 flex flex-col gap-y-6 text-center">
+      <div class="flex flex-col">
+        <h1
+          class="mb-2 scroll-mt-31 text-3xl leading-tight font-medium text-pretty wrap-break-word hyphens-auto sm:text-4xl"
+          id="post-title"
+        >
+          {post.data.title}
+        </h1>
+
+        <div
+          class="text-muted-foreground divide-border mb-4 flex flex-col items-center justify-center divide-y text-xs sm:flex-row sm:flex-wrap sm:divide-x sm:divide-y-0 sm:text-sm"
+        >
+          {
+            authors.length > 0 && (
+              <div class="flex w-full items-center justify-center gap-x-2 py-2 sm:w-fit sm:px-2 sm:py-0 first:sm:pl-0 last:sm:pr-0">
+                {authors.map((author) => (
+                  <div class="flex items-center gap-x-1.5">
+                    <Image
+                      src={author.avatar}
+                      alt={author.name}
+                      width={20}
+                      height={20}
+                      class="rounded-full"
+                    />
+                    {author.isRegistered ? (
+                      <Link
+                        href={`/authors/${author.id}`}
+                        underline
+                        class="text-foreground"
+                      >
+                        <span>{author.name}</span>
+                      </Link>
+                    ) : (
+                      <span>{author.name}</span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )
+          }
+
+          <div
+            class="flex w-full items-center justify-center gap-2 py-2 sm:w-fit sm:px-2 sm:py-0 first:sm:pl-0 last:sm:pr-0"
+          >
+            <span>{formatDate(post.data.date)}</span>
+          </div>
+
+          <div
+            class="flex w-full items-center justify-center gap-2 py-2 sm:w-fit sm:px-2 sm:py-0 first:sm:pl-0 last:sm:pr-0"
+          >
+            <span>
+              {postReadingTime}
+              {
+                combinedReadingTime &&
+                  combinedReadingTime !== postReadingTime && (
+                    <span class="text-muted-foreground">
+                      {' '}
+                      ({combinedReadingTime} total)
+                    </span>
+                  )
+              }
+            </span>
+          </div>
+
+          {
+            subpostCount > 0 && (
+              <div class="flex w-full items-center justify-center gap-1 py-2 sm:w-fit sm:px-2 sm:py-0 first:sm:pl-0 last:sm:pr-0">
+                <Icon name="lucide:file-text" class="size-3" />
+                {subpostCount} subpost{subpostCount === 1 ? '' : 's'}
+              </div>
+            )
+          }
+        </div>
+        <div class="flex flex-wrap justify-center gap-2">
+          {
+            post.data.tags &&
+              post.data.tags.length > 0 &&
+              post.data.tags.map((tag) => (
+                <Link href={`/tags/${tag}`}>
+                  <Badge text={tag} />
+                </Link>
+              ))
+          }
+        </div>
+      </div>
+
+      <PostNavigation
+        newerPost={navigation.newer}
+        olderPost={navigation.older}
+        parentPost={isCurrentSubpost ? navigation.parent : undefined}
+      />
+    </section>
+
+    {
+      tocSections.length > 0 && (
+        <TOCSidebar sections={tocSections} currentPostId={currentPostId} />
+      )
+    }
+
+    <article class="prose col-start-2 max-w-none">
+      <Content />
+    </article>
+
+    {
+      (hasChildPosts || isCurrentSubpost) && (
+        <SubpostsSidebar
+          parentId={
+            isCurrentSubpost ? getParentId(currentPostId) : currentPostId
+          }
+          className="w-64"
+        />
+      )
+    }
+
+    <PostNavigation
+      newerPost={navigation.newer}
+      olderPost={navigation.older}
+      parentPost={isCurrentSubpost ? navigation.parent : undefined}
+    />
   </section>
 
   <Button
     variant="outline"
     size="icon"
-    className="group fixed bottom-8 right-8 z-50 hidden"
+    className="group fixed right-8 bottom-8 z-50 hidden"
     id="scroll-to-top"
     title="Scroll to top"
     aria-label="Scroll to top"

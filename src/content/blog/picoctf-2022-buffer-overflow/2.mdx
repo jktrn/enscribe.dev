@@ -1,0 +1,92 @@
+---
+title: 'Buffer overflow 2'
+description: 'A comprehensive walkthrough of the picoCTF 2022 buffer overflow challenges, exploring stack-based exploitation techniques and binary security fundamentals.'
+date: 2022-06-16
+authors: ['enscribe']
+order: 2
+---
+
+import { Code } from 'astro-expressive-code/components'
+import Challenge from '@/components/mdx/Challenge.astro'
+import Callout from '@/components/mdx/Callout.astro'
+
+## Buffer overflow 2
+
+<Challenge
+  solvers={[
+    {
+      name: 'jktrn',
+      href: 'https://github.com/jktrn',
+      avatar: 'https://github.com/jktrn.png',
+    },
+  ]}
+  authors={['Sanjay C.', 'Palash Oswal']}
+  category="Binary Exploitation (pwn)"
+  points={300}
+  files={['vuln', 'vuln.c']}
+>
+  Control the return address and arguments.  
+  This time you'll need to control the arguments to the function you return to! Can you get the flag from this program? Connect with it using: `[0;33m$[0m nc saturn.picoctf.net [0;90m[PORT][0m{:ansi}`
+</Challenge>
+
+<Callout variant="warning">
+  Warning: This is an **instance-based** challenge. Port info will be redacted alongside the last eight characters of the flag, as they are dynamic.
+</Callout>
+
+import Code20 from './assets/20.txt?raw'
+
+<Code code={Code20} lang="ansi" />
+
+Let's check out our source code:
+
+import Code21 from './assets/21.txt?raw'
+
+<Code code={Code21} lang="c" title="vuln.c" />
+
+Looking at the `win(){:c}` function, we can see that two arguments are required that need to be passed into the function to receive the flag. Two guard clauses lay above the flag print:
+
+import Code22 from './assets/22.txt?raw'
+
+<Code code={Code22} lang="c" title="vuln.c" startLineNumber={10} mark={{range: "19-24"}} />
+
+The goal is simple: call `win(0xCAFEF00D, 0xF00DF00D){:c}`! We'll be doing it the hard way (for a learning experience), in addition to a more advanced easy way. Let's get started.
+
+### I: The Hard Way
+
+We can apply a lot from what we learned in Buffer overflow 1. The first thing we should do is find the offset, which requires no hassle with pwntools helpers! Although we'll get actual number here, I won't include it in the final script for the sake of not leaving out any steps. Simply segfault the process with a cyclic string, read the core dump's fault address (`[0;31m$eip[0m{:ansi}`) and throw it into `cyclic_find(){:py}`:
+
+import Code23 from './assets/23.txt?raw'
+
+<Code code={Code23} lang="ansi" mark={26} />
+
+The next thing we need to know about is the way functions are laid out on the stack. Let's recall the diagram I drew out earlier:
+
+![Stack Diagram](assets/stack-visual2.png)
+
+If we want to call a function with parameters, we'll need to include the base pointer alongside a return address, which can simply be `main(){:c}`. With this, we can basically copy our script over from Buffer overflow 1 with a few tweaks to the payload:
+
+import Code24 from './assets/24.txt?raw'
+
+<Code code={Code24} lang="py" title="solve.py" />
+
+Let's run it on the remote server:
+
+import Code25 from './assets/25.txt?raw'
+
+<Code code={Code25} lang="ansi" mark="picoCTF{argum3nt5_4_d4yZ_[REDACTED]}" />
+
+### II: The Easy Way
+
+But... what if you wanted to be an even **more** lazy pwner? Well, you're in luck, because I present to you: the **[pwntools ROP object](https://docs.pwntools.com/en/stable/rop/rop.html)**! By throwing our elf object into `ROP(){:py}` it transforms, and we can use it to automatically call functions and build chains! Here it is in action:
+
+import Code26 from './assets/26.txt?raw'
+
+<Code code={Code26} lang="py" title="solve.py" />
+
+Let's run it on the remote server:
+
+import Code27 from './assets/27.txt?raw'
+
+<Code code={Code27} lang="ansi" mark="picoCTF{argum3nt5_4_d4yZ_[REDACTED]}" />
+
+We've successfully called a function with arguments through buffer overflow!

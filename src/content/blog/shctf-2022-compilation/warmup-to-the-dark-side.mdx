@@ -1,0 +1,52 @@
+---
+title: 'Warmup to the Dark Side'
+description: 'Learn brute-forced format string attacks, blind buffer overflows, and return-oriented programming in this writeup compilation from Space Heroes CTF.'
+date: 2022-04-06
+authors: ['enscribe']
+order: 3
+---
+
+import { Code } from 'astro-expressive-code/components'
+import Challenge from '@/components/mdx/Challenge.astro'
+
+<div class="invisible h-0! [&+*]:mt-0 [&+*_*]:mt-0">
+## Warmup to the Dark Side
+</div>
+
+<Challenge
+  title="Warmup to the Dark Side"
+  solvers={[
+    {
+      name: 'enscribe',
+      href: 'https://github.com/jktrn',
+      avatar: 'https://github.com/jktrn.png',
+    },
+  ]}
+  authors={['v10l3nt']}
+  category="pwn"
+  points={100}
+  remote="nc 0.cloud.chals.io 30096"
+  flag="shctf{I_will_remov3_th3s3_restraints_and_leave_the_c3ll}"
+>
+  Once you start down the dark path, forever will it dominate your destiny. (And yes, the binary isn't included)  
+</Challenge>
+
+Let's run that `netcat` link to see what's going on:
+
+import Code14 from './assets/14.txt?raw'
+
+<Code code={Code14} lang="ansi" />
+
+We're given an address of the `win(){:c}` function... and that's it. If this is a `ret2win` challenge, how are we meant to find the offset of the `$rip` register and overflow it with our code? Of course... we need to brute force it.
+
+In the code snippet below, I got the address provided in the prompt by reading the line and taking its substring (ASLR is enabled, so it's different each time). Then, I slowly increased the buffer of the payload with a loop until I found the correct offset of the `$rip`:
+
+import Code15 from './assets/15.txt?raw'
+
+<Code code={Code15} lang="py" title="solve.py" />
+
+Let's run this script on the server to see if we can get the flag:
+
+import Code16 from './assets/16.txt?raw'
+
+<Code code={Code16} lang="ansi" mark={17} />

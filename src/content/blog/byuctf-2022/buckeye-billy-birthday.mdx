@@ -1,0 +1,66 @@
+---
+title: "Buckeye Billy Birthday"
+description: 'We were the only team of 435 to solve all 9 OSINT challenges from BYUCTF 2022. This was the process that led us to victory.'
+date: 2022-05-28
+authors: ['enscribe']
+order: 7
+---
+
+import Challenge from '@/components/mdx/Challenge.astro'
+
+<div class="invisible h-0! [&+*]:mt-0 [&+*_*]:mt-0">
+## Buckeye Billy Birthday
+</div>
+
+<Challenge
+  title="Buckeye Billy Birthday"
+  solvers={[
+    {
+      name: 'Battlemonger',
+      href: 'https://github.com/Battlemonger',
+      avatar: 'https://github.com/Battlemonger.png',
+    },
+    {
+      name: 'sahuang',
+      href: 'https://github.com/sahuang',
+      avatar: 'https://github.com/sahuang.png',
+    },
+    {
+      name: 'enscribe',
+      href: 'https://github.com/jktrn',
+      avatar: 'https://github.com/jktrn.png',
+    },
+  ]}
+  category="OSINT"
+  points={500}
+  flag="byuctf{graeters}"
+>
+  Buckeye Billy, our lovely, nutty, history loving friend, has a birthday coming
+  up! Billy is as cryptic as can be, and we have no idea what to get him for his
+  birthday. We did find three hints on written on his desk. Can you help us find
+  where we should buy a gift from? [Hint
+  1](https://mywordle.strivemath.com/?word=sokhc) [Hint
+  2](https://mywordle.strivemath.com/?word=yocod) [Hint
+  3](https://mywordle.strivemath.com/?word=lffep) format: `byuctf{storename}`
+</Challenge>
+
+I took a look at the three hints, and they were Wordle games that resulted in `WATER`, `CALLS`, and `PROBE`. Since we were looking for a shop (meaning a location), we immediately turned to [what3words](https://what3words.com/) and stumbled across [this location](https://what3words.com/water.calls.probe) in Charlotte, Ohio:
+
+![Screenshot of what3words location](assets/bday1.png)
+
+We tried a couple of stores around the area to no avail, until an admin told us in a ticket that we were in the wrong place. By extension, we decided to try out various permutations of `water`, `calls` and `probe`:
+
+| what3word address                                        | Location                  |
+| -------------------------------------------------------- | ------------------------- |
+| [///water.calls.probe](https://w3w.co/water.calls.probe) | Charlotte, North Carolina |
+| [///calls.water.probe](https://w3w.co/calls.water.probe) | Detroit, Michigan         |
+| [///probe.water.calls](https://w3w.co/probe.water.calls) | Houston, Texas            |
+| [///water.probe.calls](https://w3w.co/water.probe.calls) | Cincinnati, Ohio          |
+| [///calls.probe.water](https://w3w.co/calls.probe.water) | Albuquerque, New Mexico   |
+| [///probe.calls.water](https://w3w.co/probe.calls.water) | Eastbourne, London        |
+
+Most of them were bogus except [///water.probe.calls](https://what3words.com/water.probe.calls), which was on E. McMillan St, Cincinnati, Ohio. We assumed it was correct (and admin later confirmed) because the nickname "Buckeye Billy" comes from the fact that he loves the [Ohio State University Buckeyes](https://ohiostatebuckeyes.com/) football team. (Bonus: The Ohio Buckeye is a type of nut, and the description says that he is "nutty"). Our teammate somehow connected "history-loving" to old stores in Cincinnati, Ohio, and upon a Google search we found:
+
+![bday2](assets/bday2.png)
+
+The flag is `byuctf{graeters}`. This was a guessy challenge, so don't feel dumb. I felt dumb too.

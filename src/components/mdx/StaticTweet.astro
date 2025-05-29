@@ -17,7 +17,7 @@ interface Props {
 const { avatar, username, handle, date, src, media, video } = Astro.props
 ---
 
-<div class="mx-auto my-6 flex flex-col gap-y-4 rounded-xl border p-4">
+<div class="mx-auto my-6 flex flex-col gap-y-4 border p-4">
   <div class="not-prose flex flex-wrap justify-between gap-4">
     <span class="flex flex-wrap items-center gap-3">
       <Avatar
@@ -36,32 +36,28 @@ const { avatar, username, handle, date, src, media, video } = Astro.props
       </div>
     </span>
     <Link href={src} class="text-primary">
-      <Icon name="lucide:twitter" />
+      <Icon name="lucide:twitter" class="size-6" />
     </Link>
   </div>
-  <div class="prose-p:m-0">
+  <div class="[&>*]:first:mt-0 [&>*]:last:mb-0">
     <slot />
   </div>
   {
     media && (
       <div class="not-prose flex items-center justify-center">
-        <Image
-          src={media}
-          alt="Tweet Media"
-          width={500}
-          height={400}
-          class="not-prose rounded-md"
-        />
+        <Image src={media} alt="Tweet Media" width={500} height={400} />
       </div>
     )
   }
   {
     video && (
-      <video controls width="100%" class="not-prose rounded-md">
-        <source src={video.toString()} type="video/mp4" />
-        <track kind="captions" />
-        Sorry, your browser doesn't support embedded videos.
-      </video>
+      <div class="not-prose">
+        <video controls width="100%">
+          <source src={video.toString()} type="video/mp4" />
+          <track kind="captions" />
+          Sorry, your browser doesn't support embedded videos.
+        </video>
+      </div>
     )
   }
 </div>

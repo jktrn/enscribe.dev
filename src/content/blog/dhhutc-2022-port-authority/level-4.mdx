@@ -1,0 +1,43 @@
+---
+title: 'Level 4'
+description: 'Play a JSON-controlled strategy game through WebSocket——this is the Hacky Holidays 2022 programming challenge “Port Authority.”'
+date: 2022-07-27
+authors: ['enscribe']
+order: 4
+---
+
+import { Code } from 'astro-expressive-code/components'
+import Challenge from '@/components/mdx/Challenge.astro'
+import Flag4Video from './assets/flag4.mp4'
+
+<div class="invisible h-0! [&+*]:mt-0 [&+*_*]:mt-0">
+## Level 4
+</div>
+
+<Challenge
+  title="Level 4"
+  solvers={[{
+    name: 'sahuang',
+    href: 'https://github.com/sahuang',
+    avatar: 'https://github.com/sahuang.png',
+  }]}
+  points={50}
+  flag="CTF{C4pt41N-4MErIc4}"
+>
+  The algorithm disturbed our radar system - boats that veer too far off track are lost and never seen again. Can you give them directions in time?
+</Challenge>
+
+After I added the level 4 button alongside steer/loop buttons for the extra ship that popped up, I discovered that my solution for level 3 actually worked for level 4 as well:
+
+![Level 4](assets/level4.gif)
+
+This means I can flag this level without needing to code at all!:
+
+<video className="my-4 rounded-md" controls>
+  <source src={Flag4Video} type="video/mp4" />
+  Your browser does not support the video tag.
+</video>
+
+import Code21 from './assets/21.txt?raw'
+
+<Code code={Code21} lang="ansi" mark="CTF{C4pt41N-4MErIc4}" />

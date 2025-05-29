@@ -1,53 +1,49 @@
 ---
-import '../styles/global.css'
-import '../styles/katex.css'
-
 import { SITE } from '@/consts'
 import { ClientRouter } from 'astro:transitions'
-
-interface Props {
-  title: string
-  description: string
-  image?: string
-}
-
-const canonicalURL = new URL(Astro.url.pathname, Astro.site)
-
-const { title, description, image = '/static/twitter-card.png' } = Astro.props
+import Favicons from './Favicons.astro'
 ---
 
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<meta name="generator" content={Astro.generator} />
-<meta name="google" content="notranslate" />
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, user-scalable=yes"
+  />
+  <meta name="generator" content={Astro.generator} />
 
-<link rel="canonical" href={canonicalURL} />
-<link rel="sitemap" href="/sitemap-index.xml" />
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta
+    name="format-detection"
+    content="telephone=no,date=no,address=no,email=no,url=no"
+  />
 
-<title>{title}</title>
-<meta name="title" content={title} />
-<meta name="description" content={description} />
+  <meta
+    name="theme-color"
+    content="#121212"
+    media="(prefers-color-scheme: dark)"
+  />
+  <meta
+    name="theme-color"
+    content="#121212"
+    media="(prefers-color-scheme: light)"
+  />
 
-<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
-<link rel="manifest" href="/site.webmanifest" />
-<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#121212" />
-<meta name="msapplication-TileColor" content="#121212" />
-<meta name="theme-color" content="#E9D3B6" />
-<meta name="color-scheme" content="dark">
+  <link rel="sitemap" href="/sitemap-index.xml" />
+  <link rel="manifest" href="/site.webmanifest" />
+  <link
+    rel="alternate"
+    type="application/rss+xml"
+    title={SITE.title}
+    href={new URL('rss.xml', Astro.site)}
+  />
 
-<meta property="og:type" content="website" />
-<meta property="og:url" content={Astro.url} />
-<meta property="og:title" content={title} />
-<meta property="og:site_name" content={SITE.TITLE} />
-<meta property="og:description" content={description} />
-<meta property="og:image" content={new URL(image, Astro.url)} />
+  <Favicons />
+  <ClientRouter />
 
-<meta property="twitter:card" content="summary_large_image" />
-<meta property="twitter:url" content={Astro.url} />
-<meta property="twitter:title" content={title} />
-<meta property="twitter:description" content={description} />
-<meta property="twitter:image" content={new URL(image, Astro.url)} />
-
-<ClientRouter />
+  <slot />
+</head>

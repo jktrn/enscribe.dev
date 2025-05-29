@@ -1,0 +1,54 @@
+---
+title: "Murder Mystery"
+description: 'We were the only team of 435 to solve all 9 OSINT challenges from BYUCTF 2022. This was the process that led us to victory.'
+date: 2022-05-28
+authors: ['enscribe']
+order: 6
+---
+
+import Challenge from '@/components/mdx/Challenge.astro'
+
+<div class="invisible h-0! [&+*]:mt-0 [&+*_*]:mt-0">
+## Murder Mystery
+</div>
+
+<Challenge
+  title="Murder Mystery"
+  solvers={[
+    {
+      name: 'Battlemonger',
+      href: 'https://github.com/Battlemonger',
+      avatar: 'https://github.com/Battlemonger.png',
+    },
+    {
+      name: 'enscribe',
+      href: 'https://github.com/jktrn',
+      avatar: 'https://github.com/jktrn.png',
+    },
+  ]}
+  category="OSINT"
+  points={499}
+  flag="byuctf{murdered_by_a_traitor_and_coward_whose_name_is_not_worthy_to_appear_here}"
+>
+  While searching for secrets of the past, you find a scrap of paper that
+  contains the following information:
+  ```text
+  01101110011100100110100001110000011010-
+  01011001000100110001001011110100001111
+  June 29, 1902
+  ```
+  Because you're great at OSINT, you trace this information
+  back to a famous inscription. What is that inscription?  
+  **Flag**: `byuctf{inscription_with_underscores}`  
+  **Note**: the flag will not include the name or dates found in the inscription.
+</Challenge>
+
+Instantly, we moved to [Cyberchef](https://gchq.github.io/CyberChef/) for the binary conversion, and it resulted in `nrhpidLKÐ`. We thought it was garbage at first, until a teammate noticed "NRHP ID" within the string, which is related to the [National Register of Historic Places](https://history.idaho.gov/nrhp/). Since there's a historic date also in the description, we can immediately conclude that this is the correct path to take. We isolated the last part and converted it into decimal instead - `80002319`.
+
+Following the trail for `NRHP ID 80002319`, we found this [UpWiki Page](https://en.upwiki.one/wiki/Jesse_James_Home_Museum) About the "Jesse James Home Museum", which is the location registered under this ID.
+
+When we looked up "jesse james famous inscription", we found a [Smithsonian Magazine](https://photocontest.smithsonianmag.com/photocontest/detail/the-original-grave-site-of-jesse-james-located-in-the-yard-of-the-james-fam/) page that photographs Mr. James' grave:
+
+![mystery1](assets/mystery1.png)
+
+Removing the dates and names as the description specifies, the flag is `byuctf{murdered_by_a_traitor_and_coward_whose_name_is_not_worthy_to_appear_here}`.

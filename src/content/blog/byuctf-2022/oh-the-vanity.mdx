@@ -1,0 +1,44 @@
+---
+title: "Oh the Vanity"
+description: 'We were the only team of 435 to solve all 9 OSINT challenges from BYUCTF 2022. This was the process that led us to victory.'
+date: 2022-05-28
+authors: ['enscribe']
+order: 2
+---
+
+import Challenge from '@/components/mdx/Challenge.astro'
+
+<div class="invisible h-0! [&+*]:mt-0 [&+*_*]:mt-0">
+## Oh The Vanity
+</div>
+
+<Challenge
+  title="Oh The Vanity"
+  solvers={[
+    {
+      name: 'sahuang',
+      href: 'https://github.com/sahuang',
+      avatar: 'https://github.com/sahuang.png',
+    },
+  ]}
+  category="OSINT"
+  points={100}
+  files={['sharky1.png']}
+  flag="byuctf{05-11-2022}"
+>
+  The vanity and audacity of these scammers and their phishing attacks are just
+  getting ridiculous. I read an article this month about a new way to mask
+  phishing campaigns. They even included this photo. Find the date the article
+  was published.  
+  Flag format: `byuctf{mm-dd-yyyy}`
+  <figure>
+    <div class="max-w-72 mx-auto [&_img]:mb-0">![sharky.png](assets/sharky1.png)</div>
+    <figcaption class="text-center">sharky1.png</figcaption>
+  </figure>
+</Challenge>
+
+Reverse Google Search with a "phishing" crib:
+
+<div class="max-w-[28rem] mx-auto">![Reverse image search via Google](assets/sharky2.png)</div>
+
+The [Vanity URL on darkreading.com](https://www.darkreading.com/cloud/vanity-urls-could-be-spoofed-for-social-engineering-attacks) was published on May 11th, 2022. The flag is `byuctf{05-11-2022}`.

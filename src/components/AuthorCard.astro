@@ -1,44 +1,36 @@
 ---
 import Link from '@/components/Link.astro'
 import AvatarComponent from '@/components/ui/avatar'
-import type { Link as SocialLink } from '@/consts'
 import { cn } from '@/lib/utils'
+import type { SocialLink } from '@/types'
 import type { CollectionEntry } from 'astro:content'
 import SocialIcons from './SocialIcons.astro'
 
-type Props = {
+interface Props {
   author: CollectionEntry<'authors'>
-  linkDisabled?: boolean
 }
-const { author, linkDisabled = false } = Astro.props
-const {
-  name,
-  avatar,
-  bio,
-  pronouns,
-  github,
-  twitter,
-  linkedin,
-  website,
-  mail,
-} = author.data
+
+const { author } = Astro.props
+const { name, avatar, bio, pronouns } = author.data
+const currentPath = Astro.url.pathname
+const isAuthorPage = currentPath === `/authors/${author.id}`
 
 const socialLinks: SocialLink[] = [
-  website && { href: website, label: 'Website' },
-  github && { href: github, label: 'GitHub' },
-  twitter && { href: twitter, label: 'Twitter' },
-  linkedin && { href: linkedin, label: 'LinkedIn' },
-  mail && { href: mail, label: 'Email' },
+  author.data.website && { href: author.data.website, label: 'Website' },
+  author.data.github && { href: author.data.github, label: 'GitHub' },
+  author.data.twitter && { href: author.data.twitter, label: 'Twitter' },
+  author.data.linkedin && { href: author.data.linkedin, label: 'LinkedIn' },
+  author.data.mail && { href: `mailto:${author.data.mail}`, label: 'Email' },
 ].filter(Boolean) as SocialLink[]
 ---
 
 <div
-  class="overflow-hidden rounded-xl border p-4 transition-colors duration-300 ease-in-out has-[a:hover]:bg-secondary/50"
+  class="has-[a:hover]:bg-secondary/50 overflow-hidden border p-4 transition-colors duration-300 ease-in-out"
 >
   <div class="flex flex-wrap gap-4">
     <Link
       href={`/authors/${author.id}`}
-      class={cn('block', linkDisabled && 'pointer-events-none')}
+      class={cn('block', isAuthorPage && 'pointer-events-none')}
     >
       <AvatarComponent
         client:load
@@ -46,23 +38,23 @@ const socialLinks: SocialLink[] = [
         alt={`Avatar of ${name}`}
         fallback={name[0]}
         className={cn(
-          'size-32 rounded-md',
-          !linkDisabled &&
-            'transition-shadow duration-300 hover:cursor-pointer hover:ring-2 hover:ring-primary',
+          'size-32 rounded-none [&>[data-slot="avatar-fallback"]]:rounded-none',
+          !isAuthorPage &&
+            'hover:ring-primary transition-shadow duration-300 hover:cursor-pointer hover:ring-2',
         )}
       />
     </Link>
-    <div class="flex flex-grow flex-col justify-between gap-y-4">
+    <div class="flex grow flex-col justify-between gap-y-4">
       <div>
         <div class="flex flex-wrap items-center gap-x-2">
-          <h3 class="text-lg font-semibold">{name}</h3>
+          <h3 class="text-lg font-medium">{name}</h3>
           {
             pronouns && (
-              <span class="text-sm text-muted-foreground">({pronouns})</span>
+              <span class="text-muted-foreground text-sm">({pronouns})</span>
             )
           }
         </div>
-        <p class="text-sm text-muted-foreground">{bio}</p>
+        <p class="text-muted-foreground text-sm">{bio}</p>
       </div>
       <SocialIcons links={socialLinks} />
     </div>

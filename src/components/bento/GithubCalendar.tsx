@@ -56,7 +56,7 @@ const GithubCalendar: FunctionComponent<Props> = ({ username, ...props }) => {
           height={0}
           className="bento-lg:w-48 h-auto w-24"
         />
-        <p className="bento-lg:w-64 w-48 text-center text-sm text-muted-foreground">
+        <p className="bento-lg:w-64 text-muted-foreground w-48 text-center text-sm">
           This component is down. Please email me!
         </p>
       </div>
@@ -64,37 +64,37 @@ const GithubCalendar: FunctionComponent<Props> = ({ username, ...props }) => {
   }
 
   if (loading || !data) {
-    return <Skeleton className="h-[70%] w-[85%] rounded-3xl" />
+    return <Skeleton className="size-full" />
   }
 
   return (
     <>
-      <div className="m-4 hidden sm:block">
+      <div className="[&_.react-activity-calendar\\_\\_legend-month]:text-foreground/80 hidden w-fit sm:block">
         <Calendar
           data={selectLastNDays(data.contributions, 133)}
           theme={{
-            dark: ['#1A1A1A', '#E9D3B6'],
+            dark: ['#23211e', '#E9D3B6'],
           }}
           colorScheme="dark"
           blockSize={20}
           blockMargin={6}
-          blockRadius={7}
+          blockRadius={0}
           {...props}
           maxLevel={4}
           hideTotalCount
           hideColorLegend
         />
       </div>
-      <div className="m-4 scale-110 sm:hidden">
+      <div className="[&_.react-activity-calendar\\_\\_legend-month]:text-foreground/80 w-fit sm:hidden">
         <Calendar
           data={selectLastNDays(data.contributions, 60)}
           theme={{
-            dark: ['#1A1A1A', '#E9D3B6'],
+            dark: ['#23211e', '#E9D3B6'],
           }}
           colorScheme="dark"
           blockSize={20}
           blockMargin={6}
-          blockRadius={7}
+          blockRadius={0}
           {...props}
           maxLevel={4}
           hideTotalCount

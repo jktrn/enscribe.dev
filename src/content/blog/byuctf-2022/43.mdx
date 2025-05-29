@@ -1,0 +1,94 @@
+---
+title: "43"
+description: 'We were the only team of 435 to solve all 9 OSINT challenges from BYUCTF 2022. This was the process that led us to victory.'
+date: 2022-05-28
+authors: ['enscribe']
+order: 9
+---
+
+import Challenge from '@/components/mdx/Challenge.astro'
+import Callout from '@/components/mdx/Callout.astro'
+
+<div class="invisible h-0! [&+*]:mt-0 [&+*_*]:mt-0">
+## 43
+</div>
+
+<Challenge
+  title="43"
+  solvers={[
+    {
+      name: 'Battlemonger',
+      href: 'https://github.com/Battlemonger',
+      avatar: 'https://github.com/Battlemonger.png',
+    },
+    {
+      name: 'enscribe',
+      href: 'https://github.com/jktrn',
+      avatar: 'https://github.com/jktrn.png',
+    },
+    {
+      name: 'neil-vs',
+      href: 'https://github.com/neil-vs',
+      avatar: 'https://github.com/neil-vs.png',
+    },
+  ]}
+  category="OSINT"
+  points={500}
+  flag="byuctf{micky_dolenz}"
+>
+  It's at your fingertips!! Who made this code? `` S fsu om yjr aogr 3"45` ``  
+  format: `byuctf{blank_blank}`
+</Challenge>
+
+Looks like something the [DCode Cipher Identifier](https://www.dcode.fr/cipher-identifier) could figure out:
+
+```text
+dCode's analyzer suggests to investigate:
+Keyboard Shift Cipher ■■■■■■■■■▪
+Substitution Cipher ▪
+Shift Cipher ▪
+Homophonic Cipher ▫
+ROT Cipher ▫
+```
+
+I threw it into their [Keyboard Shift Cipher](https://www.dcode.fr/
+keyboard-shift-cipher) and got this:
+
+```text
+qwerty → A day in the \ife 2:34
+qwerty ← D gdi p, ukt spht 4A56
+qwerty ↓↻ W va7 ln ume slf4 e:v6
+qwerty ↑4 S fsu om yjr aogr 3_45
+qwerty ↓4 S fsu om yjr aogr 3{45
+```
+
+"A Day in the Life" is a song by the [Beatles](https://www.youtube.com/watch?
+v=usNsCeOV4GM) (a fascinatingly good one too), and I took a look the decoded
+timestamp `2:34` in the music video:
+
+![Screenshot of Beatles music video](assets/43-1.png)
+
+Although I couldn't find who the person in the timestamp was, someone in the
+comments named the individuals at timestamps:
+
+![Screenshot of Beatles music video comments](assets/43-2.png)
+
+![Nesmith](assets/43-3.png)
+
+The guy at 3:31 is the same as the guy at 2:34, so it's Michael Nesmith from the
+Monkees.
+
+Looking up "Monkees 43" on Google, we discover that there's actually an old
+website called [monkeesrule43.com](https://www.monkeesrule43.com/articles.html).
+
+This is where you guess all the names of the Monkees. Not sure of the logical
+thought process yet. Flag is `byuctf{micky_dolenz}`.
+
+<Callout variant="remark" title="Edit (06/02/22)">
+  The intended solve was to look at [monkeesrule43.com](https://www.monkeesrule43.com/articles.html). In their [FAQ page](https://www.monkeesrule43.com/faq.html), Question 13 asks:
+  
+  > 13.) What does the weird writing on Micky's page of the Monkees' 2001 summer tourbook mean?
+  > - Micky's page is written in a computer keyboard code. Each letter written stands for the letter to the left of it on a computer keyboard. For example, &quot;Zovlu&quot; means Micky & &quot;Jo!&quot; means Hi!
+  
+  This intended solution was pretty weird. Whoever wrote this challenge is probably the #1 Beatles fan of all time if they can remember stuff like this.
+</Callout>

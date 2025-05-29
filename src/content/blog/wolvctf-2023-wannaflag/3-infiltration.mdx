@@ -1,0 +1,58 @@
+---
+title: 'WannaFlag III: Infiltration'
+description: 'Hunting down a flag-stealing ransomware group from WolvCTF 2023 with the power of OSINT——from Ethereum breadcrumbs to TF2 workshop maps.'
+date: 2023-03-17
+authors: ['enscribe']
+order: 3
+---
+
+import Challenge from '@/components/mdx/Challenge.astro'
+
+<div class="invisible h-0! [&+*]:mt-0 [&+*_*]:mt-0">
+## WannaFlag III: Infiltration
+</div>
+
+<Challenge
+  title="WannaFlag III: Infiltration"
+  authors={["dree"]}
+  category="OSINT"
+  points={318}
+  solvers={[
+    {
+      name: 'enscribe',
+      href: 'https://github.com/jktrn',
+      avatar: 'https://github.com/jktrn.png',
+    },
+  ]}
+  solves={82}
+  flag="wctf{sp1nnnNn_tH3_cUb333e3E}"
+>
+  We have some solid leads so far. However, we need our flags back. Find a way to locate their communication and infiltrate their private ransom service, and submit the stolen flag we wanted to use for the first OSINT!  
+  From outside intelligence, we know the group sometimes goes by `w4nn4_fl4g`
+</Challenge>
+
+We're now given a keyphrase to work with: `w4nn4_fl4g`. We can search for the specific term on Google by wrapping it in quotes, and our first result is a subreddit, [r/w4nn4_fl4g](https://www.reddit.com/r/w4nn4_fl4g/):
+
+![Reddit](assets/reddit.png)
+
+Looking through the small amount of posts on this locked subreddit, we can find three users in particular which have access to post permissions (alongside one moderator): `u/w4nn4fl4g_admin`, `u/RemarkableDiamond443`, and `u/[deleted]`. None of the posts and memes were particularly interesting or relevant, but one thing stuck out in particular: the deleted user. We can find the username of the user through querying [camas.unddit.com](https://camas.unddit.com/) for a specific comment in `r/w4nn4_fl4g`; let's utilize the comment "sorry" they left under [this post](https://www.reddit.com/r/w4nn4_fl4g/comments/11p6utf/questions/):
+
+![First Query](assets/query1.png)
+
+We found the original username of the deleted user: `u/Chemical_Bread1558`! We can now query for posts the user made under the subreddit:
+
+![Second Query](assets/query2.png)
+
+We've got a hit on a [moderator-deleted post](https://reddit.com/11p5w72). Let's check it out:
+
+![Deleted Post](assets/deleted-post.png)
+
+Well, that doesn't really help. However, we can see the post's original content by using the Unddit tool once again — simply replace the `reddit` in the URL with `unddit` to see deleted comments:
+
+![Unddit](assets/unddit.png)
+
+The secret website provided leads us to this:
+
+![Website](assets/website.png)
+
+We've managed to recover the flag from the first OSINT challenge, but it's actually meant to be submitted as part of the third!

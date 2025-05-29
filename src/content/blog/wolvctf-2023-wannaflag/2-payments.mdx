@@ -1,0 +1,74 @@
+---
+title: 'WannaFlag II: Payments'
+description: 'Hunting down a flag-stealing ransomware group from WolvCTF 2023 with the power of OSINT——from Ethereum breadcrumbs to TF2 workshop maps.'
+date: 2023-03-17
+authors: ['enscribe']
+order: 2
+---
+
+import Challenge from '@/components/mdx/Challenge.astro'
+
+<div class="invisible h-0! [&+*]:mt-0 [&+*_*]:mt-0">
+## WannaFlag II: Payments
+</div>
+
+<Challenge
+  title="WannaFlag II: Payments"
+  authors={["dree"]}
+  category="OSINT"
+  points={348}
+  solvers={[
+    {
+      name: 'Legoclones',
+      href: 'https://github.com/Legoclones',
+      avatar: 'https://github.com/Legoclones.png',
+    },
+    {
+      name: 'sahuang',
+      href: 'https://github.com/sahuang',
+      avatar: 'https://github.com/sahuang.png',
+    },
+  ]}
+  solves={75}
+  flag="wctf{g1v3_m3_b4cK_mY_cRypT0!!11!}"
+>
+  Ok well.........................something may have gone wrong  
+  WannaFlag's ransom demand is insane, there's no way we are paying that. Can you figure out which address the money is being funneled to?  
+  From the ransom note: send 500,000 Goerli to `0x08f5AF98610aE4B93cD0A856682E6319bF1be8a6`
+</Challenge>
+
+Our next step involves figuring out where this ransom money is being funneled to. We can use [Etherscan](https://etherscan.io/)'s [Goerli Testnet Explorer](https://goerli.etherscan.io/) for transactions involving the address `0x08f5AF98610aE4B93cD0A856682E6319bF1be8a6`:
+
+![Goerli](assets/goerli.png)
+
+We can see the transactions this account has made so far, but the only ones that are relevant would be the ones done before the competition started (since those would be part of the challenge creation process). These are the following transactions the account has made within this reasonable scope:
+
+![Goerli 2](assets/goerli2.png)
+
+Looks like there's something that stands out — although there are a lot of <span class="text-xs relative border px-[0.3rem] py-[0.2rem] font-medium break-words bg-green-500/25 border-green-400/50 text-green-600">IN</span> transactions, there's only one <span class="text-xs relative border px-[0.3rem] py-[0.2rem] font-medium break-words bg-yellow-500/25 border-yellow-400/50 text-yellow-600">OUT</span> transaction. This is the transaction that we're looking for, and it's a pretty big one being sent to `0xA01FD0...`. Let's follow the breadcrumb:
+
+![Goerli 3](assets/goerli3.png)
+
+From here, it seems as if the money is being distributed into several different accounts. Upon checking these transactions, though, these addresses actually just loop back the crypto into the original `0x08f5AF...` wallet. Here is an example of one of these "dummy" accounts, `0xc527ad...`; the second transaction on this list sends money back in a seeming "loop":
+
+![Goerli 4](assets/goerli4.png)
+
+However, one outlier amongst these <span class="text-xs relative border px-[0.3rem] py-[0.2rem] font-medium break-words bg-yellow-500/25 border-yellow-400/50 text-yellow-600">OUT</span> transactions exists: the address `0x80710E...`, which funnels these payments into three different accounts:
+
+![Goerli 5](assets/goerli5.png)
+
+Once again, two of these accounts are dummies, and will send money back into `0x08f5AF...`. However, one of these accounts, `0x64E69A...`, will send money to a completely new address, `0x79616B...`, where the trail ends:
+
+![Goerli 6](assets/goerli6.png)
+
+There's a suspicious <span class="text-xs relative border px-[0.3rem] py-[0.2rem] font-medium break-words bg-gray-500/25 border-gray-400/50 text-gray-400">SELF</span> transaction on this address. Hovering over it, we can see that Etherscan believes there is a hidden message in the "Input Data" field:
+
+![Goerli 7](assets/goerli7.png)
+
+If we take a look at the transaction hash and click on the "More Details" button, we find the flag in the "Input Data" section when decoding it into UTF-8:
+
+![Goerli 8](assets/goerli8.png)
+
+If you're lost, I made a visualization of the transactions which took place, highlighting the breadcrumbs which eventually led to the flag:
+
+![Transactions](assets/transactions.png)
