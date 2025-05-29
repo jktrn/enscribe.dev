@@ -4,6 +4,7 @@ import GithubCalendar from '@/components/bento/GithubCalendar.tsx'
 import SpotifyPresence from '@/components/bento/SpotifyPresence.tsx'
 import WakatimeGraph from '@/components/bento/WakatimeGraph.tsx'
 import Link from '@/components/Link.astro'
+import PageHead from '@/components/PageHead.astro'
 import { SOCIAL_LINKS } from '@/consts'
 import Layout from '@/layouts/Layout.astro'
 import { getAllPosts } from '@/lib/data-utils'
@@ -14,6 +15,7 @@ const latestPost = await getAllPosts().then((posts) => posts.at(0))
 ---
 
 <Layout>
+  <PageHead slot="head" title="Home" />
   <div class="relative left-[calc(50%-50vw)] w-screen px-2">
     <section
       class={cn(
