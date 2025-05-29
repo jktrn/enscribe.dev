@@ -14,333 +14,334 @@ import { Icon } from 'astro-icon/components'
 const latestPost = await getAllPosts().then((posts) => posts.at(0))
 ---
 
-<Layout>
+<Layout class="px-2">
   <PageHead slot="head" title="Home" />
-  <div class="relative left-[calc(50%-50vw)] w-screen px-2">
-    <section
+  <section
+    class={cn(
+      'mx-auto grid min-w-xs sm:has-[[data-trigger]:hover]:*:first:[&_[data-overlay]]:opacity-0',
+      'max-w-sm grid-cols-1 [grid-template-areas:"a""b""e""h""i""c""k""d""g""f""j"]',
+      'sm:max-w-2xl sm:grid-cols-2 sm:[grid-template-areas:"a_a""b_d""e_e""j_g""h_i""h_c""k_c""f_f"]',
+      'lg:max-w-5xl lg:grid-cols-3 lg:[grid-template-areas:"a_a_b""d_e_e""h_f_f""h_i_g""k_c_j"]',
+      'xl:max-w-7xl xl:grid-cols-4 xl:[grid-template-areas:"a_a_b_c""d_e_e_c""h_f_f_g""h_i_j_k"]',
+    )}
+  >
+    <div
       class={cn(
-        'mx-auto grid sm:has-[[data-trigger]:hover]:*:first:[&_[data-overlay]]:opacity-0',
-        'max-w-sm [grid-template-areas:"a_a""b_b""e_e""h_i""h_c""k_c""d_d""d_d""g_g""g_g""f_f""j_j""j_j"]',
-        'sm:max-w-3xl sm:grid-cols-2 sm:[grid-template-areas:"a_a""b_d""e_e""j_g""h_i""h_c""k_c""f_f"]',
-        'xl:max-w-7xl xl:grid-cols-4 xl:[grid-template-areas:"a_a_b_c""d_e_e_c""h_f_f_g""h_i_j_k"]',
+        '[grid-area:a] p-2',
+        'aspect-[3/4]',
+        'sm:aspect-[2/1]',
+        'xl:aspect-[2/1]',
       )}
     >
-      <div
-        class={cn(
-          '[grid-area:a] p-2',
-          'aspect-[3/4]',
-          'sm:aspect-[2/1]',
-          'xl:aspect-[2/1]',
-        )}
-      >
-        <div class="bg-muted size-full border">
+      <div class="bg-muted size-full border">
+        <div
+          class="size-full bg-[url('/static/bento/about-background-square.png')] bg-cover bg-center bg-no-repeat sm:bg-[url('/static/bento/about-background.png')]"
+        >
           <div
-            class="size-full bg-[url('/static/bento/about-background-square.png')] bg-cover bg-center bg-no-repeat sm:bg-[url('/static/bento/about-background.png')]"
+            data-overlay
+            class="size-full bg-[url('/static/bento/about-foreground-square.png')] bg-cover bg-center bg-no-repeat transition-opacity duration-200 sm:bg-[url('/static/bento/about-foreground.png')]"
           >
-            <div
-              data-overlay
-              class="size-full bg-[url('/static/bento/about-foreground-square.png')] bg-cover bg-center bg-no-repeat transition-opacity duration-200 sm:bg-[url('/static/bento/about-foreground.png')]"
-            >
-              <div class="flex p-4">
-                <div class="hidden w-1/3 sm:block"></div>
-                <div class="space-y-4 sm:w-2/3">
-                  <p
-                    class="text-foreground/80 bg-background block border p-3 text-sm text-pretty"
-                  >
-                    Hey, I&rsquo;m Jason! I&rsquo;m a design engineer and
-                    cybersecurity enthusiast from Los Angeles.
-                  </p>
-                  <p
-                    class="text-foreground/80 bg-background block border p-3 text-sm text-pretty"
-                  >
-                    Outside of undergraduate studies and research, I contract as
-                    an independent web designer and both organize and compete in <Link
-                      href="https://en.wikipedia.org/wiki/Capture_the_flag_(cybersecurity)"
-                      external
-                      class="text-foreground decoration-muted-foreground hover:decoration-foreground font-medium break-words underline underline-offset-[3px] transition-colors"
-                      >CTF competitions</Link
-                    > with <Link
-                      href="https://sekai.team"
-                      external
-                      class="text-foreground decoration-muted-foreground hover:decoration-foreground font-medium break-words underline underline-offset-[3px] transition-colors"
-                      >Project Sekai CTF</Link
-                    > and the <Link
-                      href="https://ctf.mt"
-                      external
-                      class="text-foreground decoration-muted-foreground hover:decoration-foreground font-medium break-words underline underline-offset-[3px] transition-colors"
-                      >Friendly Maltese Citizens</Link
-                    >.
-                  </p>
-                </div>
+            <div class="flex p-4">
+              <div class="hidden w-1/3 sm:block"></div>
+              <div class="space-y-4 sm:w-2/3">
+                <p
+                  class="text-foreground/80 bg-background block border p-3 text-sm text-pretty"
+                >
+                  Hey, I&rsquo;m Jason! I&rsquo;m a design engineer and
+                  cybersecurity enthusiast from Los Angeles.
+                </p>
+                <p
+                  class="text-foreground/80 bg-background block border p-3 text-sm text-pretty"
+                >
+                  Outside of undergraduate studies and research, I contract as
+                  an independent web designer and both organize and compete in <Link
+                    href="https://en.wikipedia.org/wiki/Capture_the_flag_(cybersecurity)"
+                    external
+                    class="text-foreground decoration-muted-foreground hover:decoration-foreground font-medium break-words underline underline-offset-[3px] transition-colors"
+                    >CTF competitions</Link
+                  > with <Link
+                    href="https://sekai.team"
+                    external
+                    class="text-foreground decoration-muted-foreground hover:decoration-foreground font-medium break-words underline underline-offset-[3px] transition-colors"
+                    >Project Sekai CTF</Link
+                  > and the <Link
+                    href="https://ctf.mt"
+                    external
+                    class="text-foreground decoration-muted-foreground hover:decoration-foreground font-medium break-words underline underline-offset-[3px] transition-colors"
+                    >Friendly Maltese Citizens</Link
+                  >.
+                </p>
               </div>
             </div>
           </div>
         </div>
       </div>
-      <div
-        class={cn(
-          '[grid-area:b] p-2',
-          'aspect-square',
-          'sm:aspect-square',
-          'xl:aspect-square',
-        )}
-      >
-        <div data-trigger class="bg-muted size-full border">
+    </div>
+    <div
+      class={cn(
+        '[grid-area:b] p-2',
+        'aspect-square',
+        // 'sm:aspect-square',
+        // 'xl:aspect-square',
+      )}
+    >
+      <div data-trigger class="bg-muted size-full border">
+        <div
+          class="size-full bg-[url('/static/bento/details-background.png')] bg-cover bg-center bg-no-repeat"
+        >
           <div
-            class="size-full bg-[url('/static/bento/details-background.png')] bg-cover bg-center bg-no-repeat"
+            class="relative size-full bg-[url('/static/bento/details-foreground.png')] bg-cover bg-center bg-no-repeat transition-opacity duration-200 sm:opacity-0 sm:hover:opacity-100"
           >
-            <div
-              class="relative size-full bg-[url('/static/bento/details-foreground.png')] bg-cover bg-center bg-no-repeat transition-opacity duration-200 sm:opacity-0 sm:hover:opacity-100"
+            <p
+              class="text-foreground/80 bg-background absolute top-1/2 left-0 mr-24 ml-4 -translate-y-1/2 border p-3 text-xs text-pretty"
             >
-              <p
-                class="text-foreground/80 bg-background absolute top-1/2 left-0 mr-24 ml-4 -translate-y-1/2 border p-3 text-xs text-pretty"
-              >
-                This blog contains educational resources pertaining to CTFs and
-                cybersecurity. I hope you enjoy reading!
-              </p>
-            </div>
+              This blog contains educational resources pertaining to CTFs and
+              cybersecurity. I hope you enjoy reading!
+            </p>
           </div>
         </div>
       </div>
-      <div
-        class={cn(
-          '[grid-area:c] p-2',
-          'aspect-[1/2]',
-          'sm:aspect-[1/2]',
-          'xl:aspect-[1/2]',
-        )}
-      >
-        <div class="bg-muted size-full border">
-          <div
-            class="size-full bg-[url('/static/bento/image-1.png')] bg-cover bg-center bg-no-repeat"
-          >
-          </div>
+    </div>
+    <div
+      class={cn(
+        '[grid-area:c] p-2',
+        'aspect-square',
+        'sm:aspect-[1/2]',
+        'lg:aspect-square',
+        'xl:aspect-[1/2]',
+      )}
+    >
+      <div class="bg-muted size-full border">
+        <div
+          class="size-full bg-[url('/static/bento/image-1.png')] bg-cover bg-center bg-no-repeat"
+        >
         </div>
       </div>
-      <div
-        class={cn(
-          '[grid-area:d] p-2',
-          'aspect-auto',
-          'sm:aspect-square',
-          'xl:aspect-square',
-        )}
-      >
-        <div class="bg-muted size-full border">
-          <DiscordPresence client:load />
-        </div>
+    </div>
+    <div
+      class={cn(
+        '[grid-area:d] p-2',
+        'aspect-auto',
+        'sm:aspect-square',
+        // 'xl:aspect-square',
+      )}
+    >
+      <div class="bg-muted size-full border">
+        <DiscordPresence client:load />
       </div>
-      <div
-        class={cn(
-          '[grid-area:e] p-2',
-          'aspect-[6/5]',
-          'sm:aspect-[2/1]',
-          'xl:aspect-[2/1]',
-        )}
-      >
-        <div data-trigger class="bg-muted size-full border">
+    </div>
+    <div
+      class={cn(
+        '[grid-area:e] p-2',
+        'aspect-[6/5]',
+        'sm:aspect-[2/1]',
+        // 'xl:aspect-[2/1]',
+      )}
+    >
+      <div data-trigger class="bg-muted size-full border">
+        <div
+          class="group/blog relative size-full bg-[url('/static/bento/blog-background-square.png')] bg-cover bg-center bg-no-repeat sm:bg-[url('/static/bento/blog-background.png')]"
+        >
           <div
-            class="group/blog relative size-full bg-[url('/static/bento/blog-background-square.png')] bg-cover bg-center bg-no-repeat sm:bg-[url('/static/bento/blog-background.png')]"
+            class="absolute size-full bg-[url('/static/bento/blog-foreground-square.png')] bg-cover bg-center bg-no-repeat transition-opacity duration-200 sm:bg-[url('/static/bento/blog-foreground.png')] sm:opacity-0 sm:group-hover/blog:opacity-100"
           >
-            <div
-              class="absolute size-full bg-[url('/static/bento/blog-foreground-square.png')] bg-cover bg-center bg-no-repeat transition-opacity duration-200 sm:bg-[url('/static/bento/blog-foreground.png')] sm:opacity-0 sm:group-hover/blog:opacity-100"
+            <p
+              class="text-foreground/80 bg-background absolute bottom-4 left-16 border p-2 text-xs text-pretty sm:top-[42.5%] sm:right-4 sm:bottom-[inherit] sm:left-[inherit] sm:-translate-y-1/2"
             >
-              <p
-                class="text-foreground/80 bg-background absolute bottom-4 left-16 border p-2 text-xs text-pretty sm:top-[42.5%] sm:right-4 sm:bottom-[inherit] sm:left-[inherit] sm:-translate-y-1/2"
-              >
-                Read my latest<br /> blog post!
-              </p>
-            </div>
-            <div class="p-3 sm:size-full sm:p-6">
-              {
-                latestPost && (
-                  <Link href={`/blog/${latestPost.id}`} class="flex h-full">
-                    <img
-                      src={latestPost.data.image?.src ?? '#'}
-                      alt={`Featured image for the latest post: ${latestPost.data.title}`}
-                      class="h-full border"
-                    />
-                  </Link>
-                )
-              }
-            </div>
+              Read my latest<br /> blog post!
+            </p>
+          </div>
+          <div class="p-3 sm:size-full sm:p-6">
             {
               latestPost && (
-                <Link
-                  href={`/blog/${latestPost.id}`}
-                  title={`Read latest blog post: ${latestPost.data.title}`}
-                  aria-label={`Read latest blog post: ${latestPost.data.title}`}
-                  class="bg-border/50 text-primary ring-ring group/blog-link absolute end-0 bottom-0 m-3 rounded-full p-3 transition-[box-shadow] duration-300 hover:ring-2 focus-visible:ring-2"
-                >
-                  <Icon
-                    name="lucide:move-up-right"
-                    class="transition-transform duration-300 group-hover/blog-link:rotate-12"
-                    size={16}
+                <Link href={`/blog/${latestPost.id}`} class="flex h-full">
+                  <img
+                    src={latestPost.data.image?.src ?? '#'}
+                    alt={`Featured image for the latest post: ${latestPost.data.title}`}
+                    class="h-full border"
                   />
                 </Link>
               )
             }
           </div>
-        </div>
-      </div>
-      <div
-        class={cn(
-          '[grid-area:f] p-2',
-          'aspect-square',
-          'sm:aspect-[2/1]',
-          'xl:aspect-[2/1]',
-        )}
-      >
-        <div data-trigger class="bg-muted size-full border">
-          <div
-            class="relative size-full bg-[url('/static/bento/calendar-background.png')] bg-cover bg-left bg-no-repeat"
-          >
-            <div
-              class="absolute size-full bg-[url('/static/bento/calendar-foreground.png')] bg-cover bg-left bg-no-repeat transition-opacity duration-200 sm:opacity-0 sm:hover:opacity-100"
-            >
-              <p
-                class="text-foreground/80 bg-background absolute top-[37.5%] left-4 -translate-y-1/2 border p-2 text-xs text-pretty"
+          {
+            latestPost && (
+              <Link
+                href={`/blog/${latestPost.id}`}
+                title={`Read latest blog post: ${latestPost.data.title}`}
+                aria-label={`Read latest blog post: ${latestPost.data.title}`}
+                class="bg-border/50 text-primary ring-ring group/blog-link absolute end-0 bottom-0 m-3 rounded-full p-3 transition-[box-shadow] duration-300 hover:ring-2 focus-visible:ring-2"
               >
-                Check out my<br /> GitHub calendar!
-              </p>
-            </div>
-            <div class="flex size-full items-center justify-center p-8">
-              <GithubCalendar username="jktrn" client:load />
-            </div>
-          </div>
+                <Icon
+                  name="lucide:move-up-right"
+                  class="transition-transform duration-300 group-hover/blog-link:rotate-12"
+                  size={16}
+                />
+              </Link>
+            )
+          }
         </div>
       </div>
-      <div
-        class={cn(
-          '[grid-area:g] p-2',
-          'aspect-square',
-          'sm:aspect-square',
-          'xl:aspect-square',
-        )}
-      >
-        <div data-trigger class="bg-muted size-full border">
+    </div>
+    <div
+      class={cn(
+        '[grid-area:f] p-2',
+        'aspect-square',
+        'sm:aspect-[2/1]',
+        // 'xl:aspect-[2/1]',
+      )}
+    >
+      <div data-trigger class="bg-muted size-full border">
+        <div
+          class="relative size-full bg-[url('/static/bento/calendar-background.png')] bg-cover bg-left bg-no-repeat"
+        >
           <div
-            class="group/spotify relative size-full bg-[url('/static/bento/spotify-background.png')] bg-cover bg-center bg-no-repeat"
+            class="absolute size-full bg-[url('/static/bento/calendar-foreground.png')] bg-cover bg-left bg-no-repeat transition-opacity duration-200 sm:opacity-0 sm:hover:opacity-100"
           >
-            <div
-              class="absolute size-full bg-[url('/static/bento/spotify-foreground.png')] bg-cover bg-center bg-no-repeat transition-opacity duration-200 sm:opacity-0 sm:group-hover/spotify:opacity-100"
+            <p
+              class="text-foreground/80 bg-background absolute top-[37.5%] left-4 -translate-y-1/2 border p-2 text-xs text-pretty"
             >
-            </div>
-            <div class="flex size-full items-center justify-center">
-              <SpotifyPresence client:load />
-            </div>
+              Check out my<br /> GitHub calendar!
+            </p>
+          </div>
+          <div class="flex size-full items-center justify-center p-8">
+            <GithubCalendar username="jktrn" client:load />
           </div>
         </div>
       </div>
-      <div
-        class={cn(
-          '[grid-area:h] p-2',
-          'aspect-[1/2]',
-          'sm:aspect-[1/2]',
-          'xl:aspect-[1/2]',
-        )}
-      >
-        <div class="bg-muted size-full border">
+    </div>
+    <div
+      class={cn(
+        '[grid-area:g] p-2',
+        'aspect-square',
+        // 'sm:aspect-square',
+        // 'xl:aspect-square',
+      )}
+    >
+      <div data-trigger class="bg-muted size-full border">
+        <div
+          class="group/spotify relative size-full bg-[url('/static/bento/spotify-background.png')] bg-cover bg-center bg-no-repeat"
+        >
           <div
-            class="size-full bg-[url('/static/bento/image-2.png')] bg-cover bg-center bg-no-repeat"
+            class="absolute size-full bg-[url('/static/bento/spotify-foreground.png')] bg-cover bg-center bg-no-repeat transition-opacity duration-200 sm:opacity-0 sm:group-hover/spotify:opacity-100"
           >
+          </div>
+          <div class="flex size-full items-center justify-center">
+            <SpotifyPresence client:load />
           </div>
         </div>
       </div>
-      <div
-        class={cn(
-          '[grid-area:i] p-2',
-          'aspect-square',
-          'sm:aspect-square',
-          'xl:aspect-square',
-        )}
-      >
-        <div class="bg-muted size-full border">
+    </div>
+    <div
+      class={cn(
+        '[grid-area:h] p-2',
+        'aspect-square',
+        'sm:aspect-[1/2]',
+        // 'lg:aspect-[1/2]',
+        // 'xl:aspect-[1/2]',
+      )}
+    >
+      <div class="bg-muted size-full border">
+        <div
+          class="size-full bg-[url('/static/bento/image-2.png')] bg-cover bg-center bg-no-repeat"
+        >
+        </div>
+      </div>
+    </div>
+    <div
+      class={cn(
+        '[grid-area:i] p-2',
+        'aspect-square',
+        // 'sm:aspect-square',
+        // 'xl:aspect-square',
+      )}
+    >
+      <div class="bg-muted size-full border">
+        <div
+          class="group/github relative flex size-full items-center justify-center bg-[url('/static/bento/github-background.png')] bg-cover bg-center bg-no-repeat"
+        >
           <div
-            class="group/github relative flex size-full items-center justify-center bg-[url('/static/bento/github-background.png')] bg-cover bg-center bg-no-repeat"
+            class="size-full bg-[url('/static/bento/github-foreground.png')] bg-cover bg-center bg-no-repeat transition-opacity duration-200 sm:opacity-0 sm:group-hover/github:opacity-100"
+            aria-hidden="true"
           >
-            <div
-              class="size-full bg-[url('/static/bento/github-foreground.png')] bg-cover bg-center bg-no-repeat transition-opacity duration-200 sm:opacity-0 sm:group-hover/github:opacity-100"
-              aria-hidden="true"
-            >
-            </div>
+          </div>
+          <Icon
+            name="mdi:github"
+            class="text-primary absolute size-1/2 sm:size-24"
+            aria-hidden="true"
+          />
+          <Link
+            href={SOCIAL_LINKS.find((link) => link.label === 'GitHub')
+              ?.href || '#'}
+            title="Visit my GitHub profile"
+            aria-label="Visit my GitHub profile"
+            external
+            class="bg-border/50 text-primary ring-ring group/github-link absolute end-0 bottom-0 m-3 rounded-full p-3 transition-[box-shadow] duration-300 hover:ring-2 focus-visible:ring-2"
+          >
             <Icon
-              name="mdi:github"
-              class="text-primary absolute size-1/2 sm:size-24"
-              aria-hidden="true"
+              name="lucide:move-up-right"
+              class="transition-transform duration-300 group-hover/github-link:rotate-12"
+              size={16}
             />
-            <Link
-              href={SOCIAL_LINKS.find((link) => link.label === 'GitHub')
-                ?.href || '#'}
-              title="Visit my GitHub profile"
-              aria-label="Visit my GitHub profile"
-              external
-              class="bg-border/50 text-primary ring-ring group/github-link absolute end-0 bottom-0 m-3 rounded-full p-3 transition-[box-shadow] duration-300 hover:ring-2 focus-visible:ring-2"
-            >
-              <Icon
-                name="lucide:move-up-right"
-                class="transition-transform duration-300 group-hover/github-link:rotate-12"
-                size={16}
-              />
-            </Link>
-          </div>
+          </Link>
         </div>
       </div>
-      <div
-        class={cn(
-          '[grid-area:j] p-2',
-          'aspect-square',
-          'sm:aspect-square',
-          'xl:aspect-square',
-        )}
-      >
-        <div class="bg-muted size-full border">
-          <WakatimeGraph omitLanguages={['Markdown', 'JSON']} client:load />
-        </div>
+    </div>
+    <div
+      class={cn(
+        '[grid-area:j] p-2',
+        'aspect-square',
+        // 'sm:aspect-square',
+        // 'xl:aspect-square',
+      )}
+    >
+      <div class="bg-muted size-full border">
+        <WakatimeGraph omitLanguages={['Markdown', 'JSON']} client:load />
       </div>
-      <div
-        class={cn(
-          '[grid-area:k] p-2',
-          'aspect-square',
-          'sm:aspect-square',
-          'xl:aspect-square',
-        )}
-      >
-        <div data-trigger class="bg-muted size-full border">
+    </div>
+    <div
+      class={cn(
+        '[grid-area:k] p-2',
+        'aspect-square',
+        // 'sm:aspect-square',
+        // 'xl:aspect-square',
+      )}
+    >
+      <div data-trigger class="bg-muted size-full border">
+        <div
+          class="group/twitter relative flex size-full items-center justify-center bg-[url('/static/bento/twitter-background.png')] bg-cover bg-center bg-no-repeat"
+        >
           <div
-            class="group/twitter relative flex size-full items-center justify-center bg-[url('/static/bento/twitter-background.png')] bg-cover bg-center bg-no-repeat"
+            class="size-full bg-[url('/static/bento/twitter-foreground.png')] bg-cover bg-center bg-no-repeat transition-opacity duration-200 sm:opacity-0 sm:group-hover/twitter:opacity-100"
+            aria-hidden="true"
           >
-            <div
-              class="size-full bg-[url('/static/bento/twitter-foreground.png')] bg-cover bg-center bg-no-repeat transition-opacity duration-200 sm:opacity-0 sm:group-hover/twitter:opacity-100"
-              aria-hidden="true"
+            <p
+              class="text-foreground/80 bg-background absolute bottom-4 left-4 hidden border p-2 text-xs text-pretty sm:block"
             >
-              <p
-                class="text-foreground/80 bg-background absolute bottom-4 left-4 hidden border p-2 text-xs text-pretty sm:block"
-              >
-                TypeScript is<br />much better!
-              </p>
-            </div>
-            <Icon
-              name="mdi:twitter"
-              class="text-primary absolute size-1/2 sm:size-24"
-              aria-hidden="true"
-            />
-            <Link
-              href={SOCIAL_LINKS.find((link) => link.label === 'Twitter')
-                ?.href || '#'}
-              title="Visit my Twitter profile"
-              aria-label="Visit my Twitter profile"
-              external
-              class="bg-border/50 text-primary ring-ring group/twitter-link absolute end-0 bottom-0 m-3 rounded-full p-3 transition-[box-shadow] duration-300 hover:ring-2 focus-visible:ring-2"
-            >
-              <Icon
-                name="lucide:move-up-right"
-                class="transition-transform duration-300 group-hover/twitter-link:rotate-12"
-                size={16}
-              />
-            </Link>
+              TypeScript is<br />much better!
+            </p>
           </div>
+          <Icon
+            name="mdi:twitter"
+            class="text-primary absolute size-1/2 sm:size-24"
+            aria-hidden="true"
+          />
+          <Link
+            href={SOCIAL_LINKS.find((link) => link.label === 'Twitter')
+              ?.href || '#'}
+            title="Visit my Twitter profile"
+            aria-label="Visit my Twitter profile"
+            external
+            class="bg-border/50 text-primary ring-ring group/twitter-link absolute end-0 bottom-0 m-3 rounded-full p-3 transition-[box-shadow] duration-300 hover:ring-2 focus-visible:ring-2"
+          >
+            <Icon
+              name="lucide:move-up-right"
+              class="transition-transform duration-300 group-hover/twitter-link:rotate-12"
+              size={16}
+            />
+          </Link>
         </div>
       </div>
-    </section>
-  </div>
+    </div>
+  </section>
 </Layout>
