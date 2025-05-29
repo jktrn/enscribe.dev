@@ -5,13 +5,13 @@
     @apply text-foreground text-sm leading-6 [&>link[rel="stylesheet"]+*]:mt-0! [&>link[rel="stylesheet"]+*>*]:mt-0!;
 
     :where(p):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
-      @apply text-foreground/80 my-5 text-pretty not-first:mt-5;
+      @apply text-foreground/80 my-5 text-pretty wrap-break-word not-first:mt-5;
     }
 
     :where(h1, h2, h3, h4, h5, h6):not(
         :where([class~='not-prose'], [class~='not-prose'] *)
       ) {
-      @apply text-foreground scroll-mt-32 font-medium text-balance xl:scroll-mt-20;
+      @apply text-foreground scroll-mt-32 font-medium text-balance wrap-break-word xl:scroll-mt-20;
     }
 
     /* Don't use an <h1> in your posts, one is already generated in blog/[...id].astro */
