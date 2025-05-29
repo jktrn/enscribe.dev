@@ -155,13 +155,11 @@ const DiscordLayout = memo<{
       to add me!
     </p>
     <div className="grid size-full grid-rows-4">
-      <div className="bg-border/50" />
+      <div className="bg-border/25 bg-[url('/static/bento/discord-banner.png')] bg-cover bg-center bg-no-repeat" />
       <div className="bg-muted row-span-3 flex flex-col gap-3 p-3">
         <AvatarSection statusIndicator={statusIndicator} />
         <UserInfo />
-        <div className="bg-border/50 flex-1 p-3">
-          {activityContent}
-        </div>
+        <div className="bg-border/50 flex-1 p-3">{activityContent}</div>
       </div>
     </div>
     <DiscordIcon />
