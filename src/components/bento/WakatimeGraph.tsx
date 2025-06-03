@@ -170,9 +170,6 @@ const WakatimeGraph = ({ omitLanguages = [] }: Props) => {
     )
   }
 
-  const maxHours = Math.max(...languages.map((lang) => lang.hours))
-  const rightMargin = Math.max(40, String(Math.round(maxHours)).length * 8 + 15)
-
   return (
     <ChartContainer config={chartConfig} className="size-full p-4">
       <BarChart
@@ -181,9 +178,9 @@ const WakatimeGraph = ({ omitLanguages = [] }: Props) => {
         layout="vertical"
         margin={{
           left: 0,
-          right: rightMargin,
-          top: 5,
-          bottom: 5,
+          right: 0,
+          top: 4,
+          bottom: 4,
         }}
         width={undefined}
         height={undefined}

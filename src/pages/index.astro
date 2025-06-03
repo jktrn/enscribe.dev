@@ -25,14 +25,7 @@ const latestPost = await getAllPosts().then((posts) => posts.at(0))
       'xl:max-w-7xl xl:grid-cols-4 xl:[grid-template-areas:"a_a_b_c""d_e_e_c""h_f_f_g""h_i_j_k"]',
     )}
   >
-    <div
-      class={cn(
-        '[grid-area:a] p-2',
-        'aspect-[3/4]',
-        'sm:aspect-[2/1]',
-        'xl:aspect-[2/1]',
-      )}
-    >
+    <div class="[grid-area:a] p-2 aspect-[3/4] sm:aspect-[2/1] xl:aspect-[2/1]">
       <div class="bg-muted size-full border">
         <div
           class="size-full bg-[url('/static/bento/about-background-square.png')] bg-cover bg-center bg-no-repeat sm:bg-[url('/static/bento/about-background.png')]"
@@ -77,14 +70,7 @@ const latestPost = await getAllPosts().then((posts) => posts.at(0))
         </div>
       </div>
     </div>
-    <div
-      class={cn(
-        '[grid-area:b] p-2',
-        'aspect-square',
-        // 'sm:aspect-square',
-        // 'xl:aspect-square',
-      )}
-    >
+    <div class="aspect-square p-2 [grid-area:b]">
       <div data-trigger class="bg-muted size-full border">
         <div
           class="size-full bg-[url('/static/bento/details-background.png')] bg-cover bg-center bg-no-repeat"
@@ -102,15 +88,7 @@ const latestPost = await getAllPosts().then((posts) => posts.at(0))
         </div>
       </div>
     </div>
-    <div
-      class={cn(
-        '[grid-area:c] p-2',
-        'aspect-square',
-        'sm:aspect-[1/2]',
-        'lg:aspect-square',
-        'xl:aspect-[1/2]',
-      )}
-    >
+    <div class="aspect-square p-2 [grid-area:c] sm:aspect-[1/2] lg:aspect-square xl:aspect-[1/2]">
       <div class="bg-muted size-full border">
         <div
           class="size-full bg-[url('/static/bento/image-1.png')] bg-cover bg-center bg-no-repeat"
@@ -118,26 +96,12 @@ const latestPost = await getAllPosts().then((posts) => posts.at(0))
         </div>
       </div>
     </div>
-    <div
-      class={cn(
-        '[grid-area:d] p-2',
-        'aspect-auto',
-        'sm:aspect-square',
-        // 'xl:aspect-square',
-      )}
-    >
+    <div class="aspect-auto p-2 [grid-area:d] sm:aspect-square">
       <div class="bg-muted size-full border">
         <DiscordPresence client:load />
       </div>
     </div>
-    <div
-      class={cn(
-        '[grid-area:e] p-2',
-        'aspect-[6/5]',
-        'sm:aspect-[2/1]',
-        // 'xl:aspect-[2/1]',
-      )}
-    >
+    <div class="aspect-[6/5] p-2 [grid-area:e] sm:aspect-[2/1]">
       <div data-trigger class="bg-muted size-full border">
         <div
           class="group/blog relative size-full bg-[url('/static/bento/blog-background-square.png')] bg-cover bg-center bg-no-repeat sm:bg-[url('/static/bento/blog-background.png')]"
@@ -183,17 +147,10 @@ const latestPost = await getAllPosts().then((posts) => posts.at(0))
         </div>
       </div>
     </div>
-    <div
-      class={cn(
-        '[grid-area:f] p-2',
-        'aspect-square',
-        'sm:aspect-[2/1]',
-        // 'xl:aspect-[2/1]',
-      )}
-    >
-      <div data-trigger class="bg-muted size-full border">
+    <div class="aspect-square p-2 [grid-area:f] sm:aspect-[2/1]">
+      <div data-trigger class="bg-muted relative size-full border">
         <div
-          class="relative size-full bg-[url('/static/bento/calendar-background.png')] bg-cover bg-left bg-no-repeat"
+          class="absolute size-full bg-[url('/static/bento/calendar-background.png')] bg-cover bg-left bg-no-repeat"
         >
           <div
             class="absolute size-full bg-[url('/static/bento/calendar-foreground.png')] bg-cover bg-left bg-no-repeat transition-opacity duration-200 sm:opacity-0 sm:hover:opacity-100"
@@ -204,20 +161,13 @@ const latestPost = await getAllPosts().then((posts) => posts.at(0))
               Check out my<br /> GitHub calendar!
             </p>
           </div>
-          <div class="flex size-full items-center justify-center p-8">
-            <GithubCalendar username="jktrn" client:load />
-          </div>
+        </div>
+        <div class="flex size-full items-center justify-center p-8">
+          <GithubCalendar username="jktrn" client:load />
         </div>
       </div>
     </div>
-    <div
-      class={cn(
-        '[grid-area:g] p-2',
-        'aspect-square',
-        // 'sm:aspect-square',
-        // 'xl:aspect-square',
-      )}
-    >
+    <div class="aspect-square p-2 [grid-area:g]">
       <div data-trigger class="bg-muted size-full border">
         <div
           class="group/spotify relative size-full bg-[url('/static/bento/spotify-background.png')] bg-cover bg-center bg-no-repeat"
@@ -232,15 +182,7 @@ const latestPost = await getAllPosts().then((posts) => posts.at(0))
         </div>
       </div>
     </div>
-    <div
-      class={cn(
-        '[grid-area:h] p-2',
-        'aspect-square',
-        'sm:aspect-[1/2]',
-        // 'lg:aspect-[1/2]',
-        // 'xl:aspect-[1/2]',
-      )}
-    >
+    <div class="aspect-square p-2 [grid-area:h] sm:aspect-[1/2]">
       <div class="bg-muted size-full border">
         <div
           class="size-full bg-[url('/static/bento/image-2.png')] bg-cover bg-center bg-no-repeat"
@@ -248,14 +190,7 @@ const latestPost = await getAllPosts().then((posts) => posts.at(0))
         </div>
       </div>
     </div>
-    <div
-      class={cn(
-        '[grid-area:i] p-2',
-        'aspect-square',
-        // 'sm:aspect-square',
-        // 'xl:aspect-square',
-      )}
-    >
+    <div class="aspect-square p-2 [grid-area:i]">
       <div class="bg-muted size-full border">
         <div
           class="group/github relative flex size-full items-center justify-center bg-[url('/static/bento/github-background.png')] bg-cover bg-center bg-no-repeat"
@@ -271,8 +206,8 @@ const latestPost = await getAllPosts().then((posts) => posts.at(0))
             aria-hidden="true"
           />
           <Link
-            href={SOCIAL_LINKS.find((link) => link.label === 'GitHub')
-              ?.href || '#'}
+            href={SOCIAL_LINKS.find((link) => link.label === 'GitHub')?.href ||
+              '#'}
             title="Visit my GitHub profile"
             aria-label="Visit my GitHub profile"
             external
@@ -287,26 +222,12 @@ const latestPost = await getAllPosts().then((posts) => posts.at(0))
         </div>
       </div>
     </div>
-    <div
-      class={cn(
-        '[grid-area:j] p-2',
-        'aspect-square',
-        // 'sm:aspect-square',
-        // 'xl:aspect-square',
-      )}
-    >
+    <div class="aspect-square p-2 [grid-area:j]">
       <div class="bg-muted size-full border">
         <WakatimeGraph omitLanguages={['Markdown', 'JSON']} client:load />
       </div>
     </div>
-    <div
-      class={cn(
-        '[grid-area:k] p-2',
-        'aspect-square',
-        // 'sm:aspect-square',
-        // 'xl:aspect-square',
-      )}
-    >
+    <div class="aspect-square p-2 [grid-area:k]">
       <div data-trigger class="bg-muted size-full border">
         <div
           class="group/twitter relative flex size-full items-center justify-center bg-[url('/static/bento/twitter-background.png')] bg-cover bg-center bg-no-repeat"
@@ -327,8 +248,8 @@ const latestPost = await getAllPosts().then((posts) => posts.at(0))
             aria-hidden="true"
           />
           <Link
-            href={SOCIAL_LINKS.find((link) => link.label === 'Twitter')
-              ?.href || '#'}
+            href={SOCIAL_LINKS.find((link) => link.label === 'Twitter')?.href ||
+              '#'}
             title="Visit my Twitter profile"
             aria-label="Visit my Twitter profile"
             external

@@ -211,17 +211,17 @@ const ActivityDisplay = memo<{
       </div>
       <div className="flex flex-1 flex-col gap-y-1 py-1">
         {displayActivity.name && (
-          <div className="mb-0.5 truncate text-xs leading-none">
+          <div className="mb-0.5 line-clamp-1 text-xs leading-none">
             {displayActivity.name}
           </div>
         )}
         {displayActivity.details && (
-          <div className="text-muted-foreground truncate text-[11px] leading-none">
+          <div className="text-muted-foreground line-clamp-2 text-[11px] leading-none">
             {displayActivity.details}
           </div>
         )}
         {displayActivity.state && (
-          <div className="text-muted-foreground truncate text-[11px] leading-none">
+          <div className="text-muted-foreground line-clamp-1 text-[11px] leading-none">
             {displayActivity.state}
           </div>
         )}
