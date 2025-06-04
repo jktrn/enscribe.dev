@@ -19,15 +19,15 @@
 
 This is a list of the various technologies used to build this website:
 
-| Category            | Technology Name                                                                                    |
-| ------------------- | -------------------------------------------------------------------------------------------------- |
-| Framework           | [Astro](https://astro.build/)                                                                      |
-| Styling             | [Tailwind](https://tailwindcss.com)                                                                |
-| Components          | [shadcn/ui](https://ui.shadcn.com/)                                                                |
-| Content             | [MDX](https://mdxjs.com/)                                                                          |
-| Syntax Highlighting | [Shiki](https://github.com/shikijs/shiki) + [rehype-pretty-code](https://rehype-pretty.pages.dev/) |
-| Graphics            | [Figma](https://www.figma.com/)                                                                    |
-| Deployment          | [Vercel](https://vercel.com)                                                                       |
+| Category   | Technology Name                                                                            |
+| ---------- | ------------------------------------------------------------------------------------------ |
+| Framework  | [Astro](https://astro.build/)                                                              |
+| Styling    | [Tailwind](https://tailwindcss.com)                                                        |
+| Components | [shadcn/ui](https://ui.shadcn.com/)                                                        |
+| Content    | [MDX](https://mdxjs.com/)                                                                  |
+| Codeblocks | [Expressive Code](https://expressive-code.com/), [Shiki](https://github.com/shikijs/shiki) |
+| Graphics   | [Figma](https://www.figma.com/)                                                            |
+| Deployment | [Vercel](https://vercel.com)                                                               |
 
 > [!NOTE]
 > This site was previously built using [Next.js](https://nextjs.org) via the [timlrx/tailwind-nextjs-starter-blog](https://github.com/timlrx/tailwind-nextjs-starter-blog). If you wish to reference the codebase or utilize its components at that point (previously licensed via [Apache 2.0](https://github.com/jktrn/enscribe.dev/blob/ddda783b21d5d49783f4d98e9b06676af8f95031/LICENSE)), utilize the [v2.3.0](https://github.com/jktrn/enscribe.dev/releases/tag/v2.3.0) release or browse the tree at [`ddda783`](https://github.com/jktrn/enscribe.dev/tree/ddda783b21d5d49783f4d98e9b06676af8f95031).
@@ -35,6 +35,9 @@ This is a list of the various technologies used to build this website:
 ---
 
 ## Licensing
+
+> [!IMPORTANT]
+> TL;DR: This codebase requires my explicit permission to directly use, and you should contact me if you are in doubt; of course, you are free to use it for reference/inspiration. If you are looking to use the blogging structure, please use my [astro-erudite](https://github.com/jktrn/astro-erudite) template instead, which is MIT-licensed.
 
 This project uses a multi-tiered licensing approach to differentiate between various components:
 

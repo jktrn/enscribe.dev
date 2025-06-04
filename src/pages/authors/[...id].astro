@@ -23,6 +23,7 @@ const authorPosts = await getPostsByAuthor(author.id)
     slot="head"
     title={`${author.data.name} (Author)`}
     description={author.data.bio || `Profile of ${author.data.name}.`}
+    noindex
   />
   <Breadcrumbs
     items={[

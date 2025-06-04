@@ -45,18 +45,18 @@ const categories = Array.isArray(category)
 <div class="mx-auto flex flex-col gap-y-4 border p-4">
   {
     title && (
-      <div class="not-prose text-foreground text-xl font-medium">{title}</div>
+      <h3 class="not-prose text-foreground text-xl font-medium">{title}</h3>
     )
   }
-  <div class="not-prose flex flex-col divide-y">
+  <dl class="not-prose flex flex-col divide-y">
     {
       solvers.length > 0 && (
-        <div class="flex items-center gap-x-4 py-2 first:pt-0 last:pb-0">
-          <div class="text-muted-foreground flex flex-1 items-center gap-x-2 text-xs font-medium">
+        <div class="flex flex-wrap items-center gap-x-4 py-2 first:pt-0 last:pb-0">
+          <dt class="text-muted-foreground flex flex-1 items-center gap-x-2 text-xs font-medium">
             <Icon name="lucide:users" class="size-4" />
             {solvers.length > 1 ? 'Solvers' : 'Solver'}
-          </div>
-          <div class="flex flex-1 flex-wrap gap-y-2">
+          </dt>
+          <dd class="flex flex-1 flex-wrap gap-y-2">
             {solvers.map((solver, index) => (
               <div class="flex items-center">
                 {solver.href ? (
@@ -91,66 +91,66 @@ const categories = Array.isArray(category)
                 )}
               </div>
             ))}
-          </div>
+          </dd>
         </div>
       )
     }
     {
       authors.length > 0 && (
-        <div class="flex items-center gap-x-4 py-2">
-          <div class="text-muted-foreground flex flex-1 items-center gap-x-2 text-xs font-medium">
+        <div class="flex flex-wrap items-center gap-x-4 py-2">
+          <dt class="text-muted-foreground flex flex-1 items-center gap-x-2 text-xs font-medium">
             <Icon name="lucide:pen-tool" class="size-4" />
             {authors.length > 1 ? 'Authors' : 'Author'}
-          </div>
-          <div class="flex-1 text-xs">{authors.join(', ')}</div>
+          </dt>
+          <dd class="flex-1 text-xs">{authors.join(', ')}</dd>
         </div>
       )
     }
     {
       categories.length > 0 && (
-        <div class="flex items-center gap-x-4 py-2">
-          <div class="text-muted-foreground flex flex-1 items-center gap-x-2 text-xs font-medium">
+        <div class="flex flex-wrap items-center gap-x-4 py-2">
+          <dt class="text-muted-foreground flex flex-1 items-center gap-x-2 text-xs font-medium">
             <Icon name="lucide:tag" class="size-4" />
             {categories.length > 1 ? 'Categories' : 'Category'}
-          </div>
-          <div class="flex flex-1 flex-wrap gap-2">
+          </dt>
+          <dd class="flex flex-1 flex-wrap gap-2">
             {categories.map((cat) => (
               <Badge text={cat} />
             ))}
-          </div>
+          </dd>
         </div>
       )
     }
     {
       points !== undefined && (
-        <div class="flex items-center gap-x-4 py-2">
-          <div class="text-muted-foreground flex flex-1 items-center gap-x-2 text-xs font-medium">
+        <div class="flex flex-wrap items-center gap-x-4 py-2">
+          <dt class="text-muted-foreground flex flex-1 items-center gap-x-2 text-xs font-medium">
             <Icon name="lucide:star" class="size-4" />
             Points
-          </div>
-          <div class="flex-1 text-xs">{points}</div>
+          </dt>
+          <dd class="flex-1 text-xs">{points}</dd>
         </div>
       )
     }
     {
       solves !== undefined && (
-        <div class="flex items-center gap-x-4 py-2">
-          <div class="text-muted-foreground flex flex-1 items-center gap-x-2 text-xs font-medium">
+        <div class="flex flex-wrap items-center gap-x-4 py-2">
+          <dt class="text-muted-foreground flex flex-1 items-center gap-x-2 text-xs font-medium">
             <Icon name="lucide:check-circle" class="size-4" />
             Solves
-          </div>
-          <div class="flex-1 text-xs">{solves}</div>
+          </dt>
+          <dd class="flex-1 text-xs">{solves}</dd>
         </div>
       )
     }
     {
       files.length > 0 && (
-        <div class="flex items-center gap-x-4 py-2">
-          <div class="text-muted-foreground flex flex-1 items-center gap-x-2 text-xs font-medium">
+        <div class="flex flex-wrap items-center gap-x-4 py-2">
+          <dt class="text-muted-foreground flex flex-1 items-center gap-x-2 text-xs font-medium">
             <Icon name="lucide:file-text" class="size-4" />
             Files
-          </div>
-          <div class="flex flex-1 flex-wrap gap-2">
+          </dt>
+          <dd class="flex flex-1 flex-wrap gap-2">
             {files.map((file) => (
               <BadgeComponent
                 variant="secondary"
@@ -160,42 +160,42 @@ const categories = Array.isArray(category)
                 {file}
               </BadgeComponent>
             ))}
-          </div>
+          </dd>
         </div>
       )
     }
     {
       remote && (
-        <div class="flex items-center gap-x-4 py-2">
-          <div class="text-muted-foreground flex flex-1 items-center gap-x-2 text-xs font-medium">
+        <div class="flex flex-wrap items-center gap-x-4 py-2">
+          <dt class="text-muted-foreground flex flex-1 items-center gap-x-2 text-xs font-medium">
             <Icon name="lucide:terminal" class="size-4" />
             Remote
-          </div>
-          <div class="flex-1 text-xs">
+          </dt>
+          <dd class="flex-1 text-xs">
             <code class="bg-muted text-foreground relative border px-[0.3rem] py-[0.2rem] text-xs font-medium break-words">
               {remote}
             </code>
-          </div>
+          </dd>
         </div>
       )
     }
     {
       flag && (
-        <div class="flex items-center gap-x-4 py-2">
-          <div class="text-muted-foreground flex flex-1 items-center gap-x-2 text-xs font-medium">
+        <div class="flex flex-wrap items-center gap-x-4 py-2">
+          <dt class="text-muted-foreground flex flex-1 items-center gap-x-2 text-xs font-medium">
             <Icon name="lucide:flag" class="size-4" />
             Flag
-          </div>
-          <div class="flex-1 text-xs">
+          </dt>
+          <dd class="flex-1 text-xs">
             <code class="bg-muted text-foreground relative cursor-pointer border px-[0.3rem] py-[0.2rem] text-xs font-medium break-all blur-xs transition-all duration-200 select-all hover:blur-none">
               {flag}
             </code>
-          </div>
+          </dd>
         </div>
       )
     }
-  </div>
-  <div class="fix-margin small">
+  </dl>
+  <section class="fix-margin small">
     <slot />
-  </div>
+  </section>
 </div>
