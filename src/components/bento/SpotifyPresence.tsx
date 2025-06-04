@@ -193,20 +193,15 @@ const SpotifyPresence = () => {
                   : 'Last played...'}
               </span>
             </span>
-            <span className="text-md mb-2 line-clamp-2 leading-tight font-bold">
+            <span className="text-md mb-2 line-clamp-2 leading-tight font-medium">
               {song}
             </span>
             <span className="text-muted-foreground line-clamp-1 text-xs">
-              <span className="text-secondary-foreground font-semibold">
-                by
-              </span>{' '}
+              <span className="text-muted-foreground">by</span>{' '}
               {artist['#text']}
             </span>
             <span className="text-muted-foreground line-clamp-1 text-xs">
-              <span className="text-secondary-foreground font-semibold">
-                on
-              </span>{' '}
-              {album['#text']}
+              <span className="text-muted-foreground">on</span> {album['#text']}
             </span>
           </div>
         </div>

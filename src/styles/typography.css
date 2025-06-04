@@ -1,17 +1,42 @@
 @reference './global.css';
 
+@layer base {
+  p,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply wrap-break-word;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply text-balance;
+  }
+
+  p {
+    @apply text-pretty;
+  }
+}
+
 @layer components {
   .prose {
     @apply text-foreground text-sm leading-6 [&>link[rel="stylesheet"]+*]:mt-0! [&>link[rel="stylesheet"]+*>*]:mt-0!;
 
     :where(p):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
-      @apply text-foreground/80 my-5 text-pretty wrap-break-word not-first:mt-5;
+      @apply text-foreground/80 my-5;
     }
 
     :where(h1, h2, h3, h4, h5, h6):not(
         :where([class~='not-prose'], [class~='not-prose'] *)
       ) {
-      @apply text-foreground scroll-mt-32 font-medium text-balance wrap-break-word xl:scroll-mt-20;
+      @apply text-foreground scroll-mt-32 font-medium xl:scroll-mt-20;
     }
 
     /* Don't use an <h1> in your posts, one is already generated in blog/[...id].astro */
@@ -95,7 +120,7 @@
     }
 
     :where(td):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
-      @apply text-foreground/80 small px-4 py-2 align-top break-words [&>*]:first:mt-0! [&>*]:last:mb-0!;
+      @apply text-foreground/80 small fix-margin px-4 py-2 align-top break-words;
       @apply text-left [&[align=center]]:text-center [&[align=right]]:text-right;
     }
 

@@ -25,7 +25,7 @@ const latestPost = await getAllPosts().then((posts) => posts.at(0))
       'xl:max-w-7xl xl:grid-cols-4 xl:[grid-template-areas:"a_a_b_c""d_e_e_c""h_f_f_g""h_i_j_k"]',
     )}
   >
-    <div class="[grid-area:a] p-2 aspect-[3/4] sm:aspect-[2/1] xl:aspect-[2/1]">
+    <div class="aspect-[3/4] p-2 [grid-area:a] sm:aspect-[2/1] xl:aspect-[2/1]">
       <div class="bg-muted size-full border">
         <div
           class="size-full bg-[url('/static/bento/about-background-square.png')] bg-cover bg-center bg-no-repeat sm:bg-[url('/static/bento/about-background.png')]"
@@ -88,7 +88,9 @@ const latestPost = await getAllPosts().then((posts) => posts.at(0))
         </div>
       </div>
     </div>
-    <div class="aspect-square p-2 [grid-area:c] sm:aspect-[1/2] lg:aspect-square xl:aspect-[1/2]">
+    <div
+      class="aspect-square p-2 [grid-area:c] sm:aspect-[1/2] lg:aspect-square xl:aspect-[1/2]"
+    >
       <div class="bg-muted size-full border">
         <div
           class="size-full bg-[url('/static/bento/image-1.png')] bg-cover bg-center bg-no-repeat"
