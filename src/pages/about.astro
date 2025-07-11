@@ -1,0 +1,28 @@
+---
+import Breadcrumbs from '@/components/Breadcrumbs.astro'
+import Link from '@/components/Link.astro'
+import PageHead from '@/components/PageHead.astro'
+import Layout from '@/layouts/Layout.astro'
+import { Content } from '../content/about.mdx'
+---
+
+<Layout class="max-w-3xl">
+  <PageHead slot="head" title="About" />
+  <Breadcrumbs items={[{ label: 'About', icon: 'lucide:info' }]} />
+
+  <section>
+    <div class="min-w-full">
+      <article class="prose">
+        <Content />
+      </article>
+      <!-- <div class="mb-8 prose">
+        <p class="mt-0">
+            My first experience with coding was in my elementary school's computer lab, where at age 8 I worked through a <Link href="https://www.codecademy.com/learn/learn-html" external underline>Codecademy tutorial</Link> on HTML and CSS. Those skills — though questionably retained — came in handy customizing my <Link href="https://old.ppy.sh/users/6002735" external underline>osu!</Link> profile with <Link href="https://en.wikipedia.org/wiki/BBCode" external underline>BBCode</Link> (&ldquo;hey look, you can add a cool image with <code>[img]cool-pic.png[/img]</code> instead of <code>&lt;img src=&quot;cool-pic.png&quot;&gt;</code>!&rdquo;). I used these <Link href="https://www.stuffbydavid.com/textcolorizer" external underline>cool gradient generators</Link> to make <span style='color:#FF0000;'>c</span><span style='color:#E70017;'>o</span><span style='color:#D0002E;'>o</span><span style='color:#B90045;'>l</span> <span style='color:#8B0073;'>c</span><span style='color:#73008B;'>o</span><span style='color:#5C00A2;'>l</span><span style='color:#4500B9;'>o</span><span style='color:#2E00D0;'>r</span><span style='color:#1700E7;'>s</span> or find weird Unicode characters to put around text to maximize coolness factor. Looking back, this aspect of me has not really changed that much since I'm basically still maximizing coolness now (づ￣ 3￣)づ.
+        </p>
+        <p>
+            Admittedly, I didn't really see a career in making pretty internet pages at that point (I had wanted to be an astrophysicist in high school until I took both astronomy and physics at my local community college and hated both).
+        </p>
+      </div> -->
+    </div>
+  </section>
+</Layout>
