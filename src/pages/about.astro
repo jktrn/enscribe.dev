@@ -1,28 +1,52 @@
 ---
+import Albums from '@/components/about/Albums.astro'
 import Breadcrumbs from '@/components/Breadcrumbs.astro'
-import Link from '@/components/Link.astro'
 import PageHead from '@/components/PageHead.astro'
 import Layout from '@/layouts/Layout.astro'
 import { Content } from '../content/about.mdx'
+
+const sections = [
+  {
+    question: 'What type of music do you listen to?',
+    answer: `Music is a really important part of my life! I play and arrange classical guitar music, and I frequently attend concerts. Here is my <a href="https://last.fm/user/enscribe" target="_blank" rel="noopener noreferrer" class="text-foreground decoration-muted-foreground hover:decoration-foreground font-medium break-words underline underline-offset-[3px] transition-colors">Last.fm</a> profile, and here are my favorite LPs/EPs/cherry-picked tracks of all time:`,
+    ContentComponent: Albums,
+  },
+]
 ---
 
-<Layout class="max-w-3xl">
+<Layout>
   <PageHead slot="head" title="About" />
-  <Breadcrumbs items={[{ label: 'About', icon: 'lucide:info' }]} />
+  <div class="mx-auto w-full max-w-[calc(var(--container-3xl)-2rem)]">
+    <Breadcrumbs items={[{ label: 'About', icon: 'lucide:info' }]} />
+  </div>
 
-  <section>
-    <div class="min-w-full">
+  <section class="flex flex-col gap-4">
+    <div class="mx-auto max-w-[calc(var(--container-3xl)-2rem)]">
       <article class="prose">
         <Content />
       </article>
-      <!-- <div class="mb-8 prose">
-        <p class="mt-0">
-            My first experience with coding was in my elementary school's computer lab, where at age 8 I worked through a <Link href="https://www.codecademy.com/learn/learn-html" external underline>Codecademy tutorial</Link> on HTML and CSS. Those skills — though questionably retained — came in handy customizing my <Link href="https://old.ppy.sh/users/6002735" external underline>osu!</Link> profile with <Link href="https://en.wikipedia.org/wiki/BBCode" external underline>BBCode</Link> (&ldquo;hey look, you can add a cool image with <code>[img]cool-pic.png[/img]</code> instead of <code>&lt;img src=&quot;cool-pic.png&quot;&gt;</code>!&rdquo;). I used these <Link href="https://www.stuffbydavid.com/textcolorizer" external underline>cool gradient generators</Link> to make <span style='color:#FF0000;'>c</span><span style='color:#E70017;'>o</span><span style='color:#D0002E;'>o</span><span style='color:#B90045;'>l</span> <span style='color:#8B0073;'>c</span><span style='color:#73008B;'>o</span><span style='color:#5C00A2;'>l</span><span style='color:#4500B9;'>o</span><span style='color:#2E00D0;'>r</span><span style='color:#1700E7;'>s</span> or find weird Unicode characters to put around text to maximize coolness factor. Looking back, this aspect of me has not really changed that much since I'm basically still maximizing coolness now (づ￣ 3￣)づ.
-        </p>
-        <p>
-            Admittedly, I didn't really see a career in making pretty internet pages at that point (I had wanted to be an astrophysicist in high school until I took both astronomy and physics at my local community college and hated both).
-        </p>
-      </div> -->
     </div>
+<!-- 
+    <div class="mx-auto w-full max-w-5xl">
+      <Collapsible title="Personal Q&A" client:load>
+        {
+          sections.map((section) => (
+            <div class="flex w-full flex-col gap-4 border p-4">
+              <div class="mx-auto w-full max-w-[calc(var(--container-3xl)-2rem)]">
+                <h3 class="m-0 mb-2">
+                  <span class="text-primary font-medium">Q.</span>{' '}
+                  {section.question}
+                </h3>
+                <p class="text-muted-foreground m-0 text-[13px] leading-5">
+                  <span class="text-primary font-medium">A.</span>
+                  <Fragment set:html={section.answer} />
+                </p>
+              </div>
+              <section.ContentComponent />
+            </div>
+          ))
+        }
+      </Collapsible>
+    </div> -->
   </section>
 </Layout>
