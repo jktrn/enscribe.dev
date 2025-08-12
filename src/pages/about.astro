@@ -1,17 +1,17 @@
 ---
-import Albums from '@/components/about/Albums.astro'
+// import Albums from '@/components/about/Albums.astro'
 import Breadcrumbs from '@/components/Breadcrumbs.astro'
 import PageHead from '@/components/PageHead.astro'
 import Layout from '@/layouts/Layout.astro'
 import { Content } from '../content/about.mdx'
 
-const sections = [
-  {
-    question: 'What type of music do you listen to?',
-    answer: `Music is a really important part of my life! I play and arrange classical guitar music, and I frequently attend concerts. Here is my <a href="https://last.fm/user/enscribe" target="_blank" rel="noopener noreferrer" class="text-foreground decoration-muted-foreground hover:decoration-foreground font-medium break-words underline underline-offset-[3px] transition-colors">Last.fm</a> profile, and here are my favorite LPs/EPs/cherry-picked tracks of all time:`,
-    ContentComponent: Albums,
-  },
-]
+// const sections = [
+//   {
+//     question: 'What type of music do you listen to?',
+//     answer: `Music is a really important part of my life! I play and arrange classical guitar music, and I frequently attend concerts. Here is my <a href="https://last.fm/user/enscribe" target="_blank" rel="noopener noreferrer" class="text-foreground decoration-muted-foreground hover:decoration-foreground font-medium break-words underline underline-offset-[3px] transition-colors">Last.fm</a> profile, and here are my favorite LPs/EPs/cherry-picked tracks of all time:`,
+//     ContentComponent: Albums,
+//   },
+// ]
 ---
 
 <Layout>
@@ -26,27 +26,25 @@ const sections = [
         <Content />
       </article>
     </div>
-<!-- 
-    <div class="mx-auto w-full max-w-5xl">
-      <Collapsible title="Personal Q&A" client:load>
-        {
-          sections.map((section) => (
-            <div class="flex w-full flex-col gap-4 border p-4">
-              <div class="mx-auto w-full max-w-[calc(var(--container-3xl)-2rem)]">
-                <h3 class="m-0 mb-2">
-                  <span class="text-primary font-medium">Q.</span>{' '}
-                  {section.question}
-                </h3>
-                <p class="text-muted-foreground m-0 text-[13px] leading-5">
-                  <span class="text-primary font-medium">A.</span>
-                  <Fragment set:html={section.answer} />
-                </p>
-              </div>
-              <section.ContentComponent />
+
+    <!-- <div class="mx-auto w-full max-w-5xl">
+      {
+        sections.map((section) => (
+          <div class="flex w-full flex-col gap-4 border p-4">
+            <div class="mx-auto w-full max-w-[calc(var(--container-3xl)-2rem)]">
+              <h3 class="m-0 mb-2">
+                <span class="text-primary font-medium">Q.</span>{' '}
+                {section.question}
+              </h3>
+              <p class="text-muted-foreground m-0 text-[13px] leading-5">
+                <span class="text-primary font-medium">A.</span>
+                <Fragment set:html={section.answer} />
+              </p>
             </div>
-          ))
-        }
-      </Collapsible>
+            <section.ContentComponent />
+          </div>
+        ))
+      }
     </div> -->
   </section>
 </Layout>
