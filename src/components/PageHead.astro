@@ -20,7 +20,7 @@ const image = new URL('/static/twitter-card.png', Astro.site)
 <link rel="canonical" href={SITE.href} />
 {noindex && <meta name="robots" content="noindex, nofollow" />}
 
-<meta property="og:title" content={title} />
+<meta property="og:title" content={`${title} | ${SITE.title}`} />
 <meta property="og:description" content={description} />
 <meta property="og:image" content={image} />
 <meta property="og:image:alt" content={title} />
