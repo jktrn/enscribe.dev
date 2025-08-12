@@ -13,6 +13,13 @@ export function formatDate(date: Date) {
   }).format(date)
 }
 
+export function formatMonthYear(date: Date) {
+  return Intl.DateTimeFormat('en-US', {
+    year: 'numeric',
+    month: 'short',
+  }).format(date)
+}
+
 export function calculateWordCountFromHtml(
   html: string | null | undefined,
 ): number {
@@ -48,4 +55,13 @@ export function getElapsedTime(unixTimestamp: number): string {
   return `${hours.toString().padStart(2, '0')}:${minutes
     .toString()
     .padStart(2, '0')}:${seconds.toString().padStart(2, '0')} elapsed`
+}
+
+export function extractDomain(url: string): string {
+  try {
+    const domain = new URL(url).hostname
+    return domain.startsWith('www.') ? domain.slice(4) : domain
+  } catch {
+    return url
+  }
 }

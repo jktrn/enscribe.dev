@@ -1,0 +1,45 @@
+---
+import Breadcrumbs from '@/components/Breadcrumbs.astro'
+import PageHead from '@/components/PageHead.astro'
+import ProjectCard from '@/components/ProjectCard.astro'
+import Layout from '@/layouts/Layout.astro'
+import { getAllProjects, groupProjectsByYear } from '@/lib/data-utils'
+import { Content } from '../content/work.mdx'
+
+const projects = await getAllProjects()
+const projectsByYear = groupProjectsByYear(projects)
+const years = Object.keys(projectsByYear).sort(
+  (a, b) => parseInt(b) - parseInt(a),
+)
+---
+
+<Layout>
+  <PageHead slot="head" title="Work" />
+  <div class="mx-auto w-full max-w-[calc(var(--container-3xl)-2rem)]">
+    <Breadcrumbs items={[{ label: 'Work', icon: 'lucide:briefcase' }]} />
+  </div>
+
+  <section
+    class="mx-auto flex max-w-[calc(var(--container-3xl)-2rem)] flex-col gap-4"
+  >
+    <article class="prose">
+      <Content />
+    </article>
+    <div class="flex flex-col gap-y-8">
+      {
+        years.map((year) => (
+          <section class="flex flex-col gap-y-4">
+            <div class="font-medium">{year}</div>
+            <ul class="flex flex-col gap-4">
+              {projectsByYear[year].map((project) => (
+                <li>
+                  <ProjectCard project={project} />
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))
+      }
+    </div>
+  </section>
+</Layout>

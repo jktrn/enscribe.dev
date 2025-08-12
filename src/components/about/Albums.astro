@@ -1,0 +1,74 @@
+---
+const favoriteAlbums = [
+  {
+    src: 'https://lastfm.freetls.fastly.net/i/u/300x300/14499c4d27be2a70c9483f44faccdbfc.jpg',
+    title: 'Deafheaven – Ordinary Corrupt Human Love (2018)',
+    href: 'https://www.last.fm/music/Deafheaven/_/Ordinary+Corrupt+Human+Love',
+  },
+  {
+    src: 'https://lastfm.freetls.fastly.net/i/u/300x300/fb1a13f7828d4373b4c1c0617bb08ccf.jpg',
+    title: 'susquatch – In This World (2009)',
+  },
+  {
+    src: 'https://lastfm.freetls.fastly.net/i/u/300x300/802c02c05615398ffe842135a3614c87.png',
+    title:
+      '大原ゆい子 – 無職転生 ~異世界行ったら本気だす~ Theme Song Collection (2021)',
+  },
+  {
+    src: 'https://lastfm.freetls.fastly.net/i/u/300x300/557f8d10244850be317f4d2099f85ed0.png',
+    title: 'Porter Robinson – Nurture (2014)',
+  },
+  {
+    src: 'https://lastfm.freetls.fastly.net/i/u/300x300/8a6a1123bb124e4890f20c956a63e734.png',
+    title: 'Deafheaven – Sunbather (2013)',
+  },
+  {
+    src: 'https://lastfm.freetls.fastly.net/i/u/300x300/60d9ba6c2d960a49646ccba69de73b63.jpg',
+    title: 'Deafheaven – New Bermuda (2015)',
+  },
+  {
+    src: 'https://lastfm.freetls.fastly.net/i/u/300x300/2286d9b770e46f43bfdc9c2a49686288.jpg',
+    title: 'ippo.tsk – seeyalater stratocaster (2022)',
+  },
+  {
+    src: 'https://i.scdn.co/image/ab67616d0000b2737034ec5985c53b30c5124f0c',
+    title: 'Whirl (Whirr) – Distressor (2010)',
+  },
+  {
+    src: 'https://lastfm.freetls.fastly.net/i/u/300x300/4153137c237541917e1d728cce56c7a8.jpg',
+    title: '明日の叙景 [Asunojokei] – アイランド (Island) (2022)',
+  },
+  {
+    src: 'https://lastfm.freetls.fastly.net/i/u/300x300/4721b357323a41963b5176266815054a.png',
+    title: 'Lamp – 東京ユウトピア通信 (Tokyo Utopia Communications) (2011)',
+  },
+  {
+    src: 'https://e.snmc.io/i/300/w/5f0bbe2f9d813b4eb8517c2b565a33ac/2151996/toe%20-%20New%20Sentimentality%2C%20Cover%20art.webp',
+    title: 'toe - グッドバイ (Goodbye) (2006)',
+  },
+  {
+    src: 'https://e.snmc.io/i/600/s/2e49d5d297b092042c5aac6073d7a040/4377207/egoist-extra-terrestrial-biological-entities-Cover-Art.jpg',
+    title: 'EGOIST - Departures ～あなたにおくるアイの歌～ (2011)',
+  },
+  {
+    src: 'https://lastfm.freetls.fastly.net/i/u/300x300/497f395950d24929c9b843828dec4350.png',
+    title: 'Ne Obliviscaris - Portal of I (2012)',
+  },
+]
+---
+
+<div class="flex flex-wrap justify-center gap-2">
+  {
+    favoriteAlbums.map((album) => (
+      <div class="flex flex-col gap-2">
+        <img
+          src={album.src}
+          alt={album.title}
+          class="h-24 w-24 object-cover opacity-80 grayscale sepia-50 transition-all duration-300 hover:opacity-100 hover:grayscale-0 hover:sepia-0"
+          title={album.title}
+        />
+        <span class="text-muted-foreground w-24 text-[9px]">{album.title}</span>
+      </div>
+    ))
+  }
+</div>
