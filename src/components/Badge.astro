@@ -19,69 +19,156 @@ const {
   showIcon = true,
 } = Astro.props
 
-const getCategoryStyle = (content: string) => {
-  const lowerContent = content.toLowerCase()
-
-  if (lowerContent.includes('crypto')) {
-    return {
+const categoryMappings = [
+  {
+    keywords: ['crypto'],
+    style: {
       color:
         'bg-yellow-50 text-yellow-700 dark:bg-yellow-950/30 dark:text-yellow-200',
       icon: 'lucide:key',
-    }
-  } else if (lowerContent.includes('web')) {
-    return {
+    },
+  },
+  {
+    keywords: ['web'],
+    style: {
       color: 'bg-blue-50 text-blue-700 dark:bg-blue-950/30 dark:text-blue-200',
       icon: 'lucide:globe',
-    }
-  } else if (lowerContent.includes('reverse') || lowerContent.includes('rev')) {
-    return {
+    },
+  },
+  {
+    keywords: ['reverse', 'rev'],
+    style: {
       color:
         'bg-orange-50 text-orange-700 dark:bg-orange-950/30 dark:text-orange-200',
       icon: 'lucide:rotate-ccw',
-    }
-  } else if (
-    lowerContent.includes('pwn') ||
-    lowerContent.includes('binary exploitation')
-  ) {
-    return {
+    },
+  },
+  {
+    keywords: ['pwn', 'binary exploitation'],
+    style: {
       color: 'bg-red-50 text-red-700 dark:bg-red-950/30 dark:text-red-200',
       icon: 'lucide:zap',
-    }
-  } else if (lowerContent.includes('misc')) {
-    return {
+    },
+  },
+  {
+    keywords: ['misc'],
+    style: {
       color:
         'bg-stone-50 text-stone-700 dark:bg-stone-950/30 dark:text-stone-200',
       icon: 'lucide:puzzle',
-    }
-  } else if (lowerContent.includes('forensic')) {
-    return {
+    },
+  },
+  {
+    keywords: ['forensic'],
+    style: {
       color:
         'bg-green-50 text-green-700 dark:bg-green-950/30 dark:text-green-200',
       icon: 'lucide:search',
-    }
-  } else if (lowerContent.includes('osint')) {
-    return {
+    },
+  },
+  {
+    keywords: ['osint'],
+    style: {
       color:
         'bg-purple-50 text-purple-700 dark:bg-purple-950/30 dark:text-purple-200',
       icon: 'lucide:eye',
-    }
-  } else if (lowerContent.includes('blockchain')) {
-    return {
+    },
+  },
+  {
+    keywords: ['blockchain'],
+    style: {
       color: 'bg-teal-50 text-teal-700 dark:bg-teal-950/30 dark:text-teal-200',
       icon: 'lucide:link',
-    }
-  } else if (
-    lowerContent.includes('ppc') ||
-    lowerContent.includes('programming')
-  ) {
-    return {
+    },
+  },
+  {
+    keywords: ['ppc', 'programming'],
+    style: {
       color:
         'bg-indigo-50 text-indigo-700 dark:bg-indigo-950/30 dark:text-indigo-200',
       icon: 'lucide:code',
-    }
-  } else {
-    return null
-  }
+    },
+  },
+  {
+    keywords: ['commercial'],
+    style: {
+      color: 'text-foreground bg-foreground/10',
+      icon: 'lucide:building-2',
+    },
+  },
+  {
+    keywords: ['personal'],
+    style: {
+      // color: 'bg-sky-50 text-sky-700 dark:bg-sky-950/30 dark:text-sky-200',
+      icon: 'lucide:user',
+    },
+  },
+  {
+    keywords: ['open-source'],
+    style: {
+      // color: 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-200',
+      icon: 'lucide:git-branch',
+    },
+  },
+  {
+    keywords: ['freelance'],
+    style: {
+      // color: 'bg-teal-50 text-teal-700 dark:bg-teal-950/30 dark:text-teal-200',
+      icon: 'lucide:briefcase',
+    },
+  },
+  {
+    keywords: ['team'],
+    style: {
+      // color: 'bg-violet-50 text-violet-700 dark:bg-violet-950/30 dark:text-violet-200',
+      icon: 'lucide:users',
+    },
+  },
+  {
+    keywords: ['contract'],
+    style: {
+      // color: 'bg-rose-50 text-rose-700 dark:bg-rose-950/30 dark:text-rose-200',
+      icon: 'lucide:file-text',
+    },
+  },
+  {
+    keywords: ['astro'],
+    style: {
+      // color: 'bg-orange-50 text-orange-700 dark:bg-orange-950/30 dark:text-orange-200',
+      icon: 'lucide:rocket',
+    },
+  },
+  {
+    keywords: ['shopify'],
+    style: {
+      // color: 'bg-green-50 text-green-700 dark:bg-green-950/30 dark:text-green-200',
+      icon: 'lucide:shopping-bag',
+    },
+  },
+  {
+    keywords: ['html'],
+    style: {
+      // color: 'bg-red-50 text-red-700 dark:bg-red-950/30 dark:text-red-200',
+      icon: 'lucide:code-2',
+    },
+  },
+  {
+    keywords: ['figma'],
+    style: {
+      // color: 'bg-purple-50 text-purple-700 dark:bg-purple-950/30 dark:text-purple-200',
+      icon: 'lucide:palette',
+    },
+  },
+]
+
+const getCategoryStyle = (content: string) => {
+  const lowerContent = content.toLowerCase()
+
+  const match = categoryMappings.find((category) =>
+    category.keywords.some((keyword) => lowerContent.includes(keyword)),
+  )
+
+  return match?.style || null
 }
 
 const content = text || (typeof children === 'string' ? children : '')

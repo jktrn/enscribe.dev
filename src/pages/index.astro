@@ -40,19 +40,23 @@ const latestPost = await getAllPosts().then((posts) => posts.at(0))
                 <p
                   class="text-foreground/80 bg-background block border p-3 text-sm text-pretty"
                 >
-                  Hey, I&rsquo;m Jason! I&rsquo;m a design engineer and
-                  cybersecurity enthusiast from Los Angeles.
+                  Hey, I&rsquo;m Jason! I&rsquo;m a <Link
+                    href="https://en.wikipedia.org/wiki/Design_engineer#In_software_engineering"
+                    external
+                    class="text-foreground decoration-muted-foreground hover:decoration-foreground font-medium break-words underline underline-offset-[3px] transition-colors"
+                    >design engineer</Link
+                  > and security researcher based in Los Angeles.
                 </p>
                 <p
                   class="text-foreground/80 bg-background block border p-3 text-sm text-pretty"
                 >
-                  Outside of undergraduate studies and research, I contract as
-                  an independent web designer and both organize and compete in <Link
+                  Outside of undergraduate studies, I contract as a web designer
+                  and organize <Link
                     href="https://en.wikipedia.org/wiki/Capture_the_flag_(cybersecurity)"
                     external
                     class="text-foreground decoration-muted-foreground hover:decoration-foreground font-medium break-words underline underline-offset-[3px] transition-colors"
-                    >CTF competitions</Link
-                  > with <Link
+                    >security CTF</Link
+                  > competitions with <Link
                     href="https://sekai.team"
                     external
                     class="text-foreground decoration-muted-foreground hover:decoration-foreground font-medium break-words underline underline-offset-[3px] transition-colors"
@@ -62,7 +66,11 @@ const latestPost = await getAllPosts().then((posts) => posts.at(0))
                     external
                     class="text-foreground decoration-muted-foreground hover:decoration-foreground font-medium break-words underline underline-offset-[3px] transition-colors"
                     >Friendly Maltese Citizens</Link
-                  >.
+                  >. You can read more about me <Link
+                    href="/about"
+                    class="text-foreground decoration-muted-foreground hover:decoration-foreground font-medium break-words underline underline-offset-[3px] transition-colors"
+                    >here</Link
+                  >!
                 </p>
               </div>
             </div>
