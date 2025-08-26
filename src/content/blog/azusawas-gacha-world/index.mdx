@@ -14,7 +14,7 @@ import VideoPreview from './assets/preview.mp4'
 
 ## Introduction
 
-This blog post details my design process for a beginner-friendly reverse-engineering challenge that I authored this year for [SekaiCTF 2023](https://ctftime.org/event/1923/)——a fully functional, hackable replica of Project Sekai's "gacha" system. Here is a snippet of the challenge, featured in the CTF's first teaser:
+This blog post details my design process for a beginner-friendly reverse-engineering challenge that I authored this year for [SekaiCTF 2023](https://ctftime.org/event/1923/) —— a fully functional, hackable replica of Project Sekai's "gacha" system. Here is a snippet of the challenge, featured in the CTF's first teaser:
 
 <StaticTweet
   avatar="https://pbs.twimg.com/profile_images/1516810637858545668/UKYxlCqh_400x400.jpg"
@@ -29,7 +29,7 @@ This blog post details my design process for a beginner-friendly reverse-enginee
   [#Teaser](https://twitter.com/hashtag/Teaser)
 </StaticTweet>
 
-Dubbed "Azusawa's Gacha World," this challenge took heavy theming inspiration from a team friend with the handle [@stypr](https://github.com/stypr), who singlehandedly spent around USD$20,000 on [Project Sekai](https://projectsekai.fandom.com/wiki/Project_SEKAI_COLORFUL_STAGE!) (the mobile rhythm game). He also runs a website called [azusawa.world](https://azusawa.world), which features his experiences with a character named [Kohane Azsuawa](https://projectsekai.fandom.com/wiki/Azusawa_Kohane) (小豆沢こはね)——this challenge is part of the recurring meme with the character.
+Dubbed "Azusawa's Gacha World," this challenge took heavy theming inspiration from a team friend with the handle [@stypr](https://github.com/stypr), who singlehandedly spent around USD$20,000 on [Project Sekai](https://projectsekai.fandom.com/wiki/Project_SEKAI_COLORFUL_STAGE!) (the mobile rhythm game). He also runs a website called [azusawa.world](https://azusawa.world), which features his experiences with a character named [Kohane Azsuawa](https://projectsekai.fandom.com/wiki/Azusawa_Kohane) (小豆沢こはね) —— this challenge is part of the recurring meme with the character.
 
 However, before we get into the challenge itself, let's talk first about the game and genre that inspired it.
 
@@ -69,7 +69,7 @@ For the sake of simplicity within the challenge, I decided to implement a **pure
 
 ### Considering Challenge Difficulty
 
-Learning from feedback in our survey last year, we ([Project SEKAI CTF](https://sekai.team/)) discovered that a lot of our players were actually beginners——over half of the playerbase that took the survey had less than 5 CTFs worth of experience under their belt:
+Learning from feedback in our survey last year, we ([Project SEKAI CTF](https://sekai.team/)) discovered that a lot of our players were actually beginners —— over half of the playerbase that took the survey had less than 5 CTFs worth of experience under their belt:
 
 ![SekaiCTF 2022 Pie Chart](assets/2022-pie-chart.svg)
 
@@ -129,7 +129,7 @@ This was all of the planning and designing that went into the actual challenge s
 
 Since I'm really comfortable with vanilla TypeScript, I decided that it'd be best to use it to write the backend server (contrary to the typical Python Flask server in CTFs).
 
-I created a `gacha.json`, which contains the entire pool of characters that we used. Since the entire challenge is themed around Kohane Azusawa, I utilized the pool from her 2023 birthday banner——the drop rates and characters are fully available on [sekai.best](https://sekai.best/gacha/302)'s entry of the banner:
+I created a `gacha.json`, which contains the entire pool of characters that we used. Since the entire challenge is themed around Kohane Azusawa, I utilized the pool from her 2023 birthday banner —— the drop rates and characters are fully available on [sekai.best](https://sekai.best/gacha/302)'s entry of the banner:
 
 ![Sekai.best Pool](assets/sekai-best-pool.gif)
 
@@ -175,9 +175,9 @@ I wanted to make the game look as polished and as similar to the real product as
 
 ![Example Screen](assets/example-screen.png)
 
-Unfortunately, there weren't any datamines/rips of Project Sekai that I could find which contained my desired UI elements, and I had to remake them from scratch in graphic design software——I used [Figma](https://figma.com) throughout this entire process.
+Unfortunately, there weren't any datamines/rips of Project Sekai that I could find which contained my desired UI elements, and I had to remake them from scratch in graphic design software —— I used [Figma](https://figma.com) throughout this entire process.
 
-Since this project was meant to replicate, not innovate, a lot of the design process was just me eyeballing the elements and trying to recreate them as accurately as possible——the hardest part, honestly, was finding the fonts which were used in-game. I scoured the internet for any available resources regarding this to no avail, and used various font detection/scanning software on in-game screenshots (which, of course, yielded incorrect results).
+Since this project was meant to replicate, not innovate, a lot of the design process was just me eyeballing the elements and trying to recreate them as accurately as possible —— the hardest part, honestly, was finding the fonts which were used in-game. I scoured the internet for any available resources regarding this to no avail, and used various font detection/scanning software on in-game screenshots (which, of course, yielded incorrect results).
 
 Luckily, [@blueset](https://github.com/blueset), my team's co-founder, happens to be a massive typography enjoyer, and quickly directed me to one of his old tweets:
 
@@ -215,7 +215,7 @@ All elements that I were unable to recreate due to complexity (like the characte
 
 ## Unity Implementation
 
-Of course, I'm no professional Unity game developer——I've only ever made a few major 2D projects in the past, and I've only touched the engine's 3D components before once (my Unity challenge from last year, [reverse/Perfect Match X-treme](https://github.com/project-sekai-ctf/sekaictf-2022/tree/main/reverse/perfect-match-xtreme/Challenge)). However, I was confident that I would be able to emulate the appearance and functionality of the gacha system with a bit of graphic design knowledge and some janky code.
+Of course, I'm no professional Unity game developer —— I've only ever made a few major 2D projects in the past, and I've only touched the engine's 3D components before once (my Unity challenge from last year, [reverse/Perfect Match X-treme](https://github.com/project-sekai-ctf/sekaictf-2022/tree/main/reverse/perfect-match-xtreme/Challenge)). However, I was confident that I would be able to emulate the appearance and functionality of the gacha system with a bit of graphic design knowledge and some janky code.
 
 My Unity 2D (2021.3.29f1) project was honestly just a bunch of Canvas elements layered on top of each other. Of course, there's a million better ways to do this (e.g. the new Unity UI Toolkit with dynamic modals/buttons), but since this challenge was never meant to be long-term/scalable I didn't want to overcomplexify. Here is the hierarchy structure from within the editor:
 
@@ -225,7 +225,7 @@ You can easily observe which GameObjects become visible/invisible throughout pla
 
 ![Unity Layers](assets/unity-layers.gif)
 
-For this section of the blog post, I'll be going over each individual script located within `Assets/Scripts`——conveniently, structuring the post in this manner actually fleshes out a lot of my challenge's functionality, and places the various scripts in context for later when we talk about reverse-engineering. Each script will have its own dedicated section, ordered by how important I believe they are. Let's get started!
+For this section of the blog post, I'll be going over each individual script located within `Assets/Scripts` —— conveniently, structuring the post in this manner actually fleshes out a lot of my challenge's functionality, and places the various scripts in context for later when we talk about reverse-engineering. Each script will have its own dedicated section, ordered by how important I believe they are. Let's get started!
 
 ---
 
@@ -255,9 +255,9 @@ import Code9 from './assets/9.txt?raw'
   startLineNumber={57}
 />
 
-This obvious base64 obfuscation is the endpoint IP that we talked about earlier, which is decoded before being passed into the `new UnityWebRequest{:cs}`. This is particularly catered towards newer players——it's honestly like a sore thumb sticking out of the script, meant to be noticed and questioned.
+This obvious base64 obfuscation is the endpoint IP that we talked about earlier, which is decoded before being passed into the `new UnityWebRequest{:cs}`. This is particularly catered towards newer players —— it's honestly like a sore thumb sticking out of the script, meant to be noticed and questioned.
 
-Other than this, the script is pretty straightforward——if the request fails (due to bad internet, downed server, malformed payload, etc.), `uiManager.GenericModalHandler(){:cs}` is called and displays `failedConnectionModal{:cs}`:
+Other than this, the script is pretty straightforward —— if the request fails (due to bad internet, downed server, malformed payload, etc.), `uiManager.GenericModalHandler(){:cs}` is called and displays `failedConnectionModal{:cs}`:
 
 import Code10 from './assets/10.txt?raw'
 
@@ -290,7 +290,7 @@ import Code11 from './assets/11.txt?raw'
 
 ### GameState.cs
 
-Although bite-sized in comparison to the other scripts, this script is responsible for maintaining the state of the game——the amount of crystals the player has and the amount of pulls they've made in the current session:
+Although bite-sized in comparison to the other scripts, this script is responsible for maintaining the state of the game —— the amount of crystals the player has and the amount of pulls they've made in the current session:
 
 import Code12 from './assets/12.txt?raw'
 
@@ -633,7 +633,7 @@ An extremely undervalued aspect of video games which give them that beautiful po
 
 ![PJSekai Database](assets/pjsekai-database.png)
 
-Any SFX assets I weren't able to find I ended up taking from the game itself——I ended up taking a screen recording of me pulling the gacha and cutting out the various sound effects I heard (with the music volume at 0%). From this, alongside recordings of people fiddling with the gacha system on YouTube, I was able to deduce which sound effects needed to be triggered when. I finished off the recordings with a bit of post-processing in Audacity:
+Any SFX assets I weren't able to find I ended up taking from the game itself —— I ended up taking a screen recording of me pulling the gacha and cutting out the various sound effects I heard (with the music volume at 0%). From this, alongside recordings of people fiddling with the gacha system on YouTube, I was able to deduce which sound effects needed to be triggered when. I finished off the recordings with a bit of post-processing in Audacity:
 
 ![Audacity](assets/audacity.png)
 
@@ -767,7 +767,7 @@ Check out that emphasized text in pink, however. Although players are meant to O
 > 注意: このキャラクターは、このピックアップで行う**100 万回目**の引き出しで保証されます。  
 > NOTE: This character is guaranteed on the **1,000,000th** withdrawal made in this pickup.
 
-Of course, this means that we would need to pull a million times to get our desired character. That's no fun——so how are we going to manipulate this game to make it think that we've already pulled a million times?
+Of course, this means that we would need to pull a million times to get our desired character. That's no fun —— so how are we going to manipulate this game to make it think that we've already pulled a million times?
 
 Let's use [dnSpy v6.1.8](https://github.com/dnSpy/dnSpy) to our advantage here to reverse engineer the game. Since all Unity-compiled C# code goes into an `Assembly-CSharp.dll` within the `dist/Asusawa's Gacha World_Data/Managed` directory, we should be analyzing this file first and foremost. Opening dnSpy and dragging the DLL into the program will reveal the following structure:
 
@@ -805,7 +805,7 @@ import Code22 from './assets/22.txt?raw'
   mark={[4]}
 />
 
-We can see that a new `GachaRequest{:cs}` is being created with the parameters `this.gameState.crystals{:cs}`, `this.gameState.pulls{:cs}`, and `numPulls{:cs}`. Since we can edit and recompile assemblies with dnSpy, let's change the parameters being sent to `GachaRequest{:cs}` to something static. We can change the `this.gameState.crystals{:cs}` parameter to something large, like 10,000,000, and the `this.gameState.pulls{:cs}` parameter to something close to 1,000,000——let's say 999,999. Right click the method and click "Edit Method (C#)..." to change the parameters:
+We can see that a new `GachaRequest{:cs}` is being created with the parameters `this.gameState.crystals{:cs}`, `this.gameState.pulls{:cs}`, and `numPulls{:cs}`. Since we can edit and recompile assemblies with dnSpy, let's change the parameters being sent to `GachaRequest{:cs}` to something static. We can change the `this.gameState.crystals{:cs}` parameter to something large, like 10,000,000, and the `this.gameState.pulls{:cs}` parameter to something close to 1,000,000 —— let's say 999,999. Right click the method and click "Edit Method (C#)..." to change the parameters:
 
 ![Recompiling DLL](assets/recompiling-dll.png)
 
@@ -827,7 +827,7 @@ After fixing some minor errors, we can recompile the DLL and save it over the or
 
 ## Afterword
 
-That's about all there is left to cover in terms of the Unity project! Honestly, for a 1\* (baby difficulty) reverse-engineering challenge which could probably be solved in less than 5 minutes by an experienced reverse player, a lot of sweat and tears were put into this entire process——a total of 29 hours (via [WakaTime](https://wakatime.com/)) over the course of 3 weeks were spent designing, programming, and polishing. I'm really proud of the final product that I've created; you can genuinely see the overall growth from last year's challenge. I hope you enjoyed reading about the process as much as I enjoyed making it!
+That's about all there is left to cover in terms of the Unity project! Honestly, for a 1\* (baby difficulty) reverse-engineering challenge which could probably be solved in less than 5 minutes by an experienced reverse player, a lot of sweat and tears were put into this entire process —— a total of 29 hours (via [WakaTime](https://wakatime.com/)) over the course of 3 weeks were spent designing, programming, and polishing. I'm really proud of the final product that I've created; you can genuinely see the overall growth from last year's challenge. I hope you enjoyed reading about the process as much as I enjoyed making it!
 
 Special thanks to:
 
