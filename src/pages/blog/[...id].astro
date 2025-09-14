@@ -109,9 +109,13 @@ const tocSections = await getTOCSections(currentPostId)
     </div>
 
     {
-      post.data.image && (
+      (post.data.imageWithoutText || post.data.imageWithText) && (
         <Image
-          src={post.data.image}
+          src={
+            post.data.imageWithoutText
+              ? post.data.imageWithoutText
+              : post.data.imageWithText!
+          }
           alt={post.data.title}
           width={1200}
           height={630}
