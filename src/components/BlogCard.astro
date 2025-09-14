@@ -33,10 +33,14 @@ const subpostCount = !isSubpost(entry.id) ? await getSubpostCount(entry.id) : 0
     class="flex flex-col gap-4 sm:flex-row"
   >
     {
-      entry.data.image && (
+      (entry.data.imageWithoutText || entry.data.imageWithText) && (
         <div class="max-w-3xs sm:shrink-0">
           <Image
-            src={entry.data.image}
+            src={
+              entry.data.imageWithoutText
+                ? entry.data.imageWithoutText
+                : entry.data.imageWithText!
+            }
             alt={entry.data.title}
             width={1200}
             height={630}
