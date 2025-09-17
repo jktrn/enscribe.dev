@@ -291,4 +291,52 @@ We can now use this in our HTML with a tiny script that will toggle the `data-th
     />
   </example-preview>
 </example-section>
+
+The primary issue here is that this is not maintainable at all. If we wanted to swap colors, we would need to find and replace every single color variable in the CSS. Writing new elements also requires assigning two different color classes for each element, which is a pain. To solve this, we establish a layered system using Tailwind's theme variables:
+
+1. **Define semantic theme variables** using the `@theme` directive. This creates utility classes like `text-foreground` and `bg-background` that Tailwind generates automatically. We use the `inline` option here to prevent weird variable resolution issues that I won't get into.
+2. **Define the actual colors** in the `:root` block. Since we have variables that reference variables, at the second level we can freely swap them out based on the `data-theme` attribute.
+
+```css title="styles.css"
+@import "tailwindcss";
+
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-muted-foreground: var(--muted-foreground);
+}
+
+:root {
+  --background: var(--color-amber-100);
+  --foreground: var(--color-stone-900);
+  --muted-foreground: var(--color-stone-500);
+}
+
+html[data-theme="dark"] {
+  --background: var(--color-slate-800);
+  --foreground: var(--color-slate-100);
+  --muted-foreground: var(--color-slate-400);
+}
+```
+
+We now refactor our classes to use the new semantic variables:
+
+<example-section class="grid grid-cols-1 my-4 [&_*]:m-0">
+  <example-source>
+    ```html title="index.html" add="text-foreground" add="text-muted-foreground" add="bg-background" startLineNumber={2}
+    <section class="bg-background" data-theme="light">
+      <h1 class="mb-3 text-2xl font-semibold text-foreground">
+        Welcome to our website
+      </h1>
+      <p class="leading-relaxed text-muted-foreground">
+        This is a really cool website with great colors and fonts!
+      </p>
+    </section>
+    ```
+  </example-source>
+</example-section>
+
+This looks just so much better than the old versions, and it's easier to maintain.
 </Callout>
