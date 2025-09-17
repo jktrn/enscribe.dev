@@ -111,9 +111,7 @@ It's actually funny that these people are entirely right about the design patter
 
 I just want to emphasize that there are entire universes of creative opportunities that arise from designing and implementing your sites with **(1) soul** and **(2) intention**. The concept of "making the web more fun" is overused, but I genuinely believe that when you have fun designing, your visitors will have fun looking at what you create. Care about inconsequential things that people will never see, consider things that might never happen, pay the greatest attention to detail as you can possibly muster. This is my design philosophy, and I hope this is reflected in the work that I produce. I love what I do, and the process doesn't feel like work to me. Maybe this will be the case for you as well.
 
----
-
-## Developing subconscious taste
+### Developing subconscious taste
 
 At this point, I'd like to transition into my actual design process. The word "process" here sucks because there's an implication of coherentness and order but, of course, this is never the case. There are a couple immediate issues I see:
 
@@ -123,13 +121,15 @@ At this point, I'd like to transition into my actual design process. The word "p
 
 My goal by the end of this post is to have someone who otherwise dismisses themselves as "horrible at design" <span class="text-muted-foreground">(the majority of technical people)</span> understand that design isn't daunting, but rather a productive <span class="text-muted-foreground">(in that it's still tech-related)</span> way to express yourself. Maybe it will incentivize you to vibe less of your frontend and make something fun.
 
-### A website that shows who you are
+---
+
+## Actually personal websites
 
 The rest of this post will be dedicated to explaining something that I've poured my heart into these past four years: this website! It's a great example of how I approach design because it's probably the most soulful thing that I've made. It's hard to get more personal than a personal website, and it really sucks when people make generic white-on-black or black-on-white sites for the sake of "looking clean." Us humans are messy and filled with dreams, aspirations, nostalgia, cherished things, cherished people, so it's never a bad idea to really show who you are.
 
 I will go through the entire process, from start to finish, denoting as many subconscious decisions as I possibly can, of how I designed and implemented the homepage of my website. If I were to give you homework, it would be to run through this process yourself on your own website <span class="text-muted-foreground">(or start making one if you don't have one yet).</span>
 
-#### Ideation, previous iterations
+### Iteration, ideation
 
 Of course, I didn't start with a bento box. The current homepage has had multiple dozens of revisions done to it since I came up with the idea in 2023. I, and most likely you, started with a generic hackery template theme as well -- it was only after countless ideas accumulating on top of each other that it got to this point. Here are some screenshots of progression of my website, which coincidentally has had one major design overhaul every year for the past four years:
 
@@ -163,17 +163,17 @@ Of course, I didn't start with a bento box. The current homepage has had multipl
 
 Although they may look very different, particularly because my design skills improved throughout this entire process, in general I followed several mantras through every iteration:
 
-- **My homepage should quickly introduce myself.** I used to do this with a small paragraph blurb. When I was making the bento box, I really felt like it looked like a cartoon panel. I opted for the approach of having text bubbles come out of the bean guy to emulate me "talking" to the user, which makes it feel a tad bit more personal.
+- **My homepage should quickly introduce myself.** I used to do this with a small paragraph blurb, but when I was making the bento box, I really felt like it looked like a cartoon panel. As such, I opted for the approach of having text bubbles come out of the bean guy to emulate me "talking" to the user, which makes it feel a tad bit more personal.
 - **My homepage should have interactivity.** Little micro-interactions, no matter how small, can provide a lot of life to an otherwise static site. This is why I ended up adding those hover effects. You'll see the implementation process for these later.
 - **My homepage should show data about myself.** This ended up being the Spotify status, Discord status, WakaTime bar chart, and the GitHub calendar. In hindsight, this idea was incredible, since there are lots of disparate but related things, which is perfect for a bento box format.
 - **My homepage should be engaging.** If we regress back to the SF tech-bro mentality, the goal of a homepage is to get the user to interact and move somewhere else that retains them on the site <span class="text-muted-foreground">(a.k.a. exploring).</span> All of the above help increase retention <span class="text-muted-foreground">(you need to stay a bit longer to comprehend and explore the graphs, micro-interactions, hover effects, etc.)</span>. I also include social links that will further coax the user into doing something insidious, like following me on [Twitter](https://twitter.com/enscry) and [GitHub](https://github.com/jktrn) <span class="text-muted-foreground">(do that please, you're already here!)</span>.
 - **My homepage should show character.** Although I used to do this with the way I write, eventually this ended up manifesting as an actual character <span class="text-muted-foreground">(the sepia-colored cartoon guy you see throughout my blog, which we'll call a "bean guy").</span> The bean guy is a caricature of myself that I started doodling in middle school, mostly because I couldn't draw people well <span class="text-muted-foreground">(and also because he just looks cute).</span> Even if no one else knows the backstory, adding something so personal gives the site a unique touch and makes it feel more alive.
     <Callout variant="intuition" title="Making the bean guy">
-    To illustrate what I mean by "denoting as many subconscious decisions as I possibly can," let me show you the default bean guy:
+    To illustrate what I mean by "denoting as many subconscious decisions as I possibly can," let me go through the process of how I made the bean guy:
 
     <span class="[&>img]:border-none">![Default bean guy](assets/bean.png)</span>
 
-    The choices behind this design weren't made through conscious deliberation, meaning they just felt right to me. I didn't need to experiment or iterate to reach this version since I already had a clear image in my mind of what I wanted.
+    The choices behind this design weren't made through conscious deliberation <span class="text-muted-foreground">(or if they did, they happened in seconds)</span>, meaning they just felt right to me; I didn't need to experiment or iterate much to get to a point where I was happy:
 
     <span class="[&>img]:border-none">![Bean guy decisions](assets/bean-decisions.png)</span>
     
@@ -187,10 +187,10 @@ Although they may look very different, particularly because my design skills imp
       </ol>
       <ol class="list-decimal list-inside space-y-2 ml-0 [&>li::marker]:[content:'('counter(list-item)')_']" start="6">
         <li>The shoulders can't be too wide, or he looks slumped.</li>
-        <li>The body color should differ from the face to separate them visually.</li>
+        <li>The body color should differ from the face to separate them visually. Even though there's a shadow added under the chin here, it doesn't do enough visually.</li>
         <li>The bean needs human proportions; here, the shoulders are too high and the body too short.</li>
-        <li>In general, the bean should still have the same proportions as a human, so the body shouldn't be too long.</li>
-        <li>Sharp bottom corners help define the shoulders better than rounded ones.</li>
+        <li>The body shouldn't be too long.</li>
+        <li>If you add rounded corners to the bottom, then the shoulders lose their "shoulder" shape.</li>
       </ol>
     </div>
 
@@ -208,14 +208,200 @@ Although they may look very different, particularly because my design skills imp
     Little details like this can make a big difference in how meaningful your presentation is.
     </Callout>
 
-#### Colors and swatches
+### Colors
 
-When I make a website, the very first thing I do is think about colors. I'm not a color theory snob or anything along those lines, but I do understand that color is incredibly important to conveying a particular vibe to a user, especially when the site is commercial <span class="text-muted-foreground">(e.g. you don't want your yoga class one-pager to be grunge black and blood red).</span>
+Whenever I make a website, the very first thing I do is think about colors.
 
-The 60-30-10 rule is a great first step. It states that 60% of your site, visually, should be a primary color, 30% should be a secondary color, and 10% should be an accent color. The point of this is to establish visual hierarchy, where the 10% is meant to draw the user's eye <span class="text-muted-foreground">(e.g. a button or a link, in general more important things).</span>
+#### Connotation, hierarchy
 
-<Callout variant="remark">
-I know I dunked on "best practices" earlier, but I only really do so because people use it as an excuse to be lazy on the design front. From now on, when I mention a rule or "best practice," it is because it is an objectively valid design choice to make.
+I'm not a color theory snob or anything along those lines, but I do understand that color is incredibly important to conveying a particular connotation to a user, especially when the site is commercial <span class="text-muted-foreground">(e.g. you don't want your yoga class one-pager to be grunge black and blood red)</span>. I don't need to go through all the colors and their cultural connotations since it is self-evident.
+
+We use the 60-30-10 rule to establish hierarchy:
+
+<Callout variant="definition" title="60-30-10 rule">
+  The 60-30-10 rule helps us to establish hierarchy. It means that about 60% of your site's visual space <span class="text-muted-foreground">(not actual surface area or pixel count, meaning that a blob of text and a blob of color of the same size both count equally)</span> should use a "primary" color, 30% should use a "secondary" color, and the remaining 10% should be reserved for an "accent" color. Secondary colors are often used to denote sections, while accent colors are used for elements that are meant to grab attention, like buttons or links.
 </Callout>
 
-Personally, I don't even like this ratio and often opt to not use a secondary color due to it introducing too much noise. Rather, a secondary color will emerge when needing to [...]
+Personally, I find that sticking rigidly to this ratio can feel exhausting, and I prefer to design more intuitively and only refer back to the ratio as a sanity check after the fact.
+
+#### Semantic CSS variables
+
+That said, one guideline I do always stick to is using semantically-named color variables in my CSS, which makes the process so much less painful when you're working with a lot of colors/have to change them. I've provided a large example below to illustrate how this works:
+
+<Callout variant="example" title="Semantic CSS variables">
+Let's make a generic hero section! On the left is the HTML source, and on the right is how it renders with no CSS:
+
+<example-section class="grid grid-cols-1 my-4 [&_*]:m-0">
+  <example-source>
+    ```html title="index.html"
+    <section>
+      <h1>Welcome to our website</h1>
+      <p>This is a really cool website with great colors and fonts!</p>
+    </section>
+    ```
+  </example-source>
+  <example-preview>
+    <iframe
+      srcdoc={`<section>
+  <h1>Welcome to our website</h1>
+  <p>This is a really cool website with great colors and fonts!</p>
+</section>`}
+      style={{
+        width: "100%",
+        height: "100%",
+        background: "white",
+        colorScheme: "light",
+      }}
+      sandbox="allow-same-origin"
+      className="h-auto w-full"
+    />
+  </example-preview>
+</example-section>
+
+We'll use Tailwind CSS for this example to warm you up with the notation if you've never seen it before, since it will be important later on. The notation is intuitive: `bg-amber-100` adds an amber-colored background of shade `100` to the section <span class="text-muted-foreground">(where Tailwind has shades `100`-`900` in steps of 100, with an additional `950` for super-dark)</span>:
+
+<example-section class="grid grid-cols-1 my-4 [&_*]:m-0">
+  <example-source>
+    ```html title="index.html"
+    <section class="bg-amber-100">
+      <!-- 12px bottom margin, 24px font size, 500 font weight -->
+      <h1 class="mb-3 text-2xl font-semibold text-stone-900">
+        Welcome to our website
+      </h1>
+      <!-- 1.625 line height, 600 font weight -->
+      <p class="leading-relaxed text-stone-500">
+        This is a really cool website with great colors and fonts!
+      </p>
+    </section>
+    ```
+  </example-source>
+  <example-preview>
+    <iframe
+      srcdoc={`<style>
+        section {
+          background: #fef3c6;
+          padding: 2rem;
+        }
+        h1 {
+          color: #1c1917;
+          font-size: 1.5rem;
+          font-weight: 600;
+          margin-bottom: 0.75rem;
+        }
+        p {
+          color: #79716b;
+          line-height: 1.6;
+        }
+      </style>
+      <section>
+        <h1>Welcome to our website</h1>
+        <p>This is a really cool website with great colors and fonts!</p>
+      </section>`}
+      style={{
+        width: "100%",
+        height: "200px",
+        background: "white",
+        colorScheme: "light",
+      }}
+      sandbox="allow-same-origin"
+      className="h-auto w-full"
+    />
+  </example-preview>
+</example-section>
+
+We can go even further to add a darkmode. With Tailwind, we can add a `dark:` variant prefix to any class to only apply it when the [`prefers-color-scheme` media query](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-color-scheme) is `dark`. Since we can't demonstrate this without changing system preferences, we'll need to manually control the theme. This is done by overriding the `dark:` variant to select for an attribute `data-theme="dark"`:
+
+```css title="styles.css"
+@import "tailwindcss";
+
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+```
+
+We can now use this in our HTML with a tiny script that will toggle the `data-theme` attribute. For my colors, I've made the design decision to have a "warm"-temperature light mode <span>(the `stone` palette)</span> and a "cool"-temperature dark mode <span>(the `slate` palette)</span>, since Tailwind's color palettes offer different shades of gray for this use case:
+
+![Warm and cool temperature palettes](assets/tailwind-temperatures.png)
+
+<example-section class="grid grid-cols-1 my-4 [&_*]:m-0">
+  <example-source>
+    ```html title="index.html" add="data-theme=\"light\"" add="dark:"
+    <button onclick="toggleTheme()" class="mb-2">Toggle theme</button>
+    <section class="bg-amber-100 dark:bg-slate-800" data-theme="light">
+      <h1 class="mb-3 text-2xl font-semibold text-stone-900 dark:text-slate-100">
+        Welcome to our website
+      </h1>
+      <p class="leading-relaxed text-stone-500 dark:text-slate-400">
+        This is a really cool website with great colors and fonts!
+      </p>
+    </section>
+
+    <script>
+      function toggleTheme() {
+        const section = document.querySelector('[data-theme]');
+        const currentTheme = section.getAttribute('data-theme');
+        section.setAttribute('data-theme', currentTheme === 'light' ? 'dark' : 'light');
+      }
+    </script>
+    ```
+  </example-source>
+  <example-preview>
+    <iframe
+      srcdoc={`
+        <style>
+          section {
+            background-color: #fef3c6;
+            padding: 2rem;
+          }
+          
+          section[data-theme="dark"] {
+            background-color: #1e293b;
+          }
+
+          button {
+            margin-bottom: 8px;
+          }
+          
+          h1 {
+            color: #1c1917;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+          }
+          
+          section[data-theme="dark"] h1 {
+            color: #f1f5f9;
+          }
+          
+          p {
+            color: #78716c;
+            line-height: 1.6;
+          }
+          
+          section[data-theme="dark"] p {
+            color: #94a3b8;
+          }
+        </style>
+        <button onclick="toggleTheme()">Toggle theme</button>
+        <section data-theme="light">
+          <h1>Welcome to our website</h1>
+          <p>This is a really cool website with great colors and fonts!</p>
+        </section>
+        <script>
+          function toggleTheme() {
+            const section = document.querySelector('[data-theme]');
+            const currentTheme = section.getAttribute('data-theme');
+            section.setAttribute('data-theme', currentTheme === 'light' ? 'dark' : 'light');
+          }
+        </script>
+      `}
+      style={{
+        width: "100%",
+        height: "250px",
+        background: "white",
+        colorScheme: "light",
+      }}
+      sandbox="allow-same-origin allow-scripts"
+      className="h-auto w-full"
+    />
+  </example-preview>
+</example-section>
+</Callout>
