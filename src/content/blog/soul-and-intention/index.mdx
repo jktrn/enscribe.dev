@@ -42,13 +42,30 @@ The tech world's response to LLMs has been effectively self-sabotage. I have way
 
 The design industry, specifically scoped to web design, is even worse off. Since it sits in the uncomfortable grey-area between the tech world and the art world, neither party claims it. Yet, it still remains vulnerable to the relentless optimization of the former and the relentless subjectivity of the latter.
 
-Even before AI tooling, we've been self-sabotaging our creative liberties through aggressive standardization and abstractions in the name of "best practices" <span class="text-muted-foreground">(I'll admit that many of these best practices are valid and good, but the caveat comes soon)</span>. We homogenize visual language with component libraries and design systems, which eliminate the need to make aesthetic decisions because these libraries are marketed as "designed by professionals" and "best practice." Even though it seems logical/optimal that we use these (lest we reinvent the wheel through remaking 40 different button states and form fields for every client), now everything on the internet that is "best practice" also happens to look exactly like each other. A landscape painting with templated trees that are "very tree-like" and "psychologically optimized to look like a tree" and a pre-made mountain loses a bit of soul, don't you think?
+Even before AI tooling, we've been self-sabotaging our creative liberties through aggressive standardization and abstractions in the name of "best practices" <span class="text-muted-foreground">(I'll admit that many of these best practices are valid and good, but the caveat comes soon)</span>. We homogenize visual language with component libraries and design systems, which eliminate the need to make aesthetic decisions because these libraries are marketed as "designed by professionals" and "best practice." Even though it seems logical/optimal that we use these <span class="text-muted-foreground">(lest we reinvent the wheel through remaking 40 different button states and form fields for every client)</span>, now everything on the internet that is "best practice" also happens to look exactly like each other. A landscape painting with templated trees that are "very tree-like" and "psychologically optimized to look like a tree" and a pre-made mountain loses a bit of soul, don't you think?
 
-The greatest offender is, in my opinion, [shadcn/ui](https://ui.shadcn.com) <span class="text-muted-foreground">(with Google's Material design system coming in close)</span>. This library is actually great to use, since it follows great accessibility standards and UX expectations <span class="text-muted-foreground">(for example, tabbing to a button should show a border ring to indicate it is in-focus)</span>. Its primary issue, which funnily enough is completely out of its control, was that it attempted to mitigate the everything-looks-the-same issue by claiming itself to be a clean baseline that its users can customize and build on top of <span class="text-muted-foreground">(hell, the first sentence in the documentation is **"This is not a component library. It is how you build your component library."**)</span>. To no one's surprise, everyone decided to rawdog the standard library without any customization, defeating its entire purpose and making the web look even more same-y but now with a different and cool Vercel hacker Next.js aesthetic.
+The greatest offender is, in my opinion, [shadcn/ui](https://ui.shadcn.com) <span class="text-muted-foreground">(with Google's Material design system coming in close)</span>:
+
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-2 my-6 [&_*]:m-0">
+  <div>
+    ![v0](assets/shadcn-system.png)
+    <figcaption className="[&>p]:text-muted-foreground text-center [&>p]:mt-2 [&>p]:mb-4">
+      shadcn/ui design system
+    </figcaption>
+  </div>
+  <div>
+    ![Claude](assets/material-system.png)
+    <figcaption className="[&>p]:text-muted-foreground text-center [&>p]:mt-2 [&>p]:mb-4">
+      Google's Material design system
+    </figcaption>
+  </div>
+</div>
+
+shadcn/ui is actually nice to use, since it follows great accessibility standards and UX expectations <span class="text-muted-foreground">(for example, tabbing to a button should show a border ring to indicate it is in-focus)</span>. Its primary issue, which funnily enough is completely out of its control, was that it attempted to mitigate the everything-looks-the-same issue by claiming itself to be a clean baseline that its users can customize and build on top of <span class="text-muted-foreground">(hell, the first sentence in the documentation is **"This is not a component library. It is how you build your component library."**)</span>. To no one's surprise, everyone decided to rawdog the standard library without any customization, defeating its entire purpose and making the web look even more same-y but now with a different and cool Vercel hacker Next.js aesthetic.
 
 This has only been exacerbated with LLMs -- of course it would like these standardizations, because then its less context that it has to eat to generate a button or an input. Anthropic models tend to shit out React and default shadcn/ui components without you even asking for it <span class="text-muted-foreground">(imagine saying "How should I structure my essay?" and it outputs a React-based flowchart)</span>. Even though we used to manually place the templated trees and mountains in their various locations on the canvas, which was better than nothing, now we have fucking robots that will do it for you in a hyperoptimized and speedy way that makes your landscape painting look maximally landscape-y. And everyone in industry took the bait.
 
-### Cleaning up after ourselves
+### Beyond the purple gradient
 
 I think it's fine to embrace these tools as "a means to an end" for things that you can't be bothered with. You cannot catch me lacking because it is evident from my [WakaTime](https://wakatime.com/@jktrn) that I have 1,000 hours in Cursor. My point is that we cannot be replacing the only good thing that's left within frontend web development, the design aspect, with slop. In a similar manner to how we quickly figured out what constitutes AI prose <span class="text-muted-foreground">(e.g. overusing "It's not just [A], it's also [B]" form, vocabulary such as "tapestry" and "embodiment," em dashes, colons in titles, etc.)</span>, our pattern recognition skills have quickly enabled us to point out a vibed website. See this tweet chain:
 
@@ -65,7 +82,7 @@ I think it's fine to embrace these tools as "a means to an end" for things that 
 
 <StaticTweet
   avatar="https://pbs.twimg.com/profile_images/1949145162401136640/yxFdO84t_400x400.jpg"
-  username="Jovan - StarvingHustler.com"
+  username="Jovan"
   handle="jovan___jovan"
   date="12:40 PM · Sep 12, 2025"
   src="https://twitter.com/jovan___jovan/status/1700176543210987654"
@@ -75,7 +92,24 @@ I think it's fine to embrace these tools as "a means to an end" for things that 
   &gt; That Spacing
 </StaticTweet>
 
-I just want to emphasize that there are entire universes of creative opportunities that arise from designing and implementing your sites with **(1) soul** and **(2) intention**. The concept of "making the web more fun" is overused, but I genuinely believe that when you have fun designing, your visitors will have fun looking at what you create. Care about inconsequential things that people will never see, consider things that might never happen, pay the greatest attention to detail as you can possibly muster -- this is my design philosophy, and I hope this is reflected in the work that I produce. I love what I do, and the process doesn't feel like work to me -- maybe this will be the case for you as well.
+It's actually funny that these people are entirely right about the design patterns that leading models have latched onto. I gave the generic prompt "Make a generic tech waitlist" to both v0 and Claude, which both spit out exactly what the tweets describe:
+
+<div class="grid grid-cols-1 gap-2 my-6 [&_*]:m-0">
+  <div>
+    ![v0](assets/v0-generation.png)
+    <figcaption className="[&>p]:text-muted-foreground text-center [&>p]:mt-2 [&>p]:mb-4">
+      v0-generated waitlist
+    </figcaption>
+  </div>
+  <div>
+    ![Claude](assets/claude-generation.png)
+    <figcaption className="[&>p]:text-muted-foreground text-center [&>p]:mt-2 [&>p]:mb-4">
+      Claude-generated waitlist
+    </figcaption>
+  </div>
+</div>
+
+I just want to emphasize that there are entire universes of creative opportunities that arise from designing and implementing your sites with **(1) soul** and **(2) intention**. The concept of "making the web more fun" is overused, but I genuinely believe that when you have fun designing, your visitors will have fun looking at what you create. Care about inconsequential things that people will never see, consider things that might never happen, pay the greatest attention to detail as you can possibly muster. This is my design philosophy, and I hope this is reflected in the work that I produce. I love what I do, and the process doesn't feel like work to me. Maybe this will be the case for you as well.
 
 ---
 
@@ -91,24 +125,90 @@ My goal by the end of this post is to have someone who otherwise dismisses thems
 
 ### A website that shows who you are
 
-The most expressive thing that I've probably done is this website you're looking at. It's hard to get more personal than a personal website, and it really sucks when people make generic white-on-black or black-on-white sites for the sake of "looking clean." Us humans are messy and filled with dreams, aspirations, nostalgia, cherished things, cherished people, and it's never a bad idea to really show who you are.
+The rest of this post will be dedicated to explaining something that I've poured my heart into these past four years: this website! It's a great example of how I approach design because it's probably the most soulful thing that I've made. It's hard to get more personal than a personal website, and it really sucks when people make generic white-on-black or black-on-white sites for the sake of "looking clean." Us humans are messy and filled with dreams, aspirations, nostalgia, cherished things, cherished people, so it's never a bad idea to really show who you are.
 
-I will go through the entire process, from start to finish, denoting as many subconscious decisions as I possibly can, of how I conceptualized the "bento box" layout on my homepage. Hopefully you'll be able to see how I approach design.
+I will go through the entire process, from start to finish, denoting as many subconscious decisions as I possibly can, of how I designed and implemented the homepage of my website. If I were to give you homework, it would be to run through this process yourself on your own website <span class="text-muted-foreground">(or start making one if you don't have one yet).</span>
 
-### Ideation
+#### Ideation, previous iterations
 
-Of course, I didn't start with a bento box. The current homepage has had maybe a dozen revisions done to it since I came up with the idea in 2023. I, and most likely you, started with a generic hackery website as well -- it was only after countless ideas accumulating on top of each other that it got to this point. Here are some screenshots of progression of my website:
+Of course, I didn't start with a bento box. The current homepage has had multiple dozens of revisions done to it since I came up with the idea in 2023. I, and most likely you, started with a generic hackery template theme as well -- it was only after countless ideas accumulating on top of each other that it got to this point. Here are some screenshots of progression of my website, which coincidentally has had one major design overhaul every year for the past four years:
 
-TODO
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-2 my-6 [&_*]:m-0">
+  <div>
+    ![2022](assets/2022.png)
+    <figcaption className="[&>p]:text-muted-foreground text-center [&>p]:mt-2 [&>p]:mb-4">
+      2022
+    </figcaption>
+  </div>
+  <div>
+    ![2023](assets/2023.png)
+    <figcaption className="[&>p]:text-muted-foreground text-center [&>p]:mt-2 [&>p]:mb-4">
+      2023
+    </figcaption>
+  </div>
+  <div>
+    ![2024](assets/2024.png)
+    <figcaption className="[&>p]:text-muted-foreground text-center [&>p]:mt-2 [&>p]:mb-4">
+      2024
+    </figcaption>
+  </div>
+  <div>
+    ![2025](assets/2025.png)
+    <figcaption className="[&>p]:text-muted-foreground text-center [&>p]:mt-2 [&>p]:mb-4">
+      2025
+    </figcaption>
+  </div>
+</div>
 
-Although they may look very different <span class="text-muted-foreground">(exclusively because my design skills improved throughout this entire process)</span> in general I followed several mantras through every iteration:
-- **My homepage should show character.** Although I used to do this with the way I write, eventually this ended up manifesting as an actual character <span class="text-muted-foreground">(the sepia-colored cartoon guy you see throughout my blog, which we'll call a "bean guy").</span> This bean guy caricature of myself is meaningful because I used to draw him while doodling in middle school, since I had no idea how to properly draw a human <span class="text-muted-foreground">(and because it looks cute).</span> This also brings up the point that meaning, even when personal and unbeknownst to anyone else, provides a lot of value**. [TODO: Talk about how the face is intentionally short, size of the mouth, size of the eyes, etc]**
-- **My homepage should quickly introduce myself.** I used to do this with a small paragraph blurb <span class="text-muted-foreground">(which is what every personal homepage does)</span>, but when I was making the bento box I really felt like it looked like a cartoon panel, so I opted for the approach of having text bubbles come out of the bean guy to emulate me "talking" to the user, which makes it feel a tad bit more personal.
-- **My homepage should have interactivity.** Little micro-interactions, no matter how small, can provide a lot of life to an otherwise static site. This is why I ended up adding those hover effects that you'll see the implementation process for later.
-- **My homepage should show data about myself.** This ended up being the Spotify status, Discord status, WakaTime bar chart, and the GitHub calendar. In hindsight this idea was incredible, especially since it's appropriate for a bento box format in that there are lots of disparate but related things being shoved together coherently.
-- **My homepage should be engaging.** If we regress back to the SF tech-bro mentality, the goal of a homepage is to get the user to interact and move somewhere else that retains them on the site (a.k.a. exploring). All of the above help increase retention <span class="text-muted-foreground">(you need to stay a bit longer to comprehend and explore the graphs, micro-interactions, hover efffects, etc.)</span>, but I additionally include social links that will further coax the user into doing something insidious like following me on [Twitter](https://twitter.com/enscry) and [GitHub](https://github.com/jktrn) <span class="text-muted-foreground">(do that please, you're already here!)</span>.
 
-### Colors and swatches
+Although they may look very different, particularly because my design skills improved throughout this entire process, in general I followed several mantras through every iteration:
+
+- **My homepage should quickly introduce myself.** I used to do this with a small paragraph blurb. When I was making the bento box, I really felt like it looked like a cartoon panel. I opted for the approach of having text bubbles come out of the bean guy to emulate me "talking" to the user, which makes it feel a tad bit more personal.
+- **My homepage should have interactivity.** Little micro-interactions, no matter how small, can provide a lot of life to an otherwise static site. This is why I ended up adding those hover effects. You'll see the implementation process for these later.
+- **My homepage should show data about myself.** This ended up being the Spotify status, Discord status, WakaTime bar chart, and the GitHub calendar. In hindsight, this idea was incredible, since there are lots of disparate but related things, which is perfect for a bento box format.
+- **My homepage should be engaging.** If we regress back to the SF tech-bro mentality, the goal of a homepage is to get the user to interact and move somewhere else that retains them on the site <span class="text-muted-foreground">(a.k.a. exploring).</span> All of the above help increase retention <span class="text-muted-foreground">(you need to stay a bit longer to comprehend and explore the graphs, micro-interactions, hover effects, etc.)</span>. I also include social links that will further coax the user into doing something insidious, like following me on [Twitter](https://twitter.com/enscry) and [GitHub](https://github.com/jktrn) <span class="text-muted-foreground">(do that please, you're already here!)</span>.
+- **My homepage should show character.** Although I used to do this with the way I write, eventually this ended up manifesting as an actual character <span class="text-muted-foreground">(the sepia-colored cartoon guy you see throughout my blog, which we'll call a "bean guy").</span> The bean guy is a caricature of myself that I started doodling in middle school, mostly because I couldn't draw people well <span class="text-muted-foreground">(and also because he just looks cute).</span> Even if no one else knows the backstory, adding something so personal gives the site a unique touch and makes it feel more alive.
+    <Callout variant="intuition" title="Making the bean guy">
+    To illustrate what I mean by "denoting as many subconscious decisions as I possibly can," let me show you the default bean guy:
+
+    <span class="[&>img]:border-none">![Default bean guy](assets/bean.png)</span>
+
+    The choices behind this design weren't made through conscious deliberation, meaning they just felt right to me. I didn't need to experiment or iterate to reach this version since I already had a clear image in my mind of what I wanted.
+
+    <span class="[&>img]:border-none">![Bean guy decisions](assets/bean-decisions.png)</span>
+    
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <ol class="list-decimal list-inside space-y-2 ml-0 [&>li::marker]:[content:'('counter(list-item)')_']">
+        <li>Adding a nose is fine, but for some reason leaving it out makes the character cuter, so no nose.</li>
+        <li>Placing the face exactly in the center makes him look too chubby for my taste.</li>
+        <li>Putting the face too close to the edge looks odd, so I keep it off-center with enough padding inside the head.</li>
+        <li>If the eyes are too small or the mouth too narrow, he looks derpy.</li>
+        <li>If the eyes or mouth are too large, he starts to look like a monster.</li>
+      </ol>
+      <ol class="list-decimal list-inside space-y-2 ml-0 [&>li::marker]:[content:'('counter(list-item)')_']" start="6">
+        <li>The shoulders can't be too wide, or he looks slumped.</li>
+        <li>The body color should differ from the face to separate them visually.</li>
+        <li>The bean needs human proportions; here, the shoulders are too high and the body too short.</li>
+        <li>In general, the bean should still have the same proportions as a human, so the body shouldn't be too long.</li>
+        <li>Sharp bottom corners help define the shoulders better than rounded ones.</li>
+      </ol>
+    </div>
+
+    Another great thing about the bean guy is that because he is so simple, he is also easily accessorized:
+
+    <span class="[&>img]:border-none">![Bean guy accessories](assets/bean-accessories.png)</span>
+
+    This was great to use in my [Japan retrospective](/blog/japan-retrospective) post to censor out my family members' faces whilst still identifying them. There are also a lot of details here:
+    
+    - The accessories actually represent habits that my family members have <span class="text-muted-foreground">(e.g. Dad wearing a tie, Little Brother always wearing headphones, Mom with a flower pin)</span>.
+    - In general, everything has to be sepia-colored to match the overall theme. The accessories I picked were either hand-made or found on Google Images with the `filetype:svg` filter.
+    - Even though Dad can wear a tie, I also decided that he'd have a darker body color to differentiate him from me <span class="text-muted-foreground">(the unaccessorized bean)</span> since we both have no accessory on our heads. In the end, everyone has a very slightly different body color, which might not be noticeable on bad monitors but is fine for me.
+    - The version of me with a scarf is actually only used a single time, on the homepage for when my character is in a "cold climate" setting <span class="text-muted-foreground">(a mountain range)</span>.
+
+    Little details like this can make a big difference in how meaningful your presentation is.
+    </Callout>
+
+#### Colors and swatches
 
 When I make a website, the very first thing I do is think about colors. I'm not a color theory snob or anything along those lines, but I do understand that color is incredibly important to conveying a particular vibe to a user, especially when the site is commercial <span class="text-muted-foreground">(e.g. you don't want your yoga class one-pager to be grunge black and blood red).</span>
 
