@@ -1,14 +1,17 @@
 ---
-title: 'My Design Process'
+title: 'Building Websites We Cherish'
 description: 'With web development becoming a solved problem, differentiating between soulless “slop” and something meaningful comes down to thought and intention.'
 date: 2025-09-17
 authors: ['enscribe']
 ---
 
 import Callout from '@/components/mdx/Callout.astro'
+import { Icon } from 'astro-icon/components'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 
 <div class="invisible h-0! [&+*]:mt-0 [&+*_*]:mt-0">
-## My design process
+## Building websites we cherish
 </div>
 
 This subpost is dedicated to exploring the process of designing/implementing the homepage of this website.
@@ -95,18 +98,14 @@ Although they may look very different, in general I followed several mantras thr
     Little details like this can make a big difference in how meaningful your presentation is.
     </Callout>
 
-### Colors
+### Color palettes
 
-Whenever I make a website, the very first thing I do is think about colors.
-
-#### Connotation, hierarchy
-
-I'm not a color theory snob or anything along those lines, but I do understand that color is incredibly important to conveying a particular connotation to a user, especially when the site is commercial <span class="text-muted-foreground">(e.g. you don't want your yoga class one-pager to be grunge black and blood red)</span>. I don't need to go through all the colors and their cultural connotations since it is self-evident.
+Whenever I make a website, the very first thing I do is think about colors. I'm not a color theory snob or anything along those lines, but I do understand that color is incredibly important to conveying a particular connotation to a user, especially when the site is commercial <span class="text-muted-foreground">(e.g. you don't want your yoga class one-pager to be grunge black and blood red)</span>. I don't need to go through all the colors and their cultural connotations since it is self-evident.
 
 We use the 60-30-10 rule to establish hierarchy:
 
 <Callout variant="definition" title="60-30-10 rule">
-  The 60-30-10 rule helps us to establish hierarchy. It means that about 60% of your site's visual space should use a "primary" color, 30% should use a "secondary" color, and the remaining 10% should be reserved for an "accent" color. Secondary colors are often used to denote sections, while accent colors are used for elements that are meant to grab attention, like buttons or links.
+  60% of your site's visual space should use a "primary" color, 30% should use a "secondary" color, and the remaining 10% should be reserved for an "accent" color. Secondary colors are often used to denote sections, while accent colors are used for elements that are meant to grab attention, like buttons or links.
 </Callout>
 
 Personally, I find that sticking rigidly to this ratio can feel exhausting, and I prefer to design more intuitively and only refer back to the ratio as a sanity check after the fact.
@@ -339,4 +338,331 @@ We now refactor our classes to use the new semantic variables:
 </example-section>
 
 This looks just so much better than the old versions, and it's easier to maintain.
+
+<Callout variant="remark" title="Native approaches">
+While Tailwind (in my opinion) is phenomenal <abbr title="Developer Experience">DX</abbr> for its tradeoff, native CSS in 2025 is also awesome and viable in this use case! Here, we can use `color-scheme: light dark{:css}` to automatically apply the correct colors based on the user's system preference, and then use `light-dark(){:css}` to apply different styles for each theme:
+
+```css title="styles.css"
+:root {
+  color-scheme: light dark;
+  /* Since Tailwind isn't imported here, these color variables won't actually resolve. This is just for demonstration purposes. */
+  --background: light-dark(var(--color-amber-100), var(--color-slate-800));
+  --foreground: light-dark(var(--color-stone-900), var(--color-slate-100));
+  --muted-foreground: light-dark(var(--color-stone-500), var(--color-slate-400));
+}
+```
+
+If you wish to let the user override their preference, you can do so with a picker that toggles the `color-scheme` property. Although you can't actually save user preference without JavaScript, this is a progressive enhancement opportunity.
 </Callout>
+</Callout>
+
+#### Choosing colors with oklch()
+
+For all of my color palettes, I use a simpler version of the [shadcn/ui](https://ui.shadcn.com/docs/theming) naming convention, which likes to specify foreground-background pairs. I cut down the variables to only include relevant ones:
+
+```css title="styles.css" del={2, 5-8, 11-12, 15-16, 19, 21-33}
+:root {
+  --radius: /* ... */rem;
+  --background: oklch(/* ... */);
+  --foreground: oklch(/* ... */);
+  --card: oklch(/* ... */);
+  --card-foreground: oklch(/* ... */);
+  --popover: oklch(/* ... */);
+  --popover-foreground: oklch(/* ... */);
+  --primary: oklch(/* ... */);
+  --primary-foreground: oklch(/* ... */);
+  --secondary: oklch(/* ... */);
+  --secondary-foreground: oklch(/* ... */);
+  --muted: oklch(/* ... */);
+  --muted-foreground: oklch(/* ... */);
+  --accent: oklch(/* ... */);
+  --accent-foreground: oklch(/* ... */);
+  --destructive: oklch(/* ... */);
+  --border: oklch(/* ... */);
+  --input: oklch(/* ... */);
+  --ring: oklch(/* ... */);
+  --chart-1: oklch(/* ... */);
+  --chart-2: oklch(/* ... */);
+  --chart-3: oklch(/* ... */);
+  --chart-4: oklch(/* ... */);
+  --chart-5: oklch(/* ... */);
+  --sidebar: oklch(/* ... */);
+  --sidebar-foreground: oklch(/* ... */);
+  --sidebar-primary: oklch(/* ... */);
+  --sidebar-primary-foreground: oklch(/* ... */);
+  --sidebar-accent: oklch(/* ... */);
+  --sidebar-accent-foreground: oklch(/* ... */);
+  --sidebar-border: oklch(/* ... */);
+  --sidebar-ring: oklch(/* ... */);
+}
+```
+
+For choosing the colors themselves, this was done by [manually fiddling](https://oklch.com) with [`oklch()` notation](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/oklch). `oklch()` is objectively the perfect way to work with color, because its only inherent limitations are **(1)** the literal human eye, **(2)** visual display/monitor capabilities, and **(3)** it being too new.
+
+If you haven't seen `oklch()` before, the format is `oklch(L C H / a)`. Here, `L` is "perceived" lightness <span class="text-muted-foreground">(dark to bright, 0–1)</span>, `C` is chroma <span class="text-muted-foreground">(dull to vivid, 0–∞)</span>, `H` is hue angle <span class="text-muted-foreground">(0–360°)</span>, and `a` is optional alpha/opacity. If you had no idea what any of that meant, here are explanations:
+- The reason why the lightness `L` is preceded by "perceived" is because there is a difference between perceptual uniformity and mathematical uniformity. One of the primary drawbacks of HSL was that if we were to define a yellow and a blue at 50% lightness, the blue looks much "darker" than the yellow:
+
+  <color-comparison class="grid grid-cols-2 grid-rows-2 gap-3 items-center justify-center my-6 [&_*]:m-0">
+    <div class="flex flex-col items-center gap-1">
+      <color-box class="h-16 w-full bg-[hsl(50,100%,50%)]" />
+      <figcaption class="[&>p]:text-muted-foreground [&>p]:text-xs text-center">
+        hsl(<span class="text-foreground font-medium">50</span> 100% 50%)
+      </figcaption>
+    </div>
+    <div class="flex flex-col items-center gap-1">
+      <color-box class="h-16 w-full bg-[hsl(220,100%,50%)]" />
+      <figcaption class="[&>p]:text-muted-foreground [&>p]:text-xs text-center">
+        hsl(<span class="text-foreground font-medium">220</span> 100% 50%)
+      </figcaption>
+    </div>
+    <div class="flex flex-col items-center gap-1">
+      <color-box class="h-16 w-full bg-[oklch(0.8_0.18_97)]" />
+      <figcaption class="[&>p]:text-muted-foreground [&>p]:text-xs text-center">
+        oklch(0.8 0.18 <span class="text-foreground font-medium">97</span>)
+      </figcaption>
+    </div>
+    <div class="flex flex-col items-center gap-1">
+      <color-box class="h-16 w-full bg-[oklch(0.8_0.18_264)]" />
+      <figcaption class="[&>p]:text-muted-foreground [&>p]:text-xs text-center">
+        oklch(0.8 0.18 <span class="text-foreground font-medium">264</span>)
+      </figcaption>
+    </div>
+  </color-comparison>
+
+  Note that the hue angles here are different because 0° in `oklch()` <span class="text-muted-foreground">(which uses [CIELab](https://en.wikipedia.org/wiki/CIELAB_color_space) color space due to its perceptual uniformity)</span> is roughly magenta, while 0° in `hsl()` <span class="text-muted-foreground">(which uses the ancient [sRGB](https://en.wikipedia.org/wiki/SRGB) color space)</span> is roughly red.
+
+- The chroma `C` is technically unbounded because **(1)** its maximum depends on your hardware <span class="text-muted-foreground">(higher-end monitors can display a wider range of colors)</span>, and **(2)** the highest possible chroma also varies depending on the specific lightness-hue pairing. You don't need to worry about exceeding the limit, since browsers will automatically clamp out-of-gamut values to the closest displayable color. However, in practice values above `0.4` aren't useful <span class="text-muted-foreground">(`0.4` is what you get if you use `100%` chroma in percentage notation)</span>.
+- The `H` in `oklch()` is called a hue "angle" because the color space is defined using polar coordinates: `C` is the chroma (distance from the center), and `H` is the angle around the color wheel. This is more intuitive for most people than the Cartesian coordinates used in `oklab(L a b)` <span class="text-muted-foreground">(where `a` and `b` is a point `(a, b)` in color space)</span>, thus making it easier to fiddle with colors.
+
+For my specific color palette, I started with the color <code class="bg-background"><span class="inline-block align-text-bottom bg-[oklch(0.8775_0.0458_75)] size-4 border" /> oklch(0.8775 0.0458 75)</code> to be my "accent" color <span class="text-muted-foreground">(which would be `--color-primary` in shadcn/ui convention)</span>. From here, you can define colors "around" this color:
+
+<color-comparison class="grid grid-cols-2 sm:grid-cols-4 gap-3 items-start justify-center my-6 [&_*]:m-0">
+  <div class="flex flex-col items-center gap-1">
+    <color-box class="h-16 w-full bg-[oklch(0.172_0.004_75)] border" />
+    <figcaption class="[&>p]:text-muted-foreground [&>p]:text-xs text-center">
+      background<br />
+      oklch(0.172 0.004 <span class="text-foreground font-medium">75</span>)
+    </figcaption>
+  </div>
+  <div class="flex flex-col items-center gap-1">
+    <color-box class="h-16 w-full bg-[oklch(0.947_0.041_75)]" />
+    <figcaption class="[&>p]:text-muted-foreground [&>p]:text-xs text-center">
+      foreground<br />
+      oklch(0.947 0.041 <span class="text-foreground font-medium">75</span>)
+    </figcaption>
+  </div>
+  <div class="flex flex-col items-center gap-1">
+    <color-box class="h-16 w-full bg-[oklch(0.878_0.046_75)]" />
+    <figcaption class="[&>p]:text-muted-foreground [&>p]:text-xs text-center">
+      primary<br />
+      oklch(0.878 0.046 <span class="text-foreground font-medium">75</span>)
+    </figcaption>
+  </div>
+  <div class="flex flex-col items-center gap-1">
+    <color-box class="h-16 w-full bg-[oklch(0.209_0.006_75)] border" />
+    <figcaption class="[&>p]:text-muted-foreground [&>p]:text-xs text-center">
+      primary-foreground<br />
+      oklch(0.209 0.006 <span class="text-foreground font-medium">75</span>)
+    </figcaption>
+  </div>
+  <div class="flex flex-col items-center gap-1">
+    <color-box class="h-16 w-full bg-[oklch(0.209_0.006_75)] border" />
+    <figcaption class="[&>p]:text-muted-foreground [&>p]:text-xs text-center">
+      muted<br />
+      oklch(0.209 0.006 <span class="text-foreground font-medium">75</span>)
+    </figcaption>
+  </div>
+  <div class="flex flex-col items-center gap-1">
+    <color-box class="h-16 w-full bg-[oklch(0.681_0.024_75)]" />
+    <figcaption class="[&>p]:text-muted-foreground [&>p]:text-xs text-center">
+      muted-foreground<br />
+      oklch(0.681 0.024 <span class="text-foreground font-medium">75</span>)
+    </figcaption>
+  </div>
+  {/* <div class="flex flex-col items-center gap-1">
+    <color-box class="h-16 w-full bg-[oklch(0.704_0.191_22)]" />
+    <figcaption class="[&>p]:text-muted-foreground [&>p]:text-xs text-center">
+      --destructive<br />
+      oklch(0.704 0.191 <span class="text-foreground font-medium">22</span>)
+    </figcaption>
+  </div> */}
+  <div class="flex flex-col items-center gap-1">
+    <color-box class="h-16 w-full bg-[oklch(0.307_0.009_75)]" />
+    <figcaption class="[&>p]:text-muted-foreground [&>p]:text-xs text-center">
+      border<br />
+      oklch(0.307 0.009 <span class="text-foreground font-medium">75</span>)
+    </figcaption>
+  </div>
+  <div class="flex flex-col items-center gap-1">
+    <color-box class="h-16 w-full bg-[oklch(0.486_0.017_75)]" />
+    <figcaption class="[&>p]:text-muted-foreground [&>p]:text-xs text-center">
+      ring<br />
+      oklch(0.486 0.017 <span class="text-foreground font-medium">75</span>)
+    </figcaption>
+  </div>
+</color-comparison>
+
+Here are some general comments on my thought process behind both the selection of colors and their usage:
+- Everything should have the same hue angle, meaning we can change it however we want and the colors will adjust relative to each other. For example, if we swap all the 75s to 200s, the entire website will become a nice baby blue:
+
+  <color-comparison class="grid grid-cols-2 sm:grid-cols-4 gap-3 items-start justify-center my-6 [&_*]:m-0">
+    <div class="flex flex-col items-center gap-1">
+      <color-box class="h-16 w-full bg-[oklch(0.172_0.004_200)] border" />
+      <figcaption class="[&>p]:text-muted-foreground [&>p]:text-xs text-center">
+        background<br />
+        oklch(... ... <span class="text-foreground font-medium">200</span>)
+      </figcaption>
+    </div>
+    <div class="flex flex-col items-center gap-1">
+      <color-box class="h-16 w-full bg-[oklch(0.947_0.041_200)]" />
+      <figcaption class="[&>p]:text-muted-foreground [&>p]:text-xs text-center">
+        foreground<br />
+        oklch(... ... <span class="text-foreground font-medium">200</span>)
+      </figcaption>
+    </div>
+    <div class="flex flex-col items-center gap-1">
+      <color-box class="h-16 w-full bg-[oklch(0.878_0.046_200)]" />
+      <figcaption class="[&>p]:text-muted-foreground [&>p]:text-xs text-center">
+        primary<br />
+        oklch(... ... <span class="text-foreground font-medium">200</span>)
+      </figcaption>
+    </div>
+    <div class="flex flex-col items-center gap-1">
+      <color-box class="h-16 w-full bg-[oklch(0.209_0.006_200)] border" />
+      <figcaption class="[&>p]:text-muted-foreground [&>p]:text-xs text-center">
+        primary-foreground<br />
+        oklch(... ... <span class="text-foreground font-medium">200</span>)
+      </figcaption>
+    </div>
+    <div class="flex flex-col items-center gap-1">
+      <color-box class="h-16 w-full bg-[oklch(0.209_0.006_200)] border" />
+      <figcaption class="[&>p]:text-muted-foreground [&>p]:text-xs text-center">
+        muted<br />
+        oklch(... ... <span class="text-foreground font-medium">200</span>)
+      </figcaption>
+    </div>
+    <div class="flex flex-col items-center gap-1">
+      <color-box class="h-16 w-full bg-[oklch(0.681_0.024_200)]" />
+      <figcaption class="[&>p]:text-muted-foreground [&>p]:text-xs text-center">
+        muted-foreground<br />
+        oklch(... ... <span class="text-foreground font-medium">200</span>)
+      </figcaption>
+    </div>
+    {/* <div class="flex flex-col items-center gap-1">
+      <color-box class="h-16 w-full bg-[oklch(0.704_0.191_22)]" />
+      <figcaption class="[&>p]:text-muted-foreground [&>p]:text-xs text-center">
+        --destructive<br />
+        oklch(0.704, 0.191, <span class="text-foreground font-medium">22</span>)
+      </figcaption>
+    </div> */}
+    <div class="flex flex-col items-center gap-1">
+      <color-box class="h-16 w-full bg-[oklch(0.307_0.009_200)]" />
+      <figcaption class="[&>p]:text-muted-foreground [&>p]:text-xs text-center">
+        border<br />
+        oklch(... ... <span class="text-foreground font-medium">200</span>)
+      </figcaption>
+    </div>
+    <div class="flex flex-col items-center gap-1">
+      <color-box class="h-16 w-full bg-[oklch(0.486_0.017_200)]" />
+      <figcaption class="[&>p]:text-muted-foreground [&>p]:text-xs text-center">
+        ring<br />
+        oklch(... ... <span class="text-foreground font-medium">200</span>)
+      </figcaption>
+    </div>
+  </color-comparison>
+
+- I chose a dark gray for <code class="bg-background"><span class="inline-block align-text-bottom bg-background border size-4" /> background</code> instead of pure black to create a sense of warmth (when we change the hue angle from 75° to 200° above, this becomes a "cool gray"). This is a very subtle warmth that helps the other colors feel more cohesive, rather than isolated against a stark and neutral black. See the following:
+
+  <color-comparison class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-start justify-center my-6 [&_*]:m-0">
+    <div class="flex flex-col items-center gap-1">
+      <color-box class="h-16 w-full bg-black flex items-center justify-center border">
+        <p class="text-foreground font-medium text-center">Hello world!</p>
+      </color-box>
+      <figcaption class="[&>p]:text-muted-foreground [&>p]:text-xs text-center">
+        foreground on black
+      </figcaption>
+    </div>
+    <div class="flex flex-col items-center gap-1">
+      <color-box class="h-16 w-full bg-background flex items-center justify-center border">
+        <p class="text-foreground font-medium text-center">Hello world!</p>
+      </color-box>
+      <figcaption class="[&>p]:text-muted-foreground [&>p]:text-xs text-center">
+        foreground on background
+      </figcaption>
+    </div>
+        <div class="flex flex-col items-center gap-1">
+      <color-box class="h-16 w-full bg-[oklch(0.172_0.004_200)] flex items-center justify-center border">
+        <p class="text-[oklch(0.947_0.041_200)] font-medium text-center">Hello world!</p>
+      </color-box>
+      <figcaption class="[&>p]:text-muted-foreground [&>p]:text-xs text-center">
+        foreground on background (blue)
+      </figcaption>
+    </div>
+  </color-comparison>
+
+- <code class="bg-background"><span class="inline-block align-text-bottom bg-foreground border size-4" /> foreground</code> will only ever be used for text elements. We'll never do anything like <code class="bg-background"><span class="inline-block align-text-bottom bg-foreground border size-4" /> bg-foreground</code> because this is very unintuitive. I chose <code class="bg-background"><span class="inline-block align-text-bottom bg-foreground border size-4" /> foreground</code> to be a slightly desaturated and brighter version of <code class="bg-background"><span class="inline-block align-text-bottom bg-primary border size-4" /> primary</code> so that the text contrast is still good.
+- We can't do <code class="bg-background"><span class="inline-block align-text-bottom bg-foreground border size-4" /> text-foreground <span class="inline-block align-text-bottom bg-background border size-4" /> bg-background</code> for prose text because the contrast is too stark. I like to establish a hierarchy here, with the following levels:
+  1. <code class="bg-background"><span class="inline-block align-text-bottom bg-foreground border size-4" /> text-foreground</code> exists for bold text and links. This is different from <code class="bg-background"><span class="inline-block align-text-bottom bg-primary border size-4" /> text-primary</code>, which is only used for SVG icons due to SVGs inheriting text color.
+  2. <code class="bg-background"><span class="inline-block align-text-bottom bg-foreground/80 border size-4" /> text-foreground/80</code> exists for prose text. It's softer due to it being lower contrast, and thus it's easier on the eyes to read.
+  3. <code class="bg-background"><span class="inline-block align-text-bottom bg-muted-foreground border size-4" /> text-muted-foreground</code> exists for secondary text, captions, or less important details. 
+  4. <code class="bg-background"><span class="inline-block align-text-bottom bg-muted-foreground/60 border size-4" /> text-muted-foreground/60</code> exists for things that are meant to be irrelevant or disabled. For example, if you're on a desktop, the headers from the parent post will be this color because they're not relevant to this post.
+
+  <color-comparison class="grid grid-cols-1 sm:grid-cols-4 gap-3 items-start justify-center my-6 [&_*]:m-0">
+    <div class="flex flex-col items-center gap-1">
+      <color-box class="h-16 w-full bg-background flex items-center justify-center border">
+        <p class="text-foreground font-medium">Hello world!</p>
+      </color-box>
+      <figcaption class="[&>p]:text-muted-foreground [&>p]:text-xs text-center">
+        foreground
+      </figcaption>
+    </div>
+    <div class="flex flex-col items-center gap-1">
+      <color-box class="h-16 w-full bg-background flex items-center justify-center border">
+        <p class="text-foreground/80 font-medium">Hello world!</p>
+      </color-box>
+      <figcaption class="[&>p]:text-muted-foreground [&>p]:text-xs text-center">
+        foreground/80
+      </figcaption>
+    </div>
+    <div class="flex flex-col items-center gap-1">
+      <color-box class="h-16 w-full bg-background flex items-center justify-center border">
+        <p class="text-muted-foreground font-medium">Hello world!</p>
+      </color-box>
+      <figcaption class="[&>p]:text-muted-foreground [&>p]:text-xs text-center">
+        muted-foreground
+      </figcaption>
+    </div>
+    <div class="flex flex-col items-center gap-1">
+      <color-box class="h-16 w-full bg-background flex items-center justify-center border">
+        <p class="text-muted-foreground/60 font-medium">Hello world!</p>
+      </color-box>
+      <figcaption class="[&>p]:text-muted-foreground [&>p]:text-xs text-center">
+        muted-foreground/60
+      </figcaption>
+    </div>
+  </color-comparison>
+
+- <code class="bg-background"><span class="inline-block align-text-bottom bg-primary border size-4" /> primary</code> is only really used for backgrounds on buttons, badges, and icons. Text within <code class="bg-background"><span class="inline-block align-text-bottom bg-primary border size-4" /> primary</code>-colored buttons and badges is the only case where we'll use <code class="bg-background"><span class="inline-block align-text-bottom bg-primary-foreground border size-4" /> text-primary-foreground</code>, which I chose to be the same color as <code class="bg-background"><span class="inline-block align-text-bottom bg-muted border size-4" /> muted</code> rather than <code class="bg-background"><span class="inline-block align-text-bottom bg-background border size-4" /> background</code>:
+
+<div class="flex gap-4 flex-wrap items-end justify-center border w-full p-4 [&_*]:m-0">
+    <div class="flex flex-col items-center gap-1">
+      <Button>Button</Button>
+      <figcaption class="[&>p]:text-muted-foreground [&>p]:text-xs text-center">
+        Primary button
+      </figcaption>
+    </div>
+    <div class="flex flex-col items-center gap-1">
+      <Badge>Badge</Badge>
+      <figcaption class="[&>p]:text-muted-foreground [&>p]:text-xs text-center">
+        Primary badge
+      </figcaption>
+    </div>
+    <div class="flex flex-col items-center gap-1">
+      <Icon name="lucide:key" class="size-4" />
+      <figcaption class="[&>p]:text-muted-foreground [&>p]:text-xs text-center">
+        Primary icon
+      </figcaption>
+    </div>
+</div>
+
+- <code class="bg-background"><span class="inline-block align-text-bottom bg-muted border size-4" /> muted</code> is used similarly to "secondary" in the 60-30-10 rule to help establish a hierarchy above the <code class="bg-background"><span class="inline-block align-text-bottom bg-background border size-4" /> background</code> color. It's most often used when hovering over elements that would otherwise be <code class="bg-background"><span class="inline-block align-text-bottom bg-background border size-4" /> background</code>-colored, or to indicate that a hovered element is considered active. If there is already an existing active element, hovering over elements will instead use <code class="bg-background"><span class="inline-block align-text-bottom bg-muted/50 border size-4" /> muted/50</code> to differentiate.
