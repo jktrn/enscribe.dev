@@ -52,8 +52,8 @@ const parentId = isCurrentSubpost ? getParentId(currentPostId) : currentPostId
                           'text-sm',
                           getHeadingMargin(heading.depth),
                           isCurrentSubpost
-                            ? 'text-foreground/40'
-                            : 'text-foreground/60',
+                            ? 'text-muted-foreground/60'
+                            : 'text-muted-foreground',
                         )}
                       >
                         <a
@@ -84,9 +84,9 @@ const parentId = isCurrentSubpost ? getParentId(currentPostId) : currentPostId
                             'text-xs',
                             getHeadingMargin(heading.depth),
                             section.subpostId === currentPostId
-                              ? 'text-foreground/60'
+                              ? 'text-muted-foreground'
                               : heading.isSubpostTitle
-                                ? 'text-foreground/60'
+                                ? 'text-muted-foreground'
                                 : 'text-foreground/30',
                           )}
                         >
@@ -96,7 +96,7 @@ const parentId = isCurrentSubpost ? getParentId(currentPostId) : currentPostId
                                 ? `#${heading.slug}`
                                 : `/blog/${section.subpostId}#${heading.slug}`
                             }
-                            class="marker:text-foreground/30 hover:text-foreground/60 list-none underline decoration-transparent underline-offset-[3px] transition-colors duration-200 hover:decoration-inherit"
+                            class="marker:text-foreground/30 hover:text-muted-foreground list-none underline decoration-transparent underline-offset-[3px] transition-colors duration-200 hover:decoration-inherit"
                             data-heading-link={
                               section.subpostId === currentPostId
                                 ? heading.slug

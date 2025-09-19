@@ -29,9 +29,9 @@ const isSubpost = !!parentPost
     />
     <div class="flex flex-col items-start overflow-hidden text-wrap">
       <span class="text-muted-foreground text-left text-xs">
-        {isSubpost ? 'Previous Subpost' : 'Previous Post'}
+        {isSubpost ? 'Previous subpost' : 'Previous post'}
       </span>
-      <span class="w-full text-left text-sm text-balance text-ellipsis">
+      <span class="w-full text-left text-sm text-balance text-ellipsis line-clamp-2">
         {
           olderPost?.data.title ||
             (isSubpost ? 'No older subpost!' : "You're at the oldest post!")
@@ -56,9 +56,9 @@ const isSubpost = !!parentPost
         />
         <div class="flex flex-col items-center overflow-hidden text-wrap">
           <span class="text-muted-foreground text-center text-xs">
-            Parent Post
+            Parent post
           </span>
-          <span class="w-full text-center text-sm text-balance text-ellipsis">
+          <span class="w-full text-center text-sm text-balance text-ellipsis line-clamp-2">
             {parentPost?.data.title || 'No parent post!'}
           </span>
         </div>
@@ -77,7 +77,7 @@ const isSubpost = !!parentPost
   >
     <div class="flex flex-col items-end overflow-hidden text-wrap">
       <span class="text-muted-foreground text-right text-xs">
-        {isSubpost ? 'Next Subpost' : 'Next Post'}
+        {isSubpost ? 'Next subpost' : 'Next post'}
       </span>
       <span class="w-full text-right text-sm text-balance text-ellipsis">
         {
