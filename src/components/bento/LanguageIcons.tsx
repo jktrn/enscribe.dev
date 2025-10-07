@@ -5,6 +5,7 @@ import {
   SiCplusplus,
   // SiCsharp,
   SiCss3,
+  SiFigma,
   SiHtml5,
   SiJavascript,
   SiJson,
@@ -31,6 +32,7 @@ export const languageIcons: { [key: string]: IconType } = {
   json: SiJson,
   yaml: SiYaml,
   tex: SiLatex,
+  figma: SiFigma,
 }
 
 export const getLanguageIcon = (language: string): React.ReactNode | null => {

@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils'
 import { Icon } from 'astro-icon/components'
 
 interface Props {
-  variant?: 'default' | 'secondary' | 'destructive' | 'outline'
+  variant?: 'default' | 'muted' | 'destructive' | 'outline'
   className?: string
   children?: any
   text?: string
@@ -12,7 +12,7 @@ interface Props {
 }
 
 const {
-  variant = 'secondary',
+  variant = 'muted',
   className = '',
   children,
   text,
@@ -176,7 +176,7 @@ const categoryStyle = getCategoryStyle(content)
 ---
 
 <BadgeComponent
-  variant={categoryStyle ? 'secondary' : variant}
+  variant={categoryStyle ? 'muted' : variant}
   className={cn(categoryStyle?.color, className)}
   client:load
 >
