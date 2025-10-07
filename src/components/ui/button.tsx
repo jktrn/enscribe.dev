@@ -14,7 +14,7 @@ const buttonVariants = cva(
           'bg-destructive text-white hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60',
         outline:
           'border bg-background hover:bg-muted hover:text-[oklch(from_var(--color-foreground)_calc(l+0.25)_c_h)]',
-        secondary:
+        muted:
           'bg-muted text-muted-foreground hover:bg-muted/80',
         ghost:
           'hover:bg-muted hover:text-[oklch(from_var(--color-foreground)_calc(l+0.25)_c_h)] dark:hover:bg-muted/50',

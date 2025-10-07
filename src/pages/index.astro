@@ -234,7 +234,7 @@ const latestPost = await getAllPosts().then((posts) => posts.at(0))
     </div>
     <div class="aspect-square p-2 [grid-area:j]">
       <div class="bg-muted size-full border">
-        <WakatimeGraph omitLanguages={['Markdown', 'JSON']} client:load />
+        <WakatimeGraph client:load />
       </div>
     </div>
     <div class="aspect-square p-2 [grid-area:k]">
