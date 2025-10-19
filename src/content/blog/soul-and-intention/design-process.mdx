@@ -22,7 +22,7 @@ The goal of all of this is to describe as many (sub)conscious decisions as possi
 
 ### Iteration, ideation
 
-Of course, I didn't start with a bento box. I, and most likely you, started with a generic hackery template theme as well -- it was only after countless ideas accumulating on top of each other that it got to this point. Here are some screenshots of the progression of my website, which coincidentally has had one major design overhaul every year for the past four years:
+Of course, I didn't start with what I have now. I, and most likely you, started with a generic hackery template theme as well -- it was only after countless ideas accumulating on top of each other that it got to this point. Here are some screenshots of the progression of my website, which coincidentally has had one major design overhaul every year for the past four years:
 
 <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 my-4 [&_*]:m-0">
   <div>
@@ -39,13 +39,13 @@ Of course, I didn't start with a bento box. I, and most likely you, started with
   </div>
   <div>
     ![2024](assets/2024.png)
-    <figcaption className="[&>p]:text-muted-foreground text-center [&>p]:mt-2">
+    <figcaption className="[&>p]:text-muted-foreground text-center [&>p]:mt-2 mb-0">
       2024
     </figcaption>
   </div>
   <div>
     ![2025](assets/2025.png)
-    <figcaption className="[&>p]:text-muted-foreground text-center [&>p]:mt-2">
+    <figcaption className="[&>p]:text-muted-foreground text-center [&>p]:mt-2 mb-0">
       2025
     </figcaption>
   </div>
@@ -53,9 +53,9 @@ Of course, I didn't start with a bento box. I, and most likely you, started with
 
 Although they may look very different, in general I followed several mantras through every iteration:
 
-- **My homepage should quickly introduce myself.** I used to do this with a small paragraph blurb, but when I was making the bento box, I really felt like it looked like a cartoon panel. As such, I opted for the approach of having text bubbles come out of the bean guy to emulate me "talking" to the user, which makes it feel a tad bit more personal.
+- **My homepage should quickly introduce myself.** I used to do this with a small paragraph blurb, but when I was making the current layout, I really felt like it looked like a cartoon panel. As such, I opted for the approach of having text bubbles come out of the bean guy to emulate me "talking" to the user, which makes it feel a tad bit more personal.
 - **My homepage should have interactivity.** Little micro-interactions, no matter how small, can provide a lot of life to an otherwise static site. This is why I ended up adding those hover effects. You'll see the implementation process for these later.
-- **My homepage should show data about myself.** This ended up being the Spotify status, Discord status, WakaTime bar chart, and the GitHub calendar. In hindsight, this idea was incredible, since there are lots of disparate but related things, which is perfect for a bento box format.
+- **My homepage should show data about myself.** This ended up being the Spotify status, Discord status, WakaTime bar chart, and the GitHub calendar. In hindsight, this idea was incredible, since there are lots of disparate but related things, which is perfect for the "bento box" layout I was going for.
 - **My homepage should be engaging.** If we regress back to the SF tech-bro mentality, the goal of a homepage is to get the user to interact and move somewhere else that retains them on the site <span class="text-muted-foreground">(a.k.a. exploring).</span> All of the above help increase retention <span class="text-muted-foreground">(you need to stay a bit longer to comprehend and explore the graphs, micro-interactions, hover effects, etc.)</span>. I also include social links that will further coax the user into doing something insidious, like following me on [Twitter](https://twitter.com/enscry) and [GitHub](https://github.com/jktrn) <span class="text-muted-foreground">(do that please, you're already here!)</span>.
 - **My homepage should show character.** Although I used to do this with the way I write, eventually this ended up manifesting as an actual character <span class="text-muted-foreground">(the sepia-colored cartoon guy you see throughout my blog, which we'll call a "bean guy").</span> The bean guy is a caricature of myself that I started doodling in middle school, mostly because I couldn't draw people well <span class="text-muted-foreground">(and also because he just looks cute).</span> Even if no one else knows the backstory, adding something so personal gives the site a unique touch and makes it feel more alive.
     <Callout variant="intuition" title="Making the bean guy">
@@ -80,7 +80,7 @@ Although they may look very different, in general I followed several mantras thr
         <li>The body color should differ from the face to separate them visually. Even though there's a shadow added under the chin here, it doesn't do enough visually.</li>
         <li>The bean needs human proportions; here, the shoulders are too high and the body too short.</li>
         <li>The body shouldn't be too long.</li>
-        <li>If you add rounded corners to the bottom, then the shoulders lose their "shoulder" shape.</li>
+        <li>If you add corners to the bottom, then the shoulders lose their "shoulder" shape.</li>
       </ol>
     </div>
 
@@ -98,7 +98,7 @@ Although they may look very different, in general I followed several mantras thr
     Little details like this can make a big difference in how meaningful your presentation is.
     </Callout>
 
-### Color palettes
+### Choosing our palette
 
 Whenever I make a website, the very first thing I do is think about colors. I'm not a color theory snob or anything along those lines, but I do understand that color is incredibly important to conveying a particular connotation to a user, especially when the site is commercial <span class="text-muted-foreground">(e.g. you don't want your yoga class one-pager to be grunge black and blood red)</span>. I don't need to go through all the colors and their cultural connotations since it is self-evident.
 
@@ -356,7 +356,7 @@ If you wish to let the user override their preference, you can do so with a pick
 </Callout>
 </Callout>
 
-#### Choosing colors with oklch()
+#### oklch() colors
 
 For all of my color palettes, I use a simpler version of the [shadcn/ui](https://ui.shadcn.com/docs/theming) naming convention, which likes to specify foreground-background pairs. I cut down the variables to only include relevant ones:
 
@@ -602,7 +602,7 @@ Here are some general comments on my thought process behind both the selection o
 
 - <code class="bg-background"><span class="inline-block align-text-bottom bg-foreground border size-4" /> foreground</code> will only ever be used for text elements. We'll never do anything like <code class="bg-background"><span class="inline-block align-text-bottom bg-foreground border size-4" /> bg-foreground</code> because this is very unintuitive. I chose <code class="bg-background"><span class="inline-block align-text-bottom bg-foreground border size-4" /> foreground</code> to be a slightly desaturated and brighter version of <code class="bg-background"><span class="inline-block align-text-bottom bg-primary border size-4" /> primary</code> so that the text contrast is still good.
 - We can't do <code class="bg-background"><span class="inline-block align-text-bottom bg-foreground border size-4" /> text-foreground <span class="inline-block align-text-bottom bg-background border size-4" /> bg-background</code> for prose text because the contrast is too stark. I like to establish a hierarchy here, with the following levels:
-  1. <code class="bg-background"><span class="inline-block align-text-bottom bg-foreground border size-4" /> text-foreground</code> exists for bold text and links. This is different from <code class="bg-background"><span class="inline-block align-text-bottom bg-primary border size-4" /> text-primary</code>, which is only used for SVG icons due to SVGs inheriting text color.
+  1. <code class="bg-background"><span class="inline-block align-text-bottom bg-foreground border size-4" /> text-foreground</code> exists for bold text and links <span class="text-muted-foreground">(I choose to not actually change font weight on bold text for aesthetic purposes, which is questionable for <abbr title="accessibility">a11y</abbr>)</span>. This is different from <code class="bg-background"><span class="inline-block align-text-bottom bg-primary border size-4" /> text-primary</code>, which is only used for SVG icons due to SVGs inheriting text color.
   2. <code class="bg-background"><span class="inline-block align-text-bottom bg-foreground/80 border size-4" /> text-foreground/80</code> exists for prose text. It's softer due to it being lower contrast, and thus it's easier on the eyes to read.
   3. <code class="bg-background"><span class="inline-block align-text-bottom bg-muted-foreground border size-4" /> text-muted-foreground</code> exists for secondary text, captions, or less important details. 
   4. <code class="bg-background"><span class="inline-block align-text-bottom bg-muted-foreground/60 border size-4" /> text-muted-foreground/60</code> exists for things that are meant to be irrelevant or disabled. For example, if you're on a desktop, the headers from the parent post will be this color because they're not relevant to this post.
@@ -644,25 +644,276 @@ Here are some general comments on my thought process behind both the selection o
 
 - <code class="bg-background"><span class="inline-block align-text-bottom bg-primary border size-4" /> primary</code> is only really used for backgrounds on buttons, badges, and icons. Text within <code class="bg-background"><span class="inline-block align-text-bottom bg-primary border size-4" /> primary</code>-colored buttons and badges is the only case where we'll use <code class="bg-background"><span class="inline-block align-text-bottom bg-primary-foreground border size-4" /> text-primary-foreground</code>, which I chose to be the same color as <code class="bg-background"><span class="inline-block align-text-bottom bg-muted border size-4" /> muted</code> rather than <code class="bg-background"><span class="inline-block align-text-bottom bg-background border size-4" /> background</code>:
 
-<div class="flex gap-4 flex-wrap items-end justify-center border w-full p-4 [&_*]:m-0">
+  <div class="flex gap-4 my-6 flex-wrap items-end justify-center border w-full p-4 [&_*]:m-0">
+      <div class="flex flex-col items-center gap-1">
+        <Button>Button</Button>
+        <figcaption class="[&>p]:text-muted-foreground [&>p]:text-xs text-center">
+          Primary button
+        </figcaption>
+      </div>
+      <div class="flex flex-col items-center gap-1">
+        <Badge>Badge</Badge>
+        <figcaption class="[&>p]:text-muted-foreground [&>p]:text-xs text-center">
+          Primary badge
+        </figcaption>
+      </div>
+      <div class="flex flex-col items-center gap-1">
+        <Icon name="lucide:key" class="size-4" />
+        <figcaption class="[&>p]:text-muted-foreground [&>p]:text-xs text-center">
+          Primary icon
+        </figcaption>
+      </div>
+  </div>
+
+- <code class="bg-background"><span class="inline-block align-text-bottom bg-muted border size-4" /> muted</code> is used similarly to "secondary" in the 60-30-10 rule to help establish a hierarchy above the <code class="bg-background"><span class="inline-block align-text-bottom bg-background border size-4" /> background</code> color. It's most often used when hovering over elements that would otherwise be <code class="bg-background"><span class="inline-block align-text-bottom bg-background border size-4" /> background</code>-colored, or to indicate that a hovered element is considered active. If there is already an existing active element, hovering over elements will instead use <code class="bg-background"><span class="inline-block align-text-bottom bg-muted/50 border size-4" /> muted/50</code> to differentiate. Muted is also used for a lower priority button/badge, which will actually use <code class="bg-background"><span class="inline-block align-text-bottom bg-primary border size-4" /> text-primary</code> for the text color:
+
+  <div class="flex gap-4 my-6 flex-wrap items-end justify-center border w-full p-4 [&_*]:m-0">
     <div class="flex flex-col items-center gap-1">
-      <Button>Button</Button>
+      <Button variant="muted">Button</Button>
       <figcaption class="[&>p]:text-muted-foreground [&>p]:text-xs text-center">
-        Primary button
+        Muted button
       </figcaption>
     </div>
     <div class="flex flex-col items-center gap-1">
-      <Badge>Badge</Badge>
+      <Badge variant="muted">Badge</Badge>
       <figcaption class="[&>p]:text-muted-foreground [&>p]:text-xs text-center">
-        Primary badge
+        Muted badge
       </figcaption>
     </div>
-    <div class="flex flex-col items-center gap-1">
-      <Icon name="lucide:key" class="size-4" />
-      <figcaption class="[&>p]:text-muted-foreground [&>p]:text-xs text-center">
-        Primary icon
-      </figcaption>
+  </div>
+
+- <code class="bg-background"><span class="inline-block align-text-bottom bg-muted-foreground border size-4" /> muted-foreground</code> is, unintuitively, not used for text on a <code class="bg-background"><span class="inline-block align-text-bottom bg-muted border size-4" /> muted</code>-colored background. It is only used for the text hierarchy I established above.
+- <code class="bg-background"><span class="inline-block align-text-bottom bg-border border size-4" /> border</code> is used for the borders of elements. On the occasions where borders are too hard relative to the background I use <code class="bg-background"><span class="inline-block align-text-bottom bg-border/50 border size-4" /> border/50</code> to make it softer.
+- <code class="bg-background"><span class="inline-block align-text-bottom bg-ring border size-4" /> ring</code> is used exclusively for indication that [`:focus-visible`](https://developer.mozilla.org/en-US/docs/Web/CSS/:focus-visible) is active <span class="text-muted-foreground">(different from [`:focus`](https://developer.mozilla.org/en-US/docs/Web/CSS/:focus) in that it only triggers when the user's modality is a keyboard rather than a mouse; `:focus` triggers on both)</span>.
+
+### Selecting our canvas
+
+Now that we've created our palette, it's time for us to pick our canvas. My favorite and most intuitive layout is the [holy grail layout](https://en.wikipedia.org/wiki/Holy_grail_(web_design)), which I didn't know actually had a name:
+
+<div class="my-6 border p-2 bg-background">
+  <div class="max-w-4xl mx-auto">
+    <div class="flex flex-col gap-2 h-80">
+      <header class="bg-primary/10 border border-primary/20 p-2 grid place-items-center">
+        <span class="text-xs font-medium text-primary">&lt;header&gt;</span>
+      </header>
+    
+      <div class="grid flex-1" style="grid-template-columns: 10px 1fr 3fr 1fr 10px;">
+        <div class="bg-pink-400/25 border border-pink-400/50 relative overflow-hidden">
+          <div class="absolute inset-0" style="background-image: repeating-linear-gradient(-45deg, transparent, transparent 3px, rgba(236, 72, 153, 0.08) 3px, rgba(236, 72, 153, 0.08) 6px);"></div>
+        </div>
+        
+        <div class="bg-muted/50 border px-2 grid place-items-center">
+          <span class="text-xs text-muted-foreground">&lt;nav&gt;</span>
+        </div>
+    
+        <main class="bg-background border p-1 mx-2 grid place-items-center">
+          <span class="text-xs text-center text-foreground">&lt;article&gt;</span>
+        </main>
+    
+        <div class="bg-muted/50 border px-2 text-right grid place-items-center">
+          <span class="text-xs text-muted-foreground">&lt;aside&gt;</span>
+        </div>
+        
+        <div class="bg-pink-400/25 border border-pink-400/50 relative overflow-hidden">
+          <div class="absolute inset-0" style="background-image: repeating-linear-gradient(-45deg, transparent, transparent 3px, rgba(236, 72, 153, 0.08) 3px, rgba(236, 72, 153, 0.08) 6px);"></div>
+        </div>
+      </div>
+    
+      <footer class="bg-primary/10 border border-primary/20 p-2 grid place-items-center">
+        <span class="text-xs font-medium text-primary">&lt;footer&gt;</span>
+      </footer>
     </div>
+  </div>
 </div>
 
-- <code class="bg-background"><span class="inline-block align-text-bottom bg-muted border size-4" /> muted</code> is used similarly to "secondary" in the 60-30-10 rule to help establish a hierarchy above the <code class="bg-background"><span class="inline-block align-text-bottom bg-background border size-4" /> background</code> color. It's most often used when hovering over elements that would otherwise be <code class="bg-background"><span class="inline-block align-text-bottom bg-background border size-4" /> background</code>-colored, or to indicate that a hovered element is considered active. If there is already an existing active element, hovering over elements will instead use <code class="bg-background"><span class="inline-block align-text-bottom bg-muted/50 border size-4" /> muted/50</code> to differentiate.
+Here is my personal implementation of this layout:
+
+```html
+<body>
+  <header>...</header>
+  <main>
+    <nav>...</nav>
+    <article>...</article>
+    <aside>...</aside>
+  </main>
+  <footer>...</footer>
+</body>
+```
+
+```css
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+}
+
+main {
+  flex: 1;
+  display: grid;
+  grid-template-columns:
+    minmax(0, 1fr)
+    min(calc(var(--container-3xl) - var(--spacing) * 8), 100%)
+    minmax(0, 1fr);
+  padding-inline: calc(var(--spacing) * 4);
+}
+
+nav { grid-column: 1; }
+article { grid-column: 2; }
+aside { grid-column: 3; }
+```
+
+Take note of the line numbers in the CSS, since I will reference them in the following dialogue:
+
+<ol>
+<li value="15">Due to science reasons, we wish to constrain text content to around 65 characters wide for readability. Although you can exactly hit 65 characters with the `ch` unit, it causes a couple problems with different font sizes and families. Thus, I settled on `--container-3xl: 48rem;` for the maximum prose width, which approximates 65 characters at 16px `:root` font size and serves as a common responsive breakpoint. There's a couple weird things I additionally do here on this line:</li>
+<ul>
+<li>I use a `--spacing: 0.25rem;` variable to create a consistent spacing system throughout my site. Using this minimizes the amount of decimals I have to mess around with and allows for a blanket change to the spacing system if I ever want to make things more or less compact.</li>
+<li>I do a subtraction of around `0.25rem × 8 = 2rem` here to align the body with the header's content, since that has `1rem` padding on each side.</li>
+<li>I use `min(/* ... */, 100%)` to constrain the center column to either the container width minus padding, or 100% of the viewport (whichever is smaller).</li>
+</ul>
+
+<li value="13">Since we do this text width constraint, we now have a bunch of real estate on the left and right of the content! Although I could in theory slap two gigantic banner advertisements here, we instead make these sections workable <span class="text-muted-foreground">(rather than being just margin)</span> by establishing the entire area as a grid layout.</li>
+
+<li value="14">We use `minmax(0, 1fr)` to create flexible columns that can grow to fill available space but won't shrink below 0 width. The `1fr` means "1 fraction of the remaining space," so if we have two `1fr` columns, they'll each take half the remaining space.</li>
+
+<li value="18">The little pink stripes on the sides of the demo indicate `padding-inline` <span class="text-muted-foreground">(left and right padding that respects text direction)</span>. These are there so that wrapping text on mobile devices won't hit the edge of the screen:</li>
+  <div class="my-6 max-w-4xl mx-auto grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div>
+      <div class="border border-border/50 flex h-24">
+        <span class="my-4 flex-1 [&_p]:text-muted-foreground [&_p]:text-xs [&_p]:my-0 [&_p]:leading-5">
+          No padding-inline means the text hits the screen edges, which feels awkward.
+        </span>
+      </div>
+      <p class="text-xs text-muted-foreground text-center mt-2 mb-0">Without padding-inline</p>
+    </div>
+    <div>
+      <div class="border border-border/50 flex h-24">
+        <div class="bg-pink-400/25 border border-pink-400/50 relative overflow-hidden w-[10px] opacity-25">
+          <div class="absolute inset-0" style="background-image: repeating-linear-gradient(-45deg, transparent, transparent 3px, rgba(236, 72, 153, 0.08) 3px, rgba(236, 72, 153, 0.08) 6px);"></div>
+        </div>
+        <span class="my-4 flex-1 [&_p]:text-muted-foreground [&_p]:text-xs [&_p]:my-0 [&_p]:leading-5">
+          Adding padding-inline creates comfortable insets so lines don't butt up against the edges.
+        </span>
+        <div class="bg-pink-400/25 border border-pink-400/50 relative overflow-hidden w-[10px] opacity-25">
+          <div class="absolute inset-0" style="background-image: repeating-linear-gradient(-45deg, transparent, transparent 3px, rgba(236, 72, 153, 0.08) 3px, rgba(236, 72, 153, 0.08) 6px);"></div>
+        </div>
+      </div>
+      <p class="text-xs text-muted-foreground text-center mt-2 mb-0">With padding-inline</p>
+    </div>
+  </div>
+
+<li value="11">Even when the height of the content is too small to cause scrolling, we still want the footer to be "pushed" to the bottom of the page. We can do this with `flex: 1;`, which is shorthand for `flex-grow: 1; flex-shrink:  1; flex-basis: 0%` <span class="text-muted-foreground">(flexbox is cool, you can [learn it here](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_flexible_box_layout/Basic_concepts_of_flexbox)!)</span>:</li>
+
+  <div class="my-6 max-w-4xl mx-auto grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div>
+      <div class="border border-border/50 p-2">
+        <div class="flex flex-col gap-2 h-48">
+          <header class="bg-primary/10 border border-primary/20 p-2 grid place-items-center">
+            <span class="text-xs font-medium text-primary">&lt;header&gt;</span>
+          </header>
+          
+          <main class="bg-background border p-2 grid place-items-center" style="height: fit-content;">
+            <div class="bg-muted/50 border p-4 grid place-items-center w-full">
+              <span class="text-xs text-muted-foreground">content</span>
+            </div>
+          </main>
+          
+          <footer class="bg-primary/10 border border-primary/20 p-2 grid place-items-center">
+            <span class="text-xs font-medium text-primary">&lt;footer&gt;</span>
+          </footer>
+        </div>
+      </div>
+      <p class="text-xs text-muted-foreground text-center mt-2 mb-0">No flex: 1</p>
+    </div>
+    
+    <div>
+      <div class="border border-border/50 p-2">
+        <div class="flex flex-col gap-2 h-48">
+          <header class="bg-primary/10 border border-primary/20 p-2 grid place-items-center">
+            <span class="text-xs font-medium text-primary">&lt;header&gt;</span>
+          </header>
+          
+          <main class="bg-background border p-2 grid place-items-start flex-grow">
+            <div class="bg-muted/50 border p-4 grid place-items-center w-full">
+              <span class="text-xs text-muted-foreground">content</span>
+            </div>
+          </main>
+          
+          <footer class="bg-primary/10 border border-primary/20 p-2 grid place-items-center">
+            <span class="text-xs font-medium text-primary">&lt;footer&gt;</span>
+          </footer>
+        </div>
+      </div>
+      <p class="text-xs text-muted-foreground text-center mt-2 mb-0">flex: 1</p>
+    </div>
+  </div>
+
+  <li value="2">I made the opinionated choice to make the entire document a flexbox, since I felt that it was the most intuitive way to lay out a header, content, and footer. Many people opt to make the header take on `position: absolute;` or `position: fixed;`, but I find that the header should remain within the document flow <span class="text-muted-foreground">(for reasons like avoiding unintentional overlap, and for cases like expandable navigation menus)</span> and thus should use `position: sticky;` instead for a similar effect.</li>
+</ol>
+
+### Creating a bento box
+
+<Callout variant="definition" title="Bento box">
+A bento box is a traditional Japanese lunch box consisting of a partitioned container with separate compartments for different types of food. The compartments are typically rectangular and vary in size, allowing for an organized presentation of rice, vegetables, proteins, and other dishes in a compact arrangement.
+</Callout>
+
+The landmark feature of my website is the "bento box" homepage. Although it is objectively an overdone design trend <span class="text-muted-foreground">(there are entire websites solely dedicated to inspiration on bento grids)</span>, it is also objectively a powerful way to show lots of <span class="text-muted-foreground">(often disparate)</span> information in a compact layout. However, it comes with the caveat that it will look absolutely terrible with poor execution, so I had to tread carefully when designing it so that it stands out from the rest.
+
+The most important thing is maintaining proper grid structure. When looking through examples of bento boxes online, I was so surprised by how many people flagrantly disregarded it. Religious adherence to it will help avoid both implementation headaches and improve visual harmony:
+
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-6 my-6 [&_*]:m-0">
+  <div>
+    ![Improper grid](assets/improper-grid.png)
+    <figcaption class="[&>p]:text-muted-foreground text-center [&>p]:mt-2 [&>p]:mb-4">
+      Improper grid structure
+    </figcaption>
+  </div>
+  <div>
+    ![Proper grid](assets/proper-grid.png)
+    <figcaption class="[&>p]:text-muted-foreground text-center [&>p]:mt-2 [&>p]:mb-4">
+      Proper grid structure
+    </figcaption>
+  </div>
+</div>
+
+<Callout variant="remark" title="Bleeding elements">
+Another thing is that the homepage should subvert the "holy grail" layout since `65ch` is simply not enough space for this design. We want to be able to "bleed" outside of the constraints of the 2nd column and take up as much space as we can <span class="text-muted-foreground">(see [this blog post](https://www.joshwcomeau.com/css/full-bleed/) by Josh Comeau for more information)</span>. We do this with `grid-column: 1 / -1;` to span the entire width of the grid.
+</Callout>
+
+In the end, I decided that my main bento box would have a maximum of 4 columns and 4 rows, with the following breakpoints derived from Tailwind:
+
+| Breakpoint | Minimum width | Columns  |
+|------------|---------------|---------:|
+| Under `sm` | &lt;40rem <span class="text-muted-foreground">(640px)</span> | 1 |
+| `sm` to `lg` | ≥40rem <span class="text-muted-foreground">(640px)</span> to &lt;64rem <span class="text-muted-foreground">(1024px)</span> | 2 |
+| `lg` to `xl` | ≥64rem <span class="text-muted-foreground">(1024px)</span> to &lt;80rem <span class="text-muted-foreground">(1280px)</span> | 3 |
+| Over `xl` | ≥80rem <span class="text-muted-foreground">(1280px)</span> | 4 |
+
+#### Dishes and compartments
+
+We can now pick our dishes <span class="text-muted-foreground">(content)</span>! When brainstorming on what I wanted on my homepage <span class="text-muted-foreground">(see ["Iteration, ideation"](#iteration-ideation))</span>, I had to decide three things: **(1)** what would the content actually be, **(2)** how many columns/rows would I allow it to span, and **(3)** in what order would I want them to appear. This is what I decided on for non-mobile views:
+
+| Content | Rows × columns  | Order | Notes |
+|---------|--------------|---------| --- |
+| Introduction | 2 × 1 | Should appear as the very first thing. | Should be large and on the top-left. |
+| Secondary introduction | 1 × 1 | Should appear immediately after the introduction. | This is smaller since it's less important. |
+| Latest blog post | 2 × 1 | Should appear somewhere near the top. | Should show the thumbnail of the latest blog post. Since these are 1200 × 630px, the compartment should be 2 × 1. |
+| Discord status | 1 × 1 | Not as important, maybe somewhere lower. Might need to appear on-load. |  |
+| Spotify status | 1 × 1 | Not as important, maybe somewhere lower. Doesn't necessarily need to appear on-load. |  |
+| GitHub calendar | 2 × 1 | Not as important, maybe somewhere lower. Doesn't necessarily need to appear on-load. | This is a bit larger since it's a calendar. |
+| Languages graph | 1 × 1 | Should go somewhere at the bottom. | Although this could theoretically be larger, the content arguably is not as important. |
+| Twitter link | 1 × 1 | Should go somewhere at the bottom. Should not appear next to GitHub link. | |
+| GitHub link | 1 × 1 | Should go somewhere at the bottom. Should not appear next to Twitter link. | |
+
+<Callout variant="remark" title="Mobile view">
+For a mobile view, since the layout is one column I would need to adapt the inner content of 2 × 1 compartments to be more compact, but that is a conversation to be had later.
+</Callout>
+
+After a lot of deliberation and iteration, I ended up with the following structure and ordering for my bento box:
+
+![Bento structure](assets/bento-structure.png)
+
+As you can see, two additional 1 × 2 compartments were added called "throwaway graphics." I initially added these as filler to fill up the grid, but I found that it actually helped give more breathing room and reduced visual clutter and overload, since the content here is so dense.
