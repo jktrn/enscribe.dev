@@ -31,7 +31,7 @@ const { items } = Astro.props
     </BreadcrumbItem>
     {
       items.map((item, index) => (
-        <>
+        <span class="flex gap-1.5 sm:gap-2 items-center">
           <BreadcrumbSeparator />
           <BreadcrumbItem>
             {index === items.length - 1 ? (
@@ -40,7 +40,7 @@ const { items } = Astro.props
                   {item.icon && (
                     <Icon name={item.icon} class="size-4 shrink-0" />
                   )}
-                  <span class="line-clamp-2">{item.label}</span>
+                  <span class="line-clamp-1">{item.label}</span>
                 </span>
               </BreadcrumbPage>
             ) : (
@@ -49,12 +49,12 @@ const { items } = Astro.props
                   {item.icon && (
                     <Icon name={item.icon} class="size-4 shrink-0" />
                   )}
-                  <span class="line-clamp-2">{item.label}</span>
+                  <span class="line-clamp-1">{item.label}</span>
                 </span>
               </BreadcrumbLink>
             )}
           </BreadcrumbItem>
-        </>
+        </span>
       ))
     }
   </BreadcrumbList>

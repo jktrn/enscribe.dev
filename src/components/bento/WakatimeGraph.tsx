@@ -128,18 +128,41 @@ const useWakatimeData = (omitLanguages: string[]) => {
         }
 
         const data = await response.json()
-        const processedLanguages = data.data
-          .filter(
-            (lang: { name: string }) => !omitLanguages.includes(lang.name),
-          )
+        
+        const languageMap = new Map<string, number>()
+        
+        data.data.forEach((lang: { name: string; hours: number }) => {
+          if (omitLanguages.includes(lang.name)) return
+          
+          let normalizedName = lang.name
+          
+          if (lang.name === 'JavaScript' || lang.name === 'TypeScript') {
+            normalizedName = 'TypeScript'
+          }
+          
+          if (lang.name === 'Markdown' || lang.name === 'MDX') {
+            normalizedName = 'MDX'
+          }
+          
+          if (lang.name === 'Image (svg)' || lang.name === 'SVG') {
+            normalizedName = 'Figma'
+          }
+          
+          const currentHours = languageMap.get(normalizedName) || 0
+          languageMap.set(normalizedName, currentHours + lang.hours)
+        })
+        
+        const combinedLanguages = Array.from(languageMap.entries())
+          .map(([name, hours]) => ({ name, hours }))
+          .sort((a, b) => b.hours - a.hours)
           .slice(0, MAX_LANGUAGES)
-          .map((lang: { name: string; hours: number }, index: number) => ({
+          .map((lang, index) => ({
             name: lang.name,
             hours: Number(lang.hours.toFixed(2)),
             fill: CHART_COLORS[index % CHART_COLORS.length],
           }))
 
-        setLanguages(processedLanguages)
+        setLanguages(combinedLanguages)
       } catch (err) {
         setError(
           err instanceof Error ? err.message : 'An unexpected error occurred',
@@ -178,7 +201,7 @@ const WakatimeGraph = ({ omitLanguages = [] }: Props) => {
         layout="vertical"
         margin={{
           left: 0,
-          right: 0,
+          right: 16,
           top: 4,
           bottom: 4,
         }}

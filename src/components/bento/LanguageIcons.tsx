@@ -5,6 +5,7 @@ import {
   SiCplusplus,
   // SiCsharp,
   SiCss3,
+  SiFigma,
   SiHtml5,
   SiJavascript,
   SiJson,
@@ -14,6 +15,7 @@ import {
   SiPython,
   SiTypescript,
   SiYaml,
+  SiJupyter,
 } from 'react-icons/si'
 
 export const languageIcons: { [key: string]: IconType } = {
@@ -31,6 +33,8 @@ export const languageIcons: { [key: string]: IconType } = {
   json: SiJson,
   yaml: SiYaml,
   tex: SiLatex,
+  figma: SiFigma,
+  'jupyter notebook': SiJupyter,
 }
 
 export const getLanguageIcon = (language: string): React.ReactNode | null => {
