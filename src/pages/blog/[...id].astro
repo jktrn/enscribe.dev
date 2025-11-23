@@ -74,13 +74,13 @@ const tocSections = await getTOCSections(currentPostId)
         isCurrentSubpost &&
         headings.length === 1 &&
         headings[0].text === post.data.title
-      ) && <TOCHeader slot="table-of-contents" headings={headings} />
+      ) && <TOCHeader slot="table-of-contents" headings={headings} currentTitle={post.data.title} />
   }
 
   <section
     class="grid grid-cols-[minmax(0px,1fr)_min(calc(var(--breakpoint-md)-2rem),100%)_minmax(0px,1fr)] gap-y-6"
   >
-    <div class="col-start-2">
+    <div class="col-start-2 hidden sm:block">
       <Breadcrumbs
         items={[
           { href: '/blog', label: 'Blog', icon: 'lucide:library-big' },
@@ -108,10 +108,42 @@ const tocSections = await getTOCSections(currentPostId)
       />
     </div>
 
+    <div class="col-start-2 sm:hidden">
+      <Breadcrumbs
+        items={[
+          { href: '/blog', label: 'Blog', icon: 'lucide:library-big' },
+          ...(isCurrentSubpost && parentPost
+            ? [
+                {
+                  href: `/blog/${parentPost.id}`,
+                  label: 'Post',
+                  icon: 'lucide:book-open',
+                },
+                {
+                  href: `/blog/${currentPostId}`,
+                  label: 'Subpost',
+                  icon: 'lucide:file-text',
+                },
+              ]
+            : [
+                {
+                  href: `/blog/${currentPostId}`,
+                  label: 'Post',
+                  icon: 'lucide:book-open-text',
+                },
+              ]),
+        ]}
+      />
+    </div>
+
     {
-      post.data.image && (
-        <Image
-          src={post.data.image}
+      (post.data.imageWithoutText || post.data.imageWithText) && (
+        <img
+          src={
+            post.data.imageWithoutText
+              ? post.data.imageWithoutText.src
+              : post.data.imageWithText!.src
+          }
           alt={post.data.title}
           width={1200}
           height={630}

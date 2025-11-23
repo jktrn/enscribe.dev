@@ -43,7 +43,7 @@ export default defineEcConfig({
       terminalTitlebarDotsOpacity: '100%',
     },
     lineNumbers: {
-      foreground: 'var(--secondary-foreground)',
+      foreground: 'var(--muted-foreground)',
     },
     collapsibleSections: {
       closedBackgroundColor: 'var(--border)',

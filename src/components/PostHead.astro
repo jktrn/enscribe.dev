@@ -29,8 +29,8 @@ const author =
 <meta property="og:description" content={description} />
 <meta
   property="og:image"
-  content={post?.data?.image?.src
-    ? `${SITE.href}${post.data.image.src}`
+  content={post?.data?.imageWithText?.src
+    ? `${SITE.href}${post.data.imageWithText.src}`
     : image}
 />
 <meta property="og:image:alt" content={title} />
@@ -44,8 +44,8 @@ const author =
 <meta name="twitter:description" content={description} />
 <meta
   property="twitter:image"
-  content={post?.data?.image?.src
-    ? `${SITE.href}${post.data.image.src}`
+  content={post?.data?.imageWithText?.src
+    ? `${SITE.href}${post.data.imageWithText.src}`
     : image}
 />
 <meta name="twitter:image:alt" content={title} />

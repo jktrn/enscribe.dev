@@ -1,6 +1,7 @@
 ---
 import Link from '@/components/Link.astro'
 import { NAV_LINKS } from '@/consts'
+import { cn } from '@/lib/utils'
 import { Image } from 'astro:assets'
 import logo from '../../public/static/logo.svg'
 ---
@@ -18,7 +19,10 @@ import logo from '../../public/static/logo.svg'
           NAV_LINKS.map((item) => (
             <Link
               href={item.href}
-              class="text-foreground/60 hover:text-foreground/80 capitalize transition-colors"
+              class={cn(
+                'text-muted-foreground hover:text-foreground capitalize transition-colors',
+                item.label === 'Home' && 'hidden sm:inline',
+              )}
             >
               {item.label}
             </Link>

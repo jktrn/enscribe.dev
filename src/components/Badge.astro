@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils'
 import { Icon } from 'astro-icon/components'
 
 interface Props {
-  variant?: 'default' | 'secondary' | 'destructive' | 'outline'
+  variant?: 'default' | 'muted' | 'destructive' | 'outline'
   className?: string
   children?: any
   text?: string
@@ -12,7 +12,7 @@ interface Props {
 }
 
 const {
-  variant = 'secondary',
+  variant = 'muted',
   className = '',
   children,
   text,
@@ -118,7 +118,7 @@ const categoryMappings = [
     },
   },
   {
-    keywords: ['team'],
+    keywords: ['community'],
     style: {
       // color: 'bg-violet-50 text-violet-700 dark:bg-violet-950/30 dark:text-violet-200',
       icon: 'lucide:users',
@@ -159,6 +159,13 @@ const categoryMappings = [
       icon: 'lucide:palette',
     },
   },
+  {
+    keywords: ['academic'],
+    style: {
+      // color: 'bg-green-50 text-green-700 dark:bg-green-950/30 dark:text-green-200',
+      icon: 'lucide:book-open-text',
+    },
+  }
 ]
 
 const getCategoryStyle = (content: string) => {
@@ -176,7 +183,7 @@ const categoryStyle = getCategoryStyle(content)
 ---
 
 <BadgeComponent
-  variant={categoryStyle ? 'secondary' : variant}
+  variant={categoryStyle ? 'muted' : variant}
   className={cn(categoryStyle?.color, className)}
   client:load
 >
