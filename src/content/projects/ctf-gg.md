@@ -1,7 +1,7 @@
 ---
 name: 'ctf.gg'
 description: 'I designed and created the official blog for .;,;. (smiley), the #1 capture-the-flag cybersecurity team in the United States.'
-tags: ['team', 'astro', 'figma']
+tags: ['community', 'astro', 'figma']
 image: '../../../public/static/projects/ctf-gg.png'
 link: 'https://ctf.gg'
 startDate: '2025-01-15'

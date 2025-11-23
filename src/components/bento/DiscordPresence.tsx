@@ -70,12 +70,12 @@ const StatusIndicator = memo<{ status: LanyardData['discord_status'] }>(
 const DecorativeBadges = memo(() => {
   const badgeStyles = useMemo(
     () => [
-      'size-3 rounded-full bg-purple-200/75 sepia-50',
-      'size-3 bg-violet-200/75 sepia-50 rounded-xs',
-      'size-3 rounded-xs bg-emerald-200/75 sepia-50',
-      'size-3 bg-fuchsia-200/75 sepia-50',
-      'size-3 rounded-full bg-teal-200/75 sepia-50',
-      'size-3 rounded-full bg-transparent ring-2 ring-sky-200/75 sepia-50 ring-inset',
+      'grayscale size-3 rounded-full bg-purple-200/75 sepia-50',
+      'grayscale size-3 bg-violet-200/75 sepia-50 rounded-xs',
+      'grayscale size-3 rounded-xs bg-emerald-200/75 sepia-50',
+      'grayscale size-3 bg-fuchsia-200/75 sepia-50',
+      'grayscale size-3 rounded-full bg-teal-200/75 sepia-50',
+      'grayscale size-3 rounded-full bg-transparent ring-2 ring-sky-200/75 sepia-50 ring-inset',
     ],
     [],
   )
@@ -120,10 +120,10 @@ const AvatarSection = memo<{
   <div className="flex justify-between gap-x-1">
     <div className="relative">
       <AvatarComponent
-        src="/static/bento/avatar.webp"
+        src="/static/bento/avatar.jpg"
         alt="Avatar"
         fallback="e"
-        className="-mt-12 aspect-square size-16 rounded-full sm:-mt-[4.5rem] sm:size-24"
+        className="-mt-12 aspect-square grayscale sepia-50 size-16 rounded-full sm:-mt-[4.5rem] sm:size-24"
       />
       <div
         className="absolute inset-0 -mt-12 aspect-square size-16 rounded-full bg-cover bg-center bg-no-repeat opacity-0 transition-opacity duration-200 group-hover/discord:opacity-100 sm:-mt-[4.5rem] sm:size-24 sm:bg-[url('/static/bento/avatar-foreground.png')]"
