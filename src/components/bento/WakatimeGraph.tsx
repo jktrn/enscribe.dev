@@ -17,9 +17,6 @@ interface Language {
   fill: string
 }
 
-interface Props {
-  omitLanguages?: string[]
-}
 
 const CHART_COLORS = [
   'hsl(var(--chart-1))',
@@ -114,7 +111,7 @@ const LoadingSkeleton = () => (
   </div>
 )
 
-const useWakatimeData = (omitLanguages: string[]) => {
+const useWakatimeData = () => {
   const [languages, setLanguages] = useState<Language[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -132,8 +129,6 @@ const useWakatimeData = (omitLanguages: string[]) => {
         const languageMap = new Map<string, number>()
         
         data.data.forEach((lang: { name: string; hours: number }) => {
-          if (omitLanguages.includes(lang.name)) return
-          
           let normalizedName = lang.name
           
           if (lang.name === 'JavaScript' || lang.name === 'TypeScript') {
@@ -173,13 +168,13 @@ const useWakatimeData = (omitLanguages: string[]) => {
     }
 
     fetchData()
-  }, [omitLanguages])
+  }, [])
 
   return { languages, isLoading, error }
 }
 
-const WakatimeGraph = ({ omitLanguages = [] }: Props) => {
-  const { languages, isLoading, error } = useWakatimeData(omitLanguages)
+const WakatimeGraph = () => {
+  const { languages, isLoading, error } = useWakatimeData()
 
   if (isLoading) return <LoadingSkeleton />
   if (error) {
