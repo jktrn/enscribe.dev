@@ -204,7 +204,6 @@ const WakatimeGraph = () => {
         width={undefined}
         height={undefined}
       >
-        {/* @ts-expect-error */}
         <YAxis
           dataKey="name"
           type="category"
@@ -213,7 +212,6 @@ const WakatimeGraph = () => {
           width={45}
           tick={<CustomYAxisTick />}
         />
-        {/* @ts-expect-error */}
         <XAxis type="number" hide />
         <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
         <Bar dataKey="hours" radius={[0, 0, 0, 0]} isAnimationActive={false}>
