@@ -1,6 +1,7 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import * as React from 'react'
+import { useState, useEffect } from 'react'
 import { Bar, BarChart, LabelList, XAxis, YAxis } from 'recharts'
 import {
   type ChartConfig,
@@ -196,13 +197,14 @@ const WakatimeGraph = () => {
         layout="vertical"
         margin={{
           left: 0,
-          right: 16,
+          right: 24,
           top: 4,
           bottom: 4,
         }}
         width={undefined}
         height={undefined}
       >
+        {/* @ts-expect-error */}
         <YAxis
           dataKey="name"
           type="category"
@@ -211,6 +213,7 @@ const WakatimeGraph = () => {
           width={45}
           tick={<CustomYAxisTick />}
         />
+        {/* @ts-expect-error */}
         <XAxis type="number" hide />
         <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
         <Bar dataKey="hours" radius={[0, 0, 0, 0]} isAnimationActive={false}>
