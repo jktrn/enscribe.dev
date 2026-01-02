@@ -16,9 +16,11 @@ import rehypeDocument from 'rehype-document'
 
 import tailwindcss from '@tailwindcss/vite'
 
+import svelte from '@astrojs/svelte';
+
 export default defineConfig({
   site: 'https://enscribe.dev',
-  integrations: [expressiveCode(), mdx(), react(), sitemap(), icon()],
+  integrations: [expressiveCode(), mdx(), react(), sitemap(), icon(), svelte()],
   vite: {
     plugins: [tailwindcss()],
   },
