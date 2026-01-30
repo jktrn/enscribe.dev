@@ -197,7 +197,7 @@ const WakatimeGraph = () => {
         layout="vertical"
         margin={{
           left: 0,
-          right: 24,
+          right: 36,
           top: 4,
           bottom: 4,
         }}
