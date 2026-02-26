@@ -1,6 +1,6 @@
 ---
 name: 'Veria Labs'
-description: 'I created the logo, identity, and website for Veria Labs, an auditing firm protecting $500M+ in assets across Web3, Web2, and cryptography.'
+description: 'I created the logo, brand, and website for Veria Labs, an AI-native security platform spun out of the #1 US hacking team and backed by Y Combinator.'
 tags: ['commercial', 'contract', 'astro']
 image: '../../../public/static/projects/veria-labs.png'
 link: 'https://verialabs.com'

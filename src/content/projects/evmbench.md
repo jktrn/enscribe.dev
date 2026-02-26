@@ -5,5 +5,5 @@ tags: ['open-source', 'contract']
 image: '../../../public/static/projects/evmbench.png'
 link: 'https://paradigm.xyz/evmbench'
 startDate: '2026-01-10'
-endDate: '2024-02-18'
+endDate: '2026-02-18'
 ---
