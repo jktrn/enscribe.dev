@@ -4,6 +4,7 @@ description: 'I did logo design, brand identity, and website design for plainshi
 tags: ['commercial', 'freelance', 'astro']
 image: '../../../public/static/projects/plainshift.png'
 link: 'https://plainshift.io'
+order: 14
 startDate: '2024-09-07'
 endDate: '2024-10-08'
 ---

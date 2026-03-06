@@ -4,6 +4,7 @@ description: 'I created a highly opinionated, unstyled static blogging template 
 tags: ['open-source', 'astro']
 image: '../../../public/static/projects/astro-erudite.png'
 link: 'https://astro-erudite.vercel.app'
+order: 9
 startDate: '2024-09-10'
 # endDate: '2024-02-01'
 ---

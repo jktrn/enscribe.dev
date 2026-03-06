@@ -4,6 +4,7 @@ description: "I've been organizing CTFs with Project Sekai for nearly four years
 tags: ['community']
 image: '../../../public/static/projects/project-sekai.png'
 link: 'https://sekai.team'
+order: 11
 startDate: '2022-04-22'
 # endDate: '2025-08-11'
 ---

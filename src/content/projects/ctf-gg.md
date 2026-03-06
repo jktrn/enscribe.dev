@@ -4,6 +4,7 @@ description: 'I designed and created the official blog for .;,;. (smiley), the #
 tags: ['community', 'astro', 'figma']
 image: '../../../public/static/projects/ctf-gg.png'
 link: 'https://ctf.gg'
+order: 12
 startDate: '2025-01-15'
 endDate: '2025-02-15'
 ---

@@ -4,6 +4,7 @@ description: 'I designed and implemented a landing page for Hacktron, a fully au
 tags: ['commercial', 'contract', 'astro']
 image: '../../../public/static/projects/hacktron.png'
 link: 'https://hacktron.ai'
+order: 3
 startDate: '2025-07-15'
 endDate: '2025-08-15'
 ---
