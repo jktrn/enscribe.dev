@@ -4,6 +4,7 @@ description: "[Accepted NeurIPS 2025] BountyBench is a cybersecurity benchmark t
 tags: ['academic']
 image: '../../../public/static/projects/bountybench.png'
 link: 'https://arxiv.org/pdf/2505.15216'
+order: 7
 startDate: '2025-02-10'
 endDate: '2025-05-21'
 ---

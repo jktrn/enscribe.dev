@@ -4,6 +4,7 @@ description: 'I used Shopify and Liquid to make a custom theme for an e-commerce
 tags: ['commercial', 'freelance', 'shopify']
 image: '../../../public/static/projects/eleven-percent.png'
 link: 'https://elevenpercent.net'
+order: 13
 startDate: '2024-01-10'
 endDate: '2024-06-10'
 ---
