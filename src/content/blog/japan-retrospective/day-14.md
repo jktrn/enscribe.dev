@@ -26,7 +26,7 @@ We got to the airport several hours early since we wanted to explore the airport
 
 <img
 class="frame-wide"
-src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/76/Shopping_area_terminal_3_haneda_airport_tokyo.jpg/800px-Shopping_area_terminal_3_haneda_airport_tokyo.jpg?20200410110314"
+src="https://commons.wikimedia.org/wiki/Special:Redirect/file/Shopping_area_terminal_3_haneda_airport_tokyo.jpg?width=800"
 alt="Haneda Airport Terminal 3"
 />
 <figcaption class="caption">

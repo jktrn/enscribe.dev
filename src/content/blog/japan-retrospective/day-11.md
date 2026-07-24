@@ -58,7 +58,7 @@ Of course, the food itself is never the reason why you would go to a maid cafe (
 
 </div>
 
-For the rest of the evening we stuck to the same routine of walking into a shop we found interesting, not buying anything, and moving on to the next one. The only item I actually ended up buying was an [Artisan Mousepad](https://www.artisan-jp.com/nj_index_eng.html/), a gaming-oriented mousepad that was only readily available in Japan at the time. We also popped into an arcade and messed around with the fighting games:
+For the rest of the evening we stuck to the same routine of walking into a shop we found interesting, not buying anything, and moving on to the next one. The only item I actually ended up buying was an [Artisan Mousepad](https://artisan-jp.com/global/), a gaming-oriented mousepad that was only readily available in Japan at the time. We also popped into an arcade and messed around with the fighting games:
 
 <div class="image-grid">
 

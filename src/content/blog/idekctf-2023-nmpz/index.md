@@ -134,7 +134,7 @@ The middle of nowhere... a classic. Let's see what the Google Lens yields:
 
 ![Google Lens output of `4.png`](./assets/4-lens.png)
 
-The first result identifies a [Stuart Highway](https://en.wikipedia.org/wiki/Stuart_Highway), which runs straight through central <img class="country-flag" src="https://flagcdn.com/20x15/au.png" srcset="https://flagcdn.com/40x30/au.png 2x" width="20" height="15" alt="au" /> [Australia](https://en.wikipedia.org/wiki/Australia) (a.k.a. the middle of nowhere). Also, if you look closely, there's a reflector sign in the center of the photo which looks exactly like the Australian bollard on [geohints.com](https://geohints.com/Bollards), a resource for GeoGuessr players:
+The first result identifies a [Stuart Highway](https://en.wikipedia.org/wiki/Stuart_Highway), which runs straight through central <img class="country-flag" src="https://flagcdn.com/20x15/au.png" srcset="https://flagcdn.com/40x30/au.png 2x" width="20" height="15" alt="au" /> [Australia](https://en.wikipedia.org/wiki/Australia) (a.k.a. the middle of nowhere). Also, if you look closely, there's a reflector sign in the center of the photo which looks exactly like the Australian bollard on [geohints.com](https://geohints.com/meta/bollards), a resource for GeoGuessr players:
 
 <div class="button-row">
 
@@ -155,7 +155,7 @@ Bollard in [`4.png{:file}`](#4png)
 geohints.com](./assets/4-comparison.png)
 <figcaption class="caption">
 
-Australian bollard in [geohints.com](https://geohints.com/Bollards)
+Australian bollard in [geohints.com](https://geohints.com/meta/bollards)
 
 </figcaption>
 
@@ -265,7 +265,7 @@ Ah, yes, another "middle of nowhere." This time, however, it's a bit easier! Her
 Yep, that's definitely <img class="country-flag" src="https://flagcdn.com/20x15/is.png" srcset="https://flagcdn.com/40x30/is.png 2x" width="20" height="15" alt="is" /> [Iceland](https://en.wikipedia.org/wiki/Iceland). Here are some things you use to identify Iceland:
 
 - 99% of the time there will be overcast skies
-- Off-green, almost yellow-ish grass. Here is an example from [GeoHints](https://geohints.com/Scenery):
+- Off-green, almost yellow-ish grass. Here is an example from [GeoHints](https://geohints.com/meta/sceneries):
 
 ![Example screenshots of Iceland on geohints.com](./assets/6-geohints.png)
 
@@ -289,7 +289,7 @@ Bollard in [`6.png{:file}`](#6png)
 geohints.com](./assets/6-comparison.png)
 <figcaption class="caption">
 
-Icelandic bollard in [geohints.com](https://geohints.com/Bollards)
+Icelandic bollard in [geohints.com](https://geohints.com/meta/bollards)
 
 </figcaption>
 
@@ -468,7 +468,7 @@ Bollard in [`11.png{:file}`](#11png)
 geohints.com](./assets/11-comparison.png)
 <figcaption class="caption">
 
-Polish bollard in [geohints.com](https://geohints.com/Bollards)
+Polish bollard in [geohints.com](https://geohints.com/meta/bollards)
 
 </figcaption>
 

@@ -1,9 +1,9 @@
 ---
-const SKELETON_ROWS = 7
+import { MAX_WAKATIME_ROWS } from "@/lib/wakatime"
 ---
 
 <wakatime-graph>
-  {Array.from({ length: SKELETON_ROWS }).map((_, index) => (
+  {Array.from({ length: MAX_WAKATIME_ROWS }).map((_, index) => (
       <wakatime-row data-skeleton>
         <wakatime-icon></wakatime-icon>
         <wakatime-track>
@@ -20,7 +20,6 @@ const SKELETON_ROWS = 7
     --wakatime-gap: clamp(0.25rem, 2cqh, 1.25rem);
     --wakatime-text: clamp(0.75rem, 5cqh, 2rem);
 
-    container-type: size;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -140,30 +139,6 @@ const SKELETON_ROWS = 7
     }
   }
 
-  @container (height < 20rem) {
-    wakatime-row:nth-child(n + 7) {
-      display: none;
-    }
-  }
-
-  @container (height < 10rem) {
-    wakatime-row:nth-child(n + 6) {
-      display: none;
-    }
-  }
-
-  @container (height < 8.5rem) {
-    wakatime-row:nth-child(n + 5) {
-      display: none;
-    }
-  }
-
-  @container (height < 7rem) {
-    wakatime-row:nth-child(n + 4) {
-      display: none;
-    }
-  }
-
   @keyframes wakatime-pulse {
     50% {
       opacity: 0.5;
@@ -173,10 +148,10 @@ const SKELETON_ROWS = 7
 
 <script>
   import { readTileCache, writeTileCache } from "@/lib/tile-cache"
+  import { MAX_WAKATIME_ROWS, visibleWakatimeRows } from "@/lib/wakatime"
 
   const API_URL =
     "https://wakatime.com/share/@jktrn/ef6e633b-589d-44f2-9ae6-0eb93445cf2a.json"
-  const MAX_LANGUAGES = 7
 
   const NORMALIZED: Record<string, string> = {
     JavaScript: "TypeScript",
@@ -226,7 +201,12 @@ const SKELETON_ROWS = 7
   }
 
   class WakatimeGraph extends HTMLElement {
+    resizeObserver: ResizeObserver | null = null
+
     async connectedCallback() {
+      this.resizeObserver = new ResizeObserver(() => this.updateVisibleRows())
+      this.resizeObserver.observe(this)
+
       const cached = readTileCache<[string, number][]>("wakatime")
       if (cached) this.renderRows(cached)
 
@@ -245,7 +225,7 @@ const SKELETON_ROWS = 7
 
         const languages = [...totals.entries()]
           .sort((a, b) => b[1] - a[1])
-          .slice(0, MAX_LANGUAGES)
+          .slice(0, MAX_WAKATIME_ROWS)
 
         if (JSON.stringify(languages) === JSON.stringify(cached)) return
         writeTileCache("wakatime", languages)
@@ -262,6 +242,10 @@ const SKELETON_ROWS = 7
       }
     }
 
+    disconnectedCallback() {
+      this.resizeObserver?.disconnect()
+    }
+
     renderRows(languages: [string, number][]) {
       const max = languages[0]?.[1] ?? 1
       this.replaceChildren(
@@ -269,6 +253,19 @@ const SKELETON_ROWS = 7
           this.renderRow(name, hours, max, index),
         ),
       )
+      this.updateVisibleRows()
+    }
+
+    updateVisibleRows() {
+      const rootFontSize = Number.parseFloat(
+        getComputedStyle(document.documentElement).fontSize,
+      )
+      const visibleRows = visibleWakatimeRows(this.clientHeight / rootFontSize)
+      for (const [index, row] of this.querySelectorAll(
+        "wakatime-row",
+      ).entries()) {
+        row.toggleAttribute("hidden", index >= visibleRows)
+      }
     }
 
     renderRow(name: string, hours: number, max: number, index: number) {

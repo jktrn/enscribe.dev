@@ -87,6 +87,8 @@ import { SITE } from "@/consts"
   </script>
 
   <script is:inline>
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)")
+
     document.addEventListener(
       "load",
       (event) => {
@@ -94,10 +96,12 @@ import { SITE } from "@/consts"
         if (!(img instanceof HTMLImageElement) || img.loading !== "lazy") return
         if (!img.hasAttribute("data-loaded")) {
           img.setAttribute("data-loaded", "")
-          img.animate(
-            { opacity: [0, 1] },
-            { duration: 900, easing: "cubic-bezier(0.22, 1, 0.36, 1)" },
-          )
+          if (!reducedMotion.matches) {
+            img.animate(
+              { opacity: [0, 1] },
+              { duration: 900, easing: "cubic-bezier(0.22, 1, 0.36, 1)" },
+            )
+          }
         }
       },
       true,

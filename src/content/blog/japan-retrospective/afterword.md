@@ -31,38 +31,38 @@ Just for fun, here's a table of all of the dining experiences we had throughout 
 
 | Day | Location | Restaurant                                                                             | Type           | Meal      | My Rating                                  |
 | --- | -------- | -------------------------------------------------------------------------------------- | -------------- | --------- | ------------------------------------------ |
-| 1   | Kyoto    | [Yayoi-ken Shijō-Karasuma](https://tabelog.com/en/kyoto/A2601/A260201/26011748/)       | Teishoku       | Breakfast | <span style="color:#facc15">3.5/5</span> |
-| 1   | Osaka    | [Kushikatsu to Odashi Kushiemon](https://tabelog.com/en/osaka/A2701/A270206/27135045/) | Kushikatsu     | Lunch     | <span style="color:#ef4444">2/5</span>      |
-| 1   | Osaka    | [Ichiran](https://en.wikipedia.org/wiki/Ichiran)                                       | Ramen          | Dinner    | <span style="color:#4ade80">4.5/5</span>  |
-| 2   | Kyoto    | [Shijō Nishinotōin Shokudō](https://tabelog.com/en/kyoto/A2601/A260201/26017600/)      | Teishoku       | Breakfast | <span style="color:#86efac">4/5</span>    |
-| 2   | Nara     | [Mamejica Kitchen](https://tabelog.com/en/nara/A2901/A290101/29011358/)                | Ice Cream      | Snack     | <span style="color:#4ade80">4.5/5</span>  |
-| 2   | Nara     | [Maguro Koya](https://tabelog.com/en/nara/A2901/A290101/29000802/)                     | Tuna Specialty | Lunch     | <span style="color:#22c55e">5/5</span>    |
-| 3   | Kyoto    | [MACCHA HOUSE](https://tabelog.com/en/kyoto/A2601/A260301/26030960/)                   | Cafe           | Snack     | <span style="color:#4ade80">4.5/5</span>  |
-| 3   | Kyoto    | [Honkaku Yakiniku Chifaja](https://tabelog.com/en/kyoto/A2601/A260201/26021071/)       | Yakiniku       | Dinner    | <span style="color:#facc15">3.5/5</span> |
-| 4   | Kyoto    | [Katsukura](https://tabelog.com/en/kyoto/A2601/A260101/26001923/)                      | Tonkatsu       | Lunch     | <span style="color:#86efac">4/5</span>    |
-| 5   | Kyoto    | [nana's green tea](https://tabelog.com/en/kyoto/A2601/A260201/26032210/)               | Cafe           | Snack     | <span style="color:#fde047">3/5</span>   |
-| 5   | Kyoto    | [Ramen Sen-no-Kaze](https://tabelog.com/en/kyoto/A2601/A260202/26016307/)              | Ramen          | Dinner    | <span style="color:#86efac">4/5</span>    |
-| 5   | Kyoto    | [Nishiki Market](https://www.japan-guide.com/e/e3931.html)                             | Street Food    | Snack     | <span style="color:#fde047">3/5</span>   |
-| 6   | Hakone   | Ryokan In-House Dinner                                                                 | Kaiseki        | Dinner    | <span style="color:#22c55e">5/5</span>    |
-| 7   | Hakone   | Ryokan In-House Breakfast                                                              | Traditional    | Breakfast | <span style="color:#86efac">4/5</span>    |
-| 7   | Hakone   | [Amazake Chaya](https://tabelog.com/en/kanagawa/A1410/A141001/14001260/)               | Tea House      | Snack     | <span style="color:#4ade80">4.5/5</span>  |
-| 7   | Hakone   | [Hakone Butter SUN SAN D](https://sunsan-d.com/)                                       | Ice Cream      | Snack     | <span style="color:#22c55e">5/5</span>    |
-| 7   | Hakone   | Ryokan In-House Dinner                                                                 | Kaiseki        | Dinner    | <span style="color:#22c55e">5/5</span>    |
-| 8   | Hakone   | Ryokan In-House Breakfast                                                              | Traditional    | Breakfast | <span style="color:#86efac">4/5</span>    |
-| 8   | Tokyo    | [CoCo Ichibanya](https://tabelog.com/en/tokyo/A1304/A130401/13126200/)                 | Curry          | Brunch    | <span style="color:#facc15">3.5/5</span> |
-| 8   | Tokyo    | [Kim Cafe](https://tabelog.com/en/tokyo/A1304/A130401/13278125/)                       | Korean         | Dinner    | <span style="color:#facc15">3.5/5</span> |
-| 9   | Yokohama | Cup Noodles Museum Food Court                                                          | International  | Lunch     | <span style="color:#fde047">3/5</span>   |
-| 9   | Tokyo    | [Shabu Yo](https://tabelog.com/en/tokyo/A1303/A130301/13207838/)                       | Shabu-shabu    | Dinner    | <span style="color:#4ade80">4.5/5</span>  |
-| 10  | Tokyo    | Tsukiji Market                                                                         | Seafood        | Lunch     | <span style="color:#fde047">3/5</span>   |
-| 10  | Tokyo    | [Tsurutontan](https://tabelog.com/tokyo/A1304/A130401/13024799/)                       | Udon           | Dinner    | <span style="color:#4ade80">4.5/5</span>  |
-| 11  | Tokyo    | [PHO THIN](https://tabelog.com/en/tokyo/A1304/A130401/13257231/)                       | Vietnamese     | Brunch    | <span style="color:#86efac">4/5</span>    |
-| 11  | Tokyo    | [maidreamin](https://tabelog.com/en/tokyo/A1311/A131101/13050366/)                     | Maid Cafe      | Lunch     | <span style="color:#ef4444">2/5</span>      |
-| 11  | Tokyo    | [Hakata Furyu](https://tabelog.com/en/tokyo/A1311/A131101/13096267/)                   | Ramen          | Dinner    | <span style="color:#22c55e">5/5</span>    |
-| 12  | Tokyo    | [Shinshu Sojibo](https://tabelog.com/en/tokyo/A1313/A131306/13188484/)                 | Soba           | Lunch     | <span style="color:#fde047">3/5</span>   |
-| 12  | Tokyo    | [Yomenya Goemon](https://en.yomenya-goemon.com/)                                       | Pasta          | Dinner    | <span style="color:#4ade80">4.5/5</span>  |
-| 13  | Tokyo    | [Ippudo](https://tabelog.com/en/tokyo/A1304/A130401/13274333/)                         | Ramen          | Dinner    | <span style="color:#facc15">3.5/5</span> |
-| 14  | Tokyo    | [Setagaya](https://tabelog.com/en/tokyo/A1315/A131504/13117591/)                       | Ramen          | Lunch     | <span style="color:#86efac">4/5</span>    |
-| 14  | Tokyo    | [Saryo Itoen](https://tabelog.com/en/tokyo/A1315/A131504/13174290/)                    | Cafe           | Snack     | <span style="color:#86efac">4/5</span>    |
+| 1   | Kyoto    | [Yayoi-ken Shijō-Karasuma](https://tabelog.com/en/kyoto/A2601/A260201/26011748/)       | Teishoku       | Breakfast | <span class="rating" data-rating="3.5">3.5/5</span> |
+| 1   | Osaka    | [Kushikatsu to Odashi Kushiemon](https://tabelog.com/en/osaka/A2701/A270206/27135045/) | Kushikatsu     | Lunch     | <span class="rating" data-rating="2">2/5</span>      |
+| 1   | Osaka    | [Ichiran](https://en.wikipedia.org/wiki/Ichiran)                                       | Ramen          | Dinner    | <span class="rating" data-rating="4.5">4.5/5</span>  |
+| 2   | Kyoto    | [Shijō Nishinotōin Shokudō](https://tabelog.com/en/kyoto/A2601/A260201/26017600/)      | Teishoku       | Breakfast | <span class="rating" data-rating="4">4/5</span>      |
+| 2   | Nara     | [Mamejica Kitchen](https://tabelog.com/en/nara/A2901/A290101/29011358/)                | Ice Cream      | Snack     | <span class="rating" data-rating="4.5">4.5/5</span>  |
+| 2   | Nara     | [Maguro Koya](https://tabelog.com/en/nara/A2901/A290101/29000802/)                     | Tuna Specialty | Lunch     | <span class="rating" data-rating="5">5/5</span>      |
+| 3   | Kyoto    | [MACCHA HOUSE](https://tabelog.com/en/kyoto/A2601/A260301/26030960/)                   | Cafe           | Snack     | <span class="rating" data-rating="4.5">4.5/5</span>  |
+| 3   | Kyoto    | [Honkaku Yakiniku Chifaja](https://tabelog.com/en/kyoto/A2601/A260201/26021071/)       | Yakiniku       | Dinner    | <span class="rating" data-rating="3.5">3.5/5</span> |
+| 4   | Kyoto    | [Katsukura](https://tabelog.com/en/kyoto/A2601/A260101/26001923/)                      | Tonkatsu       | Lunch     | <span class="rating" data-rating="4">4/5</span>      |
+| 5   | Kyoto    | [nana's green tea](https://tabelog.com/en/kyoto/A2601/A260201/26032210/)               | Cafe           | Snack     | <span class="rating" data-rating="3">3/5</span>      |
+| 5   | Kyoto    | [Ramen Sen-no-Kaze](https://tabelog.com/en/kyoto/A2601/A260202/26016307/)              | Ramen          | Dinner    | <span class="rating" data-rating="4">4/5</span>      |
+| 5   | Kyoto    | [Nishiki Market](https://www.japan-guide.com/e/e3931.html)                             | Street Food    | Snack     | <span class="rating" data-rating="3">3/5</span>      |
+| 6   | Hakone   | Ryokan In-House Dinner                                                                 | Kaiseki        | Dinner    | <span class="rating" data-rating="5">5/5</span>      |
+| 7   | Hakone   | Ryokan In-House Breakfast                                                              | Traditional    | Breakfast | <span class="rating" data-rating="4">4/5</span>      |
+| 7   | Hakone   | [Amazake Chaya](https://tabelog.com/en/kanagawa/A1410/A141001/14001260/)               | Tea House      | Snack     | <span class="rating" data-rating="4.5">4.5/5</span>  |
+| 7   | Hakone   | [Hakone Butter SUN SAN D](https://sunsan-d.com/)                                       | Ice Cream      | Snack     | <span class="rating" data-rating="5">5/5</span>      |
+| 7   | Hakone   | Ryokan In-House Dinner                                                                 | Kaiseki        | Dinner    | <span class="rating" data-rating="5">5/5</span>      |
+| 8   | Hakone   | Ryokan In-House Breakfast                                                              | Traditional    | Breakfast | <span class="rating" data-rating="4">4/5</span>      |
+| 8   | Tokyo    | [CoCo Ichibanya](https://tabelog.com/en/tokyo/A1304/A130401/13126200/)                 | Curry          | Brunch    | <span class="rating" data-rating="3.5">3.5/5</span> |
+| 8   | Tokyo    | [Kim Cafe](https://tabelog.com/en/tokyo/A1304/A130401/13278125/)                       | Korean         | Dinner    | <span class="rating" data-rating="3.5">3.5/5</span> |
+| 9   | Yokohama | Cup Noodles Museum Food Court                                                          | International  | Lunch     | <span class="rating" data-rating="3">3/5</span>      |
+| 9   | Tokyo    | [Shabu Yo](https://tabelog.com/en/tokyo/A1303/A130301/13207838/)                       | Shabu-shabu    | Dinner    | <span class="rating" data-rating="4.5">4.5/5</span>  |
+| 10  | Tokyo    | Tsukiji Market                                                                         | Seafood        | Lunch     | <span class="rating" data-rating="3">3/5</span>      |
+| 10  | Tokyo    | [Tsurutontan](https://tabelog.com/tokyo/A1304/A130401/13024799/)                       | Udon           | Dinner    | <span class="rating" data-rating="4.5">4.5/5</span>  |
+| 11  | Tokyo    | [PHO THIN](https://tabelog.com/en/tokyo/A1304/A130401/13257231/)                       | Vietnamese     | Brunch    | <span class="rating" data-rating="4">4/5</span>      |
+| 11  | Tokyo    | [maidreamin](https://tabelog.com/en/tokyo/A1311/A131101/13050366/)                     | Maid Cafe      | Lunch     | <span class="rating" data-rating="2">2/5</span>      |
+| 11  | Tokyo    | [Hakata Furyu](https://tabelog.com/en/tokyo/A1311/A131101/13096267/)                   | Ramen          | Dinner    | <span class="rating" data-rating="5">5/5</span>      |
+| 12  | Tokyo    | [Shinshu Sojibo](https://tabelog.com/en/tokyo/A1313/A131306/13188484/)                 | Soba           | Lunch     | <span class="rating" data-rating="3">3/5</span>      |
+| 12  | Tokyo    | [Yomenya Goemon](https://en.yomenya-goemon.com/)                                       | Pasta          | Dinner    | <span class="rating" data-rating="4.5">4.5/5</span>  |
+| 13  | Tokyo    | [Ippudo](https://tabelog.com/en/tokyo/A1304/A130401/13274333/)                         | Ramen          | Dinner    | <span class="rating" data-rating="3.5">3.5/5</span> |
+| 14  | Tokyo    | [Setagaya](https://tabelog.com/en/tokyo/A1315/A131504/13117591/)                       | Ramen          | Lunch     | <span class="rating" data-rating="4">4/5</span>      |
+| 14  | Tokyo    | [Saryo Itoen](https://tabelog.com/en/tokyo/A1315/A131504/13174290/)                    | Cafe           | Snack     | <span class="rating" data-rating="4">4/5</span>      |
 
 Some observations and overall thoughts, since none of these restaurants/establishments were planned or researched beforehand:
 - In terms of price-value dynamics, chain restaurants offered significantly better value than their US. counterparts.
@@ -84,3 +84,34 @@ For future trips or similar experiences:
 - Plan shopping based on regional pricing and inflation rather than the availablility of goods.
 
 Overall, while the intensive planning created a solid framework for our trip, no amount of planning could prepare us for the unplanned moments and discoveries that often proved most memorable. The trip succeeded in its primary goal—providing a comprehensive first-time experience for the family—while also teaching me valuable lessons about responsibility, adaptability, and the delicate balance between preparation and spontaneity that makes travel truly meaningful.
+
+<style>
+.rating {
+  color: var(--rating-color);
+  font-weight: var(--font-weight-medium);
+}
+
+.rating[data-rating="2"] {
+  --rating-color: light-dark(#b91c1c, #ff9592);
+}
+
+.rating[data-rating="3"] {
+  --rating-color: light-dark(#8a5d00, #fde047);
+}
+
+.rating[data-rating="3.5"] {
+  --rating-color: light-dark(#a03f00, #facc15);
+}
+
+.rating[data-rating="4"] {
+  --rating-color: light-dark(#166b46, #86efac);
+}
+
+.rating[data-rating="4.5"] {
+  --rating-color: light-dark(#08713f, #4ade80);
+}
+
+.rating[data-rating="5"] {
+  --rating-color: light-dark(#006b38, #22c55e);
+}
+</style>

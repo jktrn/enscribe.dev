@@ -12,3 +12,22 @@ import { Content } from "./_about.md"
     </prose-content>
   </article>
 </Layout>
+
+<style>
+  :global(.awesome-colors) {
+    --awesome-from: light-dark(#b21e59, #ff9592);
+    --awesome-to: light-dark(#825000, #f5e147);
+
+    color: var(--awesome-from);
+
+    @supports (background-clip: text) {
+      background-image: linear-gradient(
+        90deg,
+        var(--awesome-from),
+        var(--awesome-to)
+      );
+      background-clip: text;
+      color: transparent;
+    }
+  }
+</style>

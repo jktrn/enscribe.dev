@@ -32,7 +32,7 @@ Come play SekaiCTF 2023, where we have... Wait, this is a CTF challenge?!
 
 </static-tweet>
 
-Dubbed "Azusawa's Gacha World," this challenge took heavy theming inspiration from a team friend with the handle [@stypr](https://github.com/stypr), who singlehandedly spent around USD$20,000 on [Project Sekai](https://projectsekai.fandom.com/wiki/Project_SEKAI_COLORFUL_STAGE!) (the mobile rhythm game). He also runs a website called [azusawa.world](https://azusawa.world), which features his experiences with a character named [Kohane Azsuawa](https://projectsekai.fandom.com/wiki/Azusawa_Kohane) (小豆沢こはね)—this challenge is part of the recurring meme with the character.
+Dubbed "Azusawa's Gacha World," this challenge took heavy theming inspiration from a team friend with the handle [@stypr](https://github.com/stypr), who singlehandedly spent around USD$20,000 on [Project Sekai](https://projectsekai.fandom.com/wiki/Project_SEKAI_COLORFUL_STAGE!) (the mobile rhythm game). He also runs a website called [azusawa.world](https://web.archive.org/web/20240602172523/https://azusawa.world/), which features his experiences with a character named [Kohane Azsuawa](https://projectsekai.fandom.com/wiki/Azusawa_Kohane) (小豆沢こはね)—this challenge is part of the recurring meme with the character.
 
 However, before we get into the challenge itself, let's talk first about the game and genre that inspired it.
 
@@ -2157,7 +2157,7 @@ Since we have a lot of context now on how the game is made and the various scrip
 
 **(description on CTF platform)**
 
-> https://azusawa.world/#/2023/03/02
+> https://web.archive.org/web/20240602172523/https://azusawa.world/#/2023/03/02
 >
 > ❖ **Note**  
 > The website only contains the challenge description, and is not needed to solve the challenge.
