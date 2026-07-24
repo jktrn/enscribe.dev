@@ -1,0 +1,49 @@
+<script>
+  const timers = new WeakMap<HTMLElement, ReturnType<typeof setTimeout>>()
+
+  const copy = async (pill: HTMLElement) => {
+    const text = pill.dataset.copy
+    if (!text) return
+    try {
+      await navigator.clipboard.writeText(text)
+    } catch {
+      return
+    }
+    pill.toggleAttribute("data-copied", true)
+    clearTimeout(timers.get(pill))
+    timers.set(
+      pill,
+      setTimeout(() => pill.removeAttribute("data-copied"), 1500),
+    )
+  }
+
+  document.addEventListener("click", (event) => {
+    const pill = (event.target as Element).closest?.("copy-command")
+    if (pill instanceof HTMLElement) copy(pill)
+  })
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key !== "Enter" && event.key !== " ") return
+    const pill = event.target
+    if (!(pill instanceof HTMLElement) || pill.tagName !== "COPY-COMMAND")
+      return
+    event.preventDefault()
+    copy(pill)
+  })
+
+  document.addEventListener("click", async (event) => {
+    const button = (event.target as Element).closest?.("[data-copy-page]")
+    if (!(button instanceof HTMLElement) || !button.dataset.href) return
+    try {
+      const text = await (await fetch(button.dataset.href)).text()
+      await navigator.clipboard.writeText(text)
+    } catch {
+      return
+    }
+    const original = button.textContent
+    button.textContent = "Copied"
+    setTimeout(() => {
+      button.textContent = original
+    }, 1500)
+  })
+</script>

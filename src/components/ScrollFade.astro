@@ -1,0 +1,42 @@
+<script>
+  let els: HTMLElement[] = []
+
+  const update = (el: HTMLElement) => {
+    if (el.hasAttribute("data-scroll-fade")) {
+      const max = el.scrollHeight - el.clientHeight
+      el.toggleAttribute("data-fade-top", el.scrollTop > 1)
+      el.toggleAttribute("data-fade-bottom", el.scrollTop < max - 1)
+    }
+    if (el.hasAttribute("data-scroll-fade-x")) {
+      const max = el.scrollWidth - el.clientWidth
+      el.toggleAttribute("data-fade-left", el.scrollLeft > 1)
+      el.toggleAttribute("data-fade-right", el.scrollLeft < max - 1)
+    }
+  }
+
+  const observer = new ResizeObserver((entries) => {
+    for (const entry of entries) update(entry.target as HTMLElement)
+  })
+
+  document.addEventListener(
+    "toggle",
+    () => {
+      for (const el of els) update(el)
+    },
+    true,
+  )
+
+  document.addEventListener("astro:page-load", () => {
+    observer.disconnect()
+    els = [
+      ...document.querySelectorAll<HTMLElement>(
+        "[data-scroll-fade], [data-scroll-fade-x]",
+      ),
+    ]
+    for (const el of els) {
+      update(el)
+      el.addEventListener("scroll", () => update(el), { passive: true })
+      observer.observe(el)
+    }
+  })
+</script>

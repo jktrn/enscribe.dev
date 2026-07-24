@@ -1,5 +1,0 @@
-void sigsegv_handler(int sig) {
-    printf("%s\n", flag);
-    fflush(stdout);
-    exit(1);
-}

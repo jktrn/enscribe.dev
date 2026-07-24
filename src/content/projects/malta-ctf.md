@@ -1,10 +1,12 @@
 ---
 name: 'MaltaCTF 2025'
 description: 'I led branding, design, and created the landing for MaltaCTF 2025, an intl. conference/competition with finals held on-site in Valletta, Malta!'
-tags: ['commercial', 'community']
-image: '../../../public/static/projects/malta-ctf.png'
+image: './assets/malta-ctf.png'
+thumbnail:
+  light: './assets/maltactf-light.png'
+  dark: './assets/maltactf-dark.png'
 link: 'https://2025.ctf.mt'
-order: 2
 startDate: '2025-05-05'
 endDate: '2025-05-23'
+order: 4
 ---

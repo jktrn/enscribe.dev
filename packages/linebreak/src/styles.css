@@ -1,0 +1,38 @@
+[data-kp-justified] {
+  text-align: start;
+  text-wrap: wrap;
+  hyphens: manual;
+}
+
+[data-kp-justified] > .kp-line {
+  display: inline-block;
+  inline-size: 100%;
+  white-space: nowrap;
+  word-spacing: calc(
+    var(--kp-base-word-spacing) + var(--kp-word-spacing-delta)
+  );
+  letter-spacing: calc(
+    var(--kp-base-letter-spacing) + var(--kp-letter-spacing-delta)
+  );
+  text-align: start;
+  text-align-last: start;
+  vertical-align: top;
+}
+
+[data-kp-justified]
+  [data-kp-inline-fragment]:not([data-kp-fragment-start]) {
+  padding-inline-start: 0;
+  margin-inline-start: 0;
+  border-inline-start-width: 0;
+  border-start-start-radius: 0;
+  border-end-start-radius: 0;
+}
+
+[data-kp-justified]
+  [data-kp-inline-fragment]:not([data-kp-fragment-end]) {
+  padding-inline-end: 0;
+  margin-inline-end: 0;
+  border-inline-end-width: 0;
+  border-start-end-radius: 0;
+  border-end-end-radius: 0;
+}

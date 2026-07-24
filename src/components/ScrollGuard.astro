@@ -1,0 +1,23 @@
+<style is:global>
+  html[data-page-scrolling] :is(.expressive-code pre, page-toc nav > ul) {
+    pointer-events: none;
+  }
+</style>
+
+<script>
+  const SETTLE_MS = 200
+
+  let timer: ReturnType<typeof setTimeout> | undefined
+
+  addEventListener(
+    "scroll",
+    () => {
+      document.documentElement.setAttribute("data-page-scrolling", "")
+      clearTimeout(timer)
+      timer = setTimeout(() => {
+        document.documentElement.removeAttribute("data-page-scrolling")
+      }, SETTLE_MS)
+    },
+    { passive: true },
+  )
+</script>

@@ -1,0 +1,123 @@
+prose-content {
+  > * {
+    min-inline-size: 0;
+    max-inline-size: 100%;
+  }
+
+  :where(div):has(img, video) {
+    max-inline-size: 100%;
+
+    > * {
+      min-inline-size: 0;
+      max-inline-size: 100%;
+    }
+  }
+
+  blockquote {
+    border-inline-start: 2px solid var(--border);
+    padding-inline-start: 1.25em;
+    color: var(--muted-foreground);
+
+    :is(p, li) {
+      color: inherit;
+    }
+  }
+
+  hr {
+    margin-block: var(--space-l);
+    border-block-start: 1.5px solid var(--border);
+  }
+
+  :is(img, video) {
+    margin-inline: auto;
+  }
+
+  svg[data-diagram],
+  p > svg {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  summary {
+    cursor: pointer;
+    font-weight: var(--font-weight-medium);
+  }
+
+  details[open] summary {
+    margin-block-end: 0.5em;
+  }
+
+  .footnotes {
+    margin-block-start: var(--space-l);
+    padding-block-start: var(--space-s);
+    border-block-start: 1.5px solid var(--border);
+  }
+
+  :is(math, math *) {
+    letter-spacing: normal;
+  }
+
+  math {
+    font-family: var(--font-math);
+  }
+
+  math-display {
+    display: flex;
+    justify-content: safe center;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+
+  .expressive-code {
+    content-visibility: auto;
+    contain-intrinsic-block-size: auto 20rem;
+
+    pre {
+      max-block-size: min(68vh, 1000px);
+      overflow-y: auto;
+
+      &::-webkit-scrollbar-corner {
+        display: none;
+      }
+    }
+
+    .tm-label .code::before {
+      font-family: var(--font-sans);
+    }
+
+    .frame.is-terminal .header {
+      font-weight: var(--font-weight-normal);
+    }
+
+    .frame.has-title:not(.is-terminal) .header {
+      border-block-end: var(--ec-brdWd) solid var(--border);
+    }
+
+    .expand {
+      margin-block-end: 0.1em;
+    }
+
+    .ec-section summary {
+      list-style: none;
+    }
+
+    .collapsible-start summary {
+      margin-block: var(--space-3xs);
+    }
+  }
+}
+
+:root[data-js]
+  prose-content
+  img[loading="lazy"]:not([data-loaded]):not([data-favicon]) {
+  color: transparent;
+  background-color: color-mix(in oklab, var(--muted) 60%, transparent);
+  animation: image-skeleton 2s ease-in-out infinite;
+}
+
+@keyframes image-skeleton {
+  50% {
+    opacity: 0.6;
+  }
+}

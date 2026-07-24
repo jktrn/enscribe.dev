@@ -1,0 +1,692 @@
+[
+  {
+    "date": "2026-07-19",
+    "genres": ["post-hardcore", "metalcore", "screamo"],
+    "artists": [
+      {
+        "name": "I Promised the World",
+        "url": "https://ipromisedtheworld.com/",
+        "formerName": "Sinema"
+      },
+      {
+        "name": "A Static Lullaby",
+        "url": "https://en.wikipedia.org/wiki/A_Static_Lullaby"
+      },
+      {
+        "name": "Rosasharin",
+        "url": "https://rosasharin.bandcamp.com/"
+      },
+      {
+        "name": "Guilt",
+        "url": "https://guilt206.bandcamp.com/"
+      }
+    ],
+    "venue": {
+      "name": "The Belasco",
+      "city": "Los Angeles",
+      "url": "https://www.google.com/maps/search/?api=1&query=The+Belasco+Los+Angeles"
+    },
+    "source": {
+      "label": "setlist",
+      "url": "https://www.setlist.fm/show/2026-07-19/the-belasco-los-angeles-ca-23b7c4ab.html?setlist=2374c457"
+    }
+  },
+  {
+    "date": "2026-06-16",
+    "genres": ["digicore", "rage", "drum and bass", "breakbeat"],
+    "artists": [
+      {
+        "name": "Jane Remover",
+        "url": "https://janeremover.bandcamp.com/"
+      },
+      {
+        "name": "dazegxd",
+        "url": "https://dazegxd.bandcamp.com/"
+      }
+    ],
+    "venue": {
+      "name": "The Regency Ballroom",
+      "city": "San Francisco",
+      "url": "https://www.google.com/maps/search/?api=1&query=The+Regency+Ballroom+San+Francisco"
+    },
+    "source": {
+      "label": "setlist",
+      "url": "https://www.setlist.fm/setlist/jane-remover/2026/the-regency-ballroom-san-francisco-ca-4377db0f.html"
+    }
+  },
+  {
+    "date": "2026-04-26",
+    "genres": ["Vocaloid", "J-pop", "electronic"],
+    "artists": [
+      {
+        "name": "Hatsune Miku",
+        "url": "https://en.wikipedia.org/wiki/Hatsune_Miku"
+      }
+    ],
+    "venue": {
+      "name": "Peacock Theater",
+      "city": "Los Angeles",
+      "url": "https://www.google.com/maps/search/?api=1&query=Peacock+Theater+Los+Angeles"
+    },
+    "source": {
+      "label": "setlist",
+      "url": "https://www.setlist.fm/setlist/hatsune-miku/2026/la-live-peacock-theater-los-angeles-ca-2b4f941e.html"
+    }
+  },
+  {
+    "date": "2026-04-22",
+    "genres": ["digicore", "experimental hip hop", "cloud rap"],
+    "artists": [
+      {
+        "name": "Lucy Bedroque",
+        "url": "https://bedroque00.bandcamp.com/"
+      },
+      {
+        "name": "kuru",
+        "url": "https://kuruofficial.bandcamp.com/"
+      },
+      {
+        "name": "9lives",
+        "url": "https://9lives.bandcamp.com/"
+      }
+    ],
+    "venue": {
+      "name": "Great American Music Hall",
+      "city": "San Francisco",
+      "url": "https://www.google.com/maps/search/?api=1&query=Great+American+Music+Hall+San+Francisco"
+    },
+    "source": {
+      "label": "setlist",
+      "url": "https://www.setlist.fm/setlist/lucy-bedroque/2026/great-american-music-hall-san-francisco-ca-6b4d9ac6.html"
+    }
+  },
+  {
+    "date": "2025-12-07",
+    "genres": ["progressive metal", "technical death metal", "extreme metal"],
+    "artists": [
+      {
+        "name": "Ne Obliviscaris",
+        "url": "https://neobliviscarissom.bandcamp.com/"
+      },
+      {
+        "name": "Rivers of Nihil",
+        "url": "https://riversofnihil.bandcamp.com/"
+      },
+      {
+        "name": "Psycroptic",
+        "url": "https://psycroptic.bandcamp.com/"
+      }
+    ],
+    "venue": {
+      "name": "The Belasco",
+      "city": "Los Angeles",
+      "url": "https://www.google.com/maps/search/?api=1&query=The+Belasco+Los+Angeles"
+    },
+    "source": {
+      "label": "setlist",
+      "url": "https://www.setlist.fm/setlist/ne-obliviscaris/2025/the-belasco-los-angeles-ca-1b409dac.html"
+    }
+  },
+  {
+    "date": "2025-11-29",
+    "genres": ["experimental hip hop", "hyperpop", "digital hardcore"],
+    "artists": [
+      {
+        "name": "Danny Brown",
+        "url": "https://dannybrown.bandcamp.com/"
+      },
+      {
+        "name": "femtanyl",
+        "url": "https://femtanyl.bandcamp.com/"
+      },
+      {
+        "name": "underscores",
+        "url": "https://underscores.bandcamp.com/"
+      }
+    ],
+    "venue": {
+      "name": "The Observatory North Park",
+      "city": "San Diego",
+      "url": "https://www.google.com/maps/search/?api=1&query=The+Observatory+North+Park+San+Diego"
+    },
+    "source": {
+      "label": "setlist",
+      "url": "https://guestpectacular.com/artists/danny-brown/events/2025-11-29/united-states/san-diego/the-observatory-north-park"
+    }
+  },
+  {
+    "date": "2025-11-22",
+    "genres": ["screamo", "post-hardcore", "post-metal"],
+    "artists": [
+      {
+        "name": "Portraits of Past",
+        "url": "https://portraitsofpast.bandcamp.com/"
+      },
+      {
+        "name": "Glassing",
+        "url": "https://www.instagram.com/glassingband/"
+      },
+      {
+        "name": "GAYT",
+        "url": "https://www.instagram.com/gaytband/"
+      }
+    ],
+    "venue": {
+      "name": "The Ché Café",
+      "city": "La Jolla",
+      "url": "https://www.google.com/maps/search/?api=1&query=The+Che+Cafe+La+Jolla"
+    },
+    "source": {
+      "label": "setlist",
+      "url": "https://www.setlist.fm/setlist/portraits-of-past/2025/the-che-cafe-la-jolla-ca-5b41df2c.html"
+    }
+  },
+  {
+    "date": "2025-11-07",
+    "genres": ["Shibuya-kei", "bossa nova", "dream pop"],
+    "artists": [
+      {
+        "name": "Lamp",
+        "url": "https://botanicalhouse.bandcamp.com/"
+      }
+    ],
+    "venue": {
+      "name": "House of Blues",
+      "city": "Anaheim",
+      "url": "https://www.google.com/maps/search/?api=1&query=House+of+Blues+Anaheim"
+    },
+    "source": {
+      "label": "setlist",
+      "url": "https://www.setlist.fm/setlist/lamp/2025/house-of-blues-anaheim-ca-b421976.html"
+    }
+  },
+  {
+    "date": "2025-10-11",
+    "event": "Niteharts",
+    "genres": ["trap", "bass house", "dubstep", "breakbeat"],
+    "artists": [
+      {
+        "name": "Knock2",
+        "url": "https://www.knock2music.com/"
+      },
+      {
+        "name": "Syzy",
+        "url": "https://syzy.bandcamp.com/"
+      },
+      {
+        "name": "WINK",
+        "url": "https://www.instagram.com/winksounds/",
+        "b2bWithNext": true
+      },
+      {
+        "name": "NIKKO",
+        "url": "https://www.instagram.com/nikkommvi/"
+      },
+      {
+        "name": "starjunk95",
+        "url": "https://starjunk95.bandcamp.com/"
+      },
+      {
+        "name": "Nate Sib",
+        "url": "https://natesib.bandcamp.com/"
+      },
+      {
+        "name": "Joyryde",
+        "url": "https://www.joyryde.net/"
+      },
+      {
+        "name": "Kenny Beats",
+        "url": "https://kennybeats.bandcamp.com/"
+      },
+      {
+        "name": "ISOxo",
+        "url": "https://www.instagram.com/isoxo_/",
+        "acronymPrefix": "ISO",
+        "b2bWithNext": true
+      },
+      {
+        "name": "Skrillex",
+        "url": "https://skrillex.com/"
+      }
+    ],
+    "venue": {
+      "name": "Snapdragon Stadium",
+      "city": "San Diego",
+      "url": "https://www.google.com/maps/search/?api=1&query=Snapdragon+Stadium+San+Diego"
+    },
+    "source": {
+      "label": "setlist",
+      "url": "https://www.festivaldust.com/festivals/niteharts-2025-sandiegoca"
+    }
+  },
+  {
+    "date": "2025-09-23",
+    "genres": ["electropop", "cloud rap", "EDM"],
+    "artists": [
+      {
+        "name": "2hollis",
+        "url": "https://2hollis.bandcamp.com/"
+      },
+      {
+        "name": "Nate Sib",
+        "url": "https://natesib.bandcamp.com/"
+      },
+      {
+        "name": "rommulas",
+        "url": "https://www.instagram.com/rommulas/?hl=en"
+      }
+    ],
+    "venue": {
+      "name": "Shrine Exposition Hall",
+      "city": "Los Angeles",
+      "url": "https://www.google.com/maps/search/?api=1&query=Shrine+Exposition+Hall+Los+Angeles"
+    },
+    "source": {
+      "label": "setlist",
+      "url": "https://www.setlist.fm/setlist/2hollis/2025/shrine-exposition-hall-los-angeles-ca-43449f33.html"
+    }
+  },
+  {
+    "date": "2025-08-31",
+    "genres": ["shoegaze", "dream pop", "slowcore"],
+    "artists": [
+      {
+        "name": "Whirr",
+        "url": "https://whirrband.bandcamp.com/"
+      },
+      {
+        "name": "Nothing",
+        "url": "https://nothing.bandcamp.com/"
+      },
+      {
+        "name": "Midrift",
+        "url": "https://midriftband.com/"
+      },
+      {
+        "name": "Night School",
+        "url": "https://www.instagram.com/nightschoolband/"
+      }
+    ],
+    "venue": {
+      "name": "Modesto Centre Plaza",
+      "city": "Modesto",
+      "url": "https://www.google.com/maps/search/?api=1&query=Modesto+Centre+Plaza"
+    },
+    "source": {
+      "label": "setlist",
+      "url": "https://www.setlist.fm/setlist/whirr/2025/modesto-centre-plaza-modesto-ca-43424fbf.html"
+    }
+  },
+  {
+    "date": "2025-08-29",
+    "genres": ["emo", "indie rock"],
+    "artists": [
+      {
+        "name": "Taxi",
+        "url": "https://taxi3.bandcamp.com/album/reasons"
+      },
+      {
+        "name": "Slinger",
+        "url": "https://www.instagram.com/slinger_band/"
+      },
+      {
+        "name": "Vetch",
+        "url": "https://www.instagram.com/vetch____/"
+      },
+      {
+        "name": "Wyatt R.",
+        "url": "https://www.instagram.com/wyattramos2001/"
+      }
+    ],
+    "venue": {
+      "name": "3030 16th St.",
+      "city": "San Francisco",
+      "url": "https://www.google.com/maps/search/?api=1&query=3030+16th+St+San+Francisco"
+    },
+    "source": {
+      "label": "post",
+      "url": "https://www.instagram.com/p/DM3OrxpyPKO/"
+    }
+  },
+  {
+    "date": "2025-05-24",
+    "event": "Slide Away Fest",
+    "genres": ["shoegaze", "dream pop", "noise pop"],
+    "artists": [
+      {
+        "name": "Whirr",
+        "url": "https://whirrband.bandcamp.com/"
+      },
+      {
+        "name": "Luster",
+        "url": "https://lusterla.bandcamp.com/"
+      },
+      {
+        "name": "Swirlies",
+        "url": "https://swirlies.bandcamp.com/"
+      },
+      {
+        "name": "Swervedriver",
+        "url": "https://swervedriver.bandcamp.com/"
+      },
+      {
+        "name": "Nothing",
+        "url": "https://nothing.bandcamp.com/"
+      }
+    ],
+    "venue": {
+      "name": "Hollywood Palladium",
+      "city": "Los Angeles",
+      "url": "https://www.google.com/maps/search/?api=1&query=Hollywood+Palladium+Los+Angeles"
+    },
+    "source": {
+      "label": "setlist",
+      "url": "https://www.setlist.fm/setlist/whirr/2025/hollywood-palladium-los-angeles-ca-5b598b6c.html"
+    }
+  },
+  {
+    "date": "2025-05-21",
+    "genres": ["digicore", "drum and bass", "experimental hip hop"],
+    "artists": [
+      {
+        "name": "Jane Remover",
+        "url": "https://janeremover.bandcamp.com/"
+      },
+      {
+        "name": "dazegxd",
+        "url": "https://dazegxd.bandcamp.com/"
+      },
+      {
+        "name": "Lucy Bedroque",
+        "url": "https://bedroque00.bandcamp.com/"
+      }
+    ],
+    "venue": {
+      "name": "El Rey Theatre",
+      "city": "Los Angeles",
+      "url": "https://www.google.com/maps/search/?api=1&query=El+Rey+Theatre+Los+Angeles"
+    },
+    "source": {
+      "label": "setlist",
+      "url": "https://www.setlist.fm/setlist/jane-remover/2025/el-rey-theatre-los-angeles-ca-4b592376.html"
+    }
+  },
+  {
+    "date": "2025-04-19",
+    "genres": ["blackgaze", "death metal", "shoegaze"],
+    "artists": [
+      {
+        "name": "Deafheaven",
+        "url": "https://deafheavens.bandcamp.com/"
+      },
+      {
+        "name": "Gatecreeper",
+        "url": "https://gatecreeper.bandcamp.com/"
+      },
+      {
+        "name": "trauma ray",
+        "url": "https://traumaray.bandcamp.com/"
+      }
+    ],
+    "venue": {
+      "name": "The Belasco",
+      "city": "Los Angeles",
+      "url": "https://www.google.com/maps/search/?api=1&query=The+Belasco+Los+Angeles"
+    },
+    "source": {
+      "label": "setlist",
+      "url": "https://www.setlist.fm/setlist/deafheaven/2025/the-belasco-los-angeles-ca-1b5a9d0c.html"
+    }
+  },
+  {
+    "date": "2025-04-17",
+    "genres": ["hyperpop", "indie pop", "pop-punk"],
+    "artists": [
+      {
+        "name": "underscores",
+        "url": "https://underscores.bandcamp.com/"
+      },
+      {
+        "name": "gabby start",
+        "url": "https://bringyourknapsack.bandcamp.com/"
+      }
+    ],
+    "venue": {
+      "name": "Music Box",
+      "city": "San Diego",
+      "url": "https://www.google.com/maps/search/?api=1&query=Music+Box+San+Diego"
+    },
+    "source": {
+      "label": "setlist",
+      "url": "https://www.setlist.fm/setlist/underscores/2025/music-box-san-diego-ca-4358c353.html"
+    }
+  },
+  {
+    "date": "2024-11-29",
+    "genres": ["shoegaze", "alternative rock", "grunge"],
+    "artists": [
+      {
+        "name": "trauma ray",
+        "url": "https://traumaray.bandcamp.com/"
+      },
+      {
+        "name": "Slumped",
+        "url": "https://slumped.bandcamp.com/"
+      },
+      {
+        "name": "Luster",
+        "url": "https://lusterla.bandcamp.com/"
+      },
+      {
+        "name": "Toner",
+        "url": "https://tonerca.bandcamp.com/"
+      }
+    ],
+    "venue": {
+      "name": "The Roxy Theatre",
+      "city": "Los Angeles",
+      "url": "https://www.google.com/maps/search/?api=1&query=The+Roxy+Theatre+West+Hollywood"
+    },
+    "source": {
+      "label": "setlist",
+      "url": "https://www.concertarchives.org/concerts/trauma-ray-roxy-theatre"
+    }
+  },
+  {
+    "date": "2024-11-19",
+    "genres": ["digital hardcore", "breakcore", "noise rock"],
+    "artists": [
+      {
+        "name": "Machine Girl",
+        "url": "https://machinegirl.bandcamp.com/"
+      },
+      {
+        "name": "Kill Alters",
+        "url": "https://killalters.bandcamp.com/"
+      },
+      {
+        "name": "Lightning Bolt",
+        "url": "https://lightningbolt.bandcamp.com/"
+      }
+    ],
+    "venue": {
+      "name": "House of Blues",
+      "city": "San Diego",
+      "url": "https://www.google.com/maps/search/?api=1&query=House+of+Blues+San+Diego"
+    },
+    "source": {
+      "label": "setlist",
+      "url": "https://guestpectacular.com/artists/machine-girl/events/2024-11-19/united-states/san-diego/house-of-blues-jhZE9"
+    }
+  },
+  {
+    "date": "2024-10-13",
+    "genres": ["electropop", "indie pop", "progressive house"],
+    "artists": [
+      {
+        "name": "Porter Robinson",
+        "url": "https://porterrobinson.com/"
+      },
+      {
+        "name": "ericdoa",
+        "url": "https://ericdoa.bandcamp.com/"
+      },
+      {
+        "name": "Air2Earth",
+        "url": "https://porterrobinson.com/"
+      }
+    ],
+    "venue": {
+      "name": "The Rady Shell at Jacobs Park",
+      "city": "San Diego",
+      "url": "https://www.google.com/maps/search/?api=1&query=The+Rady+Shell+at+Jacobs+Park"
+    },
+    "source": {
+      "label": "setlist",
+      "url": "https://www.concertarchives.org/concerts/porter-robinson-ericdoa-d7d58630-b4e6-42d1-b01f-46d3db3652df"
+    }
+  },
+  {
+    "date": "2024-10-10",
+    "genres": ["technical death metal", "deathcore", "symphonic death metal"],
+    "artists": [
+      {
+        "name": "Fleshgod Apocalypse",
+        "url": "https://fleshgodapocalypse.bandcamp.com/"
+      },
+      {
+        "name": "Shadow of Intent",
+        "url": "https://shadowofintent7.bandcamp.com/"
+      },
+      {
+        "name": "Ingested",
+        "url": "https://ingested.bandcamp.com/"
+      },
+      {
+        "name": "The Zenith Passage",
+        "url": "https://zenithpassage.bandcamp.com/"
+      },
+      {
+        "name": "Disembodied Tyrant",
+        "url": "https://disembodiedtyrant.bandcamp.com/"
+      }
+    ],
+    "venue": {
+      "name": "House of Blues",
+      "city": "San Diego",
+      "url": "https://www.google.com/maps/search/?api=1&query=House+of+Blues+San+Diego"
+    },
+    "source": {
+      "label": "setlist",
+      "url": "https://www.concertarchives.org/concerts/fleshgod-apocalypse-shadow-of-intent-ingested-the-zenith-passage-71a958d2-6e3e-4276-8baa-3e64a3511f90"
+    }
+  },
+  {
+    "date": "2024-09-25",
+    "genres": ["Shibuya-kei", "bossa nova", "dream pop"],
+    "artists": [
+      {
+        "name": "Lamp",
+        "url": "https://botanicalhouse.bandcamp.com/"
+      }
+    ],
+    "venue": {
+      "name": "House of Blues",
+      "city": "San Diego",
+      "url": "https://www.google.com/maps/search/?api=1&query=House+of+Blues+San+Diego"
+    },
+    "source": {
+      "label": "setlist",
+      "url": "https://www.concertarchives.org/concerts/lamp--5683627"
+    }
+  },
+  {
+    "date": "2024-09-17",
+    "genres": ["alternative rock", "post-hardcore", "shoegaze"],
+    "artists": [
+      {
+        "name": "MASS OF THE FERMENTING DREGS",
+        "url": "https://massofthefermentingdregs.bandcamp.com/"
+      },
+      {
+        "name": "Cam Kahin",
+        "url": "https://dinealonerecords.bandcamp.com/"
+      },
+      {
+        "name": "Blush",
+        "url": "https://blushblush.bandcamp.com/"
+      }
+    ],
+    "venue": {
+      "name": "The Vermont Hollywood",
+      "city": "Los Angeles",
+      "url": "https://www.google.com/maps/search/?api=1&query=The+Vermont+Hollywood"
+    },
+    "source": {
+      "label": "setlist",
+      "url": "https://www.setlist.fm/setlist/mass-of-the-fermenting-dregs/2024/the-vermont-hollywood-los-angeles-ca-13a9c195.html"
+    }
+  },
+  {
+    "date": "2023-10-21",
+    "genres": [
+      "progressive metal",
+      "technical death metal",
+      "instrumental metal"
+    ],
+    "artists": [
+      {
+        "name": "Ne Obliviscaris",
+        "url": "https://neobliviscarissom.bandcamp.com/"
+      },
+      {
+        "name": "Beyond Creation",
+        "url": "https://beyondcreation.bandcamp.com/"
+      },
+      {
+        "name": "The Omnific",
+        "url": "https://theomnific.bandcamp.com/"
+      }
+    ],
+    "venue": {
+      "name": "The Belasco",
+      "city": "Los Angeles",
+      "url": "https://www.google.com/maps/search/?api=1&query=The+Belasco+Los+Angeles"
+    },
+    "source": {
+      "label": "setlist",
+      "url": "https://www.setlist.fm/setlist/beyond-creation/2023/the-belasco-los-angeles-ca-1ba0cd88.html"
+    }
+  },
+  {
+    "date": "2023-10-20",
+    "genres": [
+      "progressive metal",
+      "technical death metal",
+      "instrumental metal"
+    ],
+    "artists": [
+      {
+        "name": "Ne Obliviscaris",
+        "url": "https://neobliviscarissom.bandcamp.com/"
+      },
+      {
+        "name": "Beyond Creation",
+        "url": "https://beyondcreation.bandcamp.com/"
+      },
+      {
+        "name": "The Omnific",
+        "url": "https://theomnific.bandcamp.com/"
+      }
+    ],
+    "venue": {
+      "name": "House of Blues",
+      "city": "San Diego",
+      "url": "https://www.google.com/maps/search/?api=1&query=House+of+Blues+San+Diego"
+    },
+    "source": {
+      "label": "setlist",
+      "url": "https://guestpectacular.com/artists/ne-obliviscaris/events/2023-10-20/united-states/san-diego/house-of-blues-jhZE9"
+    }
+  }
+]

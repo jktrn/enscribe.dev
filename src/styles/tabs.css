@@ -1,0 +1,88 @@
+prose-content tab-group {
+  display: block;
+  margin-block: 0 1em;
+
+  > [role="tablist"] {
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: var(--space-xs);
+    border-block-end: 2px solid var(--border);
+
+    > [role="tab"] {
+      padding-block: 0.35em;
+      margin-block-end: -2px;
+      font-size: var(--step--1);
+      font-weight: var(--font-weight-medium);
+      color: var(--muted-foreground);
+      border-block-end: 2px solid transparent;
+      cursor: pointer;
+      transition:
+        color 0.2s ease,
+        border-color 0.2s ease;
+
+      &:hover {
+        color: var(--foreground);
+      }
+
+      &[aria-selected="true"] {
+        color: var(--foreground);
+        border-color: var(--foreground);
+      }
+    }
+  }
+
+  > [role="tabpanel"] {
+    padding-block-start: var(--space-xs);
+
+    > :last-child {
+      margin-block-end: 0;
+    }
+  }
+
+  &[data-code-tabs] {
+    > [role="tablist"] {
+      column-gap: 0;
+      border: 2px solid var(--border);
+      background: transparent;
+
+      > [role="tab"] {
+        margin-block-end: 0;
+        padding: 0.45rem var(--space-xs);
+        border: 0;
+        background: transparent;
+        font-size: var(--step--1);
+        font-weight: var(--font-weight-medium);
+        line-height: 1.45;
+        transition: background-color 0.2s ease;
+
+        &:hover {
+          background: color-mix(in oklab, var(--muted) 60%, transparent);
+        }
+
+        &[aria-selected="true"] {
+          background: var(--muted);
+        }
+
+        code {
+          padding: 0;
+          background: none;
+          border-radius: 0;
+        }
+      }
+    }
+
+    > [role="tabpanel"] {
+      padding-block-start: 0;
+
+      .expressive-code {
+        margin-block-start: 0;
+      }
+
+      .frame pre {
+        border-block-start: 0;
+        border-start-start-radius: 0;
+        border-start-end-radius: 0;
+      }
+    }
+  }
+}

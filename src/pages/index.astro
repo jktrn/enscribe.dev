@@ -1,272 +1,718 @@
 ---
-import DiscordPresence from '@/components/bento/DiscordPresence.tsx'
-import GithubCalendar from '@/components/bento/GithubCalendar.tsx'
-import SpotifyPresence from '@/components/bento/SpotifyPresence.tsx'
-import WakatimeGraph from '@/components/bento/WakatimeGraph.tsx'
-import Link from '@/components/Link.astro'
-import PageHead from '@/components/PageHead.astro'
-import { SOCIAL_LINKS } from '@/consts'
-import Layout from '@/layouts/Layout.astro'
-import { getAllPosts } from '@/lib/data-utils'
-import { cn } from '@/lib/utils'
-import { Icon } from 'astro-icon/components'
+import ArrowUpRight from "@/assets/icons/arrow-up-right.svg"
+import GitHubIcon from "@/assets/icons/github.svg"
+import TwitterIcon from "@/assets/icons/twitter.svg"
+import ABackgroundMobileDark from "@/assets/bento/a-background-mobile-dark.svg"
+import ABackgroundMobileLight from "@/assets/bento/a-background-mobile-light.svg"
+import ABackgroundDark from "@/assets/bento/a-background-dark.svg"
+import ABackgroundLight from "@/assets/bento/a-background-light.svg"
+import AForegroundMobileDark from "@/assets/bento/a-foreground-mobile-dark.svg"
+import AForegroundMobileLight from "@/assets/bento/a-foreground-mobile-light.svg"
+import AForegroundDark from "@/assets/bento/a-foreground-dark.svg"
+import AForegroundLight from "@/assets/bento/a-foreground-light.svg"
+import BBackgroundDark from "@/assets/bento/b-background-dark.svg"
+import BBackgroundLight from "@/assets/bento/b-background-light.svg"
+import BForegroundDark from "@/assets/bento/b-foreground-dark.svg"
+import BForegroundLight from "@/assets/bento/b-foreground-light.svg"
+import CImageDark from "@/assets/bento/c-dark.svg"
+import CImageLight from "@/assets/bento/c-light.svg"
+import EBackgroundMobileDark from "@/assets/bento/e-background-mobile-dark.svg"
+import EBackgroundMobileLight from "@/assets/bento/e-background-mobile-light.svg"
+import EBackgroundDark from "@/assets/bento/e-background-dark.svg"
+import EBackgroundLight from "@/assets/bento/e-background-light.svg"
+import EForegroundMobileDark from "@/assets/bento/e-foreground-mobile-dark.svg"
+import EForegroundMobileLight from "@/assets/bento/e-foreground-mobile-light.svg"
+import EForegroundDark from "@/assets/bento/e-foreground-dark.svg"
+import EForegroundLight from "@/assets/bento/e-foreground-light.svg"
+import FBackgroundDark from "@/assets/bento/f-background-dark.svg"
+import FBackgroundLight from "@/assets/bento/f-background-light.svg"
+import FForegroundDark from "@/assets/bento/f-foreground-dark.svg"
+import FForegroundLight from "@/assets/bento/f-foreground-light.svg"
+import GBackgroundDark from "@/assets/bento/g-background-dark.svg"
+import GBackgroundLight from "@/assets/bento/g-background-light.svg"
+import GForegroundDark from "@/assets/bento/g-foreground-dark.svg"
+import GForegroundLight from "@/assets/bento/g-foreground-light.svg"
+import HImageDark from "@/assets/bento/h-dark.svg"
+import HImageLight from "@/assets/bento/h-light.svg"
+import IBackgroundDark from "@/assets/bento/i-background-dark.svg"
+import IBackgroundLight from "@/assets/bento/i-background-light.svg"
+import IForegroundDark from "@/assets/bento/i-foreground-dark.svg"
+import IForegroundLight from "@/assets/bento/i-foreground-light.svg"
+import KBackgroundDark from "@/assets/bento/k-background-dark.svg"
+import KBackgroundLight from "@/assets/bento/k-background-light.svg"
+import KForegroundDark from "@/assets/bento/k-foreground-dark.svg"
+import KForegroundLight from "@/assets/bento/k-foreground-light.svg"
+import DiscordPresence from "@/components/DiscordPresence.astro"
+import GithubCalendar from "@/components/GithubCalendar.astro"
+import MetaPage from "@/components/MetaPage.astro"
+import SpotifyPresence from "@/components/SpotifyPresence.astro"
+import ThemedBannerImage from "@/components/ThemedBannerImage.astro"
+import WakatimeGraph from "@/components/WakatimeGraph.astro"
+import { SOCIALS } from "@/consts"
+import Layout from "@/layouts/Layout.astro"
+import { bannerRaster } from "@/lib/assets/banner"
+import { getPosts } from "@/lib/content"
+import { Image } from "astro:assets"
 
-const latestPost = await getAllPosts().then((posts) => posts.at(0))
+const latestPost = (await getPosts()).at(0)
+const latestPostRaster = latestPost ? bannerRaster(latestPost) : null
+const githubHref = SOCIALS.find((link) => link.label === "GitHub")?.href ?? "#"
+const twitterHref =
+  SOCIALS.find((link) => link.label === "Twitter")?.href ?? "#"
 ---
 
-<Layout class="px-2">
-  <PageHead slot="head" title="Home" />
-  <section
-    class={cn(
-      'mx-auto grid min-w-xs sm:has-[[data-trigger]:hover]:*:first:[&_[data-overlay]]:opacity-0',
-      'max-w-sm grid-cols-1 [grid-template-areas:"a""b""e""d""g""f""j""i""k"]',
-      'sm:max-w-2xl sm:grid-cols-2 sm:[grid-template-areas:"a_a""b_d""e_e""j_g""h_i""h_c""k_c""f_f"]',
-      'lg:max-w-5xl lg:grid-cols-3 lg:[grid-template-areas:"a_a_b""d_e_e""h_f_f""h_i_g""k_c_j"]',
-      'xl:max-w-7xl xl:grid-cols-4 xl:[grid-template-areas:"a_a_b_c""d_e_e_c""h_f_f_g""h_i_j_k"]',
-    )}
-  >
-    <div class="aspect-[3/4] p-2 [grid-area:a] sm:aspect-[2/1] xl:aspect-[2/1]">
-      <div class="bg-muted size-full border">
-        <div
-          class="size-full bg-[url('/static/bento/about-background-square.png')] bg-cover bg-center bg-no-repeat sm:bg-[url('/static/bento/about-background.png')]"
-        >
-          <div
-            data-overlay
-            class="size-full bg-[url('/static/bento/about-foreground-square.png')] bg-cover bg-center bg-no-repeat transition-opacity duration-200 sm:bg-[url('/static/bento/about-foreground.png')]"
-          >
-            <div class="flex p-4">
-              <div class="hidden w-1/3 sm:block"></div>
-              <div class="space-y-4 sm:w-2/3">
-                <p
-                  class="text-foreground/80 bg-background block border p-3 text-sm text-pretty"
-                >
-                  Hey, I&rsquo;m Jason! I&rsquo;m a product engineer, designer, and security researcher based in Los Angeles, California.
-                </p>
-                <p
-                  class="text-foreground/80 bg-background block border p-3 text-sm text-pretty"
-                >
-                   I organize and author for <Link
-                    href="https://en.wikipedia.org/wiki/Capture_the_flag_(cybersecurity)"
-                    external
-                    class="text-foreground decoration-muted-foreground hover:decoration-foreground font-medium break-words underline underline-offset-[3px] transition-colors"
-                    >security CTF</Link
-                  > competitions with <Link
-                    href="https://sekai.team"
-                    external
-                    class="text-foreground decoration-muted-foreground hover:decoration-foreground font-medium break-words underline underline-offset-[3px] transition-colors"
-                    >Project Sekai CTF</Link
-                  > and the <Link
-                    href="https://ctf.mt"
-                    external
-                    class="text-foreground decoration-muted-foreground hover:decoration-foreground font-medium break-words underline underline-offset-[3px] transition-colors"
-                    >Friendly Maltese Citizens</Link
-                  >. You can read more about me <Link
-                    href="/about"
-                    class="text-foreground decoration-muted-foreground hover:decoration-foreground font-medium break-words underline underline-offset-[3px] transition-colors"
-                    >here</Link
-                  >!
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="aspect-square p-2 [grid-area:b]">
-      <div data-trigger class="bg-muted size-full border">
-        <div
-          class="size-full bg-[url('/static/bento/details-background.png')] bg-cover bg-center bg-no-repeat"
-        >
-          <div
-            class="relative size-full bg-[url('/static/bento/details-foreground.png')] bg-cover bg-center bg-no-repeat transition-opacity duration-200 sm:opacity-0 sm:hover:opacity-100"
-          >
-            <p
-              class="text-foreground/80 bg-background absolute top-1/2 left-0 mr-24 ml-4 -translate-y-1/2 border p-3 text-xs text-pretty"
-            >
-              This blog contains educational resources pertaining to CTFs and
-              cybersecurity. I hope you enjoy reading!
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div
-      class="hidden p-2 [grid-area:c] sm:block sm:aspect-[1/2] lg:aspect-square xl:aspect-[1/2]"
-    >
-      <div class="bg-muted size-full border">
-        <div
-          class="size-full bg-[url('/static/bento/image-1.png')] bg-cover bg-center bg-no-repeat"
-        >
-        </div>
-      </div>
-    </div>
-    <div class="aspect-auto p-2 [grid-area:d] sm:aspect-square">
-      <div class="bg-muted size-full border">
-        <DiscordPresence client:load />
-      </div>
-    </div>
-    <div class="aspect-[6/5] p-2 [grid-area:e] sm:aspect-[2/1]">
-      <div data-trigger class="bg-muted size-full border">
-        <div
-          class="group/blog relative size-full bg-[url('/static/bento/blog-background-square.png')] bg-cover bg-center bg-no-repeat sm:bg-[url('/static/bento/blog-background.png')]"
-        >
-          <div
-            class="absolute size-full bg-[url('/static/bento/blog-foreground-square.png')] bg-cover bg-center bg-no-repeat transition-opacity duration-200 sm:bg-[url('/static/bento/blog-foreground.png')] sm:opacity-0 sm:group-hover/blog:opacity-100"
-          >
-            <p
-              class="text-foreground/80 bg-background absolute bottom-4 left-16 border p-2 text-xs text-pretty sm:top-[42.5%] sm:right-4 sm:bottom-[inherit] sm:left-[inherit] sm:-translate-y-1/2"
-            >
-              Read my latest<br /> blog post!
-            </p>
-          </div>
-          <div class="p-3 sm:size-full sm:p-6">
-            {
-              latestPost && (
-                <Link href={`/blog/${latestPost.id}`} class="flex h-full">
-                  <img
-                    src={latestPost.data.imageWithText?.src ?? '#'}
-                    alt={`Featured image for the latest post: ${latestPost.data.title}`}
-                    class="h-full border"
-                  />
-                </Link>
-              )
-            }
-          </div>
-          {
-            latestPost && (
-              <Link
+<Layout wide>
+  <MetaPage slot="head" />
+  <bento-container>
+    <bento-grid>
+      <bento-cell style="grid-area: a">
+        <bento-layer data-desktop>
+          <ABackgroundDark
+            data-theme-dark
+            preserveAspectRatio="xMidYMid slice"
+          />
+          <ABackgroundLight
+            data-theme-light
+            preserveAspectRatio="xMidYMid slice"
+          />
+        </bento-layer>
+        <bento-layer data-mobile>
+          <ABackgroundMobileDark
+            data-theme-dark
+            preserveAspectRatio="xMidYMid slice"
+          />
+          <ABackgroundMobileLight
+            data-theme-light
+            preserveAspectRatio="xMidYMid slice"
+          />
+        </bento-layer>
+        <bento-layer data-desktop data-overlay>
+          <AForegroundDark
+            data-theme-dark
+            preserveAspectRatio="xMidYMid slice"
+          />
+          <AForegroundLight
+            data-theme-light
+            preserveAspectRatio="xMidYMid slice"
+          />
+          <bento-note-stack data-note="about" data-typeset-root>
+            <bento-note>
+              Hey, I&rsquo;m Jason! I&rsquo;m a design engineer based in Los
+              Angeles. I currently work at
+              <a
+                href="https://osec.io"
+                target="_blank"
+                rel="noopener noreferrer"
+                >OtterSec</a
+              >, a security auditing firm.
+            </bento-note>
+            <bento-note data-tail="left">
+              I organize and author for
+              <a
+                href="https://en.wikipedia.org/wiki/Capture_the_flag_(cybersecurity)"
+                target="_blank"
+                rel="noopener noreferrer"
+                >security <span data-acronym>CTF</span></a
+              >
+              competitions with
+              <a
+                href="https://sekai.team"
+                target="_blank"
+                rel="noopener noreferrer"
+                >Project Sekai <span data-acronym>CTF</span></a
+              >
+              and the
+              <a href="https://ctf.mt" target="_blank" rel="noopener noreferrer"
+                >Friendly Maltese Citizens</a
+              >. You can read more about me
+              <a href="/about">here</a>!
+            </bento-note>
+          </bento-note-stack>
+        </bento-layer>
+        <bento-layer data-mobile data-overlay>
+          <AForegroundMobileDark
+            data-theme-dark
+            preserveAspectRatio="xMidYMid slice"
+          />
+          <AForegroundMobileLight
+            data-theme-light
+            preserveAspectRatio="xMidYMid slice"
+          />
+          <bento-note-stack data-note="about" data-typeset-root>
+            <bento-note>
+              Hey, I&rsquo;m Jason! I&rsquo;m a design engineer based in Los
+              Angeles.
+            </bento-note>
+            <bento-note data-tail="down">
+              I organize and author for
+              <a
+                href="https://en.wikipedia.org/wiki/Capture_the_flag_(cybersecurity)"
+                target="_blank"
+                rel="noopener noreferrer"
+                >security <span data-acronym>CTF</span></a
+              >
+              competitions with
+              <a
+                href="https://sekai.team"
+                target="_blank"
+                rel="noopener noreferrer"
+                >Project Sekai <span data-acronym>CTF</span></a
+              >
+              and the
+              <a href="https://ctf.mt" target="_blank" rel="noopener noreferrer"
+                >Friendly Maltese Citizens</a
+              >. You can read more about me
+              <a href="/about">here</a>!
+            </bento-note>
+          </bento-note-stack>
+        </bento-layer>
+      </bento-cell>
+      <bento-cell style="grid-area: b" data-trigger>
+        <bento-layer>
+          <BBackgroundDark data-theme-dark />
+          <BBackgroundLight data-theme-light />
+        </bento-layer>
+        <bento-layer data-reveal>
+          <BForegroundDark data-theme-dark />
+          <BForegroundLight data-theme-light />
+          <bento-note data-note="details" data-tail="right">
+            I hope you enjoy reading my blog!
+          </bento-note>
+        </bento-layer>
+      </bento-cell>
+      <bento-cell style="grid-area: c" data-cover>
+        <bento-layer>
+          <CImageDark data-theme-dark preserveAspectRatio="xMidYMid slice" />
+          <CImageLight data-theme-light preserveAspectRatio="xMidYMid slice" />
+        </bento-layer>
+      </bento-cell>
+      <bento-cell style="grid-area: d"><DiscordPresence /></bento-cell>
+      <bento-cell style="grid-area: e" data-trigger>
+        <bento-layer data-desktop>
+          <EBackgroundDark
+            data-theme-dark
+            preserveAspectRatio="xMidYMax slice"
+          />
+          <EBackgroundLight
+            data-theme-light
+            preserveAspectRatio="xMidYMax slice"
+          />
+        </bento-layer>
+        <bento-layer data-mobile>
+          <EBackgroundMobileDark
+            data-theme-dark
+            preserveAspectRatio="xMidYMax slice"
+          />
+          <EBackgroundMobileLight
+            data-theme-light
+            preserveAspectRatio="xMidYMax slice"
+          />
+        </bento-layer>
+        {latestPost && (
+            <bento-layer data-content>
+              {latestPostRaster ? (
+                  <a
+                    href={`/blog/${latestPost.id}`}
+                    data-post-image
+                    tabindex="-1"
+                    aria-hidden="true"
+                  >
+                    <ThemedBannerImage raster={latestPostRaster} />
+                  </a>
+                ) : latestPost.data.image && (
+                  <a
+                    href={`/blog/${latestPost.id}`}
+                    data-post-image
+                    tabindex="-1"
+                    aria-hidden="true"
+                  >
+                    <Image
+                      src={latestPost.data.image}
+                      alt=""
+                      width={640}
+                      height={336}
+                    />
+                  </a>
+                )}
+              <a
                 href={`/blog/${latestPost.id}`}
+                data-action
                 title={`Read latest blog post: ${latestPost.data.title}`}
                 aria-label={`Read latest blog post: ${latestPost.data.title}`}
-                class="bg-border/50 text-primary ring-ring group/blog-link absolute end-0 bottom-0 m-3 rounded-full p-3 transition-[box-shadow] duration-300 hover:ring-2 focus-visible:ring-2"
               >
-                <Icon
-                  name="lucide:move-up-right"
-                  class="transition-transform duration-300 group-hover/blog-link:rotate-12"
-                  size={16}
-                />
-              </Link>
-            )
-          }
-        </div>
-      </div>
-    </div>
-    <div class="aspect-square p-2 [grid-area:f] sm:aspect-[2/1]">
-      <div data-trigger class="bg-muted relative size-full border">
-        <div
-          class="absolute size-full bg-[url('/static/bento/calendar-background.png')] bg-cover bg-left bg-no-repeat"
-        >
-          <div
-            class="absolute size-full bg-[url('/static/bento/calendar-foreground.png')] bg-cover bg-left bg-no-repeat transition-opacity duration-200 sm:opacity-0 sm:hover:opacity-100"
-          >
-            <p
-              class="text-foreground/80 bg-background absolute top-[37.5%] left-4 -translate-y-1/2 border p-2 text-xs text-pretty"
-            >
-              Check out my<br /> GitHub calendar!
-            </p>
-          </div>
-        </div>
-        <div class="flex size-full items-center justify-center p-8">
-          <GithubCalendar username="jktrn" client:load />
-        </div>
-      </div>
-    </div>
-    <div class="aspect-square p-2 [grid-area:g]">
-      <div data-trigger class="bg-muted size-full border">
-        <div
-          class="group/spotify relative size-full bg-[url('/static/bento/spotify-background.png')] bg-cover bg-center bg-no-repeat"
-        >
-          <div
-            class="absolute size-full bg-[url('/static/bento/spotify-foreground.png')] bg-cover bg-center bg-no-repeat transition-opacity duration-200 sm:opacity-0 sm:group-hover/spotify:opacity-100"
-          >
-          </div>
-          <div class="flex size-full items-center justify-center">
-            <SpotifyPresence client:load />
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="hidden p-2 [grid-area:h] sm:block sm:aspect-[1/2]">
-      <div class="bg-muted size-full border">
-        <div
-          class="size-full bg-[url('/static/bento/image-2.png')] bg-cover bg-center bg-no-repeat"
-        >
-        </div>
-      </div>
-    </div>
-    <div class="aspect-square p-2 [grid-area:i]">
-      <div class="bg-muted size-full border">
-        <div
-          class="group/github relative flex size-full items-center justify-center bg-[url('/static/bento/github-background.png')] bg-cover bg-center bg-no-repeat"
-        >
-          <div
-            class="size-full bg-[url('/static/bento/github-foreground.png')] bg-cover bg-center bg-no-repeat transition-opacity duration-200 sm:opacity-0 sm:group-hover/github:opacity-100"
-            aria-hidden="true"
-          >
-          </div>
-          <Icon
-            name="mdi:github"
-            class="text-primary absolute size-1/2 sm:size-24"
-            aria-hidden="true"
+                <ArrowUpRight aria-hidden="true" />
+              </a>
+            </bento-layer>
+          )}
+        <bento-layer data-desktop data-reveal>
+          <EForegroundDark
+            data-theme-dark
+            preserveAspectRatio="xMidYMax slice"
           />
-          <Link
-            href={SOCIAL_LINKS.find((link) => link.label === 'GitHub')?.href ||
-              '#'}
+          <EForegroundLight
+            data-theme-light
+            preserveAspectRatio="xMidYMax slice"
+          />
+          <bento-note data-note="blog" data-tail="up"
+            >Read my<br>latest post!</bento-note
+          >
+        </bento-layer>
+        <bento-layer data-mobile data-reveal>
+          <EForegroundMobileDark
+            data-theme-dark
+            preserveAspectRatio="xMidYMax slice"
+          />
+          <EForegroundMobileLight
+            data-theme-light
+            preserveAspectRatio="xMidYMax slice"
+          />
+          <bento-note data-note="blog" data-tail="left"
+            >Read my latest<br>
+            blog post!</bento-note
+          >
+        </bento-layer>
+      </bento-cell>
+      <bento-cell style="grid-area: f" data-trigger data-cover>
+        <bento-layer data-content>
+          <GithubCalendar />
+        </bento-layer>
+        <bento-layer>
+          <FBackgroundDark
+            data-theme-dark
+            preserveAspectRatio="xMinYMid slice"
+          />
+          <FBackgroundLight
+            data-theme-light
+            preserveAspectRatio="xMinYMid slice"
+          />
+        </bento-layer>
+        <bento-layer data-reveal>
+          <FForegroundDark
+            data-theme-dark
+            preserveAspectRatio="xMinYMid slice"
+          />
+          <FForegroundLight
+            data-theme-light
+            preserveAspectRatio="xMinYMid slice"
+          />
+          <bento-note data-note="calendar" data-tail="down">
+            Check out my<br>
+            GitHub calendar!
+          </bento-note>
+        </bento-layer>
+      </bento-cell>
+      <bento-cell style="grid-area: g" data-trigger>
+        <bento-layer>
+          <GBackgroundDark data-theme-dark />
+          <GBackgroundLight data-theme-light />
+        </bento-layer>
+        <bento-layer data-reveal>
+          <GForegroundDark data-theme-dark />
+          <GForegroundLight data-theme-light />
+        </bento-layer>
+        <bento-layer data-content>
+          <SpotifyPresence />
+        </bento-layer>
+      </bento-cell>
+      <bento-cell style="grid-area: h">
+        <bento-layer>
+          <HImageDark data-theme-dark preserveAspectRatio="xMidYMid slice" />
+          <HImageLight data-theme-light preserveAspectRatio="xMidYMid slice" />
+        </bento-layer>
+      </bento-cell>
+      <bento-cell style="grid-area: i" data-trigger>
+        <bento-layer>
+          <IBackgroundDark data-theme-dark />
+          <IBackgroundLight data-theme-light />
+        </bento-layer>
+        <bento-layer data-reveal>
+          <IForegroundDark data-theme-dark />
+          <IForegroundLight data-theme-light />
+        </bento-layer>
+        <bento-layer data-content>
+          <bento-mark><GitHubIcon aria-hidden="true" /></bento-mark>
+          <a
+            href={githubHref}
+            data-action
+            target="_blank"
+            rel="noopener noreferrer"
             title="Visit my GitHub profile"
             aria-label="Visit my GitHub profile"
-            external
-            class="bg-border/50 text-primary ring-ring group/github-link absolute end-0 bottom-0 m-3 rounded-full p-3 transition-[box-shadow] duration-300 hover:ring-2 focus-visible:ring-2"
           >
-            <Icon
-              name="lucide:move-up-right"
-              class="transition-transform duration-300 group-hover/github-link:rotate-12"
-              size={16}
-            />
-          </Link>
-        </div>
-      </div>
-    </div>
-    <div class="aspect-square p-2 [grid-area:j]">
-      <div class="bg-muted size-full border">
-        <WakatimeGraph client:load />
-      </div>
-    </div>
-    <div class="aspect-square p-2 [grid-area:k]">
-      <div data-trigger class="bg-muted size-full border">
-        <div
-          class="group/twitter relative flex size-full items-center justify-center bg-[url('/static/bento/twitter-background.png')] bg-cover bg-center bg-no-repeat"
-        >
-          <div
-            class="size-full bg-[url('/static/bento/twitter-foreground.png')] bg-cover bg-center bg-no-repeat transition-opacity duration-200 sm:opacity-0 sm:group-hover/twitter:opacity-100"
-            aria-hidden="true"
-          >
-            <p
-              class="text-foreground/80 bg-background absolute bottom-4 left-4 hidden border p-2 text-xs text-pretty sm:block"
-            >
-              TypeScript is<br />much better!
-            </p>
-          </div>
-          <Icon
-            name="mdi:twitter"
-            class="text-primary absolute size-1/2 sm:size-24"
-            aria-hidden="true"
-          />
-          <Link
-            href={SOCIAL_LINKS.find((link) => link.label === 'Twitter')?.href ||
-              '#'}
+            <ArrowUpRight aria-hidden="true" />
+          </a>
+        </bento-layer>
+      </bento-cell>
+      <bento-cell style="grid-area: j"><WakatimeGraph /></bento-cell>
+      <bento-cell style="grid-area: k" data-trigger>
+        <bento-layer>
+          <KBackgroundDark data-theme-dark />
+          <KBackgroundLight data-theme-light />
+        </bento-layer>
+        <bento-layer data-reveal>
+          <KForegroundDark data-theme-dark />
+          <KForegroundLight data-theme-light />
+        </bento-layer>
+        <bento-layer data-content>
+          <bento-mark><TwitterIcon aria-hidden="true" /></bento-mark>
+          <a
+            href={twitterHref}
+            data-action
+            target="_blank"
+            rel="noopener noreferrer"
             title="Visit my Twitter profile"
             aria-label="Visit my Twitter profile"
-            external
-            class="bg-border/50 text-primary ring-ring group/twitter-link absolute end-0 bottom-0 m-3 rounded-full p-3 transition-[box-shadow] duration-300 hover:ring-2 focus-visible:ring-2"
           >
-            <Icon
-              name="lucide:move-up-right"
-              class="transition-transform duration-300 group-hover/twitter-link:rotate-12"
-              size={16}
-            />
-          </Link>
-        </div>
-      </div>
-    </div>
-  </section>
+            <ArrowUpRight aria-hidden="true" />
+          </a>
+        </bento-layer>
+      </bento-cell>
+    </bento-grid>
+  </bento-container>
 </Layout>
+
+<style>
+  bento-container {
+    display: block;
+    container-type: inline-size;
+  }
+
+  bento-grid {
+    --bento-gap: var(--space-xs);
+
+    display: grid;
+    gap: var(--bento-gap);
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "a" "b" "e" "d" "g" "f" "j" "i" "k";
+
+    @media (width < 30rem) {
+      bento-cell {
+        aspect-ratio: 1;
+      }
+
+      bento-cell:nth-of-type(1) {
+        aspect-ratio: 3 / 4;
+      }
+
+      bento-cell:nth-of-type(4) {
+        container-type: inline-size;
+        aspect-ratio: auto;
+      }
+
+      bento-cell:nth-of-type(5) {
+        aspect-ratio: 6 / 5;
+      }
+
+      bento-cell:nth-of-type(3),
+      bento-cell:nth-of-type(8) {
+        display: none;
+      }
+    }
+
+    @media (width >= 30rem) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-auto-rows: calc((100cqw - var(--bento-gap)) / 2);
+      grid-template-areas:
+        "a a"
+        "b d"
+        "e e"
+        "j g"
+        "h i"
+        "h c"
+        "k c"
+        "f f";
+    }
+
+    @media (width >= 56rem) {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-auto-rows: calc((100cqw - 2 * var(--bento-gap)) / 3);
+      grid-template-areas:
+        "a a b"
+        "d e e"
+        "h f f"
+        "h i g"
+        "k c j";
+    }
+
+    @media (width >= 80rem) {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-auto-rows: calc((100cqw - 3 * var(--bento-gap)) / 4);
+      grid-template-areas:
+        "a a b c"
+        "d e e c"
+        "h f f g"
+        "h i j k";
+    }
+  }
+
+  bento-cell {
+    container-type: size;
+    position: relative;
+    display: block;
+    overflow: hidden;
+    border: 2px solid var(--border);
+  }
+
+  bento-layer {
+    position: absolute;
+    inset: 0;
+    display: block;
+
+    :global(svg),
+    img {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    img {
+      object-fit: cover;
+    }
+  }
+
+  bento-layer[data-mobile] {
+    display: none;
+  }
+
+  @media (width < 30rem) {
+    bento-layer[data-desktop] {
+      display: none;
+    }
+
+    bento-layer[data-mobile] {
+      display: block;
+    }
+  }
+
+  bento-layer[data-reveal],
+  bento-layer[data-overlay] {
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+  }
+
+  @media (width >= 30rem) {
+    bento-layer[data-reveal] {
+      opacity: 0;
+    }
+
+    bento-cell[data-trigger]:hover bento-layer[data-reveal] {
+      opacity: 1;
+    }
+
+    bento-grid:has(bento-cell[data-trigger]:hover) bento-layer[data-overlay] {
+      opacity: 0;
+    }
+  }
+
+  bento-layer[data-content] {
+    pointer-events: none;
+
+    a {
+      pointer-events: auto;
+    }
+  }
+
+  a[data-post-image] {
+    position: absolute;
+    inset: var(--space-xs);
+
+    :global(img) {
+      width: auto;
+      height: auto;
+      max-width: 100%;
+      max-height: 100%;
+      border: 2px solid var(--border);
+    }
+
+    @media (width >= 30rem) {
+      inset: var(--space-s);
+    }
+  }
+
+  bento-note {
+    position: absolute;
+    display: block;
+    pointer-events: auto;
+    padding: var(--space-3xs) var(--space-2xs);
+    border: 2px solid var(--background-l4);
+    background-color: var(--background);
+    color: var(--prose-foreground);
+    font-size: var(--note-text, clamp(0.8125rem, 4.5cqw, 1rem));
+    line-height: calc(0.4rem + 1em);
+    text-wrap: pretty;
+
+    a {
+      --underline: var(--muted-foreground);
+
+      color: var(--foreground);
+    }
+
+    &[data-tail]::after {
+      content: "";
+      position: absolute;
+      inline-size: 0.625rem;
+      block-size: 0.625rem;
+      rotate: 45deg;
+      background-color: var(--background);
+      border: 2px solid var(--background-l4);
+    }
+
+    &[data-tail="up"]::after {
+      inset-block-start: calc(-0.3125rem - 1.5px);
+      inset-inline-start: var(--tail-x, 50%);
+      translate: -50% 0;
+      border-inline-end: none;
+      border-block-end: none;
+    }
+
+    &[data-tail="down"]::after {
+      inset-block-end: calc(-0.3125rem - 1.5px);
+      inset-inline-start: var(--tail-x, 50%);
+      translate: -50% 0;
+      border-inline-start: none;
+      border-block-start: none;
+    }
+
+    &[data-tail="left"]::after {
+      inset-inline-start: calc(-0.3125rem - 1.5px);
+      inset-block-start: var(--tail-y, 50%);
+      translate: 0 -50%;
+      border-inline-end: none;
+      border-block-start: none;
+    }
+
+    &[data-tail="right"]::after {
+      inset-inline-end: calc(-0.3125rem - 1.5px);
+      inset-block-start: var(--tail-y, 50%);
+      translate: 0 -50%;
+      border-inline-start: none;
+      border-block-end: none;
+    }
+  }
+
+  bento-note-stack {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2xs);
+
+    bento-note {
+      --tail-y: 30%;
+
+      position: relative;
+      inset: auto;
+    }
+  }
+
+  bento-note-stack[data-note="about"] {
+    --note-text: clamp(0.8125rem, 2.25cqw, 1rem);
+
+    inset-block-start: var(--space-s);
+    inset-inline-end: var(--space-s);
+    inline-size: min(60%, 26rem);
+
+    bento-note {
+      padding: clamp(0.5rem, 1.4cqw, 0.75rem);
+    }
+  }
+
+  bento-layer[data-mobile] bento-note-stack[data-note="about"] {
+    --note-text: clamp(0.9375rem, 4.5cqw, 1.1875rem);
+
+    --tail-x: 20%;
+
+    inset-inline: var(--space-xs);
+    inset-block-start: var(--space-xs);
+    inline-size: auto;
+
+    bento-note {
+      padding: clamp(0.5rem, 3cqw, 1rem);
+    }
+  }
+
+  bento-note[data-note="details"] {
+    --tail-y: 80%;
+
+    inset-block-start: 65%;
+    inset-inline-start: var(--space-xs);
+    translate: 0 -50%;
+    max-inline-size: calc(100% - 6rem);
+  }
+
+  bento-note[data-note="blog"] {
+    --note-text: clamp(0.8125rem, 2.25cqw, 1rem);
+
+    --tail-x: 70%;
+
+    inset-block-start: 48%;
+    inset-inline-end: var(--space-xs);
+    translate: 0 -50%;
+  }
+
+  bento-layer[data-mobile] bento-note[data-note="blog"] {
+    inset-block-start: auto;
+    inset-block-end: var(--space-xs);
+    inset-inline: 4rem auto;
+    translate: none;
+  }
+
+  bento-note[data-note="calendar"] {
+    --note-text: clamp(0.8125rem, 2.25cqw, 1rem);
+    --tail-x: 15%;
+
+    inset-block-start: 30%;
+    inset-inline-start: var(--space-xs);
+    translate: 0 -50%;
+  }
+
+  bento-mark {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: light-dark(var(--background-l7), var(--primary));
+
+    :global(svg) {
+      width: 50%;
+      height: 50%;
+    }
+
+    @media (width >= 30rem) {
+      :global(svg) {
+        width: 6rem;
+        height: 6rem;
+      }
+    }
+  }
+
+  a[data-action] {
+    position: absolute;
+    inset-block-end: 0;
+    inset-inline-end: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: var(--space-2xs);
+    padding: 0.75rem;
+    border-radius: var(--radius-full);
+    background-color: color-mix(in oklab, var(--border) 50%, transparent);
+    color: var(--primary);
+    transition: box-shadow 0.3s ease;
+
+    &:hover,
+    &:focus-visible {
+      box-shadow: 0 0 0 2px var(--ring);
+    }
+
+    :global(svg) {
+      width: 1rem;
+      height: 1rem;
+      transition: transform 0.3s ease;
+    }
+
+    &:hover :global(svg) {
+      transform: rotate(12deg);
+    }
+  }
+</style>

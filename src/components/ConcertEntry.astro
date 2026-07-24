@@ -1,0 +1,11 @@
+---
+import type { Concert } from "@/lib/music"
+import { renderConcertEntry } from "@/lib/music-render"
+
+type Props = { concert: Concert }
+
+const { concert } = Astro.props
+const html = await renderConcertEntry(concert)
+---
+
+<li><Fragment set:html={html} /></li>

@@ -1,0 +1,93 @@
+@property --marquee-fade-l {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --marquee-fade-r {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+[data-marquee-window] {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+[data-marquee-window][data-marquee-scroll] {
+  text-overflow: clip;
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    black var(--marquee-fade-l),
+    black calc(100% - var(--marquee-fade-r)),
+    transparent
+  );
+  animation: marquee-fade var(--marquee-duration) linear infinite;
+}
+
+[data-marquee-window][data-marquee-scroll] > [data-marquee-content] {
+  display: inline-block;
+  animation: marquee-scroll var(--marquee-duration) linear infinite;
+}
+
+@keyframes marquee-scroll {
+  0%,
+  12% {
+    transform: translateX(0);
+  }
+
+  77%,
+  89% {
+    transform: translateX(calc(-1 * var(--marquee-shift)));
+  }
+
+  93%,
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes marquee-fade {
+  0%,
+  12% {
+    --marquee-fade-l: 0rem;
+    --marquee-fade-r: 1.5rem;
+    opacity: 1;
+  }
+
+  24%,
+  65% {
+    --marquee-fade-l: 1.5rem;
+    --marquee-fade-r: 1.5rem;
+    opacity: 1;
+  }
+
+  77%,
+  85% {
+    --marquee-fade-l: 1.5rem;
+    --marquee-fade-r: 0rem;
+    opacity: 1;
+  }
+
+  89% {
+    --marquee-fade-l: 1.5rem;
+    --marquee-fade-r: 0rem;
+    opacity: 0;
+  }
+
+  93% {
+    --marquee-fade-l: 0rem;
+    --marquee-fade-r: 1.5rem;
+    opacity: 0;
+  }
+
+  100% {
+    --marquee-fade-l: 0rem;
+    --marquee-fade-r: 1.5rem;
+    opacity: 1;
+  }
+}

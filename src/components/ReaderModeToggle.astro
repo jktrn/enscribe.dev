@@ -1,0 +1,161 @@
+---
+import BookOpenText from "@/assets/icons/book-open-text.svg"
+
+type Props = { mobile?: boolean }
+
+const { mobile = false } = Astro.props
+---
+
+<button
+  id={mobile ? "reader-mode-toggle-mobile" : "reader-mode-toggle"}
+  data-reader-mode-toggle
+  data-mobile={mobile || undefined}
+  data-icon-button
+  type="button"
+  aria-label="Reader mode"
+  aria-pressed="false"
+  title="Reader mode: off"
+>
+  <BookOpenText aria-hidden="true" />
+</button>
+
+<style is:global>
+  :root:not([data-js]) [data-reader-mode-toggle] {
+    display: none;
+  }
+
+  [data-reader-mode-toggle] {
+    color: var(--foreground);
+
+    &[aria-pressed="true"] {
+      background-color: color-mix(in oklab, var(--muted) 50%, transparent);
+    }
+  }
+
+  :root[data-reader-mode] body:has([data-reader-mode-toggle]) {
+    page-toc,
+    page-nav .brand,
+    page-nav nav,
+    .menu-toggle {
+      display: none !important;
+    }
+
+    page-nav aside {
+      justify-content: flex-end;
+    }
+
+    page-content {
+      grid-column: 1 / -1;
+      inline-size: min(100%, var(--measure));
+      max-inline-size: var(--measure);
+      margin-inline: auto;
+    }
+
+    page-content a {
+      --underline: transparent;
+      text-decoration-line: none;
+    }
+
+    prose-content [data-favicon] {
+      display: none !important;
+    }
+  }
+
+  @media (width >= 48rem) and (width < 64rem) {
+    :root[data-reader-mode] body:has([data-reader-mode-toggle]) {
+      page-grid {
+        grid-template-columns: 1fr;
+        grid-template-areas: "content";
+      }
+    }
+  }
+
+  @media (width < 48rem) {
+    [data-reader-mode-toggle]:not([data-mobile]) {
+      display: none;
+    }
+
+    [data-reader-mode-toggle][data-mobile] {
+      position: fixed;
+      inset-block-end: var(--grid-gutter);
+      inset-inline-end: var(--grid-gutter);
+      z-index: 20;
+      width: 2rem;
+      height: 2rem;
+      background-color: color-mix(in oklab, var(--background) 90%, transparent);
+      backdrop-filter: blur(var(--blur-sm));
+      border: 0;
+    }
+
+    :root[data-reader-mode] body:has([data-reader-mode-toggle]) {
+      sidebar-site-actions,
+      post-actions > :not([data-reader-mode-toggle]) {
+        display: none !important;
+      }
+
+      page-grid {
+        grid-template-rows: 1fr;
+        padding-block-start: var(--grid-gutter);
+      }
+
+      page-header,
+      page-nav,
+      page-nav aside,
+      sidebar-toggle,
+      sidebar-blog-actions,
+      post-actions {
+        display: contents;
+      }
+
+      page-content {
+        grid-row: 1;
+      }
+    }
+  }
+
+  @media (width >= 48rem) {
+    [data-reader-mode-toggle][data-mobile] {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  import { dispatchReaderModeChange } from "@/lib/typography/preference-events"
+  import {
+    captureReadingAnchor,
+    restoreReadingAnchor,
+  } from "@/lib/typography/scroll-anchor"
+  import { discoverTypesetContent } from "@/lib/typography/typeset-content"
+
+  const updateReaderButton = () => {
+    const enabled = document.documentElement.dataset.readerMode !== undefined
+    for (const button of document.querySelectorAll<HTMLButtonElement>(
+      "[data-reader-mode-toggle]",
+    )) {
+      button.setAttribute("aria-pressed", String(enabled))
+      button.title = `Reader mode: ${enabled ? "on" : "off"}`
+    }
+  }
+
+  document.addEventListener("astro:page-load", updateReaderButton)
+  document.addEventListener("click", (event) => {
+    if (!(event.target as Element).closest?.("[data-reader-mode-toggle]")) {
+      return
+    }
+
+    const root = document.documentElement
+    const enabled = root.dataset.readerMode === undefined
+    const anchor = captureReadingAnchor(discoverTypesetContent())
+    if (enabled) root.dataset.readerMode = ""
+    else delete root.dataset.readerMode
+    try {
+      localStorage.setItem("readerMode", enabled ? "on" : "off")
+    } catch {}
+    updateReaderButton()
+    dispatchReaderModeChange(enabled)
+    restoreReadingAnchor(anchor)
+  })
+
+  updateReaderButton()
+</script>

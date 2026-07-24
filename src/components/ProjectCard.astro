@@ -1,76 +1,135 @@
 ---
-import Badge from '@/components/Badge.astro'
-import Link from '@/components/Link.astro'
-import { Separator } from '@/components/ui/separator'
-import { extractDomain, formatMonthYear } from '@/lib/utils'
-import { Icon } from 'astro-icon/components'
-import { Image } from 'astro:assets'
-import type { CollectionEntry } from 'astro:content'
+import ExternalIcon from "@/assets/icons/external.svg"
+import FormattedDate from "@/components/FormattedDate.astro"
+import ThemedBannerImage from "@/components/ThemedBannerImage.astro"
+import { renderInline } from "@/lib/markdown/inline-markdown"
+import { Image } from "astro:assets"
+import type { CollectionEntry } from "astro:content"
 
-interface Props {
-  project: CollectionEntry<'projects'>
-}
+type Props = { project: CollectionEntry<"projects"> }
 
 const { project } = Astro.props
+const { name, description, link, image, thumbnail, startDate, endDate } =
+  project.data
+const [nameHtml, descriptionHtml] = await Promise.all([
+  renderInline(name),
+  renderInline(description),
+])
 ---
 
-<div
-  class="hover:bg-muted/50 border p-4 transition-colors duration-300 ease-in-out"
->
-  <Link
-    href={project.data.link}
-    class="flex flex-col gap-4 sm:flex-row"
-    external
-  >
-    {
-      project.data.image && (
-        <div class="max-w-3xs sm:shrink-0">
-          <Image
-            src={project.data.image}
-            alt={project.data.name}
-            width={1200}
-            height={630}
-            class="object-cover"
-          />
-        </div>
-      )
+<li>
+  {(thumbnail || image) && (
+      <a
+        href={link}
+        target="_blank"
+        rel="noopener noreferrer"
+        tabindex="-1"
+        aria-hidden="true"
+      >
+        {thumbnail ? (
+          <ThemedBannerImage raster={thumbnail} />
+        ) : (
+          <Image src={image} alt="" width={640} height={336} />
+        )}
+      </a>
+    )}
+  <entry-info data-typeset-root>
+    <a href={link} target="_blank" rel="noopener noreferrer">
+      <Fragment set:html={nameHtml} />
+    </a>
+    <entry-meta>
+      {startDate && (
+          <project-dates>
+            <FormattedDate date={startDate} />
+            {" → "}
+            {endDate ? (
+              <FormattedDate date={endDate} />
+            ) : (
+              "Present"
+            )}
+          </project-dates>
+        )}
+      <project-link>
+        <ExternalIcon aria-hidden="true" />
+        {new URL(link).hostname}
+      </project-link>
+    </entry-meta>
+    <p><Fragment set:html={descriptionHtml} /></p>
+  </entry-info>
+</li>
+
+<style>
+  li {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-s);
+
+    > a {
+      flex-shrink: 0;
+      inline-size: 14rem;
+
+      :global(img) {
+        inline-size: 100%;
+        block-size: auto;
+      }
     }
-    <div class="grow">
-      <h3 class="mb-1 text-lg font-medium">
-        {project.data.name}
-      </h3>
-      <p class="text-muted-foreground mb-2 text-sm">
-        {project.data.description}
-      </p>
-      {
-        project.data.startDate && (
-          <div class="text-muted-foreground/60 mb-2 flex flex-wrap items-center gap-x-2 text-xs">
-            <span class="flex items-center gap-x-1.5">
-              <Icon name="lucide:calendar" class="size-3" />
-              <span>
-                {formatMonthYear(project.data.startDate)}
-                {project.data.endDate
-                  ? ` → ${formatMonthYear(project.data.endDate)}`
-                  : ' → Present'}
-              </span>
-            </span>
-            <Separator orientation="vertical" className="h-4!" />
-            <span class="flex items-center gap-x-1">
-              <Icon name="lucide:external-link" class="size-3" />
-              <span>{extractDomain(project.data.link)}</span>
-            </span>
-          </div>
-        )
+
+    entry-info {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-inline-size: 0;
+
+      > a {
+        font-size: var(--step-1);
+        line-height: calc(var(--leading-offset) + 1em);
+        font-weight: var(--font-weight-medium);
       }
-      {
-        project.data.tags && (
-          <div class="flex flex-wrap gap-2">
-            {project.data.tags.map((tag: string) => (
-              <Badge text={tag} />
-            ))}
-          </div>
-        )
+
+      entry-meta {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: var(--space-3xs);
+        margin-block-end: var(--space-3xs);
+        font-size: var(--step--1);
+        color: var(--muted-foreground);
+
+        project-dates {
+          display: flex;
+          align-items: center;
+          gap: var(--space-3xs);
+        }
+
+        project-link {
+          display: flex;
+          align-items: center;
+          gap: var(--space-3xs);
+          color: color-mix(in oklab, var(--muted-foreground) 50%, transparent);
+
+          svg {
+            inline-size: 1em;
+            block-size: 1em;
+          }
+        }
+
+        project-dates ~ project-link::before {
+          content: "·";
+          color: var(--muted-foreground);
+        }
       }
-    </div>
-  </Link>
-</div>
+
+      p {
+        color: var(--muted-foreground);
+      }
+    }
+
+    @media (width < 40rem) {
+      flex-direction: column;
+
+      > a {
+        inline-size: 100%;
+      }
+    }
+  }
+</style>

@@ -1,0 +1,80 @@
+---
+import ArrowLeft from "@/assets/icons/arrow-left.svg"
+import ArrowRight from "@/assets/icons/arrow-right.svg"
+import ReaderModeToggle from "@/components/ReaderModeToggle.astro"
+import ScrollToTop from "@/components/ScrollToTop.astro"
+import TextJustificationToggle from "@/components/TextJustificationToggle.astro"
+
+type Link = { href: string; title: string }
+type Props = { prev?: Link; next?: Link }
+
+const { prev, next } = Astro.props
+const prevTitle = prev?.title
+const nextTitle = next?.title
+---
+
+<post-actions>
+  <post-reading-actions>
+    <TextJustificationToggle />
+    <ReaderModeToggle />
+  </post-reading-actions>
+  <post-navigation-actions>
+    <a
+      href={next?.href}
+      data-icon-button
+      data-dir="next"
+      aria-label={nextTitle && `Next: ${nextTitle}`}
+      aria-hidden={!next || undefined}
+      title={nextTitle}
+    >
+      <ArrowRight />
+    </a>
+    <a
+      href={prev?.href}
+      data-icon-button
+      data-dir="prev"
+      aria-label={prevTitle && `Previous: ${prevTitle}`}
+      aria-hidden={!prev || undefined}
+      title={prevTitle}
+    >
+      <ArrowLeft />
+    </a>
+    <ScrollToTop />
+  </post-navigation-actions>
+</post-actions>
+
+<style>
+  post-actions {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+
+    @media (width >= 48rem) and (width < 64rem) {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    @media (width < 48rem) {
+      a {
+        display: none;
+      }
+    }
+  }
+
+  post-navigation-actions,
+  post-reading-actions {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+  }
+
+  a {
+    color: var(--foreground);
+
+    &:not([href]) {
+      color: var(--muted-foreground);
+      opacity: 0.5;
+      pointer-events: none;
+    }
+  }
+</style>
