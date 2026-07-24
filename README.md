@@ -12,7 +12,7 @@
 
 The majority of technology behind this website was designed for the sole purpose of augmenting and enhancing the reader experience without detracting from the content itself. I&rsquo;ve put a lot of care into this:
 
-- I implemented the [Knuth&ndash;Plass line-breaking algorithm](https://en.wikipedia.org/wiki/Knuth%E2%80%93Plass_line-breaking_algorithm) using [Pretext](https://github.com/chenglou/pretext). The algorithm hypenates and justifies text optimally for beautiful typesetting. This is a rare and experimental feature that I&rsquo;ve made a toggle due to its fragileness.
+- I implemented the [Knuth&ndash;Plass line-breaking algorithm](https://en.wikipedia.org/wiki/Knuth%E2%80%93Plass_line-breaking_algorithm) using [Pretext](https://github.com/chenglou/pretext). The algorithm hyphenates and justifies text optimally for beautiful typesetting. This is a rare and experimental feature that I&rsquo;ve made a toggle due to its fragileness.
 - The majority of graphics and images on the site are designed in both light and dark mode. If a graphic can be represented entirely as a vector, it is embedded directly onto the page and uses the same color variables as the site. If a graphic has raster elements, its luminance is [quantized](https://en.wikipedia.org/wiki/Quantization_(image_processing)) onto my constrained color scale.
 - I use a rich typographic system with [Utopia](https://utopia.fyi/) type scales, old-style numerals, smart punctuation, muted parentheticals, and automatic small caps for acronyms and abbreviations.
 - External links receive source-specific favicon glyphs so their destinations are recognizable.
