@@ -1,0 +1,45 @@
+---
+import ArrowLineUp from "@/assets/icons/arrow-line-up.svg"
+---
+
+<button data-icon-button data-scroll-top aria-label="Scroll to top" disabled>
+  <ArrowLineUp aria-hidden="true" />
+</button>
+
+<style>
+  button {
+    color: var(--foreground);
+
+    @media (width < 48rem) {
+      display: none;
+    }
+
+    &:disabled {
+      opacity: 0.35;
+      cursor: default;
+
+      &:hover {
+        background-color: transparent;
+      }
+    }
+  }
+</style>
+
+<script>
+  const update = () => {
+    const enabled = scrollY > innerHeight * 0.5
+    for (const button of document.querySelectorAll<HTMLButtonElement>(
+      "[data-scroll-top]",
+    )) {
+      button.disabled = !enabled
+    }
+  }
+
+  addEventListener("scroll", update, { passive: true })
+  document.addEventListener("astro:page-load", update)
+
+  document.addEventListener("click", (event) => {
+    if ((event.target as Element).closest("[data-scroll-top]"))
+      window.scrollTo({ top: 0 })
+  })
+</script>

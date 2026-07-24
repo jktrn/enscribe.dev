@@ -1,0 +1,61 @@
+:root {
+  --background-l0: light-dark(#faf4ed, #11100e);
+  --background-l1: light-dark(#ede7df, #1d1b19);
+  --background-l2: light-dark(#e0dad2, #282622);
+  --background-l3: light-dark(#d4cdc5, #34312c);
+  --background-l4: light-dark(#c7c0b8, #403c36);
+  --background-l5: light-dark(#bbb3ab, #4d4840);
+  --background-l6: light-dark(#aea79e, #5a544b);
+  --background-l7: light-dark(#a19a91, #665f55);
+  --background-l8: light-dark(#958d84, #726b5f);
+  --foreground-l0: light-dark(#332b21, #feead0);
+  --foreground-l1: light-dark(#3d352b, #eedbc3);
+  --foreground-l2: light-dark(#483f35, #decdb6);
+  --foreground-l3: light-dark(#524a40, #cebfa9);
+  --foreground-l4: light-dark(#5d554b, #beb19d);
+  --foreground-l5: light-dark(#686056, #afa391);
+  --foreground-l6: light-dark(#736b62, #a09585);
+  --foreground-l7: light-dark(#7f776d, #918879);
+  --foreground-l8: light-dark(#837a6d, #8a8279);
+  --accent-l0: light-dark(#faf4ed, #feead0);
+  --accent-l1: light-dark(#ede7df, #e9d3b6);
+
+  --background:         var(--background-l0);
+  --foreground:         var(--foreground-l0);
+  --primary:            var(--foreground-l1);
+  --primary-foreground: var(--background-l1);
+  --muted:              var(--background-l1);
+  --muted-foreground:   var(--foreground-l5);
+  --destructive:        light-dark(oklch(0.5504 0.1901 25), oklch(0.704 0.191 22));
+  --border:             var(--background-l3);
+  --ring:               var(--background-l6);
+
+  --tone-red:     light-dark(#ce2c31, #ff9592);
+  --tone-orange:  light-dark(#cc4e00, #ffa057);
+  --tone-yellow:  light-dark(#9e6c00, #f5e147);
+  --tone-green:   light-dark(#218358, #3dd68c);
+  --tone-cyan:    light-dark(#107d98, #4ccce6);
+  --tone-blue:    light-dark(#0d74ce, #70b8ff);
+  --tone-magenta: light-dark(#953ea3, #e796f3);
+
+  color-scheme: light dark;
+}
+
+*,
+::before,
+::after,
+::backdrop,
+::file-selector-button {
+  border-color: var(--border);
+
+  &:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 0.25rem;
+    border-radius: var(--radius-sm);
+  }
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+}

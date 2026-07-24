@@ -1,0 +1,210 @@
+<github-calendar data-username="jktrn">
+  <github-spinner role="status" aria-label="Loading"></github-spinner>
+</github-calendar>
+
+<style is:global>
+  github-calendar {
+    --github-gap: var(--space-3xs);
+    --github-level-0: color-mix(in oklab, var(--muted) 60%, transparent);
+
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(1rem, 6cqw, 3.5rem);
+
+    github-weeks {
+      display: grid;
+      grid-auto-flow: column;
+      grid-template-rows: repeat(7, 1fr);
+      gap: var(--github-gap);
+      height: 100%;
+      aspect-ratio: var(--github-columns) / 7;
+      max-width: 100%;
+
+      &[data-enter] {
+        animation: github-fade-in 0.4s ease;
+      }
+    }
+
+    github-day {
+      display: block;
+      background-color: var(--github-level-0);
+
+      &[data-level="1"] {
+        background-color: var(--background-l2);
+      }
+
+      &[data-level="2"] {
+        background-color: color-mix(
+          in oklab,
+          var(--background-l2) 66.667%,
+          var(--foreground-l3)
+        );
+      }
+
+      &[data-level="3"] {
+        background-color: color-mix(
+          in oklab,
+          var(--background-l2) 33.333%,
+          var(--foreground-l3)
+        );
+      }
+
+      &[data-level="4"] {
+        background-color: var(--foreground-l3);
+      }
+    }
+
+    github-spinner {
+      display: flex;
+
+      &::after {
+        content: "";
+        inline-size: 1.5rem;
+        block-size: 1.5rem;
+        border: 2px solid var(--border);
+        border-block-start-color: var(--primary);
+        border-radius: var(--radius-full);
+        animation: github-spin 0.8s linear infinite;
+      }
+    }
+  }
+
+  @keyframes github-spin {
+    to {
+      rotate: 360deg;
+    }
+  }
+
+  @keyframes github-fade-in {
+    from {
+      opacity: 0;
+    }
+  }
+</style>
+
+<script>
+  import { readTileCache, writeTileCache } from "@/lib/tile-cache"
+
+  const API_URL = "https://github-contributions-api.jogruber.de/v4/"
+  const GAP_RATIO = 0.25
+  const MAX_CELL_PX = 24
+  const MAX_COLUMNS = 53
+
+  interface Activity {
+    date: string
+    count: number
+    level: 0 | 1 | 2 | 3 | 4
+  }
+
+  class GithubCalendar extends HTMLElement {
+    contributions: Activity[] | null = null
+    resizeObserver: ResizeObserver | null = null
+    renderedColumns = 0
+    renderedGap = 0
+
+    async connectedCallback() {
+      const username = this.dataset.username
+
+      const cached = readTileCache<Activity[]>(`github:${username}`)
+      if (cached) {
+        this.contributions = cached
+        this.renderGrid(cached, { enter: false })
+      }
+
+      this.resizeObserver = new ResizeObserver(() => {
+        const { columns, gap } = this.metrics()
+        if (
+          this.contributions &&
+          (columns !== this.renderedColumns ||
+            Math.abs(gap - this.renderedGap) > 0.5)
+        ) {
+          this.renderGrid(this.contributions)
+        }
+      })
+      this.resizeObserver.observe(this)
+
+      try {
+        const response = await fetch(`${API_URL}${username}?y=last`)
+        if (!response.ok) throw new Error(response.statusText)
+        const data = (await response.json()) as { contributions: Activity[] }
+        if (JSON.stringify(data.contributions) === JSON.stringify(cached)) {
+          return
+        }
+        this.contributions = data.contributions
+        writeTileCache(`github:${username}`, data.contributions)
+        this.renderGrid(this.contributions, { enter: !cached })
+      } catch {
+        if (!cached) this.replaceChildren()
+      }
+    }
+
+    disconnectedCallback() {
+      this.resizeObserver?.disconnect()
+    }
+
+    metrics(): { columns: number; gap: number } {
+      const styles = getComputedStyle(this)
+      const width =
+        this.clientWidth -
+        Number.parseFloat(styles.paddingLeft) -
+        Number.parseFloat(styles.paddingRight)
+      const height =
+        this.clientHeight -
+        Number.parseFloat(styles.paddingTop) -
+        Number.parseFloat(styles.paddingBottom)
+      const cell = Math.min(height / (7 + 6 * GAP_RATIO), MAX_CELL_PX)
+      if (cell <= 0) return { columns: 1, gap: 0, cell: 0 }
+      const gap = cell * GAP_RATIO
+      const columns = Math.min(
+        Math.max(1, Math.floor((width + gap) / (cell + gap))),
+        MAX_COLUMNS,
+      )
+      return { columns, gap, cell }
+    }
+
+    renderGrid(contributions: Activity[], { enter = true } = {}) {
+      const { columns, gap, cell } = this.metrics()
+      this.renderedColumns = columns
+      this.renderedGap = gap
+
+      const weeks = document.createElement("github-weeks")
+      if (enter && !this.querySelector("github-weeks")) {
+        weeks.dataset.enter = ""
+      }
+      weeks.style.setProperty("--github-columns", `${columns}`)
+      weeks.style.setProperty("--github-gap", `${gap}px`)
+      weeks.style.height = `${cell * 7 + gap * 6}px`
+
+      const days = columns * 7
+      let cells: (Activity | null)[]
+      const last = contributions.at(-1)
+      if (last) {
+        const trailing = 6 - new Date(`${last.date}T00:00:00`).getDay()
+        cells = [
+          ...contributions.slice(-(days - trailing)),
+          ...Array.from({ length: trailing }, () => null),
+        ]
+      } else {
+        cells = Array.from({ length: days }, () => null)
+      }
+
+      for (const activity of cells) {
+        const day = document.createElement("github-day")
+        if (activity) {
+          day.dataset.level = `${activity.level}`
+          day.title = `${activity.count} contribution${activity.count === 1 ? "" : "s"} on ${activity.date}`
+        } else {
+          day.style.visibility = "hidden"
+        }
+        weeks.appendChild(day)
+      }
+
+      this.replaceChildren(weeks)
+    }
+  }
+
+  customElements.define("github-calendar", GithubCalendar)
+</script>

@@ -1,0 +1,141 @@
+[
+  {
+    "title": "Ordinary Corrupt Human Love",
+    "artist": {
+      "name": "Deafheaven",
+      "url": "https://deafheavens.bandcamp.com/"
+    },
+    "url": "https://deafheavens.bandcamp.com/album/ordinary-corrupt-human-love",
+    "releaseDate": "2018-07-13",
+    "format": "Album",
+    "label": "ANTI-",
+    "genres": ["blackgaze", "post-metal", "post-rock"],
+    "cover": "ordinary-corrupt-human-love.jpg",
+    "coverSource": "https://f4.bcbits.com/img/a2863422656_10.jpg"
+  },
+  {
+    "title": "In This World",
+    "artist": {
+      "name": "susquatch",
+      "url": "https://music.apple.com/us/artist/susquatch/1641421476"
+    },
+    "url": "https://music.apple.com/us/album/in-this-world/1641473725",
+    "releaseDate": "2009-05-13",
+    "format": "Album",
+    "genres": ["math rock", "Midwest emo", "math pop"],
+    "cover": "in-this-world.webp",
+    "coverSource": "https://is1-ssl.mzstatic.com/image/thumb/Music122/v4/87/36/74/8736741c-31ed-b18b-698f-017b2309c8ee/artwork.jpg/632x632bb.webp"
+  },
+  {
+    "title": "Portal of I",
+    "artist": {
+      "name": "Ne Obliviscaris",
+      "url": "https://neobliviscaris.bandcamp.com/"
+    },
+    "url": "https://neobliviscaris.bandcamp.com/album/portal-of-i",
+    "releaseDate": "2012-05-07",
+    "format": "Album",
+    "label": "Code666",
+    "genres": ["progressive metal", "extreme metal", "melodic metal"],
+    "cover": "portal-of-i.jpg",
+    "coverSource": "https://f4.bcbits.com/img/a2582624901_10.jpg"
+  },
+  {
+    "title": "Sunbather",
+    "artist": {
+      "name": "Deafheaven",
+      "url": "https://deafheavens.bandcamp.com/"
+    },
+    "url": "https://deafheavens.bandcamp.com/album/sunbather-2",
+    "releaseDate": "2013-06-11",
+    "format": "Album",
+    "label": "Deathwish",
+    "genres": ["blackgaze", "post-metal", "shoegaze"],
+    "cover": "sunbather.jpg",
+    "coverSource": "https://f4.bcbits.com/img/a3169282583_10.jpg"
+  },
+  {
+    "title": "Nurture",
+    "artist": {
+      "name": "Porter Robinson",
+      "url": "https://porterrobinson.com/"
+    },
+    "url": "https://music.apple.com/us/album/nurture/1894533111",
+    "releaseDate": "2021-04-23",
+    "format": "Album",
+    "label": "Mom+Pop",
+    "genres": ["electropop", "indietronica", "ambient pop"],
+    "cover": "nurture.png",
+    "coverSource": "https://upload.wikimedia.org/wikipedia/en/thumb/0/07/Porter_Robinson_-_Nurture.png/250px-Porter_Robinson_-_Nurture.png"
+  },
+  {
+    "title": "『無職転生』Theme Song Collection",
+    "artist": {
+      "name": "大原ゆい子",
+      "url": "https://yuiko-ohara.com/"
+    },
+    "url": "https://mushokutensei.jp/music/collection/",
+    "releaseDate": "2021-12-22",
+    "format": "Compilation",
+    "label": "TOHO animation RECORDS",
+    "genres": ["anison", "J-pop", "folk pop"],
+    "cover": "mushoku-tensei-theme-song-collection.jpg",
+    "coverSource": "https://mushokutensei.jp/wp-content/themes/mushoku_re/img/music/img_collection02.jpg"
+  },
+  {
+    "title": "♡",
+    "artist": {
+      "name": "Jane Remover",
+      "url": "https://janeremover.bandcamp.com/"
+    },
+    "url": "https://janeremover.bandcamp.com/album/-",
+    "releaseDate": "2025-12-05",
+    "format": "EP",
+    "label": "deadAir",
+    "genres": ["alternative pop", "club", "contemporary R&B"],
+    "cover": "heart.jpg",
+    "coverSource": "https://f4.bcbits.com/img/a3293717077_10.jpg"
+  },
+  {
+    "title": "Fête de la Vanille",
+    "artist": {
+      "name": "Lucy Bedroque",
+      "url": "https://lucybedroque.bandcamp.com/"
+    },
+    "url": "https://lucybedroque.bandcamp.com/album/f-te-de-la-vanille",
+    "releaseDate": "2024-10-04",
+    "format": "EP",
+    "label": "AUTOSARCO MUSIQUE",
+    "genres": ["digicore", "experimental hip hop", "glitch pop"],
+    "cover": "fete-de-la-vanille.jpg",
+    "coverSource": "https://f4.bcbits.com/img/a2397475951_10.jpg"
+  },
+  {
+    "title": "we had good times together, don’t forget that",
+    "artist": {
+      "name": "Sewerslvt",
+      "url": "https://sewerslvt.bandcamp.com/"
+    },
+    "url": "https://sewerslvt.bandcamp.com/album/we-had-good-times-together-dont-forget-that",
+    "releaseDate": "2021-11-12",
+    "format": "Album",
+    "genres": ["atmospheric drum and bass", "breakcore", "ambient"],
+    "cover": "we-had-good-times-together-dont-forget-that.jpg",
+    "coverSource": "https://f4.bcbits.com/img/a2932058259_10.jpg"
+  },
+  {
+    "title": "Tokyo Utopia Tsushin",
+    "originalTitle": "東京ユウトピア通信",
+    "artist": {
+      "name": "Lamp",
+      "url": "https://www.lampweb.jp/"
+    },
+    "url": "https://music.apple.com/us/album/tokyo-utopia-tsushin/416534823",
+    "releaseDate": "2011-02-09",
+    "format": "Album",
+    "label": "P.S.C.",
+    "genres": ["Shibuya-kei", "jazz pop", "bossa nova"],
+    "cover": "tokyo-utopia-tsushin.jpg",
+    "coverSource": "https://f4.bcbits.com/img/a3541923279_10.jpg"
+  }
+]

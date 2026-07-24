@@ -1,0 +1,81 @@
+---
+import ConcertEntry from "@/components/ConcertEntry.astro"
+import FavoriteAlbum from "@/components/FavoriteAlbum.astro"
+import MetaPage from "@/components/MetaPage.astro"
+import Layout from "@/layouts/Layout.astro"
+import { favoriteAlbums, summarizeFavoriteAlbums } from "@/lib/albums"
+import { concerts, summarizeConcerts } from "@/lib/music"
+
+const stats = summarizeConcerts(concerts)
+const albumStats = summarizeFavoriteAlbums()
+---
+
+<Layout>
+  <MetaPage slot="head" title="Music" noindex />
+  <article data-url="/music">
+    <prose-content data-typeset-root>
+      <p>
+        These are my {albumStats.albums} favorite albums of all time, ranked in
+        order.
+      </p>
+      <ol data-album-ranking>
+        {favoriteAlbums.map((album) => <FavoriteAlbum album={album} />)}
+      </ol>
+      <p id="concerts">
+        This is a list of all {stats.shows} concerts I&rsquo;ve attended. As of
+        now, I have seen
+        {stats.artistAppearances}
+        artist appearances
+        <span data-parenthetical>(of which {stats.artists} are unique)</span>
+        across
+        {stats.venues}
+        venues in {stats.cities} cities.
+      </p>
+      <ul>
+        {concerts.map((concert) => <ConcertEntry concert={concert} />)}
+      </ul>
+    </prose-content>
+  </article>
+</Layout>
+
+<style>
+  article[data-url="/music"] {
+    & #concerts {
+      @media (width >= 64rem) {
+        scroll-margin-block-start: calc(var(--page-offset-top) - 0.2em);
+      }
+    }
+
+    & :global([data-album-ranking]) {
+      counter-reset: favorite-album;
+      list-style: none;
+      margin-block-end: var(--space-l);
+
+      & > :global(li) {
+        margin-block-start: var(--space-s);
+      }
+    }
+
+    & :global([data-ordinal]) {
+      font-variant-numeric: oldstyle-nums ordinal;
+    }
+
+    & :global(a[href^="https://www.google.com/maps/"]),
+    & :global([data-music-city]),
+    & :global([data-music-venue]),
+    & :global([data-music-separator]) {
+      --underline: color-mix(in oklab, var(--foreground) 60%, transparent);
+      color: color-mix(in oklab, var(--foreground) 60%, transparent);
+    }
+
+    & :global([data-music-genres]),
+    & :global([data-parenthetical]:has(a)) {
+      color: color-mix(in oklab, var(--foreground) 40%, transparent);
+    }
+
+    & :global([data-parenthetical] a) {
+      --underline: color-mix(in oklab, var(--foreground) 40%, transparent);
+      color: color-mix(in oklab, var(--foreground) 40%, transparent);
+    }
+  }
+</style>

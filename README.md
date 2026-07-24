@@ -1,72 +1,47 @@
-![Showcase Card](/public/static/showcase-card.png)
-
 <div align="center">
 
-## enscribe.dev
+# <picture><source media="(prefers-color-scheme: dark)" srcset="public/static/preview-1-dark.png" /><img alt="enscribe.dev preview" src="public/static/preview-1-light.png" /></picture>
 
-[![CodeFactor]](https://www.codefactor.io/repository/github/jktrn/enscribe.dev)
 ![Stargazers]
 [![Code License]](LICENSE.md)
 [![Content License]](LICENSE.content.md)
 
-[**enscribe.dev**](https://enscribe.dev) is my personal blog and portfolio, built with [**Astro**](https://astro.build/) and [**Tailwind**](https://tailwindcss.com/). Based on my personal blogging template, [**astro-erudite**](https://github.com/jktrn/astro-erudite).
-
 </div>
+
+[enscribe.dev](https://enscribe.dev) is my personal blog and portfolio, built with [Astro](https://astro.build/) and vanilla CSS on top of my personal blogging template, [astro-erudite](https://github.com/jktrn/astro-erudite).
+
+The majority of technology behind this website was designed for the sole purpose of augmenting and enhancing the reader experience without detracting from the content itself. I&rsquo;ve put a lot of care into this:
+
+- I implemented the [Knuth&ndash;Plass line-breaking algorithm](https://en.wikipedia.org/wiki/Knuth%E2%80%93Plass_line-breaking_algorithm) using [Pretext](https://github.com/chenglou/pretext). The algorithm hypenates and justifies text optimally for beautiful typesetting. This is a rare and experimental feature that I&rsquo;ve made a toggle due to its fragileness.
+- The majority of graphics and images on the site are designed in both light and dark mode. If a graphic can be represented entirely as a vector, it is embedded directly onto the page and uses the same color variables as the site. If a graphic has raster elements, its luminance is [quantized](https://en.wikipedia.org/wiki/Quantization_(image_processing)) onto my constrained color scale.
+- I use a rich typographic system with [Utopia](https://utopia.fyi/) type scales, old-style numerals, smart punctuation, muted parentheticals, and automatic small caps for acronyms and abbreviations.
+- External links receive source-specific favicon glyphs so their destinations are recognizable.
+- Posts support rich prose elements including theme-aware syntax-highlighted code, copyable commands, collapsible callouts, tabs, file trees, footnotes, MathML, and responsive tables.
+- A &ldquo;reader&rdquo; mode exists to hide navigational elements, inline favicons, and underlined links to improve readability and reduce noise.
+
+It is also designed to imbue as much of myself onto the site as possible. I present a lot of automatically collected data about myself (e.g., my GitHub calendar, my [WakaTime](https://wakatime.com/@jktrn) hours, my Spotify and Discord statuses), and I write with the same voice that I speak with.
+
+You are not allowed to copy this website&rsquo;s source code as your own. Please read [Licensing](#licensing) for more details.
+
+---
+
+| <picture><source media="(prefers-color-scheme: dark)" srcset="public/static/preview-2-dark.png" /><img alt="Preview 2" src="public/static/preview-2-light.png" /></picture> | <picture><source media="(prefers-color-scheme: dark)" srcset="public/static/preview-3-dark.png" /><img alt="Preview 3" src="public/static/preview-3-light.png" /></picture> |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <picture><source media="(prefers-color-scheme: dark)" srcset="public/static/preview-4-dark.png" /><img alt="Preview 4" src="public/static/preview-4-light.png" /></picture> | <picture><source media="(prefers-color-scheme: dark)" srcset="public/static/preview-5-dark.png" /><img alt="Preview 5" src="public/static/preview-5-light.png" /></picture> |
 
 ---
 
 ### Licensing
 
-> [!IMPORTANT]
-> TL;DR: **This is a personal site. Do not clone the theming and claim it is yours!** The complete blogging structure with dozens of useful features is available at [**jktrn/astro-erudite**](https://github.com/jktrn/astro-erudite), which is MIT-licensed and free-to-use. If you wish to use any component within this site itself, contact me for permission.
+**enscribe.dev is source-available, not open source.** Unless stated otherwise, its site-specific code and visual design are proprietary and may not be copied, reused, or redistributed without permission. For an MIT-licensed foundation, use [jktrn/astro-erudite](https://github.com/jktrn/astro-erudite).
 
- - The original template is based on [**jktrn/astro-erudite**](https://github.com/jktrn/astro-erudite) and [**trevortylerlee/astro-micro**](https://github.com/trevortylerlee/astro-micro) projects that remain under their original MIT license for base components.
- - All custom code modifications in [**jktrn/enscribe.dev**](https://github.com/jktrn/enscribe.dev) are proprietary and require explicit permission for usage.
- - Website blog content (including text, images, and other materials) uses the [**CC BY-NC-ND 4.0**](https://creativecommons.org/licenses/by-nc-nd/4.0/) license, which allows sharing, requires attribution, and prohibits commercial use and derivative works.
+Original posts, images, and other published material are licensed under [CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/), which permits unchanged, attributed sharing for noncommercial purposes.
 
-
-For full details, please refer to the [**LICENSE.md**](LICENSE.md) and [**LICENSE.content.md**](LICENSE.content.md) file in this repository or contact [**jason@enscribe.dev**](mailto:jason@enscribe.dev).
-
-### Stack
-
-This is a list of the various technologies used to build this website:
-
-| Category   | Technology Name                                                                                |
-| ---------- | ---------------------------------------------------------------------------------------------- |
-| Framework  | [**Astro**](https://astro.build/)                                                              |
-| Styling    | [**Tailwind**](https://tailwindcss.com)                                                        |
-| Components | [**shadcn/ui**](https://ui.shadcn.com/)                                                        |
-| Content    | [**MDX**](https://mdxjs.com/)                                                                  |
-| Codeblocks | [**Expressive Code**](https://expressive-code.com/), [Shiki](https://github.com/shikijs/shiki) |
-| Graphics   | [**Figma**](https://www.figma.com/)                                                            |
-| Deployment | [**Vercel**](https://vercel.com)                                                               |
-
-> [!NOTE]
-> This site was previously built using [**Next.js**](https://nextjs.org) via the [**timlrx/tailwind-nextjs-starter-blog**](https://github.com/timlrx/tailwind-nextjs-starter-blog). If you wish to reference the codebase or utilize its components at that point (previously licensed via [**Apache 2.0**](https://github.com/jktrn/enscribe.dev/blob/ddda783b21d5d49783f4d98e9b06676af8f95031/LICENSE)), utilize the [**v2.3.0**](https://github.com/jktrn/enscribe.dev/releases/tag/v2.3.0) release or browse the tree at [**`ddda783`**](https://github.com/jktrn/enscribe.dev/tree/ddda783b21d5d49783f4d98e9b06676af8f95031).
-
-### Star History
-
-<a href="https://star-history.com/#jktrn/enscribe.dev&Date">
- <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=jktrn/enscribe.dev&type=Date&theme=dark" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=jktrn/enscribe.dev&type=Date" />
-   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=jktrn/enscribe.dev&type=Date" />
- </picture>
-</a>
-
-
----
-
-<div align="center">
-
-Made with ♥ by [enscribe](https://enscribe.dev)!
-
-</div>
+See [LICENSE.md](LICENSE.md) for the code and design terms and [LICENSE.content.md](LICENSE.content.md) for the content terms. Permission requests may be sent to [jason@enscribe.dev](mailto:jason@enscribe.dev).
 
 [cc-by-nc-nd]: http://creativecommons.org/licenses/by-nc-nd/4.0/
 [cc-by-nc-nd-shield]: https://img.shields.io/badge/License-CC%20BY--NC--ND%204.0-lightgrey.svg
 
-[CodeFactor]: https://img.shields.io/codefactor/grade/github/jktrn/enscribe.dev?color=2f2a24&logo=codefactor&logoColor=fff&style=for-the-badge
-[Stargazers]: https://img.shields.io/github/stars/jktrn/enscribe.dev?color=463f37&logo=github&logoColor=fff&style=for-the-badge
-[Code License]: https://img.shields.io/badge/code%20license-proprietary-5d5449?style=for-the-badge&logo=github&logoColor=fff
-[Content License]: https://img.shields.io/badge/content%20license-CC%20BY--NC--ND%204.0-756a5b?style=for-the-badge&logo=creativecommons&logoColor=fff
+[Stargazers]: https://img.shields.io/github/stars/jktrn/enscribe.dev?color=463f37&logo=github&logoColor=fff&style=flat-square
+[Code License]: https://img.shields.io/badge/code%20license-proprietary-5d5449?style=flat-square&logo=github&logoColor=fff
+[Content License]: https://img.shields.io/badge/content%20license-CC%20BY--NC--ND%204.0-756a5b?style=flat-square&logo=creativecommons&logoColor=fff

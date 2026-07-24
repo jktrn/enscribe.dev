@@ -1,0 +1,49 @@
+---
+import { SITE } from "@/consts"
+import { pageTitle } from "@/lib/content"
+import { plainInline } from "@/lib/markdown/inline-markdown"
+
+type Props = {
+  title?: string
+  description?: string
+  noindex?: boolean
+  canonical?: string
+  image?: string
+}
+
+const {
+  title,
+  description = SITE.description,
+  noindex = false,
+  canonical: canonicalPath,
+  image,
+} = Astro.props
+
+const base = Astro.site ?? new URL(Astro.url.origin)
+const plainTitle = title ? plainInline(title) : undefined
+const plainDescription = plainInline(description)
+const ogTitle = plainTitle ?? SITE.title
+const fullTitle = plainTitle ? pageTitle(plainTitle) : SITE.title
+const canonical = new URL(canonicalPath ?? Astro.url.pathname, base)
+const ogImage = new URL(image ?? SITE.defaultPageImage, base)
+---
+
+<title>{fullTitle}</title>
+<meta name="description" content={plainDescription}>
+<link rel="canonical" href={canonical}>
+{noindex && <meta name="robots" content="noindex, nofollow" />}
+
+<meta property="og:title" content={ogTitle}>
+<meta property="og:description" content={plainDescription}>
+<meta property="og:url" content={canonical}>
+<meta property="og:type" content="website">
+<meta property="og:site_name" content={SITE.title}>
+<meta property="og:locale" content={SITE.locale.replace("-", "_")}>
+<meta property="og:image" content={ogImage}>
+<meta property="og:image:alt" content={ogTitle}>
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content={ogTitle}>
+<meta name="twitter:description" content={plainDescription}>
+<meta name="twitter:image" content={ogImage}>
+<meta name="twitter:image:alt" content={ogTitle}>

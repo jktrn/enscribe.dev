@@ -1,0 +1,73 @@
+@property --scroll-fade-top {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --scroll-fade-bottom {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+[data-scroll-fade] {
+  --scroll-fade-size: 0.75rem;
+  --scroll-fade-top: 0px;
+  --scroll-fade-bottom: 0px;
+
+  mask-image: linear-gradient(
+    to bottom,
+    transparent,
+    black var(--scroll-fade-top),
+    black calc(100% - var(--scroll-fade-bottom)),
+    transparent
+  );
+  transition:
+    --scroll-fade-top 0.15s ease,
+    --scroll-fade-bottom 0.15s ease;
+}
+
+[data-scroll-fade][data-fade-top] {
+  --scroll-fade-top: var(--scroll-fade-size);
+}
+
+[data-scroll-fade][data-fade-bottom] {
+  --scroll-fade-bottom: var(--scroll-fade-size);
+}
+
+@property --scroll-fade-left {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --scroll-fade-right {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+[data-scroll-fade-x] {
+  --scroll-fade-size: 0.75rem;
+  --scroll-fade-left: 0px;
+  --scroll-fade-right: 0px;
+
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    black var(--scroll-fade-left),
+    black calc(100% - var(--scroll-fade-right)),
+    transparent
+  );
+  transition:
+    --scroll-fade-left 0.15s ease,
+    --scroll-fade-right 0.15s ease;
+}
+
+[data-scroll-fade-x][data-fade-left] {
+  --scroll-fade-left: var(--scroll-fade-size);
+}
+
+[data-scroll-fade-x][data-fade-right] {
+  --scroll-fade-right: var(--scroll-fade-size);
+}

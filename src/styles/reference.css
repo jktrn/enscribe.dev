@@ -1,0 +1,46 @@
+@media (width >= 64rem) {
+  article[data-reference] {
+    --aside-gap: var(--space-l);
+    --aside-width: min(26rem, 38%);
+    --prose-width: calc(100% - var(--aside-width) - var(--aside-gap));
+  }
+
+  article[data-reference] > :where(header, page-meta),
+  article[data-reference] > prose-content:not(:has(> [data-aside])) {
+    max-inline-size: var(--prose-width);
+  }
+
+  article[data-reference] > prose-content:has(> [data-aside]) {
+    display: grid;
+    grid-template-columns: var(--prose-width) var(--aside-width);
+    column-gap: var(--aside-gap);
+    align-items: start;
+  }
+
+  article[data-reference]
+    > prose-content:has(> [data-aside])
+    > :not([data-aside]) {
+    grid-column: 1;
+    min-inline-size: 0;
+  }
+
+  article[data-reference] > prose-content > [data-aside] {
+    grid-column: 2;
+    grid-row: 1 / span 9999;
+    align-self: start;
+    position: sticky;
+    top: var(--page-offset-top);
+    max-block-size: calc(
+      100svh -
+      var(--page-offset-top) -
+      var(--page-offset-bottom)
+    );
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+}

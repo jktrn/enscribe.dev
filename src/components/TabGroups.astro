@@ -1,0 +1,87 @@
+<script>
+  const groupsOf = () => [
+    ...document.querySelectorAll<HTMLElement>("tab-group"),
+  ]
+
+  const tabsOf = (group: HTMLElement) => [
+    ...group.querySelectorAll<HTMLButtonElement>(
+      ":scope > [role='tablist'] > [role='tab']",
+    ),
+  ]
+  const panelsOf = (group: HTMLElement) => [
+    ...group.querySelectorAll<HTMLElement>(":scope > [role='tabpanel']"),
+  ]
+
+  const keyOf = (tab: HTMLElement) =>
+    tab.dataset.syncId ?? tab.textContent?.trim() ?? ""
+
+  const activate = (
+    group: HTMLElement,
+    index: number,
+    { focus = false, propagate = true } = {},
+  ) => {
+    const tabs = tabsOf(group)
+    if (!tabs[index]) return
+    tabs.forEach((tab, i) => {
+      tab.setAttribute("aria-selected", String(i === index))
+      tab.tabIndex = i === index ? 0 : -1
+    })
+    panelsOf(group).forEach((panel, i) =>
+      panel.toggleAttribute("hidden", i !== index),
+    )
+    if (focus) tabs[index].focus()
+
+    const sync = group.dataset.sync
+    if (!propagate || !sync) return
+    const key = keyOf(tabs[index])
+    try {
+      localStorage.setItem(`tab-sync:${sync}`, key)
+    } catch {}
+    for (const other of groupsOf()) {
+      if (other === group || other.dataset.sync !== sync) continue
+      const match = tabsOf(other).findIndex((tab) => keyOf(tab) === key)
+      if (match >= 0) activate(other, match, { propagate: false })
+    }
+  }
+
+  document.addEventListener("click", (event) => {
+    const tab = (event.target as Element).closest?.("[role='tab']")
+    const group = tab?.closest<HTMLElement>("tab-group")
+    if (!tab || !group) return
+    activate(group, tabsOf(group).indexOf(tab as HTMLButtonElement))
+  })
+
+  document.addEventListener("keydown", (event) => {
+    const tab = event.target
+    if (!(tab instanceof HTMLElement) || tab.getAttribute("role") !== "tab")
+      return
+    const group = tab.closest<HTMLElement>("tab-group")
+    if (!group) return
+    const tabs = tabsOf(group)
+    const current = tabs.indexOf(tab as HTMLButtonElement)
+    const last = tabs.length - 1
+    const next: Record<string, number> = {
+      ArrowLeft: current > 0 ? current - 1 : last,
+      ArrowRight: current < last ? current + 1 : 0,
+      Home: 0,
+      End: last,
+    }
+    if (!(event.key in next)) return
+    event.preventDefault()
+    activate(group, next[event.key], { focus: true })
+  })
+
+  document.addEventListener("astro:page-load", () => {
+    for (const group of groupsOf()) {
+      const sync = group.dataset.sync
+      if (!sync) continue
+      let stored: string | null = null
+      try {
+        stored = localStorage.getItem(`tab-sync:${sync}`)
+      } catch {}
+      if (!stored) continue
+      const match = tabsOf(group).findIndex((tab) => keyOf(tab) === stored)
+      if (match >= 0) activate(group, match, { propagate: false })
+    }
+  })
+</script>

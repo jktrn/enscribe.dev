@@ -1,59 +1,28 @@
-import type { IconMap, SocialLink, Site } from '@/types'
+import type { SvgComponent } from "astro/types"
+import Email from "@/assets/icons/email.svg"
+import GitHub from "@/assets/icons/github.svg"
+import RSS from "@/assets/icons/rss.svg"
+import Twitter from "@/assets/icons/twitter.svg"
 
-export const SITE: Site = {
-  title: 'enscribe.dev',
+export const SITE = {
+  title: "enscribe",
   description:
-    'Design engineer and cybersecurity enthusiast based in Los Angeles.',
-  href: 'https://enscribe.dev',
-  author: 'enscribe',
-  locale: 'en-US',
-  featuredPostCount: 2,
-  postsPerPage: 4,
-}
+    "A design engineer based in Los Angeles.",
+  locale: "en-US",
+  dir: "ltr",
+  defaultPageImage: "/static/twitter-card.png",
+  defaultPostImage: "/static/twitter-card.png",
+} as const
 
-export const NAV_LINKS: SocialLink[] = [
-  {
-    href: '/',
-    label: 'Home',
-  },
-  {
-    href: '/blog',
-    label: 'Blog',
-  },
-  {
-    href: '/work',
-    label: 'Work',
-  },
-  {
-    href: '/about',
-    label: 'About',
-  },
+export const NAVIGATION = [
+  { href: "/blog", label: "Blog" },
+  { href: "/work", label: "Work" },
+  { href: "/about", label: "About" },
 ]
 
-export const SOCIAL_LINKS: SocialLink[] = [
-  {
-    href: 'https://github.com/jktrn',
-    label: 'GitHub',
-  },
-  {
-    href: 'https://twitter.com/enscrbe',
-    label: 'Twitter',
-  },
-  {
-    href: 'mailto:jason@enscribe.dev',
-    label: 'Email',
-  },
-  {
-    href: '/rss.xml',
-    label: 'RSS',
-  },
+export const SOCIALS: { href: string; label: string; icon: SvgComponent }[] = [
+  { href: "https://github.com/jktrn", label: "GitHub", icon: GitHub },
+  { href: "https://twitter.com/enscribe", label: "Twitter", icon: Twitter },
+  { href: "mailto:jason@enscribe.dev", label: "Email", icon: Email },
+  { href: "/rss.xml", label: "RSS", icon: RSS },
 ]
-
-export const ICON_MAP: IconMap = {
-  Website: 'lucide:globe',
-  GitHub: 'lucide:github',
-  LinkedIn: 'lucide:linkedin',
-  Twitter: 'lucide:twitter',
-  Email: 'lucide:mail',
-  RSS: 'lucide:rss',
-}

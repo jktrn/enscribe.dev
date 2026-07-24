@@ -1,15 +1,31 @@
 ---
-import { SOCIAL_LINKS } from '@/consts'
-import SocialIcons from './SocialIcons.astro'
+import SocialIcons from "@/components/SocialIcons.astro"
+import { SITE, SOCIALS } from "@/consts"
 ---
 
-<footer class="py-4">
-  <div
-    class="mx-auto flex max-w-3xl flex-col items-center justify-center gap-y-2 px-4 sm:flex-row sm:justify-between"
-  >
-    <span class="text-muted-foreground text-sm">
-      &copy; {new Date().getFullYear()} enscribe
-    </span>
-    <SocialIcons links={SOCIAL_LINKS} />
-  </div>
+<footer>
+  <p>
+    &copy; {new Date().getFullYear()}
+    {SITE.title}
+  </p>
+  <SocialIcons links={SOCIALS} />
 </footer>
+
+<style>
+  footer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-block: var(--space-xs) var(--page-offset-bottom);
+
+    @media (width >= 40rem) {
+      flex-direction: row;
+      justify-content: space-between;
+    }
+
+    p {
+      font-size: var(--step--1);
+      color: var(--muted-foreground);
+    }
+  }
+</style>

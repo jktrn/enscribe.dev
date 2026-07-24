@@ -1,0 +1,99 @@
+---
+import FormattedDate from "@/components/FormattedDate.astro"
+import { albumCover } from "@/lib/album-covers"
+import { albumDate, type FavoriteAlbum } from "@/lib/albums"
+import { Image } from "astro:assets"
+
+type Props = { album: FavoriteAlbum }
+
+const { album } = Astro.props
+const cover = albumCover(album.cover)
+---
+
+<li>
+  <album-entry>
+    <a data-album-cover href={album.url} tabindex="-1" aria-hidden="true">
+      <Image src={cover} alt="" width={256} />
+    </a>
+    <album-details>
+      <album-heading>
+        <a data-album-artist href={album.artist.url}>{album.artist.name}</a>
+        <span data-album-dash> – </span>
+        <a data-album-title href={album.url}>{album.title}</a>
+      </album-heading>
+      <album-meta
+        ><FormattedDate date={albumDate(album.releaseDate)} /></album-meta
+      >
+      <span data-album-genres>{album.genres.join(", ")}</span>
+    </album-details>
+  </album-entry>
+</li>
+
+<style>
+  li {
+    position: relative;
+    counter-increment: favorite-album;
+    list-style: none;
+
+    &::before {
+      position: absolute;
+      inset-block-start: 0;
+      inset-inline-end: calc(100% + 0.5rem);
+      inline-size: max-content;
+      color: color-mix(in oklab, var(--foreground) 40%, transparent);
+      content: counter(favorite-album) ".";
+      white-space: nowrap;
+    }
+  }
+
+  album-entry {
+    display: grid;
+    grid-template-columns: clamp(4.5rem, 16vw, 6.5rem) minmax(0, 1fr);
+    align-items: start;
+    gap: var(--space-s);
+
+    [data-album-cover] {
+      display: block;
+      overflow: hidden;
+      aspect-ratio: 1;
+      line-height: 0;
+
+      :global(img) {
+        display: block;
+        inline-size: 100%;
+        block-size: 100%;
+        object-fit: cover;
+      }
+    }
+
+    album-details {
+      display: flex;
+      min-inline-size: 0;
+      flex-direction: column;
+      align-items: flex-start;
+
+      album-heading {
+        display: block;
+        max-inline-size: 100%;
+      }
+
+      [data-album-title],
+      [data-album-artist] {
+        --underline: transparent;
+
+        max-inline-size: 100%;
+        text-decoration-line: underline;
+      }
+
+      [data-album-artist],
+      [data-album-dash],
+      album-meta {
+        color: color-mix(in oklab, var(--foreground) 60%, transparent);
+      }
+
+      [data-album-genres] {
+        color: color-mix(in oklab, var(--foreground) 40%, transparent);
+      }
+    }
+  }
+</style>

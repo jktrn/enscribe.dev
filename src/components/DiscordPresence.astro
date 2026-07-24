@@ -1,0 +1,553 @@
+---
+import "@/styles/marquee.css"
+---
+
+<discord-presence>
+  <discord-banner aria-hidden="true"></discord-banner>
+  <discord-avatar>
+    <img src="/static/avatar.webp" alt="Discord avatar" width="96" height="96">
+    <discord-status
+      data-skeleton
+      role="img"
+      aria-label="Discord status unavailable"
+    ></discord-status>
+  </discord-avatar>
+  <discord-user>
+    <b>enscribe</b>
+    <span>@enscribe</span>
+  </discord-user>
+  <discord-activity aria-live="polite">
+    <discord-spinner role="status" aria-label="Loading"></discord-spinner>
+  </discord-activity>
+</discord-presence>
+
+<style is:global>
+  discord-presence {
+    --discord-pad: clamp(0.75rem, 4.5cqw, 1.25rem);
+    --discord-banner-size: clamp(4rem, 30cqw, 6.5rem);
+    --discord-avatar-size: clamp(3.5rem, 26cqw, 5.5rem);
+    --discord-text: clamp(0.8125rem, 4.25cqw, 1.0625rem);
+
+    container-type: inline-size;
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+
+    @media (width < 30rem) {
+      position: relative;
+      inset: auto;
+    }
+
+    discord-banner {
+      position: relative;
+      flex-shrink: 0;
+      block-size: var(--discord-banner-size);
+      background-color: color-mix(in oklab, var(--border) 50%, transparent);
+
+      &::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image: url("/static/discord-banner.png");
+        background-size: cover;
+        background-position: center;
+        opacity: var(--discord-pattern-opacity, 0.5);
+      }
+    }
+
+    discord-avatar {
+      position: absolute;
+      inset-block-start: calc(
+        var(--discord-banner-size) -
+        0.9 *
+        var(--discord-avatar-size)
+      );
+      inset-inline-start: var(--discord-pad);
+      inline-size: var(--discord-avatar-size);
+      aspect-ratio: 1;
+
+      img {
+        inline-size: 100%;
+        block-size: 100%;
+        border-radius: var(--radius-full);
+        filter: grayscale(1) sepia(0.3);
+      }
+    }
+
+    discord-status {
+      --discord-status-size: 26%;
+
+      position: absolute;
+      inset-block-end: 0;
+      inset-inline-end: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      inline-size: var(--discord-status-size);
+      aspect-ratio: 1;
+      border-radius: var(--radius-full);
+      background-color: var(--muted-foreground);
+      box-shadow: 0 0 0 3px var(--background);
+
+      &::after {
+        content: "";
+        inline-size: 50%;
+        aspect-ratio: 1;
+        border-radius: var(--radius-full);
+        background-color: var(--background);
+      }
+
+      &[data-status="online"] {
+        background-color: var(--primary);
+
+        &::after {
+          content: none;
+        }
+      }
+
+      &[data-status="idle"] {
+        background-color: var(--primary);
+      }
+
+      &[data-status="dnd"] {
+        background-color: var(--destructive);
+
+        &::after {
+          inline-size: 65%;
+          aspect-ratio: auto;
+          block-size: 25%;
+        }
+      }
+    }
+
+    discord-user {
+      display: flex;
+      flex-direction: column;
+      gap: 0.125rem;
+      min-width: 0;
+      padding: calc(0.1 * var(--discord-avatar-size) + var(--space-2xs))
+        var(--discord-pad) var(--discord-pad);
+
+      b {
+        overflow: hidden;
+        color: var(--foreground);
+        font-size: clamp(1rem, 6cqw, 1.5rem);
+        font-weight: var(--font-weight-medium);
+        line-height: 1.1;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      span {
+        color: var(--muted-foreground);
+        font-size: var(--discord-text);
+        line-height: 1.2;
+      }
+    }
+
+    discord-activity {
+      display: flex;
+      align-items: center;
+      gap: clamp(0.625rem, 3.5cqw, 1rem);
+      flex: 1;
+      min-block-size: 0;
+      min-width: 0;
+      margin: 0 var(--discord-pad) var(--discord-pad);
+      padding: clamp(0.5rem, 3cqw, 0.75rem);
+      background-color: var(--muted);
+    }
+
+    discord-art {
+      position: relative;
+      flex-shrink: 0;
+      block-size: var(--discord-art-size, 3.5rem);
+      aspect-ratio: 1;
+
+      img {
+        inline-size: 100%;
+        block-size: 100%;
+        object-fit: contain;
+        opacity: 0;
+        transition: opacity 0.4s ease;
+      }
+
+      img[data-loaded] {
+        opacity: 1;
+      }
+
+      img:not([data-theme-light], [data-theme-dark]) {
+        filter: grayscale(1) sepia(0.3);
+      }
+
+      img[data-small] {
+        position: absolute;
+        inset-block-end: -6%;
+        inset-inline-end: -6%;
+        inline-size: 32%;
+        block-size: 32%;
+        border: 2px solid var(--background);
+        border-radius: var(--radius-full);
+        object-fit: cover;
+      }
+    }
+
+    discord-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 0.125rem;
+      flex: 1;
+      min-width: 0;
+      margin-block-start: 0.1em;
+    }
+
+    discord-title {
+      display: flex;
+      overflow: hidden;
+      min-width: 0;
+      color: var(--foreground);
+      font-size: var(--discord-text);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.2;
+      white-space: nowrap;
+    }
+
+    discord-line {
+      display: flex;
+      overflow: hidden;
+      min-width: 0;
+      color: var(--muted-foreground);
+      font-size: calc(var(--discord-text) * 0.9);
+      line-height: 1.3;
+      white-space: nowrap;
+
+      &[data-elapsed] {
+        font-variant-numeric: tabular-nums;
+        opacity: 0.6;
+      }
+    }
+
+    discord-status[data-skeleton] {
+      visibility: hidden;
+    }
+
+    discord-status[data-status] {
+      animation: discord-fade-in 0.4s ease;
+    }
+
+    discord-spinner {
+      display: flex;
+      flex: 1;
+      align-items: center;
+      justify-content: center;
+
+      &::after {
+        content: "";
+        inline-size: 1.5rem;
+        block-size: 1.5rem;
+        border: 2px solid var(--border);
+        border-block-start-color: var(--primary);
+        border-radius: var(--radius-full);
+        animation: discord-spin 0.8s linear infinite;
+      }
+    }
+
+    discord-activity > * {
+      animation: discord-fade-in 0.4s ease;
+    }
+  }
+
+  @keyframes discord-spin {
+    to {
+      rotate: 360deg;
+    }
+  }
+
+  @keyframes discord-fade-in {
+    from {
+      opacity: 0;
+    }
+  }
+
+  :root[data-theme="dark"] discord-presence {
+    --discord-pattern-opacity: 1;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme]) discord-presence {
+      --discord-pattern-opacity: 1;
+    }
+  }
+</style>
+
+<script>
+  import {
+    type DiscordActivity,
+    type DiscordPresenceState,
+    discordAssetUrl,
+    formatDiscordDuration,
+    formatDiscordElapsed,
+    nextDiscordPresenceState,
+    parseDiscordStreamEvent,
+    selectCachedDiscordPresence,
+  } from "@/lib/discord-presence"
+  import { applyMarquee, createMarqueeText } from "@/lib/marquee"
+  import {
+    readPersistentTileCache,
+    readTileCache,
+    writePersistentTileCache,
+  } from "@/lib/tile-cache"
+
+  const SSE_URL = "https://jason-you-owe-me-money.es3n1n.eu/v1/discord/stream"
+  const CACHE_KEY = "discord:presence"
+  const LEGACY_CACHE_KEYS = ["discord:v5", "discord:v4"]
+  const FALLBACK_ART = {
+    light: "/static/discord-futon-light.svg",
+    dark: "/static/discord-futon-dark.png",
+  }
+
+  const revealWhenLoaded = (image: HTMLImageElement) => {
+    image
+      .decode()
+      .catch(() => {})
+      .then(() => image.setAttribute("data-loaded", ""))
+  }
+
+  const fallbackArt = (): HTMLImageElement[] =>
+    Object.entries(FALLBACK_ART).map(([theme, src]) => {
+      const image = document.createElement("img")
+      image.alt = ""
+      image.width = 64
+      image.height = 64
+      image.src = src
+      image.setAttribute(`data-theme-${theme}`, "")
+      return image
+    })
+
+  const activityArt = (activity: DiscordActivity | null): HTMLElement => {
+    const art = document.createElement("discord-art")
+    const largeUrl = discordAssetUrl(activity?.assets?.large_image)
+
+    if (largeUrl) {
+      const image = document.createElement("img")
+      image.alt = ""
+      image.width = 64
+      image.height = 64
+      image.src = largeUrl
+      if (activity?.assets?.large_text) {
+        image.title = activity.assets.large_text
+      }
+      art.appendChild(image)
+    } else {
+      art.append(...fallbackArt())
+    }
+
+    const smallUrl = discordAssetUrl(activity?.assets?.small_image)
+    if (smallUrl) {
+      const image = document.createElement("img")
+      image.setAttribute("data-small", "")
+      image.alt = ""
+      image.width = 24
+      image.height = 24
+      image.src = smallUrl
+      if (activity?.assets?.small_text) {
+        image.title = activity.assets.small_text
+      }
+      art.appendChild(image)
+    }
+
+    return art
+  }
+
+  class DiscordPresence extends HTMLElement {
+    eventSource: EventSource | null = null
+    artSizer: ResizeObserver | null = null
+    state: DiscordPresenceState | null = null
+    tickerId: number | null = null
+    marqueeFrameId = 0
+
+    connectedCallback() {
+      const cached = selectCachedDiscordPresence([
+        readPersistentTileCache<unknown>(CACHE_KEY),
+        ...LEGACY_CACHE_KEYS.map((key) => readTileCache<unknown>(key)),
+      ])
+      if (cached) {
+        this.renderState(cached, { fade: false })
+      }
+
+      this.connect()
+      this.syncArtSize()
+    }
+
+    disconnectedCallback() {
+      this.eventSource?.close()
+      this.eventSource = null
+      this.artSizer?.disconnect()
+      this.stopTicker()
+      cancelAnimationFrame(this.marqueeFrameId)
+    }
+
+    syncArtSize() {
+      this.artSizer?.disconnect()
+      const area = this.querySelector<HTMLElement>("discord-activity")
+      if (!area) return
+      this.artSizer = new ResizeObserver(() => {
+        const styles = getComputedStyle(area)
+        const inner =
+          area.clientHeight -
+          Number.parseFloat(styles.paddingTop) -
+          Number.parseFloat(styles.paddingBottom)
+        if (inner > 0) {
+          this.style.setProperty("--discord-art-size", `${inner}px`)
+        }
+        this.refreshMarquees()
+      })
+      this.artSizer.observe(area)
+    }
+
+    refreshMarquees() {
+      cancelAnimationFrame(this.marqueeFrameId)
+      const lines = [
+        ...this.querySelectorAll<HTMLElement>("discord-title, discord-line"),
+      ]
+      this.marqueeFrameId = requestAnimationFrame(() => {
+        for (const line of lines) applyMarquee(line)
+        this.marqueeFrameId = 0
+      })
+    }
+
+    connect() {
+      this.eventSource?.close()
+
+      const source = new EventSource(SSE_URL)
+      this.eventSource = source
+
+      source.onopen = () => {
+        if (!this.state) this.renderLoading()
+      }
+
+      source.onmessage = (message) => {
+        const event = parseDiscordStreamEvent(message.data)
+        if (!event) return
+
+        const state = nextDiscordPresenceState(this.state, event)
+        if (!state || state === this.state) return
+        this.renderState(state)
+      }
+
+      source.onerror = () => {
+        if (!this.state) this.renderUnavailable()
+      }
+    }
+
+    renderState(state: DiscordPresenceState, { fade = true } = {}) {
+      const previous = this.state
+      const activityChanged =
+        JSON.stringify(state.activity) !== JSON.stringify(previous?.activity) ||
+        state.is_active !== previous?.is_active
+      const statusChanged = state.status !== previous?.status
+      this.state = state
+      if (!activityChanged && !statusChanged) return
+
+      writePersistentTileCache(CACHE_KEY, state)
+      this.renderStatus(state.status)
+      if (!activityChanged) return
+
+      const { activity } = state
+      this.stopTicker()
+
+      const details = activity
+        ? [activity.details, activity.state].filter((text): text is string =>
+            Boolean(text),
+          )
+        : ["I’m probably asleep...", "Enjoy your stay!"]
+      const meta = document.createElement("discord-meta")
+      if (activity && !state.is_active) {
+        const lastPlayed = createMarqueeText("discord-line", "Last played...")
+        lastPlayed.setAttribute("data-last-played", "")
+        meta.appendChild(lastPlayed)
+      }
+
+      const title = createMarqueeText(
+        "discord-title",
+        activity?.name ?? "No activity",
+      )
+      meta.appendChild(title)
+      for (const text of details) {
+        const line = createMarqueeText("discord-line", text)
+        meta.appendChild(line)
+      }
+
+      const startMs = activity?.start_ms
+      if (state.is_active && startMs != null) {
+        const elapsed = document.createElement("discord-line")
+        elapsed.setAttribute("data-elapsed", "")
+        const updateElapsed = () => {
+          elapsed.textContent = formatDiscordElapsed(startMs)
+        }
+        updateElapsed()
+        meta.appendChild(elapsed)
+        this.tickerId = window.setInterval(updateElapsed, 1_000)
+      } else if (!state.is_active && state.duration_ms != null) {
+        const duration = document.createElement("discord-line")
+        duration.setAttribute("data-elapsed", "")
+        duration.textContent = `for ${formatDiscordDuration(state.duration_ms)}`
+        meta.appendChild(duration)
+      }
+
+      const art = activityArt(activity)
+      for (const image of art.querySelectorAll("img")) {
+        if (fade) revealWhenLoaded(image)
+        else image.setAttribute("data-loaded", "")
+      }
+
+      this.querySelector("discord-activity")?.replaceChildren(art, meta)
+      this.refreshMarquees()
+    }
+
+    renderStatus(status: DiscordPresenceState["status"]) {
+      const element = this.querySelector("discord-status")
+      if (!element) return
+
+      element.removeAttribute("data-skeleton")
+      if (status) element.setAttribute("data-status", status)
+      else element.removeAttribute("data-status")
+      element.setAttribute(
+        "aria-label",
+        status ? `Discord status: ${status}` : "Discord status unavailable",
+      )
+    }
+
+    renderUnavailable() {
+      this.stopTicker()
+      const message = document.createElement("discord-meta")
+      const title = createMarqueeText("discord-title", "Activity unavailable")
+      const detail = createMarqueeText("discord-line", "Reconnecting…")
+      message.append(title, detail)
+
+      const art = activityArt(null)
+      for (const image of art.querySelectorAll("img")) revealWhenLoaded(image)
+      this.querySelector("discord-activity")?.replaceChildren(art, message)
+      this.refreshMarquees()
+    }
+
+    renderLoading() {
+      this.stopTicker()
+      cancelAnimationFrame(this.marqueeFrameId)
+      const spinner = document.createElement("discord-spinner")
+      spinner.setAttribute("role", "status")
+      spinner.setAttribute("aria-label", "Loading Discord activity")
+      this.querySelector("discord-activity")?.replaceChildren(spinner)
+    }
+
+    stopTicker() {
+      if (this.tickerId === null) return
+      window.clearInterval(this.tickerId)
+      this.tickerId = null
+    }
+  }
+
+  if (!customElements.get("discord-presence")) {
+    customElements.define("discord-presence", DiscordPresence)
+  }
+</script>

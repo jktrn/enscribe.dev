@@ -1,0 +1,18 @@
+---
+import { formatDateParts } from "@/lib/utils"
+
+type Props = { date: Date }
+
+const { date } = Astro.props
+const { month, day, suffix, year } = formatDateParts(date)
+---
+
+<time datetime={date.toISOString()}
+  >{month} <span data-ordinal>{day}{suffix}</span>, {year}</time
+>
+
+<style>
+  [data-ordinal] {
+    font-variant-numeric: oldstyle-nums ordinal;
+  }
+</style>
