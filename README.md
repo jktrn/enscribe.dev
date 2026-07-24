@@ -1,6 +1,6 @@
 <div align="center">
 
-# <picture><source media="(prefers-color-scheme: dark)" srcset="public/static/preview-1-dark.png" /><img alt="enscribe.dev preview" src="public/static/preview-1-light.png" /></picture>
+<picture><source media="(prefers-color-scheme: dark)" srcset="public/static/preview-1-dark.png" /><img alt="enscribe.dev preview" src="public/static/preview-1-light.png" /></picture>
 
 ![Stargazers]
 [![Code License]](LICENSE.md)
