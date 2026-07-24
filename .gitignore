@@ -24,7 +24,7 @@ graphics/fonts/*.otf.*.tmp
 graphics/fonts/MDLorien-Regular.ttf
 graphics/fonts/MDLorien-Italic.ttf
 
-# Private build assets hydrated from Cloudflare R2.
+# Private build assets are hydrated from Cloudflare R2, not Git history.
 src/content/**/assets/
 public/blog/
 graphics/blog/
