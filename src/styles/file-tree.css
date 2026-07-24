@@ -1,0 +1,87 @@
+prose-content file-tree {
+  display: block;
+  margin-block: 0 1em;
+  padding: var(--space-xs) var(--space-m);
+  font-family: var(--font-sans);
+  font-size: var(--step--1);
+  background-color: color-mix(in oklab, var(--muted) 25%, transparent);
+  border: 2px solid var(--border);
+  overflow-x: auto;
+
+  ul {
+    list-style: none;
+    margin-block: 0;
+    padding-inline-start: 0;
+  }
+
+  ul ul {
+    position: relative;
+    margin-block: 0;
+    padding-inline-start: 1.25rem;
+
+    &::before {
+      content: "";
+      position: absolute;
+      inset-block: 0;
+      inset-inline-start: calc(0.5em - 1px);
+      inline-size: 2px;
+      background-color: color-mix(
+        in oklab,
+        var(--muted-foreground) 40%,
+        transparent
+      );
+    }
+  }
+
+  li {
+    margin-block: 0;
+    padding-inline-start: 0;
+  }
+
+  details {
+    margin-block: 0;
+  }
+
+  details[open] summary {
+    margin-block-end: 0;
+  }
+
+  svg {
+    display: inline-block;
+    flex-shrink: 0;
+    inline-size: 1em;
+    block-size: 1em;
+    color: var(--muted-foreground);
+  }
+
+  .tree-entry,
+  summary {
+    display: flex;
+    align-items: center;
+    gap: 0.75ch;
+  }
+
+  summary {
+    cursor: pointer;
+    list-style: none;
+    width: fit-content;
+
+    &::-webkit-details-marker {
+      display: none;
+    }
+  }
+
+  .tree-name {
+    color: var(--prose-foreground);
+
+    &.is-highlighted {
+      color: var(--foreground);
+      font-weight: var(--font-weight-medium);
+    }
+  }
+
+  .tree-comment,
+  .tree-placeholder {
+    color: color-mix(in oklab, var(--muted-foreground) 75%, transparent);
+  }
+}

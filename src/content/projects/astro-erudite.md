@@ -1,10 +1,7 @@
 ---
 name: 'astro-erudite'
-description: 'I created a highly opinionated, unstyled static blogging template out of frustration with existing templates and obsession with perfection.'
-tags: ['open-source', 'astro']
-image: '../../../public/static/projects/astro-erudite.png'
+description: 'I created a highly opinionated, unstyled static blogging template out of frustration with existing templates and obsession with perfection. This website uses astro-erudite!'
+image: './assets/astro-erudite.png'
 link: 'https://astro-erudite.vercel.app'
-order: 9
 startDate: '2024-09-10'
-# endDate: '2024-02-01'
 ---

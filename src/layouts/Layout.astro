@@ -1,44 +1,211 @@
 ---
-import '@/styles/global.css'
-import '@/styles/typography.css'
+import "@/styles/reset.css"
+import "@/styles/fonts.css"
+import "@/styles/color.css"
+import "@/styles/theme-toggle.css"
+import "@/styles/typography.css"
+import "@/styles/typography-headings.css"
+import "@/styles/typography-inline.css"
+import "@/styles/typography-lists.css"
+import "@/styles/typography-block.css"
+import "@/styles/typography-tables.css"
+import "@/styles/callout.css"
+import "@/styles/steps.css"
+import "@/styles/cards.css"
+import "@/styles/file-tree.css"
+import "@/styles/tabs.css"
+import "@/styles/layout.css"
+import "@/styles/reference.css"
+import "@/styles/scroll-fade.css"
+import "@/styles/icon-button.css"
+import "@/styles/bar.css"
+import "@/styles/shape.css"
 
-import Footer from '@/components/Footer.astro'
-import Head from '@/components/Head.astro'
-import Header from '@/components/Header.astro'
-import { SITE } from '@/consts'
-import { cn } from '@/lib/utils'
+import CopyCommands from "@/components/CopyCommands.astro"
+import ProseJustification from "@/components/ProseJustification.astro"
+import TabGroups from "@/components/TabGroups.astro"
+import ScrollFade from "@/components/ScrollFade.astro"
+import ScrollGuard from "@/components/ScrollGuard.astro"
+import Search from "@/components/Search.astro"
+import Footer from "@/components/Footer.astro"
+import MetaHead from "@/components/MetaHead.astro"
+import Sidebar from "@/components/Sidebar.astro"
+import { SITE } from "@/consts"
+import type { InlineLabel } from "@/lib/content"
 
-interface Props {
-  class?: string
+type Props = {
+  crumbs?: { label: InlineLabel; href: string }[]
+  wide?: boolean
 }
 
-const { class: className } = Astro.props
+const { crumbs, wide } = Astro.props
+const actions = Astro.slots.has("actions")
 ---
 
-<!doctype html>
-<html
-  class="bg-background text-foreground scheme-dark"
-  lang={SITE.locale}
-  data-theme="dark"
->
-  <Head>
+<html lang={SITE.locale} dir={SITE.dir}>
+  <MetaHead>
     <slot name="head" />
-  </Head>
+  </MetaHead>
   <body>
-    <div class="flex h-fit min-h-screen flex-col gap-y-6 font-mono">
-      <div
-        class="bg-background/90 sticky top-0 z-50 divide-y backdrop-blur-md xl:divide-none"
-      >
-        <Header />
-        <slot name="subposts-navigation" />
-        <slot name="table-of-contents" />
-      </div>
-      <main class="grow">
-        <div class={cn('mx-auto flex grow flex-col gap-y-6 px-4', className)}>
-          <slot />
-        </div>
-      </main>
-      <Footer />
-    </div>
+    <page-grid>
+      <page-header>
+        <page-nav>
+          <Sidebar crumbs={crumbs} actions={actions}
+            ><slot name="actions" slot="actions" /></Sidebar
+          >
+        </page-nav>
+        {Astro.slots.has("toc") && !wide && (
+            <page-toc><slot name="toc" /></page-toc>
+          )}
+      </page-header>
+      <page-content data-wide={wide || undefined}>
+        <main><slot /></main>
+        <page-footer><Footer /></page-footer>
+      </page-content>
+    </page-grid>
+    <CopyCommands />
+    <ProseJustification />
+    <TabGroups />
+    <ScrollFade />
+    <ScrollGuard />
+    <Search />
   </body>
 </html>
+
+<style>
+  page-grid {
+    position: relative;
+    isolation: isolate;
+    display: grid;
+    grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
+    gap: var(--grid-gutter);
+    max-width: var(--grid-max-width);
+    min-height: 100svh;
+    margin-inline: auto;
+    padding-inline: var(--grid-gutter);
+    padding-block-start: var(--page-offset-top);
+
+    @media (width >= 48rem) and (width < 64rem) {
+      grid-template-columns:
+        max(calc(2 * var(--grid-column-width) + var(--grid-gutter)), 9rem)
+        minmax(0, 1fr);
+      grid-template-rows: auto 1fr;
+      grid-template-areas: "nav toc" "nav content";
+
+      &:not(:has(page-toc)) {
+        grid-template-areas: "nav content" "nav content";
+      }
+    }
+
+    @media (width < 48rem) {
+      grid-template-columns: 1fr;
+      grid-template-rows: auto 1fr;
+      padding-block-start: 0;
+    }
+  }
+
+  page-header {
+    display: contents;
+
+    @media (width < 48rem) {
+      display: block;
+      grid-column: 1 / -1;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      min-width: 0;
+      margin-inline: calc(-1 * var(--grid-gutter));
+    }
+  }
+
+  page-nav {
+    display: block;
+    min-width: 0;
+    grid-column: 1 / 3;
+    grid-row: 1;
+
+    @media (width >= 48rem) and (width < 64rem) {
+      grid-area: nav;
+      position: fixed;
+      inset-block: var(--page-offset-top) var(--page-offset-bottom);
+      inset-inline-start: var(--grid-edge);
+      width: max(calc(2 * var(--grid-column-width) + var(--grid-gutter)), 9rem);
+    }
+
+    @media screen and (width >= 64rem) {
+      position: fixed;
+      inset-block: var(--page-offset-top) var(--page-offset-bottom);
+      inset-inline-start: var(--grid-edge);
+      width: calc(2 * var(--grid-column-width) + var(--grid-gutter));
+    }
+  }
+
+  page-toc {
+    display: block;
+    min-width: 0;
+    grid-column: 10 / 13;
+    grid-row: 1;
+
+    @media (width >= 48rem) and (width < 64rem) {
+      grid-area: toc;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      max-inline-size: var(--measure);
+
+      :global([data-bar]) {
+        --bar-border-image: none;
+
+        padding-inline: 0;
+      }
+    }
+
+    @media screen and (width >= 64rem) {
+      position: fixed;
+      inset-block: var(--page-offset-top) var(--page-offset-bottom);
+      inset-inline-end: var(--grid-edge);
+      width: calc(3 * var(--grid-column-width) + 2 * var(--grid-gutter));
+    }
+  }
+
+  page-content {
+    display: flex;
+    flex-direction: column;
+    grid-column: 3 / 10;
+    grid-row: 1;
+    min-width: 0;
+    margin-block-start: -0.1em;
+
+    main {
+      flex: 1;
+    }
+
+    page-footer {
+      display: block;
+      margin-block-start: var(--space-xl);
+    }
+
+    @media (width < 64rem) {
+      &:not([data-wide]) {
+        max-inline-size: var(--measure);
+      }
+    }
+
+    @media (width >= 48rem) and (width < 64rem) {
+      grid-area: content;
+    }
+
+    @media (width < 48rem) {
+      grid-column: 1 / -1;
+      grid-row: auto;
+      inline-size: 100%;
+      margin-inline: auto;
+    }
+  }
+
+  @media (width >= 64rem) {
+    page-content[data-wide] {
+      grid-column: 3 / 13;
+    }
+  }
+</style>

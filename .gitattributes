@@ -1,5 +1,1 @@
-*.mdx linguist-vendored
-*.js linguist-vendored
-*.mjs linguist-vendored
-*.py linguist-vendored
-*.txt linguist-vendored
+*.md linguist-vendored

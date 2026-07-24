@@ -1,0 +1,68 @@
+---
+import Paragraph from "@/assets/icons/paragraph.svg"
+---
+
+<button
+  id="text-justification-toggle"
+  data-icon-button
+  type="button"
+  aria-label="Knuth–Plass justification"
+  aria-pressed="true"
+  title="Disable experimental Knuth–Plass justification"
+>
+  <Paragraph aria-hidden="true" />
+</button>
+
+<style is:global>
+  :root:not([data-js]) #text-justification-toggle {
+    display: none;
+  }
+
+  #text-justification-toggle {
+    color: var(--foreground);
+
+    &[aria-pressed="true"] {
+      background-color: color-mix(in oklab, var(--muted) 50%, transparent);
+    }
+  }
+
+  @media (width < 48rem) {
+    #text-justification-toggle {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  import { dispatchJustificationChange } from "@/lib/typography/preference-events"
+
+  const updateButton = () => {
+    const enabled =
+      document.documentElement.dataset.textJustification !== "ragged"
+    const button = document.querySelector<HTMLButtonElement>(
+      "#text-justification-toggle",
+    )
+    if (!button) return
+    button.setAttribute("aria-pressed", String(enabled))
+    button.title = `${enabled ? "Disable" : "Enable"} experimental Knuth–Plass justification`
+  }
+
+  document.addEventListener("astro:page-load", updateButton)
+  document.addEventListener("click", (event) => {
+    if (!(event.target as Element).closest?.("#text-justification-toggle")) {
+      return
+    }
+
+    const root = document.documentElement
+    const enabled = root.dataset.textJustification === "ragged"
+    const preference = enabled ? "justified" : "ragged"
+    root.dataset.textJustification = preference
+    try {
+      localStorage.setItem("textJustification", preference)
+    } catch {}
+    updateButton()
+    dispatchJustificationChange(enabled)
+  })
+
+  updateButton()
+</script>

@@ -1,0 +1,60 @@
+prose-content step-list {
+  display: block;
+  margin-block: 0 1em;
+
+  > ol {
+    list-style: none;
+    counter-reset: steps;
+    padding-inline-start: 0;
+
+    > li {
+      --step-circle-top: calc((var(--leading-offset) + 1em - 1.75rem) / 2);
+
+      counter-increment: steps;
+      position: relative;
+      margin-block-start: 0;
+      padding-inline-start: calc(1.75rem + var(--space-xs));
+      padding-block-end: var(--space-s);
+
+      &::before {
+        content: counter(steps);
+        position: absolute;
+        inset-inline-start: 0;
+        inset-block-start: var(--step-circle-top);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        inline-size: 1.75rem;
+        block-size: 1.75rem;
+        font-size: var(--step--1);
+        font-weight: var(--font-weight-medium);
+        color: var(--foreground);
+        background-color: color-mix(in oklab, var(--muted) 50%, transparent);
+        border: 2px solid var(--border);
+        border-radius: var(--radius-full);
+      }
+
+      &::after {
+        content: "";
+        position: absolute;
+        inset-inline-start: calc(0.875rem - 1px);
+        inset-block-start: calc(var(--step-circle-top) + 1.75rem + 0.25em);
+        inset-block-end: 0.25em;
+        inline-size: 2px;
+        background-color: var(--border);
+      }
+
+      &:last-child {
+        padding-block-end: 0;
+
+        &::after {
+          display: none;
+        }
+      }
+
+      > :last-child {
+        margin-block-end: 0;
+      }
+    }
+  }
+}

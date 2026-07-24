@@ -1,0 +1,28 @@
+---
+import type { BannerRaster } from "@/lib/assets/banner"
+import { Image } from "astro:assets"
+
+type Props = { raster: BannerRaster; priority?: boolean }
+
+const { raster, priority } = Astro.props
+const fetchpriority = priority ? "high" : undefined
+---
+
+<Image
+  src={raster.light}
+  width={raster.light.width / 2}
+  densities={[1, 2]}
+  alt=""
+  loading="lazy"
+  fetchpriority={fetchpriority}
+  data-theme-light
+/>
+<Image
+  src={raster.dark}
+  width={raster.dark.width / 2}
+  densities={[1, 2]}
+  alt=""
+  loading="lazy"
+  fetchpriority={fetchpriority}
+  data-theme-dark
+/>

@@ -1,0 +1,18 @@
+---
+import "@enscribe/linebreak/styles.css"
+---
+
+<style is:global>
+  [data-typeset-root] [data-kp-flex-measure] {
+    flex-grow: 1;
+    min-inline-size: 0;
+  }
+</style>
+
+<prose-justification hidden></prose-justification>
+
+<script>
+  import { defineProseJustification } from "@/lib/typography/prose-justification"
+
+  defineProseJustification()
+</script>

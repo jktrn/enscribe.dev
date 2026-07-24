@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "lib": ["DOM", "DOM.Iterable", "ES2022"],
+    "types": ["bun", "vite/client"],
+    "strict": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "paths": {
+      "@linebreak/*": ["../../packages/linebreak/src/*"]
+    }
+  },
+  "include": ["unit/**/*.ts", "package/**/*.ts", "e2e/**/*.ts"]
+}

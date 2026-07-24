@@ -1,0 +1,55 @@
+---
+import MetaPage from "@/components/MetaPage.astro"
+import TableOfContents from "@/components/TableOfContents.astro"
+import Layout from "@/layouts/Layout.astro"
+import { enrichHeadings } from "@/lib/content"
+import { Content, frontmatter, getHeadings } from "./_fixtures.md"
+
+const headings = enrichHeadings(
+  getHeadings().filter(
+    ({ depth, text }) => depth >= 2 && depth <= 4 && text.trim(),
+  ),
+  frontmatter,
+)
+---
+
+<Layout crumbs={[{ label: "Fixtures", href: "/fixtures" }]}>
+  <MetaPage
+    slot="head"
+    title="Fixtures"
+    description="A kitchen sink of every Markdown pipeline feature."
+    noindex
+  />
+  <TableOfContents
+    slot="toc"
+    title="Fixtures"
+    sections={[{ label: "Fixtures", headings }]}
+  />
+  <article data-url="/fixtures">
+    <header data-typeset-root>
+      <h1>Fixtures</h1>
+      <p>A kitchen sink of every Markdown pipeline feature.</p>
+    </header>
+    <prose-content data-typeset-root>
+      <Content />
+    </prose-content>
+  </article>
+</Layout>
+
+<style>
+  header {
+    margin-block-end: var(--space-m);
+
+    h1 {
+      font-size: var(--step-3);
+      line-height: calc(var(--leading-offset) + 1em);
+      font-weight: var(--font-weight-medium);
+    }
+
+    > p {
+      margin-block-start: var(--space-2xs);
+      font-size: var(--step--1);
+      color: var(--muted-foreground);
+    }
+  }
+</style>

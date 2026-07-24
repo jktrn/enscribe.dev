@@ -1,3 +1,0 @@
-[31m$[0m touch flag.txt && echo "FLAGHERE" > flag.txt
-[31m$[0m ./guardians
-Does Quill manage to win the dance battle?

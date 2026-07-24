@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>Linebreak browser contract</title>
+  </head>
+  <body>
+    <main>
+      <p id="rich-owner">
+        Careful typography keeps
+        <span id="decoration" class="decoration">(decorated context)</span>,
+        preserves <code id="inline-code">inlineCode()</code>, retains a
+        <a id="semantic-link" href="#kept"
+          >semantic link<span
+            aria-hidden="true"
+            data-linebreak-decoration=""
+            data-linebreak-decoration-position="after"
+            >◆</span
+          ></a
+        >, and measures
+        <span
+          id="atom"
+          data-linebreak-atom=""
+          role="img"
+          aria-label="blue diamond"
+          >◆</span
+        >
+        as one object across optimized lines.
+      </p>
+      <p id="japanese-owner" lang="ja">
+        日本語の文章も特別な分岐を追加せず、ブラウザーが提供する自然な改行位置を使って美しく複数の行へ配置されます。
+      </p>
+      <p id="stale-owner">
+        A line plan created for one width must become stale when the paragraph
+        changes width before the package commits that plan to the document.
+      </p>
+      <p id="foreign-owner">
+        A plan belongs to the linebreaker that measured it and another instance
+        must reject it without changing this authored paragraph.
+      </p>
+      <p id="duplicate-owner">
+        Repeating one paragraph in a batch must render and correct that
+        paragraph exactly once while preserving accurate line fit across every
+        row.
+      </p>
+      <p id="image-owner">
+        Duplicate image sources preserve independent runtime state
+        <img src="/duplicate.png" alt="first" data-loaded="first">
+        throughout a rendered paragraph, and the later copy
+        <img src="/duplicate.png" alt="second" data-loaded="second">
+        keeps its own state through restoration.
+      </p>
+      <table id="intrinsic-table">
+        <thead>
+          <tr>
+            <th id="intrinsic-header">
+              A very long header cell that should wrap gracefully inside the
+              column
+            </th>
+            <th>code</th>
+            <th>Aligned right</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td id="intrinsic-cell">
+              A cell with an extremely long sentence that runs far past the
+              column's natural width to force wrapping behavior inside table
+              cells, including inline code and decorated text.
+            </td>
+            <td>centered</td>
+            <td>fail</td>
+          </tr>
+        </tbody>
+      </table>
+      <p id="locale-owner">
+        ภาษาไทยสามารถตัดคำและจัดบรรทัดได้จากภาษาสำรองที่กำหนดไว้โดยไม่ต้องพึ่งพาภาษาบนเอกสาร
+      </p>
+      <p id="minimum-shrink-owner">
+        A rendered paragraph that falls below the configured minimum width must
+        return to native browser layout.
+      </p>
+      <p id="settlement-owner">
+        A surviving paragraph must be revalidated after a failed sibling is
+        restored and changes their shared layout.
+      </p>
+      <p id="settlement-failing">
+        This sibling deliberately fails final geometry validation.
+      </p>
+      <p id="geometry-native">
+        Researching online, a segmentation fault is raised by protected hardware
+        when code such as <code>printf()</code> reaches an invalid address. The
+        line spacing stays fixed.
+      </p>
+      <p id="geometry-owner">
+        Researching online, a segmentation fault is raised by protected hardware
+        when code such as <code>printf()</code> reaches an invalid address. The
+        line spacing stays fixed.
+      </p>
+      <p id="spacing-native">
+        Authored tracking and word spacing remain part of every line while the
+        optimizer adds only the adjustment required to fit each measure.
+      </p>
+      <p id="spacing-owner">
+        Authored tracking and word spacing remain part of every line while the
+        optimizer adds only the adjustment required to fit each measure.
+      </p>
+      <p id="hyphen-owner">
+        <strong id="hyphen-prefix">extra</strong>ordinary extraordinary
+        <code>extraordinary</code>
+        extraordinary
+      </p>
+      <div id="non-english-hyphen-language" lang="fr">
+        <p id="non-english-hyphen-owner">
+          une histoire anticonstitutionnellement française et extraordinairement
+          complexe avec une internationalisation durable et
+          anticonstitutionnellement moderne
+        </p>
+      </div>
+      <p id="rtl-owner" dir="rtl">هذا النص يبقى في تخطيط المتصفح الأصلي.</p>
+      <p id="break-owner">A hard break<br>keeps this paragraph native.</p>
+      <p id="narrow-owner">
+        This paragraph is below the configured minimum width and remains native.
+      </p>
+      <p id="pre-code-owner">
+        Preformatted inline code such as
+        <code class="pre-code">alpha&#32;&#32;beta&#10;gamma</code>
+        stays in native browser layout.
+      </p>
+      <p id="pre-wrap-code-owner">
+        Wrapping preformatted code such as
+        <code class="pre-wrap-code">alpha&#32;&#32;beta&#10;gamma</code>
+        also stays in native browser layout.
+      </p>
+      <p id="preserved-whitespace-owner">
+        <span class="pre-code">&#32;&#32;</span>Whitespace-preserving content
+        stays in native browser layout even when trimming would otherwise hide
+        it.
+      </p>
+      <p id="nowrap-owner">
+        Ordinary words before the protected phrase should use several lines
+        before
+        <span class="nowrap-range"
+          ><svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16">
+            <circle cx="8" cy="8" r="7"></circle>
+          </svg>alpha beta gamma</span
+        >
+        and ordinary words after it should use several more lines afterward.
+      </p>
+      <p id="nowrap-atomic-owner">
+        <span class="nowrap-range"
+          >aaaa bbbb <span class="nowrap-atom" aria-hidden="true"></span>
+          cccc</span
+        >
+      </p>
+      <p id="nowrap-collapsed-owner">
+        <span class="nowrap-range"
+          >aaaa bbbb <span class="wrap-override"> </span>cccc dddd</span
+        >
+      </p>
+      <p id="nowrap-space-owner"><span class="nowrap-range">aaaa </span>bbbb</p>
+      <p id="nowrap-empty-inline-owner">
+        <span class="nowrap-range"
+          >aaaa<span
+            class="empty-inline wrap-override"
+            aria-hidden="true"
+          ></span>bbbb</span
+        >
+      </p>
+      <p id="nowrap-edge-sole-owner">
+        <span class="nowrap-range"
+          >aaaa<span class="nowrap-edge wrap-override"> </span>bbbb</span
+        >
+      </p>
+      <p id="nowrap-edge-duplicate-owner">
+        <span class="nowrap-range"
+          >aaaa <span class="nowrap-edge wrap-override"> </span>bbbb</span
+        >
+      </p>
+      <section id="content-contracts">
+        <p id="hidden-inline-owner">
+          Visible text<span hidden>hidden<br>text</span>
+          continues through a paragraph whose hidden inline subtree must not
+          affect measurement.
+        </p>
+        <p id="contents-owner">
+          A <span class="display-contents">display contents wrapper</span>
+          remains transparent while its styled text participates in line
+          breaking.
+        </p>
+        <p id="inline-box-owner">
+          Inline boxes preserve
+          <span id="span-box" class="inline-box"><em>one span atom</em></span>
+          and
+          <kbd id="kbd-box" class="inline-box"><span>one kbd atom</span></kbd>
+          without fragmenting their descendants.
+        </p>
+        <p id="block-link-owner">
+          This paragraph contains
+          <a class="block-link" href="#unsupported">a block-styled link</a>
+          and must remain in native browser layout.
+        </p>
+        <p id="input-owner">
+          This paragraph contains <input value="interactive content"> and must
+          remain native unless the control is explicitly annotated as an atom.
+        </p>
+        <p id="custom-inline-owner">
+          A <linebreak-example>custom inline element</linebreak-example> is
+          ordinary styled text without a package-specific tag convention.
+        </p>
+        <p id="native-image-owner">
+          A native image
+          <img
+            id="native-image"
+            alt="blue square"
+            src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16'%3E%3Crect width='16' height='16' fill='%23245ca6'/%3E%3C/svg%3E"
+          >
+          remains one inline object among surrounding words.
+        </p>
+        <p id="native-renderers-owner">
+          Browser renderers remain indivisible:
+          <svg
+            class="inline-foreign"
+            aria-label="circle"
+            width="16"
+            height="16"
+            viewBox="0 0 16 16"
+          >
+            <circle cx="8" cy="8" r="7"></circle>
+          </svg>
+          <math aria-label="x squared">
+            <msup>
+              <mi>x</mi>
+              <mn>2</mn>
+            </msup>
+          </math>
+          <ruby>漢<rt>kan</rt></ruby>
+          <span class="empty-inline" aria-label="empty ornament"></span>
+          <img aria-label="zero-sized image" width="0" height="0">
+          among ordinary text.
+        </p>
+        <p id="nbsp-owner">
+          This&nbsp;pair keeps its non-breaking space while ordinary ASCII
+          whitespace still collapses normally and this thin&thinsp;space
+          remains.
+        </p>
+      </section>
+      <section id="typography-contracts" aria-hidden="true">
+        <p id="typography-plain-owner">
+          Typography office affinity 1234567890 demonstrates exact browser
+          measurement only when Canvas geometry is inaccurate.
+        </p>
+        <p id="typography-small-caps-owner" class="typography-small-caps">
+          Typography office affinity 1234567890 demonstrates exact browser
+          measurement only when Canvas geometry is inaccurate.
+        </p>
+        <p id="typography-oldstyle-owner" class="typography-oldstyle">
+          Typography office affinity 1234567890 demonstrates exact browser
+          measurement only when Canvas geometry is inaccurate.
+        </p>
+        <p id="typography-no-ligatures-owner" class="typography-no-ligatures">
+          Typography office affinity 1234567890 demonstrates exact browser
+          measurement only when Canvas geometry is inaccurate.
+        </p>
+        <p
+          id="typography-stretch-condensed-owner"
+          class="typography-stretch-condensed"
+        >
+          Typography office affinity 1234567890 demonstrates exact browser
+          measurement only when Canvas geometry is inaccurate.
+        </p>
+        <p id="typography-word-spacing-owner" class="typography-word-spacing">
+          Typography office affinity 1234567890 demonstrates exact browser
+          measurement only when Canvas geometry is inaccurate.
+        </p>
+        <p
+          id="typography-correctable-spacing-owner"
+          class="typography-correctable-spacing"
+        >
+          Typography office affinity 1234567890 demonstrates exact browser
+          measurement only when Canvas geometry is inaccurate.
+        </p>
+        <p id="typography-uppercase-owner" class="typography-uppercase">
+          Typography office affinity 1234567890 demonstrates exact browser
+          measurement only when Canvas geometry is inaccurate.
+        </p>
+      </section>
+    </main>
+    <script type="module" src="/index.ts"></script>
+  </body>
+</html>

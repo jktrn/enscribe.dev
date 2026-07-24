@@ -1,0 +1,90 @@
+prose-content {
+  [data-callout] {
+    --accent:         var(--muted-foreground);
+    --callout-border: var(--accent);
+    --callout-text:   light-dark(
+      oklch(from var(--accent) 0.48 calc(c * 1.05) h),
+      oklch(from var(--accent) 0.83 calc(c * 0.5) h)
+    );
+
+    position: relative;
+    padding-block: 0.75rem;
+    padding-inline: 1rem 0;
+    border-inline-start: 4px solid var(--callout-border);
+
+    > summary {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      list-style: none;
+      font-weight: var(--font-weight-medium);
+      color: var(--callout-text);
+
+      &::-webkit-details-marker {
+        display: none;
+      }
+
+      :is(strong, b) {
+        color: inherit;
+      }
+
+      svg {
+        flex-shrink: 0;
+        inline-size: 1.25rem;
+        block-size: 1.25rem;
+      }
+
+      svg:first-child {
+        margin-inline-end: 0.5rem;
+      }
+
+      svg:last-child {
+        margin-inline-start: auto;
+        transition: rotate 0.2s ease;
+      }
+
+      > span {
+        margin-inline-end: 0.5rem;
+
+        > span {
+          font-weight: var(--font-weight-normal);
+          opacity: 0.7;
+        }
+      }
+    }
+
+    &[open] > summary {
+      margin-block-end: 0.75rem;
+
+      svg:last-child {
+        rotate: 180deg;
+      }
+    }
+
+    > :last-child {
+      margin-block-end: 0;
+    }
+  }
+
+  [data-callout="note"]        { --accent: #0090ff; }
+  [data-callout="tip"]         { --accent: #30a46c; }
+  [data-callout="warning"]     { --accent: #ffc53d; }
+  [data-callout="caution"]     { --accent: #e5484d; }
+  [data-callout="important"]   { --accent: #8e4ec6; }
+  [data-callout="definition"]  { --accent: #5b5bd6; }
+  [data-callout="notation"]    { --accent: #3e63dd; }
+  [data-callout="theorem"]     { --accent: #6e56cf; }
+  [data-callout="proposition"] { --accent: #ab4aba; }
+  [data-callout="lemma"]       { --accent: #d6409f; }
+  [data-callout="corollary"]   { --accent: #e93d82; }
+  [data-callout="axiom"]       { --accent: #e54666; }
+  [data-callout="conjecture"]  { --accent: #e54d2e; }
+  [data-callout="proof"]       { --accent: #00a2c7; }
+  [data-callout="recall"]      { --accent: #7ce2fe; }
+  [data-callout="remark"]      { --accent: #12a594; }
+  [data-callout="explanation"] { --accent: #29a383; }
+  [data-callout="intuition"]   { --accent: #ffe629; }
+  [data-callout="example"]     { --accent: #46a758; }
+  [data-callout="exercise"]    { --accent: #f76b15; }
+  [data-callout="solution"]    { --accent: #30a46c; }
+}

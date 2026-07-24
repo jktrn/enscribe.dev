@@ -1,0 +1,213 @@
+<script is:inline>
+  ;(() => {
+    const type = performance.getEntriesByType("navigation")[0]?.type
+    if (type && type !== "navigate" && !location.hash) return
+    const requestedUrl = `${location.pathname}${location.search}${location.hash}`
+    let pathname = location.pathname.replace(/\/+$/, "")
+    try {
+      pathname = decodeURIComponent(pathname)
+    } catch {}
+    const article = document.querySelector(
+      `article[data-embedded][data-url="${pathname}"]`,
+    )
+    if (!article) return
+
+    let target = article
+    if (location.hash) {
+      let id = location.hash.slice(1)
+      try {
+        id = decodeURIComponent(id)
+      } catch {}
+      target =
+        article.id === id
+          ? article
+          : (article.querySelector(`[id="${CSS.escape(id)}"]`) ?? article)
+    }
+    const scrollToTarget = () => {
+      target.scrollIntoView({ behavior: "instant" })
+      history.replaceState(history.state, "", requestedUrl)
+    }
+
+    scrollToTarget()
+    const correctNativeFragmentScroll = () =>
+      requestAnimationFrame(scrollToTarget)
+    if (document.readyState === "complete") correctNativeFragmentScroll()
+    else addEventListener("load", correctNativeFragmentScroll, { once: true })
+  })()
+</script>
+
+<script>
+  import { hashId, normalizePath } from "@/lib/utils"
+
+  const hashTarget = (hash: string) => {
+    try {
+      return document.getElementById(hashId(hash))
+    } catch {
+      return null
+    }
+  }
+
+  const hashTargetWithin = (root: Element, hash: string) => {
+    try {
+      const id = hashId(hash)
+      if (root.id === id) return root
+      return root.querySelector(`[id="${CSS.escape(id)}"]`)
+    } catch {
+      return null
+    }
+  }
+
+  let teardown: (() => void) | undefined
+
+  const setup = () => {
+    teardown?.()
+    teardown = undefined
+
+    const articles = [
+      ...document.querySelectorAll<HTMLElement>("article[data-url]"),
+    ]
+    if (articles.length === 0) return
+
+    const controller = new AbortController()
+    const { signal } = controller
+    teardown = () => controller.abort()
+
+    const list = document.querySelector("page-nav nav > ul > li > ul")
+    const parentLink = list?.querySelector("a")
+    let crumb = list?.querySelector<HTMLElement>('li[data-depth="1"]')
+    if (list && !crumb) {
+      const proto = list.querySelector("li")
+      if (proto) {
+        crumb = proto.cloneNode(true) as HTMLElement
+        crumb.dataset.depth = "1"
+        crumb.hidden = true
+        crumb.querySelector("a")?.removeAttribute("aria-current")
+        list.append(crumb)
+      }
+    }
+    const crumbLink = crumb?.querySelector("a")
+
+    const localTarget = (link: HTMLAnchorElement) => {
+      if (link.getAttribute("href")?.startsWith("#")) {
+        const article = link.dataset.articleUrl
+          ? articles.find(
+              (article) => article.dataset.url === link.dataset.articleUrl,
+            )
+          : link.closest("article[data-url]")
+        return article
+          ? (hashTargetWithin(article, link.hash) ?? hashTarget(link.hash))
+          : hashTarget(link.hash)
+      }
+      if (link.origin !== location.origin || link.search) return null
+      const article = articles.find(
+        (article) => article.dataset.url === normalizePath(link.pathname),
+      )
+      if (!article) return null
+      return link.hash
+        ? (hashTargetWithin(article, link.hash) ?? article)
+        : article
+    }
+
+    const syncCrumb = (article: HTMLElement) => {
+      if (!crumb || !crumbLink || !parentLink) return
+      if (article === articles[0]) {
+        crumb.hidden = true
+        crumbLink.removeAttribute("aria-current")
+        parentLink.setAttribute("aria-current", "page")
+      } else {
+        crumb.hidden = false
+        crumbLink.href = article.dataset.url ?? ""
+        crumbLink.textContent =
+          article.querySelector("header h1")?.textContent ?? ""
+        crumbLink.setAttribute("aria-current", "page")
+        parentLink.removeAttribute("aria-current")
+      }
+    }
+
+    const treeLinks = [
+      ...document.querySelectorAll<HTMLAnchorElement>("sidebar-tree a[href]"),
+    ].map((link) => [normalizePath(link.pathname), link] as const)
+
+    const syncTree = (url: string) => {
+      for (const [href, link] of treeLinks) {
+        if (href === url) link.setAttribute("aria-current", "page")
+        else link.removeAttribute("aria-current")
+      }
+    }
+
+    const sync = (article: HTMLElement, hash = "") => {
+      const { url, title } = article.dataset
+      if (!url) return
+      history.replaceState(history.state, "", url + hash)
+      if (title) document.title = title
+      syncCrumb(article)
+      if (treeLinks.length > 0) syncTree(url)
+    }
+
+    document.addEventListener(
+      "click",
+      (event) => {
+        if (
+          event.defaultPrevented ||
+          event.metaKey ||
+          event.ctrlKey ||
+          event.shiftKey ||
+          event.altKey
+        )
+          return
+        const link = (event.target as Element).closest?.("a[href]")
+        if (
+          !(link instanceof HTMLAnchorElement) ||
+          link.target ||
+          link.hasAttribute("download")
+        )
+          return
+        const target = localTarget(link)
+        const article = target?.closest<HTMLElement>("article[data-url]")
+        if (!target || !article) return
+        event.preventDefault()
+        if (target === articles[0]) {
+          scrollTo({ top: 0 })
+        } else {
+          target.scrollIntoView()
+        }
+        sync(article, target === article ? "" : link.hash)
+      },
+      { capture: true, signal },
+    )
+
+    const atBottom = () => {
+      const max = document.documentElement.scrollHeight - innerHeight
+      return max > 0 && scrollY >= max - 2
+    }
+
+    const currentArticle = () => {
+      if (atBottom()) return articles[articles.length - 1]
+      const band = innerHeight * 0.2
+      return articles.find((article) => {
+        const rect = article.getBoundingClientRect()
+        return rect.top <= band && rect.bottom > band
+      })
+    }
+
+    const update = () => {
+      const current = currentArticle()
+      if (
+        !current ||
+        current.dataset.url === normalizePath(location.pathname)
+      ) {
+        return
+      }
+      const hash =
+        location.hash && hashTargetWithin(current, location.hash)
+          ? location.hash
+          : ""
+      sync(current, hash)
+    }
+
+    addEventListener("scroll", update, { passive: true, signal })
+    update()
+  }
+
+  document.addEventListener("astro:page-load", setup)
+</script>

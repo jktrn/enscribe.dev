@@ -1,0 +1,234 @@
+---
+import SearchIcon from "@/assets/icons/search.svg"
+---
+
+<dialog id="search-dialog" aria-label="Search" transition:persist="search">
+  <search>
+    <form role="search">
+      <SearchIcon aria-hidden="true" />
+      <input
+        type="search"
+        placeholder="Search…"
+        aria-label="Search query"
+        autocomplete="off"
+      >
+    </form>
+    <search-results>
+      <p data-hint>Type to search.</p>
+      <ul></ul>
+    </search-results>
+  </search>
+</dialog>
+
+<style>
+  dialog {
+    inline-size: min(38rem, calc(100vw - 2 * var(--grid-gutter)));
+    margin-inline: auto;
+    margin-block-start: 12svh;
+    padding: 0;
+    background-color: var(--background);
+    color: var(--foreground);
+    border: 2px solid var(--border);
+
+    &::backdrop {
+      background-color: color-mix(in oklab, var(--background) 60%, transparent);
+      backdrop-filter: blur(var(--blur-sm));
+    }
+  }
+
+  form {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2xs);
+    padding-inline: var(--space-s);
+
+    svg {
+      flex-shrink: 0;
+      inline-size: 1em;
+      block-size: 1em;
+      color: var(--muted-foreground);
+    }
+
+    input {
+      flex: 1;
+      min-width: 0;
+      padding-block: var(--space-xs);
+      background: transparent;
+      font-size: var(--step-0);
+      color: var(--foreground);
+
+      &:focus-visible {
+        outline: none;
+      }
+
+      &::-webkit-search-cancel-button {
+        display: none;
+      }
+    }
+  }
+
+  search-results {
+    display: block;
+    border-block-start: 2px solid var(--border);
+
+    [data-hint] {
+      padding: var(--space-xs) var(--space-s);
+      font-size: var(--step--1);
+      color: var(--muted-foreground);
+
+      &[hidden] {
+        display: none;
+      }
+    }
+
+    ul {
+      max-block-size: min(24rem, 50svh);
+      overflow-y: auto;
+      overscroll-behavior: contain;
+
+      li + li {
+        border-block-start: 2px solid
+          color-mix(in oklab, var(--border) 50%, transparent);
+      }
+
+      a {
+        display: block;
+        padding: var(--space-2xs) var(--space-s);
+
+        &:hover,
+        &:focus-visible {
+          background-color: color-mix(in oklab, var(--muted) 35%, transparent);
+          outline: none;
+        }
+
+        strong {
+          display: block;
+          font-weight: var(--font-weight-medium);
+          color: var(--foreground);
+        }
+
+        p {
+          margin-block-start: 0.1em;
+          font-size: var(--step--1);
+          color: var(--muted-foreground);
+
+          :global(mark) {
+            background-color: color-mix(
+              in oklab,
+              var(--foreground) 15%,
+              transparent
+            );
+            color: var(--foreground);
+          }
+        }
+      }
+    }
+  }
+</style>
+
+<script>
+  type PagefindResult = {
+    data: () => Promise<{
+      url: string
+      excerpt: string
+      meta: { title?: string }
+    }>
+  }
+  type Pagefind = {
+    init?: () => void
+    debouncedSearch: (
+      query: string,
+    ) => Promise<{ results: PagefindResult[] } | null>
+  }
+
+  const dialog = document.querySelector<HTMLDialogElement>("#search-dialog")
+  const input = dialog?.querySelector("input")
+  const list = dialog?.querySelector("ul")
+  const hint = dialog?.querySelector<HTMLElement>("[data-hint]")
+
+  let pagefind: Pagefind | null | undefined
+
+  const setHint = (text: string) => {
+    if (!hint || !list) return
+    hint.textContent = text
+    hint.hidden = !text
+    if (text) list.innerHTML = ""
+  }
+
+  const load = async () => {
+    if (pagefind !== undefined) return
+    try {
+      const url = new URL("/pagefind/pagefind.js", location.origin).href
+      pagefind = (await import(/* @vite-ignore */ url)) as Pagefind
+      pagefind.init?.()
+    } catch {
+      pagefind = null
+    }
+  }
+
+  const escapeHtml = (value: string) =>
+    value.replaceAll("&", "&amp;").replaceAll("<", "&lt;")
+
+  const search = async (query: string) => {
+    if (!query.trim()) return setHint("Type to search.")
+    if (pagefind === undefined) await load()
+    if (!pagefind) {
+      return setHint("No search index found. Build the site first.")
+    }
+    const response = await pagefind.debouncedSearch(query)
+    if (!response || !list || !hint) return
+    const pages = await Promise.all(
+      response.results.slice(0, 8).map((result) => result.data()),
+    )
+    if (pages.length === 0) return setHint(`No results for “${query}”.`)
+    hint.hidden = true
+    list.innerHTML = pages
+      .map(
+        (page) =>
+          `<li><a href="${page.url}"><strong>${escapeHtml(
+            page.meta.title ?? page.url,
+          )}</strong><p>${page.excerpt}</p></a></li>`,
+      )
+      .join("")
+  }
+
+  const open = () => {
+    if (!dialog || dialog.open) return
+    dialog.showModal()
+    load()
+    input?.select()
+  }
+
+  document.addEventListener("click", (event) => {
+    const target = event.target as Element
+    if (target.closest?.("#search-trigger")) open()
+    if (target.closest?.("#search-dialog a")) dialog?.close()
+    if (event.target === dialog) dialog.close()
+  })
+
+  document.addEventListener("keydown", (event) => {
+    if ((event.metaKey || event.ctrlKey) && event.key === "k") {
+      event.preventDefault()
+      if (dialog?.open) dialog.close()
+      else open()
+      return
+    }
+    if (!dialog?.open) return
+    if (event.key !== "ArrowDown" && event.key !== "ArrowUp") return
+    const focusable = [
+      input,
+      ...(list?.querySelectorAll<HTMLAnchorElement>("a") ?? []),
+    ].filter((el): el is HTMLInputElement | HTMLAnchorElement => !!el)
+    const current = focusable.indexOf(
+      document.activeElement as HTMLInputElement | HTMLAnchorElement,
+    )
+    const next =
+      event.key === "ArrowDown"
+        ? Math.min(current + 1, focusable.length - 1)
+        : Math.max(current - 1, 0)
+    focusable[next]?.focus()
+    event.preventDefault()
+  })
+
+  input?.addEventListener("input", () => search(input.value))
+</script>

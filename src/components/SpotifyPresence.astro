@@ -1,0 +1,466 @@
+---
+import "@/styles/marquee.css"
+---
+
+<spotify-presence>
+  <spotify-spinner role="status" aria-label="Loading"></spotify-spinner>
+</spotify-presence>
+
+<style is:global>
+  spotify-presence {
+    container-type: inline-size;
+    position: absolute;
+    inset: 0;
+    --spotify-pad: clamp(1rem, 6cqw, 3.5rem);
+
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2xs);
+    padding: var(--spotify-pad);
+
+    spotify-art {
+      flex: 1;
+      min-height: 0;
+      margin-block-end: calc(var(--spotify-pad) - var(--space-2xs));
+      position: relative;
+      align-self: flex-start;
+      aspect-ratio: 1;
+      border: 2px solid var(--border);
+
+      &::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image: var(--spotify-art-image, none);
+        background-size: cover;
+        background-position: center;
+        filter: grayscale(1) sepia(0.3);
+        opacity: 0;
+        transition: opacity 0.4s ease;
+      }
+
+      &[data-loaded]::before {
+        opacity: 1;
+      }
+    }
+
+    spotify-meta {
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      min-width: 0;
+    }
+
+    spotify-status {
+      display: block;
+      margin-block-end: var(--space-3xs);
+      color: var(--primary);
+      font-size: clamp(0.75rem, 4cqw, 1.0625rem);
+    }
+
+    spotify-title {
+      display: flex;
+      margin-inline-end: max(var(--space-l), 30cqw);
+      color: var(--foreground);
+      font-size: clamp(1rem, 6.5cqw, 1.75rem);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.3;
+      white-space: nowrap;
+    }
+
+    spotify-line {
+      display: flex;
+      margin-inline-end: max(var(--space-l), 30cqw);
+      color: var(--muted-foreground);
+      font-size: clamp(0.75rem, 4cqw, 1.0625rem);
+      white-space: nowrap;
+
+      > span:not([data-marquee-window]) {
+        opacity: 0.6;
+      }
+    }
+
+    span[data-marquee-dim] {
+      opacity: 0.6;
+    }
+
+    spotify-lyric {
+      display: block;
+      overflow: hidden;
+      margin-block-start: var(--space-3xs);
+      color: var(--muted-foreground);
+      font-size: clamp(0.75rem, 4cqw, 1.0625rem);
+      font-style: italic;
+      font-synthesis-style: none;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    spotify-progress {
+      display: block;
+      flex-shrink: 0;
+      margin-inline-end: max(
+        0px,
+        calc(var(--space-2xs) + 3rem - var(--spotify-pad))
+      );
+
+      spotify-track {
+        display: block;
+        height: 2px;
+        overflow: hidden;
+        background-color: var(--border);
+      }
+
+      spotify-bar {
+        display: block;
+        height: 100%;
+        background-color: var(--primary);
+      }
+
+      spotify-times {
+        display: flex;
+        justify-content: space-between;
+        margin-block-start: var(--space-3xs);
+        color: var(--muted-foreground);
+        font-size: clamp(0.75rem, 4cqw, 1.0625rem);
+        font-variant-numeric: oldstyle-nums tabular-nums;
+        line-height: 1;
+      }
+    }
+
+    spotify-empty {
+      display: flex;
+      flex: 1;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted-foreground);
+      font-size: var(--step--1);
+      text-align: center;
+    }
+
+    spotify-spinner {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      &::after {
+        content: "";
+        inline-size: 1.5rem;
+        block-size: 1.5rem;
+        border: 2px solid var(--border);
+        border-block-start-color: var(--primary);
+        border-radius: var(--radius-full);
+        animation: spotify-spin 0.8s linear infinite;
+      }
+    }
+
+    > * {
+      animation: spotify-fade-in 0.4s ease;
+    }
+
+    a[data-action] {
+      position: absolute;
+      inset-block-end: 0;
+      inset-inline-end: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin: var(--space-2xs);
+      padding: 0.75rem;
+      border-radius: var(--radius-full);
+      background-color: color-mix(in oklab, var(--border) 50%, transparent);
+      color: var(--primary);
+      transition: box-shadow 0.3s ease;
+
+      &[hidden] {
+        display: none;
+      }
+
+      &:hover,
+      &:focus-visible {
+        box-shadow: 0 0 0 2px var(--ring);
+      }
+
+      svg {
+        width: 1rem;
+        height: 1rem;
+        transition: transform 0.3s ease;
+      }
+
+      &:hover svg {
+        transform: rotate(12deg);
+      }
+    }
+  }
+
+  @keyframes spotify-spin {
+    to {
+      rotate: 360deg;
+    }
+  }
+
+  @keyframes spotify-fade-in {
+    from {
+      opacity: 0;
+    }
+  }
+</style>
+
+<script>
+  import { applyMarquee, createMarqueeText } from "@/lib/marquee"
+  import { readTileCache, writeTileCache } from "@/lib/tile-cache"
+
+  const SSE_URL = "https://jason-you-owe-me-money.es3n1n.eu/v1/spotify/stream"
+
+  interface Track {
+    artist: string
+    title: string
+    url: string
+    album: { name: string; images: { url: string }[]; release_date?: string }
+    duration_ms: number
+  }
+
+  interface Playback {
+    is_playing: boolean
+    progress_ms: number
+    track: Track
+  }
+
+  interface LyricLine {
+    start_time_ms: number
+    words: string
+  }
+
+  const formatMs = (ms: number): string => {
+    const totalSeconds = Math.floor(ms / 1000)
+    return `${Math.floor(totalSeconds / 60)}:${(totalSeconds % 60).toString().padStart(2, "0")}`
+  }
+
+  class SpotifyPresence extends HTMLElement {
+    playback: Playback | null = null
+    lyrics: LyricLine[] = []
+    baseProgressMs = 0
+    baseTimestampMs = 0
+    eventSource: EventSource | null = null
+    resizeObserver: ResizeObserver | null = null
+    rafId = 0
+    marqueeFrameId = 0
+    reconnectId = 0
+
+    connectedCallback() {
+      const cached = readTileCache<{
+        playback: Playback
+        lyrics: LyricLine[]
+        progressMs: number
+        at: number
+      }>("spotify")
+      if (cached) {
+        this.playback = cached.playback
+        this.lyrics = cached.lyrics
+        this.baseProgressMs = cached.playback.is_playing
+          ? Math.min(
+              cached.progressMs + (Date.now() - cached.at),
+              cached.playback.track.duration_ms,
+            )
+          : cached.progressMs
+        this.baseTimestampMs = Date.now()
+        this.render({ fade: false })
+      }
+
+      this.connect()
+      this.resizeObserver = new ResizeObserver(() => this.refreshMarquees())
+      this.resizeObserver.observe(this)
+    }
+
+    saveCache() {
+      if (!this.playback) return
+      writeTileCache("spotify", {
+        playback: this.playback,
+        lyrics: this.lyrics,
+        progressMs: this.progressMs,
+        at: Date.now(),
+      })
+    }
+
+    disconnectedCallback() {
+      this.eventSource?.close()
+      this.resizeObserver?.disconnect()
+      cancelAnimationFrame(this.rafId)
+      cancelAnimationFrame(this.marqueeFrameId)
+      clearTimeout(this.reconnectId)
+    }
+
+    refreshMarquees() {
+      cancelAnimationFrame(this.marqueeFrameId)
+      const lines = [
+        ...this.querySelectorAll<HTMLElement>("spotify-title, spotify-line"),
+      ]
+      this.marqueeFrameId = requestAnimationFrame(() => {
+        for (const line of lines) applyMarquee(line)
+        this.marqueeFrameId = 0
+      })
+    }
+
+    connect() {
+      const es = new EventSource(SSE_URL)
+      this.eventSource = es
+
+      es.onmessage = (event) => {
+        const data = JSON.parse(event.data)
+        if (data.event_type === "keepalive") return
+
+        if (data.event_type === "no_playback") {
+          if (this.playback?.is_playing) {
+            this.playback.is_playing = false
+            this.saveCache()
+            this.render()
+          }
+          return
+        }
+
+        if (data.playback) {
+          const previous = this.playback
+          this.playback = data.playback as Playback
+          this.baseProgressMs = this.playback.progress_ms
+          this.baseTimestampMs = Date.now()
+          if (data.lyrics !== undefined) {
+            this.lyrics = (data.lyrics?.lines ?? []).filter(
+              (line: LyricLine) => line.words.trim() !== "",
+            )
+          }
+          const sameTrack =
+            previous?.track.url === this.playback.track.url &&
+            previous.is_playing === this.playback.is_playing
+          this.saveCache()
+          if (!sameTrack) this.render()
+        }
+      }
+
+      es.onerror = () => {
+        es.close()
+        this.reconnectId = window.setTimeout(() => this.connect(), 5000)
+      }
+    }
+
+    get progressMs() {
+      if (!this.playback) return 0
+      if (!this.playback.is_playing) return this.baseProgressMs
+      return Math.min(
+        this.baseProgressMs + (Date.now() - this.baseTimestampMs),
+        this.playback.track.duration_ms,
+      )
+    }
+
+    get currentLyric(): string | null {
+      const progress = this.progressMs
+      for (let i = this.lyrics.length - 1; i >= 0; i--) {
+        if (progress >= this.lyrics[i].start_time_ms)
+          return this.lyrics[i].words
+      }
+      return null
+    }
+
+    render({ fade = true } = {}) {
+      cancelAnimationFrame(this.rafId)
+
+      const playback = this.playback
+      if (!playback) {
+        const empty = document.createElement("spotify-empty")
+        empty.textContent = "No music data available"
+        this.replaceChildren(empty)
+        return
+      }
+
+      const { track } = playback
+
+      const art = document.createElement("spotify-art")
+      const image = track.album.images[0]?.url
+      if (image && !fade) {
+        art.style.setProperty("--spotify-art-image", `url(${image})`)
+        art.setAttribute("data-loaded", "")
+      } else if (image) {
+        const loader = new Image()
+        loader.src = image
+        loader
+          .decode()
+          .catch(() => {})
+          .then(() => {
+            art.style.setProperty("--spotify-art-image", `url(${image})`)
+            art.setAttribute("data-loaded", "")
+          })
+      }
+      art.setAttribute("role", "img")
+      art.setAttribute("aria-label", "Album art")
+
+      const meta = document.createElement("spotify-meta")
+      if (!playback.is_playing) {
+        const status = document.createElement("spotify-status")
+        status.textContent = "Last played..."
+        meta.append(status)
+      }
+      const title = createMarqueeText("spotify-title", track.title)
+      const artist = createMarqueeText("spotify-line", track.artist, "by")
+      const year = track.album.release_date?.slice(0, 4)
+      const album = createMarqueeText(
+        "spotify-line",
+        track.album.name,
+        "on",
+        year ? ` (${year})` : "",
+      )
+      meta.append(title, artist, album)
+
+      const lyric = document.createElement("spotify-lyric")
+      const progress = document.createElement("spotify-progress")
+      const bar = document.createElement("spotify-bar")
+      const elapsed = document.createElement("span")
+      const total = document.createElement("span")
+
+      if (playback.is_playing) {
+        meta.append(lyric)
+
+        const trackEl = document.createElement("spotify-track")
+        trackEl.appendChild(bar)
+        const times = document.createElement("spotify-times")
+        total.textContent = formatMs(track.duration_ms)
+        times.append(elapsed, total)
+        progress.append(trackEl, times)
+      }
+
+      const link = document.createElement("a")
+      link.setAttribute("data-action", "")
+      link.href = track.url
+      link.target = "_blank"
+      link.rel = "noopener noreferrer"
+      link.title = "View on Spotify"
+      link.setAttribute("aria-label", "View on Spotify")
+      link.innerHTML =
+        '<svg viewBox="0 0 256 256" aria-hidden="true"><path fill="currentColor" d="M200 64v104a12 12 0 0 1-24 0V93L72.49 196.49a12 12 0 0 1-17-17L159 76H88a12 12 0 0 1 0-24h100a12 12 0 0 1 12 12"/></svg>'
+
+      this.replaceChildren(
+        art,
+        meta,
+        ...(playback.is_playing ? [progress] : []),
+        link,
+      )
+
+      this.refreshMarquees()
+
+      if (playback.is_playing) {
+        const tick = () => {
+          const progressMs = this.progressMs
+          bar.style.width = `${Math.min((progressMs / track.duration_ms) * 100, 100)}%`
+          elapsed.textContent = formatMs(progressMs)
+          const line = this.currentLyric
+          lyric.textContent = line ?? ""
+          lyric.hidden = !line
+          this.rafId = requestAnimationFrame(tick)
+        }
+        tick()
+      }
+    }
+  }
+
+  customElements.define("spotify-presence", SpotifyPresence)
+</script>
