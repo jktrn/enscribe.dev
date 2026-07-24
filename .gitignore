@@ -11,8 +11,6 @@ pnpm-debug.log*
 .env.production
 .DS_Store
 .idea/
-.vercel/
-
 dist/pagefind/
 
 public/favicons/
