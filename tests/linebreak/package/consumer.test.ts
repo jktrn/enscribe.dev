@@ -27,7 +27,7 @@ interface PackedPackageManifest {
   }
   license?: string
   name?: string
-  publishConfig?: { access?: string }
+  private?: boolean
   version?: string
 }
 
@@ -68,7 +68,6 @@ test("the packed package works for Node, TypeScript, and browser consumers", asy
     const entries = run("tar", ["-tf", tarball]).trim().split("\n").sort()
     expect(entries).toEqual(
       [
-        "package/CHANGELOG.md",
         "package/LICENSE",
         "package/README.md",
         "package/dist/index.d.ts",
@@ -90,7 +89,7 @@ test("the packed package works for Node, TypeScript, and browser consumers", asy
       name: "@enscribe/linebreak",
       version: "0.1.0",
       license: "MIT",
-      publishConfig: { access: "public" },
+      private: true,
       dependencies: {
         "@chenglou/pretext": "0.0.8",
         hyphen: "1.14.1",

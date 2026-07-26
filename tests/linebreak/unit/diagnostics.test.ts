@@ -178,5 +178,5 @@ test("the manifest declares no publish surface", () => {
   expect(manifest.private).toBe(true)
   expect(manifest).not.toHaveProperty("publishConfig")
   expect(manifest).not.toHaveProperty("keywords")
-  expect(manifest).not.toHaveProperty("files")
+  expect(manifest.files).toEqual(["dist"])
 })
