@@ -6,8 +6,7 @@ import Twitter from "@/assets/icons/twitter.svg"
 
 export const SITE = {
   title: "enscribe",
-  description:
-    "A design engineer based in Los Angeles.",
+  description: "A design engineer based in Los Angeles.",
   locale: "en-US",
   dir: "ltr",
   defaultPageImage: "/static/twitter-card.png",

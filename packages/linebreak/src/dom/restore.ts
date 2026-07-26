@@ -1,16 +1,23 @@
-import { preserveImageAttributes } from "./render"
+import { preserveImageAttributes, TYPESET_ATTRIBUTE } from "./render"
 
-export const restoreAuthoredContent = (
+export type AuthoredContent = DocumentFragment
+
+export const captureAuthored = (element: HTMLElement): AuthoredContent => {
+  const fragment = element.ownerDocument.createDocumentFragment()
+  for (const child of element.childNodes) {
+    fragment.appendChild(child.cloneNode(true))
+  }
+  return fragment
+}
+
+export const restoreAuthored = (
   element: HTMLElement,
-  original: HTMLElement,
+  authored: AuthoredContent,
   preservedImageAttributes: readonly string[],
 ) => {
-  const restored = document.createDocumentFragment()
-  for (const node of original.childNodes) {
-    restored.appendChild(node.cloneNode(true))
-  }
+  if (!element.hasAttribute(TYPESET_ATTRIBUTE)) return
+  const restored = authored.cloneNode(true) as DocumentFragment
   preserveImageAttributes(element, restored, preservedImageAttributes)
   element.replaceChildren(restored)
-  delete element.dataset.kpJustified
-  delete element.dataset.kpLines
+  element.removeAttribute(TYPESET_ATTRIBUTE)
 }

@@ -18,6 +18,24 @@ describe("content layout safety", () => {
     expect(offenders).toEqual([])
   })
 
+  test("desktop pages without a table of contents do not reserve its rail", async () => {
+    const layout = await readFile("src/layouts/Layout.astro", "utf8")
+
+    expect(layout).toMatch(
+      /page-grid:not\(\[data-toc\]\) page-content:not\(\[data-wide\]\)\s*\{\s*grid-column:\s*3\s*\/\s*13;\s*max-inline-size:\s*var\(--measure\);/,
+    )
+  })
+
+  test("table-of-contents observation starts below the anchor scroll inset", async () => {
+    const toc = await readFile("src/components/TableOfContents.astro", "utf8")
+
+    expect(toc).toContain(
+      "getComputedStyle(document.documentElement).scrollPaddingBlockStart",
+    )
+    expect(toc).toContain("getComputedStyle(target).scrollMarginBlockStart")
+    expect(toc).toContain("rootMargin: `${-topInset}px 0px 0px`,")
+  })
+
   test("metadata separators can target dates rendered by a child component", async () => {
     const metadataSelectors = [
       {

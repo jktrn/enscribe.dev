@@ -126,7 +126,6 @@ const { mobile = false } = Astro.props
     captureReadingAnchor,
     restoreReadingAnchor,
   } from "@/lib/typography/scroll-anchor"
-  import { discoverTypesetContent } from "@/lib/typography/typeset-content"
 
   const updateReaderButton = () => {
     const enabled = document.documentElement.dataset.readerMode !== undefined
@@ -146,7 +145,7 @@ const { mobile = false } = Astro.props
 
     const root = document.documentElement
     const enabled = root.dataset.readerMode === undefined
-    const anchor = captureReadingAnchor(discoverTypesetContent())
+    const anchor = captureReadingAnchor()
     if (enabled) root.dataset.readerMode = ""
     else delete root.dataset.readerMode
     try {

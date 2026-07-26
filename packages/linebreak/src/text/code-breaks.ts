@@ -4,6 +4,7 @@ const graphemeSegmenter = new Intl.Segmenter(undefined, {
 
 const separatorPattern = /[./\\,;:]/u
 const operatorPattern = /[-=+*%<>!&|?~^]/u
+
 const identifierPattern = /[\p{L}\p{N}$]/u
 const lowercaseOrDigitPattern = /[\p{Ll}\p{N}]/u
 const uppercasePattern = /\p{Lu}/u
@@ -14,16 +15,16 @@ const codeBreakPenalty = {
   closingDelimiter: 450,
   operator: 550,
   wordSeparator: 750,
-  identifierBoundary: 1_100,
-  letterNumberBoundary: 1_400,
-  emergency: 3_000,
+  identifierBoundary: 850,
+  letterNumberBoundary: 900,
+  emergency: 950,
 } as const
 
 export const codeBreakOffsets = (text: string) => {
   const graphemes = [...graphemeSegmenter.segment(text)]
   const penalties = new Map<number, number>()
   const add = (offset: number, penalty: number) => {
-    if (offset <= 0 || offset > text.length) return
+    if (offset <= 0 || offset >= text.length) return
     const current = penalties.get(offset)
     if (current === undefined || penalty < current) {
       penalties.set(offset, penalty)
@@ -64,6 +65,7 @@ export const codeBreakOffsets = (text: string) => {
 
     const camelCaseBoundary =
       lowercaseOrDigitPattern.test(before) && uppercasePattern.test(after)
+
     const acronymBoundary =
       uppercasePattern.test(previous) &&
       uppercasePattern.test(before) &&

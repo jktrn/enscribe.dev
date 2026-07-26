@@ -1,86 +1,111 @@
-import { OBJECT_REPLACEMENT, SOFT_HYPHEN } from "../text/markers"
-import type { SourceRange } from "../types"
-import { cssPixels, type StyleReader } from "./styles"
+import type { Diagnostic } from "../diagnostics"
+import { policy } from "../policy"
+import { cssPixels, type StyleReader } from "./style"
 
-const maximumParagraphCharacters = 3_000
+export const OBJECT_REPLACEMENT = "￼"
 
-type InlineItemBase = {
+export const LINE_SEPARATOR = "\n"
+
+export const hasVisibleText = (text: string) => /[^\t\n\f\r ]/u.test(text)
+
+export type SourceRange = { start: number; end: number }
+
+type RunBase = {
   text: string
   start: number
   end: number
   wrappers: HTMLElement[]
 }
 
-type TextItem = InlineItemBase & {
+export type TextRun = RunBase & {
   kind: "text"
   sourceElement: HTMLElement
-  allowsHyphenation: boolean
+
+  hyphenates: boolean
 }
 
-type BoxItem = InlineItemBase & {
-  kind: "box"
+export type AtomRun = RunBase & {
+  kind: "atom"
   sourceElement: Element
   text: typeof OBJECT_REPLACEMENT
 }
 
-type AnchorItem = InlineItemBase & {
+export type AnchorRun = RunBase & {
   kind: "anchor"
   sourceElement: HTMLElement
   text: ""
+
   affinity: "previous" | "next"
 }
 
-export type InlineItem = TextItem | BoxItem | AnchorItem
-
-type WrapperEdge = {
-  nodes: HTMLElement[]
-  width: number
+export type BreakRun = RunBase & {
+  kind: "break"
+  sourceElement: HTMLElement
+  forced: boolean
 }
+
+export type InlineRun = TextRun | AtomRun | AnchorRun | BreakRun
+
+type Edge = { nodes: HTMLElement[]; width: number }
 
 export type WrapperInfo = {
   start: number
   end: number
-  firstItem: number
-  lastItem: number
-  leading: WrapperEdge
-  trailing: WrapperEdge
+  firstRun: number
+  lastRun: number
+  leading: Edge
+  trailing: Edge
 }
 
 export type ExtractedBlock = {
   text: string
-  items: InlineItem[]
+  runs: InlineRun[]
+
   breakRestrictions: SourceRange[]
   wrappers: Map<HTMLElement, WrapperInfo>
 }
 
-type RawItemBase = {
-  wrappers: HTMLElement[]
-  noWrapOwner?: Element
-}
+export type ExtractResult =
+  | { ok: true; block: ExtractedBlock }
+  | { ok: false; diagnostic: Diagnostic }
 
-type RawTextItem = RawItemBase & {
+type RawBase = { wrappers: HTMLElement[]; noWrapOwner?: Element }
+type RawText = RawBase & {
   kind: "text"
   text: string
   sourceElement: HTMLElement
 }
-
-type RawBoxItem = RawItemBase & {
-  kind: "box"
+type RawAtom = RawBase & {
+  kind: "atom"
   text: typeof OBJECT_REPLACEMENT
   sourceElement: Element
 }
+type RawBreak = RawBase & {
+  kind: "break"
+  sourceElement: HTMLElement
+  forced: boolean
+}
+type Raw = RawText | RawAtom | RawBreak
 
-type RawItem = RawTextItem | RawBoxItem
+type Layout =
+  | "hidden"
+  | "contents"
+  | "inline"
+  | "atom"
+  | "break"
+  | "unsupported"
 
-const isCode = (element: HTMLElement) => element.localName === "code"
+const DECORATION = "[data-linebreak-decoration][aria-hidden='true']"
 
-type ElementLayout = "hidden" | "contents" | "inline" | "atom" | "unsupported"
-
-const elementLayout = (element: Element, display: string): ElementLayout => {
+const elementLayout = (element: Element, display: string): Layout => {
   if (display === "none") return "hidden"
-  if (element.matches("br, wbr")) return "unsupported"
+
+  if (element.matches("br, wbr")) return "break"
   if (element.hasAttribute("data-linebreak-atom")) return "atom"
-  if (element instanceof HTMLInputElement) return "unsupported"
+
+  if (element instanceof HTMLInputElement) {
+    return element.disabled ? "atom" : "unsupported"
+  }
   if (element instanceof HTMLImageElement) return "atom"
   if (
     display === "math" ||
@@ -97,10 +122,7 @@ const elementLayout = (element: Element, display: string): ElementLayout => {
   return "unsupported"
 }
 
-const hasInlineAdvance = (element: Element) =>
-  element.getBoundingClientRect().width > 0
-
-const elementWidth = (element: HTMLElement, styleOf: StyleReader) => {
+export const outerWidth = (element: Element, styleOf: StyleReader) => {
   const style = styleOf(element)
   if (style.display === "none") return 0
   return (
@@ -124,373 +146,484 @@ const inlineEdges = (style: CSSStyleDeclaration) => {
   }
 }
 
-const makeWrapperInfo = (items: InlineItem[], styleOf: StyleReader) => {
-  const ranges = new Map<HTMLElement, { firstItem: number; lastItem: number }>()
-  for (let itemIndex = 0; itemIndex < items.length; itemIndex += 1) {
-    for (const wrapper of items[itemIndex].wrappers) {
-      const range = ranges.get(wrapper)
-      if (range) range.lastItem = itemIndex
-      else ranges.set(wrapper, { firstItem: itemIndex, lastItem: itemIndex })
+const buildWrapperInfo = (runs: InlineRun[], styleOf: StyleReader) => {
+  const spans = new Map<HTMLElement, { firstRun: number; lastRun: number }>()
+  for (let index = 0; index < runs.length; index += 1) {
+    for (const wrapper of (runs[index] as InlineRun).wrappers) {
+      const span = spans.get(wrapper)
+      if (span) span.lastRun = index
+      else spans.set(wrapper, { firstRun: index, lastRun: index })
     }
   }
 
   const wrappers = new Map<HTMLElement, WrapperInfo>()
-  for (const [element, { firstItem, lastItem }] of ranges) {
+  for (const [element, { firstRun, lastRun }] of spans) {
     const edges = inlineEdges(styleOf(element))
-    const leadingNodes: HTMLElement[] = []
-    const trailingNodes: HTMLElement[] = []
+    const leading: HTMLElement[] = []
+    const trailing: HTMLElement[] = []
     for (const decoration of element.querySelectorAll<HTMLElement>(
-      ":scope > [data-linebreak-decoration][aria-hidden='true']",
+      `:scope > ${DECORATION}`,
     )) {
-      const width = elementWidth(decoration, styleOf)
+      const width = outerWidth(decoration, styleOf)
       if (decoration.dataset.linebreakDecorationPosition === "after") {
-        trailingNodes.push(decoration)
+        trailing.push(decoration)
         edges.trailing += width
       } else {
-        leadingNodes.push(decoration)
+        leading.push(decoration)
         edges.leading += width
       }
     }
     wrappers.set(element, {
-      start: items[firstItem].start,
-      end: items[lastItem].end,
-      firstItem,
-      lastItem,
-      leading: {
-        nodes: leadingNodes,
-        width: edges.leading,
-      },
-      trailing: {
-        nodes: trailingNodes,
-        width: edges.trailing,
-      },
+      start: (runs[firstRun] as InlineRun).start,
+      end: (runs[lastRun] as InlineRun).end,
+      firstRun,
+      lastRun,
+      leading: { nodes: leading, width: edges.leading },
+      trailing: { nodes: trailing, width: edges.trailing },
     })
   }
   return wrappers
 }
 
 type PendingSpace = {
-  firstSource: RawTextItem
-  anchors: Map<HTMLElement[], RawTextItem>
+  first: RawText
+  anchors: Map<HTMLElement[], RawText>
   hasWrappingContributor: boolean
 }
 
-type ActiveNoWrapRange = SourceRange & { owner: Element }
+type ActiveNoWrap = SourceRange & { owner: Element }
 
-const normalizeRawItems = (rawItems: RawItem[]) => {
-  const items: InlineItem[] = []
-  const breakRestrictions: SourceRange[] = []
-  const contentWrappers = new Set<HTMLElement>()
-  for (const raw of rawItems) {
-    if (raw.kind === "box" || /[^\t\n\f\r ]/u.test(raw.text)) {
-      for (const wrapper of raw.wrappers) contentWrappers.add(wrapper)
+class Collapser {
+  private text = ""
+  private readonly runs: InlineRun[] = []
+  private readonly restrictions: SourceRange[] = []
+  private readonly contentWrappers: Set<HTMLElement>
+  private noWrap: ActiveNoWrap | undefined
+  private pending: PendingSpace | undefined
+
+  constructor(raws: readonly Raw[]) {
+    this.contentWrappers = new Set()
+    for (const raw of raws) {
+      if (raw.kind !== "text" || hasVisibleText(raw.text)) {
+        for (const wrapper of raw.wrappers) this.contentWrappers.add(wrapper)
+      }
     }
   }
-  let activeNoWrapRange: ActiveNoWrapRange | undefined
-  let pendingSpace: PendingSpace | undefined
-  let text = ""
 
-  const addRestriction = (start: number, end: number) => {
+  static collapse(raws: readonly Raw[]) {
+    const collapser = new Collapser(raws)
+    for (const raw of raws) collapser.take(raw)
+    collapser.finish()
+    return {
+      text: collapser.text,
+      runs: collapser.runs,
+      breakRestrictions: collapser.restrictions,
+    }
+  }
+
+  private take(raw: Raw) {
+    if (raw.kind === "break") return this.takeBreak(raw)
+    if (raw.kind === "atom") return this.takeAtom(raw)
+    return this.takeText(raw)
+  }
+
+  private takeBreak(raw: RawBreak) {
+    if (raw.forced && this.pending) {
+      for (const from of this.pending.anchors.values()) {
+        this.appendAnchor(from, this.text.length, "previous")
+      }
+      this.pending = undefined
+    }
+    this.flushSpace()
+    this.closeNoWrap()
+
+    const start = this.text.length
+    if (raw.forced) this.text += LINE_SEPARATOR
+    this.runs.push({
+      kind: "break",
+      text: raw.forced ? LINE_SEPARATOR : "",
+      start,
+      end: this.text.length,
+      wrappers: raw.wrappers,
+      sourceElement: raw.sourceElement,
+      forced: raw.forced,
+    })
+  }
+
+  private takeAtom(raw: RawAtom) {
+    this.flushSpace()
+    const start = this.text.length
+    this.text += raw.text
+    this.noteNoWrap(raw.noWrapOwner, start, this.text.length, false)
+    this.runs.push({
+      kind: "atom",
+      text: raw.text,
+      start,
+      end: this.text.length,
+      wrappers: raw.wrappers,
+      sourceElement: raw.sourceElement,
+    })
+  }
+
+  private takeText(raw: RawText) {
+    let value = raw.text.replace(/[\t\n\f\r ]+/gu, " ")
+    if (value.startsWith(" ")) {
+      this.contributeSpace(raw)
+      value = value.slice(1)
+    }
+    if (!value) return
+
+    this.flushSpace()
+    if (value.endsWith(" ")) {
+      this.appendText(value.slice(0, -1), raw, raw.noWrapOwner)
+      this.contributeSpace(raw)
+    } else {
+      this.appendText(value, raw, raw.noWrapOwner)
+    }
+  }
+
+  private finish() {
+    if (this.pending) {
+      for (const from of this.pending.anchors.values()) {
+        this.appendAnchor(from, this.text.length, "previous")
+      }
+    }
+    this.closeNoWrap()
+  }
+
+  private addRestriction(start: number, end: number) {
     if (start >= end) return
-    const previous = breakRestrictions.at(-1)
+    const previous = this.restrictions.at(-1)
     if (previous && start <= previous.end) {
       previous.end = Math.max(previous.end, end)
     } else {
-      breakRestrictions.push({ start, end })
+      this.restrictions.push({ start, end })
     }
   }
 
-  const finishNoWrapRange = () => {
-    if (!activeNoWrapRange) return
-    addRestriction(activeNoWrapRange.start, activeNoWrapRange.end)
-    activeNoWrapRange = undefined
+  private closeNoWrap() {
+    if (!this.noWrap) return
+    this.addRestriction(this.noWrap.start, this.noWrap.end)
+    this.noWrap = undefined
   }
 
-  const recordNoWrapRange = (
+  private noteNoWrap(
     owner: Element | undefined,
     start: number,
     end: number,
-    includeEndBoundary: boolean,
-  ) => {
-    const restrictionEnd = includeEndBoundary ? end + 1 : end
-    if (activeNoWrapRange?.owner !== owner) {
-      finishNoWrapRange()
+    includeBoundary: boolean,
+  ) {
+    const restrictionEnd = includeBoundary ? end + 1 : end
+    if (this.noWrap?.owner !== owner) {
+      this.closeNoWrap()
       if (owner) {
-        activeNoWrapRange = { owner, start: start + 1, end: restrictionEnd }
+        this.noWrap = { owner, start: start + 1, end: restrictionEnd }
       }
       return
     }
-    if (activeNoWrapRange) activeNoWrapRange.end = restrictionEnd
+    if (this.noWrap) this.noWrap.end = restrictionEnd
   }
 
-  const appendText = (
+  private appendText(
     value: string,
-    source: RawTextItem,
+    from: RawText,
     owner: Element | undefined,
-    includeEndBoundary = false,
-  ) => {
+    includeBoundary = false,
+  ) {
     if (!value) return
-    const start = text.length
-    text += value
-    recordNoWrapRange(owner, start, text.length, includeEndBoundary)
+    const start = this.text.length
+    this.text += value
+    this.noteNoWrap(owner, start, this.text.length, includeBoundary)
 
-    const allowsHyphenation = source.noWrapOwner === undefined
-    const previous = items.at(-1)
+    const hyphenates = from.noWrapOwner === undefined
+    const previous = this.runs.at(-1)
     if (
       previous?.kind === "text" &&
-      previous.sourceElement === source.sourceElement &&
-      previous.wrappers === source.wrappers &&
-      previous.allowsHyphenation === allowsHyphenation
+      previous.sourceElement === from.sourceElement &&
+      previous.wrappers === from.wrappers &&
+      previous.hyphenates === hyphenates
     ) {
       previous.text += value
-      previous.end = text.length
-    } else {
-      items.push({
-        kind: "text",
-        text: value,
-        start,
-        end: text.length,
-        wrappers: source.wrappers,
-        sourceElement: source.sourceElement,
-        allowsHyphenation,
-      })
+      previous.end = this.text.length
+      return
     }
+    this.runs.push({
+      kind: "text",
+      text: value,
+      start,
+      end: this.text.length,
+      wrappers: from.wrappers,
+      sourceElement: from.sourceElement,
+      hyphenates,
+    })
   }
 
-  const appendAnchor = (
-    source: RawTextItem,
+  private appendAnchor(
+    from: RawText,
     offset: number,
-    affinity: AnchorItem["affinity"],
-  ) => {
-    items.push({
+    affinity: AnchorRun["affinity"],
+  ) {
+    this.runs.push({
       kind: "anchor",
       text: "",
       start: offset,
       end: offset,
-      wrappers: source.wrappers,
-      sourceElement: source.sourceElement,
+      wrappers: from.wrappers,
+      sourceElement: from.sourceElement,
       affinity,
     })
   }
 
-  const needsAnchor = (source: RawTextItem) =>
-    source.wrappers.some((wrapper) => !contentWrappers.has(wrapper))
+  private needsAnchor(from: RawText) {
+    return from.wrappers.some((wrapper) => !this.contentWrappers.has(wrapper))
+  }
 
-  const contributeSpace = (source: RawTextItem) => {
-    const anchor = needsAnchor(source)
-    if (pendingSpace) {
-      pendingSpace.hasWrappingContributor ||= source.noWrapOwner === undefined
-      if (anchor && !pendingSpace.anchors.has(source.wrappers)) {
-        pendingSpace.anchors.set(source.wrappers, source)
+  private contributeSpace(from: RawText) {
+    const anchor = this.needsAnchor(from)
+    if (this.pending) {
+      this.pending.hasWrappingContributor ||= from.noWrapOwner === undefined
+      if (anchor && !this.pending.anchors.has(from.wrappers)) {
+        this.pending.anchors.set(from.wrappers, from)
       }
-    } else {
-      pendingSpace = {
-        firstSource: source,
-        anchors: new Map(anchor ? [[source.wrappers, source]] : []),
-        hasWrappingContributor: source.noWrapOwner === undefined,
-      }
+      return
+    }
+    this.pending = {
+      first: from,
+      anchors: new Map(anchor ? [[from.wrappers, from]] : []),
+      hasWrappingContributor: from.noWrapOwner === undefined,
     }
   }
 
-  const flushSpace = () => {
-    if (!pendingSpace) return
-    const space = pendingSpace
-    pendingSpace = undefined
-    if (text.length === 0) {
-      for (const source of space.anchors.values()) {
-        appendAnchor(source, 0, "next")
+  private flushSpace() {
+    if (!this.pending) return
+    const space = this.pending
+    this.pending = undefined
+
+    if (this.text.length === 0 || this.text.endsWith(LINE_SEPARATOR)) {
+      for (const from of space.anchors.values()) {
+        this.appendAnchor(from, this.text.length, "next")
       }
       return
     }
 
-    const start = text.length
-    const firstAnchor = space.anchors.get(space.firstSource.wrappers)
-    if (firstAnchor) appendAnchor(firstAnchor, start, "next")
-    appendText(
+    const start = this.text.length
+    const firstAnchor = space.anchors.get(space.first.wrappers)
+    if (firstAnchor) this.appendAnchor(firstAnchor, start, "next")
+    this.appendText(
       " ",
-      space.firstSource,
-      space.hasWrappingContributor ? undefined : space.firstSource.noWrapOwner,
+      space.first,
+      space.hasWrappingContributor ? undefined : space.first.noWrapOwner,
       !space.hasWrappingContributor,
     )
-    const end = text.length
-    if (firstAnchor) appendAnchor(firstAnchor, end, "previous")
-    for (const source of space.anchors.values()) {
-      if (source === firstAnchor) continue
-      appendAnchor(source, end, "previous")
+    const end = this.text.length
+    if (firstAnchor) this.appendAnchor(firstAnchor, end, "previous")
+    for (const from of space.anchors.values()) {
+      if (from !== firstAnchor) this.appendAnchor(from, end, "previous")
     }
   }
-
-  for (const raw of rawItems) {
-    if (raw.kind === "box") {
-      flushSpace()
-      const start = text.length
-      text += raw.text
-      recordNoWrapRange(raw.noWrapOwner, start, text.length, false)
-      items.push({
-        kind: raw.kind,
-        text: raw.text,
-        start,
-        end: text.length,
-        wrappers: raw.wrappers,
-        sourceElement: raw.sourceElement,
-      })
-      continue
-    }
-
-    let value = raw.text.replace(/[\t\n\f\r ]+/gu, " ")
-    if (value.startsWith(" ")) {
-      contributeSpace(raw)
-      value = value.slice(1)
-    }
-    if (!value) continue
-
-    flushSpace()
-    if (value.endsWith(" ")) {
-      appendText(value.slice(0, -1), raw, raw.noWrapOwner)
-      contributeSpace(raw)
-    } else {
-      appendText(value, raw, raw.noWrapOwner)
-    }
-  }
-
-  if (pendingSpace) {
-    for (const source of pendingSpace.anchors.values()) {
-      appendAnchor(source, text.length, "previous")
-    }
-  }
-  finishNoWrapRange()
-  return { text, items, breakRestrictions }
 }
 
-export const extractBlock = (
-  block: HTMLElement,
-  styleOf: StyleReader = getComputedStyle,
-): ExtractedBlock | null => {
-  const rawItems: RawItem[] = []
+class RawCollector {
+  readonly raws: Raw[] = []
+  private rejected: Diagnostic | undefined
 
-  const visit = (
+  constructor(
+    private readonly block: HTMLElement,
+    private readonly styleOf: StyleReader,
+  ) {}
+
+  collect(): Diagnostic | null {
+    const style = this.styleOf(this.block)
+    const noWrapOwner = style.textWrapMode === "nowrap" ? this.block : undefined
+    const collapses = style.whiteSpaceCollapse === "collapse"
+
+    for (const child of this.block.childNodes) {
+      if (!this.visit(child, [], noWrapOwner, collapses)) {
+        return (
+          this.rejected ?? {
+            kind: "unsupported-element",
+            element: this.block,
+            node: this.block,
+            detail: "unsupported inline content",
+          }
+        )
+      }
+    }
+    return null
+  }
+
+  private reject(node: Element, detail: string) {
+    this.rejected ??= {
+      kind: "unsupported-element",
+      element: this.block,
+      node,
+      detail,
+    }
+    return false
+  }
+
+  private visitText(
     node: Node,
     wrappers: HTMLElement[],
     noWrapOwner: Element | undefined,
-    collapsesWhitespace: boolean,
-  ): boolean => {
+    collapses: boolean,
+  ) {
+    if (!node.textContent) return true
+    if (!collapses) {
+      return this.reject(
+        node.parentElement ?? this.block,
+        "white-space-collapse other than collapse",
+      )
+    }
+    this.raws.push({
+      kind: "text",
+      text: node.textContent,
+      wrappers,
+      sourceElement: node.parentElement ?? this.block,
+      noWrapOwner,
+    })
+    return true
+  }
+
+  private visit(
+    node: Node,
+    wrappers: HTMLElement[],
+    noWrapOwner: Element | undefined,
+    collapses: boolean,
+  ): boolean {
     if (node.nodeType === Node.TEXT_NODE) {
-      if (!node.textContent) return true
-      if (!collapsesWhitespace) return false
-      rawItems.push({
-        kind: "text",
-        text: node.textContent,
+      return this.visitText(node, wrappers, noWrapOwner, collapses)
+    }
+    if (node.nodeType !== Node.ELEMENT_NODE) return true
+
+    const element = node as Element
+    if (element.matches(DECORATION)) return true
+
+    const style = this.styleOf(element)
+    const layout = elementLayout(element, style.display)
+    if (layout === "hidden") return true
+    if (layout === "unsupported") {
+      return this.reject(element, `display: ${style.display}`)
+    }
+
+    const nextNoWrap =
+      style.textWrapMode === "nowrap" ? (noWrapOwner ?? element) : undefined
+
+    if (layout === "break") {
+      this.raws.push({
+        kind: "break",
         wrappers,
-        sourceElement: node.parentElement ?? block,
-        noWrapOwner,
+        sourceElement: element as HTMLElement,
+        forced: element.matches("br"),
       })
       return true
     }
-
-    if (node.nodeType !== Node.ELEMENT_NODE) return true
-    const element = node as Element
-    if (element.matches("[data-linebreak-decoration][aria-hidden='true']")) {
-      return true
-    }
-
-    const style = styleOf(element)
-    const layout = elementLayout(element, style.display)
-    if (layout === "hidden") return true
-    if (layout === "unsupported") return false
-    const nextNoWrapOwner =
-      style.textWrapMode === "nowrap" ? (noWrapOwner ?? element) : undefined
     if (layout === "atom") {
-      rawItems.push({
-        kind: "box",
+      this.raws.push({
+        kind: "atom",
         text: OBJECT_REPLACEMENT,
         wrappers,
         sourceElement: element,
-        noWrapOwner: noWrapOwner ?? nextNoWrapOwner,
+        noWrapOwner: noWrapOwner ?? nextNoWrap,
       })
       return true
     }
 
-    const itemCount = rawItems.length
+    const before = this.raws.length
     const nextWrappers =
       element instanceof HTMLElement ? [...wrappers, element] : wrappers
     for (const child of element.childNodes) {
-      if (
-        !visit(
-          child,
-          nextWrappers,
-          nextNoWrapOwner,
-          style.whiteSpaceCollapse === "collapse",
-        )
-      ) {
-        rawItems.length = itemCount
+      const ok = this.visit(
+        child,
+        nextWrappers,
+        nextNoWrap,
+        style.whiteSpaceCollapse === "collapse",
+      )
+      if (!ok) {
+        this.raws.length = before
         return false
       }
     }
+
     if (
       layout === "inline" &&
-      rawItems.length === itemCount &&
-      hasInlineAdvance(element)
+      this.raws.length === before &&
+      element.getBoundingClientRect().width > 0
     ) {
-      rawItems.push({
-        kind: "box",
+      this.raws.push({
+        kind: "atom",
         text: OBJECT_REPLACEMENT,
         wrappers,
         sourceElement: element,
-        noWrapOwner: noWrapOwner ?? nextNoWrapOwner,
+        noWrapOwner: noWrapOwner ?? nextNoWrap,
       })
     }
     return true
   }
+}
 
-  const blockStyle = styleOf(block)
-  const blockNoWrapOwner =
-    blockStyle.textWrapMode === "nowrap" ? block : undefined
-  const rootWrappers: HTMLElement[] = []
-  if (
-    ![...block.childNodes].every((child) =>
-      visit(
-        child,
-        rootWrappers,
-        blockNoWrapOwner,
-        blockStyle.whiteSpaceCollapse === "collapse",
-      ),
-    )
-  ) {
-    return null
+export const extractBlock = (
+  block: HTMLElement,
+  styleOf: StyleReader,
+): ExtractResult => {
+  const collector = new RawCollector(block, styleOf)
+  const rejected = collector.collect()
+  if (rejected) return { ok: false, diagnostic: rejected }
+
+  const { text, runs, breakRestrictions } = Collapser.collapse(collector.raws)
+  if (text.length === 0) {
+    return { ok: false, diagnostic: { kind: "empty-content", element: block } }
   }
-
-  const { text, items, breakRestrictions } = normalizeRawItems(rawItems)
-
-  if (
-    text.length === 0 ||
-    text.length > maximumParagraphCharacters ||
-    text.includes(SOFT_HYPHEN)
-  ) {
-    return null
+  if (text.length > policy.limits.maximumCharacters) {
+    return {
+      ok: false,
+      diagnostic: {
+        kind: "content-too-long",
+        element: block,
+        length: text.length,
+        maximum: policy.limits.maximumCharacters,
+      },
+    }
   }
 
   return {
-    text,
-    items,
-    breakRestrictions,
-    wrappers: makeWrapperInfo(items, styleOf),
+    ok: true,
+    block: {
+      text,
+      runs,
+      breakRestrictions,
+      wrappers: buildWrapperInfo(runs, styleOf),
+    },
   }
 }
 
-export const itemEdgeWidths = (extracted: ExtractedBlock, item: InlineItem) =>
-  item.wrappers.reduce(
+export const runEdgeWidths = (block: ExtractedBlock, run: InlineRun) =>
+  run.wrappers.reduce(
     (total, wrapper) => {
-      const info = extracted.wrappers.get(wrapper)
+      const info = block.wrappers.get(wrapper)
       if (!info) return total
-      if (extracted.items[info.firstItem] === item) {
-        total.leading += info.leading.width
-      }
-      if (extracted.items[info.lastItem] === item) {
+      if (block.runs[info.firstRun] === run) total.leading += info.leading.width
+      if (block.runs[info.lastRun] === run)
         total.trailing += info.trailing.width
-      }
       return total
     },
     { leading: 0, trailing: 0 },
   )
 
-export const codeWrapper = (item: InlineItem) => item.wrappers.find(isCode)
+export const codeWrapper = (run: InlineRun) =>
+  run.wrappers.find((wrapper) => wrapper.localName === "code")
+
+export const breakAllowedAt = (
+  restrictions: readonly SourceRange[],
+  offset: number,
+) => {
+  let low = 0
+  let high = restrictions.length
+  while (low < high) {
+    const middle = (low + high) >>> 1
+    if ((restrictions[middle] as SourceRange).start <= offset) low = middle + 1
+    else high = middle
+  }
+  const range = restrictions[low - 1]
+  return !range || offset >= range.end
+}

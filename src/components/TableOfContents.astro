@@ -343,11 +343,11 @@ const title = asInline(titleLabel)
     progress()
 
     let observer: IntersectionObserver | undefined
-    let centerTimer: ReturnType<typeof setTimeout> | undefined
+    let resizeFrame: number | undefined
     teardown = () => {
       controller.abort()
+      if (resizeFrame !== undefined) cancelAnimationFrame(resizeFrame)
       observer?.disconnect()
-      clearTimeout(centerTimer)
     }
 
     const articles = document.querySelectorAll<HTMLElement>(
@@ -412,7 +412,7 @@ const title = asInline(titleLabel)
     const visible = new Set<Element>()
     let prevActive = new Set<Element>()
 
-    const center = (behavior: ScrollBehavior = "auto") => {
+    const center = () => {
       const run = [
         ...list.querySelectorAll<HTMLAnchorElement>("a[data-active]"),
       ]
@@ -426,13 +426,7 @@ const title = asInline(titleLabel)
         2
       list.scrollTo({
         top: list.scrollTop + runCenter - (area.top + area.height / 2),
-        behavior,
       })
-    }
-
-    const glideToCenter = () => {
-      clearTimeout(centerTimer)
-      centerTimer = setTimeout(() => center("smooth"), 120)
     }
 
     toggle?.addEventListener("change", () => {
@@ -444,7 +438,7 @@ const title = asInline(titleLabel)
       }
     })
 
-    observer = new IntersectionObserver((entries) => {
+    const updateActive = (entries: IntersectionObserverEntry[]) => {
       for (const entry of entries) {
         if (entry.target === heading) {
           const past = !entry.isIntersecting
@@ -489,15 +483,49 @@ const title = asInline(titleLabel)
         }
       }
       prevActive = activeTargets
-      if (grew) glideToCenter()
-    })
-
-    for (const block of sectionOf.keys()) observer.observe(block)
-    if (heading) {
-      observer.observe(heading)
-    } else {
-      title?.toggleAttribute("data-visible", true)
+      if (grew) center()
     }
+
+    const pixels = (value: string) => Number.parseFloat(value) || 0
+    const observe = () => {
+      const scrollPadding = pixels(
+        getComputedStyle(document.documentElement).scrollPaddingBlockStart,
+      )
+      const scrollMargin = Math.max(
+        0,
+        ...[...links.keys()].map((target) =>
+          pixels(getComputedStyle(target).scrollMarginBlockStart),
+        ),
+      )
+      const topInset = scrollPadding + scrollMargin
+
+      visible.clear()
+      prevActive.clear()
+      observer?.disconnect()
+      observer = new IntersectionObserver(updateActive, {
+        rootMargin: `${-topInset}px 0px 0px`,
+      })
+
+      for (const block of sectionOf.keys()) observer.observe(block)
+      if (heading) {
+        observer.observe(heading)
+      } else {
+        title?.toggleAttribute("data-visible", true)
+      }
+    }
+
+    addEventListener(
+      "resize",
+      () => {
+        if (resizeFrame !== undefined) cancelAnimationFrame(resizeFrame)
+        resizeFrame = requestAnimationFrame(() => {
+          resizeFrame = undefined
+          observe()
+        })
+      },
+      { passive: true, signal },
+    )
+    observe()
   }
 
   document.addEventListener("astro:page-load", setup)
