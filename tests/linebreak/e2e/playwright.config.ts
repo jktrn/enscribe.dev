@@ -19,7 +19,7 @@ export default defineConfig({
   webServer: {
     command: `bunx astro preview --host 127.0.0.1 --port ${port}`,
     cwd: repoRoot,
-    reuseExistingServer: true,
+    reuseExistingServer: false,
     timeout: 60_000,
     url: baseURL,
   },

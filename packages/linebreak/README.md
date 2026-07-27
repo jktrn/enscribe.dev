@@ -56,13 +56,13 @@ for (const result of results) {
 | Option | Default | Behavior |
 | --- | --- | --- |
 | `locale` | `<html lang>`, then `en-US` | Sets the fallback locale for segmentation. The nearest `lang` attribute on each element takes precedence. |
-| `minimumWidth` | `0` | Leaves elements with a narrower content box unchanged. |
+| `minimumWidth` | `0` | Returns `insufficient-width` and leaves the element unchanged when its content box is narrower than this value. |
 | `hyphenate` | `false` | Allows dictionary-based breaks inside English words. |
 | `preserveImageAttributes` | `[]` | Copies the named attributes between original and rebuilt images at the same DOM index when their counts match. |
 | `onDiagnostic` | none | Receives failures that need attention. Expected native outcomes are filtered out. |
 
-Hyphenation currently supports English locale tags. Text inside `<code>` uses
-separate break rules for paths, operators, identifiers, and letter-number
+Dictionary hyphenation is limited to English locale tags. Text inside `<code>`
+uses separate break rules for paths, operators, identifiers, and letter-number
 boundaries whether or not dictionary hyphenation is enabled.
 
 ## Results
@@ -83,10 +83,13 @@ type LinebreakResult =
     }
 ```
 
-`native` means the package left the element in its authored form or restored it
-after a failed render. A result can be native because the element does not need
-typesetting, falls outside the supported input, or could not be rendered
-reliably.
+`native` means the plan did not create a new set of line spans. Authored content
+stays in place if the element has not been typeset. If it has, a native result
+may leave the generated lines in place. Call `restore()` or `invalidate()` before
+planning when you need to start from the authored content.
+
+A plan returns `native` when the element does not need typesetting, uses
+unsupported content, or cannot be rendered reliably.
 
 ## Lifecycle
 
@@ -112,9 +115,9 @@ instance. Create another linebreaker before typesetting again.
 
 ## Supported content
 
-The package handles left-to-right elements whose text uses normal CSS whitespace
-collapsing. It reads computed styles, so the element must be connected to the
-document and have its final fonts available before planning.
+The package supports left-to-right elements whose text uses normal CSS
+whitespace collapsing. It reads computed styles, so the element must be
+connected to the document and its fonts must be loaded before planning.
 
 Text can contain ordinary inline HTML, `<br>`, `<wbr>`, images, inline math,
 ruby, disabled inputs, and elements whose display creates an atomic inline box.
@@ -131,8 +134,8 @@ These attributes describe content that needs special treatment:
 `text-wrap-mode: nowrap` prevents automatic breaks inside its range. An authored
 `<br>` or `<wbr>` still applies.
 
-The package declines an element instead of guessing when it encounters content
-it cannot model. Important cases include:
+A plan returns `native` when the element contains layout the package cannot
+model. This includes:
 
 - right-to-left direction;
 - non-collapsing whitespace;
@@ -142,9 +145,9 @@ it cannot model. Important cases include:
 - a `text-transform` value other than `none`;
 - more than 3,000 collapsed characters.
 
-Inline elements with live JavaScript state need care because rendering clones
-them. `preserveImageAttributes` covers image attributes that change after load,
-but it does not preserve event listeners or arbitrary object state.
+Rendering clones inline elements, so it cannot preserve their event listeners or
+arbitrary object state. `preserveImageAttributes` covers image attributes that
+change after load.
 
 ## Rendered DOM
 
@@ -200,7 +203,7 @@ reconstructs plain text from the live range, restores spaces and `<br>` elements
 where the break kind requires them, removes generated line wrappers, and strips
 `data-linebreak-*` attributes from the HTML copy.
 
-Hyphenation still creates a real DOM boundary inside a word. Generated hyphens
+A hyphenated break creates a real DOM boundary inside a word. Generated hyphens
 stay out of the text, and copying rejoins the word, but browser find-in-page may
 treat the two fragments as separate text.
 
@@ -224,8 +227,8 @@ The following native outcomes do not call the diagnostic handler:
 `empty-content`, `single-line`, `insufficient-width`, and
 `unsupported-direction`. They still appear as the `reason` on a native result.
 
-Exceptions thrown by the diagnostic handler are ignored so logging cannot stop
-typesetting.
+Exceptions thrown by the diagnostic handler are ignored so a reporting failure
+cannot stop typesetting.
 
 ## How layout works
 
@@ -233,8 +236,7 @@ The implementation has five stages:
 
 1. DOM extraction collapses whitespace across inline boundaries and records
    text, atomic content, authored breaks, wrapper edges, and no-wrap ranges.
-2. Measurement reads widths for each computed typography with
-   `@chenglou/pretext`.
+2. `@chenglou/pretext` measures the text for each computed typography.
 3. Compilation converts the measured runs into boxes, adjustable spaces, and
    break penalties.
 4. The Knuth–Plass search chooses a complete set of breaks. It first uses the

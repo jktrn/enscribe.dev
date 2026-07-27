@@ -1,8 +1,11 @@
 import type { BreakKind } from "../layout/breaker"
 import { LINE_SELECTOR } from "./render"
 
-const generatesBlockBox = (display: string) =>
-  display !== "contents" && display !== "none" && !display.startsWith("inline")
+const generatesBlockBox = (element: Element, display: string) =>
+  display !== "contents" &&
+  display !== "none" &&
+  !display.startsWith("inline") &&
+  !element.closest("math, ruby")
 
 const clippedText = (node: Text, range: Range) => {
   const start = node === range.startContainer ? range.startOffset : 0
@@ -42,7 +45,11 @@ const plainText = (range: Range) => {
       text += lineJoin(node as HTMLElement, range)
       return
     }
-    if (generatesBlockBox(display) && text !== "" && !text.endsWith("\n")) {
+    if (
+      generatesBlockBox(node, display) &&
+      text !== "" &&
+      !text.endsWith("\n")
+    ) {
       text += "\n"
     }
   }

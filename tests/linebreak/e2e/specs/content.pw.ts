@@ -99,6 +99,24 @@ test("copying keeps the newline an authored break stands for", async ({
   expect(copied.plain.replace(/\s+/gu, "")).toBe(copied.characters)
 })
 
+test("copying keeps inline math and ruby in the surrounding text", async ({
+  page,
+}) => {
+  await settleTypeset(page)
+  await page.evaluate(() => {
+    const block = document.createElement("p")
+    block.dataset.copyFixture = ""
+    block.dataset.linebreakTypeset = "1"
+    block.innerHTML =
+      '<span data-linebreak-break="none">Before <math><mi>x</mi><mo>+</mo><mn>1</mn></math> and <ruby>漢<rp>(</rp><rt>kan</rt><rp>)</rp></ruby> after</span>'
+    document.body.append(block)
+  })
+
+  const copied = await copyFrom(page, "[data-copy-fixture]")
+
+  expect(copied?.plain).toBe("Before x+1 and 漢kan after")
+})
+
 test("a hyphenated break is an element boundary", async ({ page }) => {
   await settleTypeset(page)
 
