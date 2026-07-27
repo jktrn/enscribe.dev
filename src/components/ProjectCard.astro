@@ -34,7 +34,7 @@ const [nameHtml, descriptionHtml] = await Promise.all([
       </a>
     )}
   <entry-info data-typeset-root>
-    <a href={link} target="_blank" rel="noopener noreferrer">
+    <a href={link} target="_blank" rel="noopener noreferrer" data-typeset-skip>
       <Fragment set:html={nameHtml} />
     </a>
     <entry-meta>

@@ -9,6 +9,7 @@ import {
 } from "@/lib/typography/scroll-anchor"
 
 const NOT_PROSE = [
+  "[data-typeset-skip]",
   "pre",
   ".expressive-code",
   "table",

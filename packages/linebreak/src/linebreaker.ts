@@ -288,6 +288,16 @@ class BrowserLinebreaker implements Linebreaker {
       }
       seen.add(record.element)
 
+      if (this.measurements.get(record.element) !== record.measurement) {
+        this.emit({ kind: "stale-plan", element: record.element })
+        results.set(handle, {
+          element: record.element,
+          state: "native",
+          reason: "stale-plan",
+        })
+        continue
+      }
+
       const style = getComputedStyle(record.element)
       const width = contentWidth(record.element, style)
       if (width < this.minimumWidth) {

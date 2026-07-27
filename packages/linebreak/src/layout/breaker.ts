@@ -20,6 +20,7 @@ export type Line = {
   readonly sourceEnd: number
   readonly naturalWidth: number
   readonly spaceCount: number
+  readonly shrink: number
   readonly adjustmentRatio: number
   readonly breakKind: BreakKind
 }
@@ -153,7 +154,7 @@ const measureLine = (search: Search, from: ActiveNode, to: number) => {
   if (slack > 0)
     ratio = stretch > 0 ? slack / stretch : Number.POSITIVE_INFINITY
   if (slack < 0) ratio = shrink > 0 ? slack / shrink : Number.NEGATIVE_INFINITY
-  return { natural, ratio }
+  return { natural, ratio, shrink }
 }
 
 const stepTo = (
@@ -250,7 +251,7 @@ const linesFrom = (search: Search, final: ActiveNode): Line[] => {
     node = node.previous
   ) {
     const from = node.previous
-    const { natural } = measureLine(search, from, node.position)
+    const { natural, shrink } = measureLine(search, from, node.position)
     const start = lineStart(items, from.position)
     const breakItem = items[node.position]
 
@@ -271,6 +272,7 @@ const linesFrom = (search: Search, final: ActiveNode): Line[] => {
       sourceEnd,
       naturalWidth: natural,
       spaceCount,
+      shrink,
       adjustmentRatio: node.ratio,
       breakKind: node.breakKind,
     })

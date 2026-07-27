@@ -27,6 +27,7 @@ export type Diagnostic =
       node: Element
       property: string
     }
+  | { kind: "stale-plan"; element: HTMLElement }
   | { kind: "no-feasible-breaking"; element: HTMLElement; width: number }
   | {
       kind: "line-wrapped"

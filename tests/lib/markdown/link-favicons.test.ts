@@ -29,11 +29,8 @@ describe("inline link favicons", () => {
     expect(html).toContain("/icons/favicons/custom-external-link.svg")
   })
 
-  test("glues the icon after trailing text or trailing inline markup", async () => {
+  test("glues the icon to trailing text", async () => {
     const textLink = await render("[Wikipedia](https://en.wikipedia.org)")
-    const emphasizedLink = await render(
-      "[*Wikipedia*](https://en.wikipedia.org)",
-    )
 
     expect(textLink).toContain("data-favicon-glue")
     expect(textLink).toMatch(
@@ -42,8 +39,21 @@ describe("inline link favicons", () => {
     expect(textLink).toContain('data-favicon-position="after"')
     expect(textLink).toContain('data-linebreak-atom=""')
     expect(textLink).toContain('data-linebreak-decoration=""')
-    expect(emphasizedLink).toContain("data-favicon-glue")
-    expect(emphasizedLink).toMatch(/<em>Wikipedia<\/em><span[^>]+data-favicon/)
+  })
+
+  test("decorates trailing inline markup instead of atomizing it", async () => {
+    const emphasizedLink = await render(
+      "[*Wikipedia*](https://en.wikipedia.org)",
+    )
+
+    expect(emphasizedLink).not.toContain("data-favicon-glue")
+    expect(emphasizedLink).not.toContain("data-linebreak-atom")
+    expect(emphasizedLink).toMatch(
+      /<em>Wikipedia<span[^>]+data-favicon[^>]*><\/span><\/em>/,
+    )
+    expect(emphasizedLink).toContain(
+      'data-linebreak-decoration-position="after"',
+    )
   })
 
   test("leaves internal and media links undecorated", async () => {

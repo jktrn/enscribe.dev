@@ -10,16 +10,6 @@ const containsMedia = (children: readonly ElementContent[]): boolean =>
         containsMedia(child.children)),
   )
 
-const cloneContent = (child: ElementContent): ElementContent =>
-  child.type === "element"
-    ? {
-        type: "element",
-        tagName: child.tagName,
-        properties: { ...child.properties },
-        children: child.children.map(cloneContent),
-      }
-    : { ...child }
-
 const icon = (asset: string) => ({
   type: "element" as const,
   tagName: "span",
@@ -71,17 +61,7 @@ export const linkFavicons = defineHastPlugin({
       }
 
       if (last?.type === "element") {
-        const glue = {
-          type: "element" as const,
-          tagName: "span",
-          properties: {
-            "data-linebreak-atom": "",
-            "data-favicon-glue": "",
-          },
-          children: [cloneContent(last), favicon],
-        }
-        ctx.removeChildAt(node, lastIndex)
-        ctx.appendChild(node, glue)
+        ctx.appendChild(last, favicon)
         return
       }
 

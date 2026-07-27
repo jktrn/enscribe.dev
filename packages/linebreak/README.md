@@ -51,6 +51,16 @@ for (const result of results) {
 }
 ```
 
+## Site block discovery
+
+The enscribe.dev integration discovers prose below each
+`[data-typeset-root]`. It uses computed `display` values to find leaf blocks, so
+flex containers can make normally inline children eligible for typesetting. For
+example, a title link becomes a block when it is a flex item.
+
+Add `data-typeset-skip` to an element that should remain ragged. The collector
+skips that element and its descendants.
+
 ## Options
 
 | Option | Default | Behavior |
@@ -89,7 +99,8 @@ may leave the generated lines in place. Call `restore()` or `invalidate()` befor
 planning when you need to start from the authored content.
 
 A plan returns `native` when the element does not need typesetting, uses
-unsupported content, or cannot be rendered reliably.
+unsupported content, cannot be rendered reliably, or refers to a cached
+measurement that is no longer current.
 
 ## Lifecycle
 
@@ -100,6 +111,13 @@ It also accepts an iterable.
 Call it after changing the element's content or any style that affects
 measurement. With no argument, `invalidate()` restores every cached element and
 clears the typography cache.
+
+An outstanding plan becomes stale when its cached measurement is discarded or
+replaced. `invalidate()` and `destroy()` discard measurements; a later `plan()`
+replaces one when the element's locale, font, or letter spacing has changed.
+Committing a stale plan returns `stale-plan` without changing the element. Use a
+new plan after `invalidate()`, or the replacement plan after a typography
+change. `restore()` keeps the measurement, so existing plans remain valid.
 
 `readMetrics()` returns the current cache sizes:
 
@@ -209,8 +227,7 @@ treat the two fragments as separate text.
 
 ## Diagnostics
 
-`onDiagnostic` reports conditions that indicate unsupported content or a failed
-layout:
+`onDiagnostic` reports unsupported content, stale plans, and layout failures:
 
 | Kind | Meaning |
 | --- | --- |
@@ -218,6 +235,7 @@ layout:
 | `content-too-long` | Collapsed text exceeds the 3,000-character limit. |
 | `segmentation-mismatch` | Measured segments do not reproduce the extracted text. |
 | `measurement-unavailable` | A required width or typography could not be measured. |
+| `stale-plan` | The plan refers to a cached measurement that was discarded or replaced. The element is unchanged. |
 | `no-feasible-breaking` | The optimizer could not cover the paragraph at the requested width. |
 | `line-wrapped` | A generated line wrapped inside its own span after retries. |
 | `line-height-unresolved` | Verification could not determine a numeric line height. |

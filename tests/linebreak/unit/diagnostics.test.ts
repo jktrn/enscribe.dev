@@ -34,6 +34,8 @@ const describeDiagnostic = (diagnostic: Diagnostic): DiagnosticKind => {
       return diagnostic.detail ? diagnostic.kind : "empty-content"
     case "measurement-unavailable":
       return diagnostic.property ? diagnostic.kind : "empty-content"
+    case "stale-plan":
+      return diagnostic.element ? diagnostic.kind : "empty-content"
     case "no-feasible-breaking":
       return Number.isFinite(diagnostic.width)
         ? diagnostic.kind
