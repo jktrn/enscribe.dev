@@ -28,22 +28,18 @@ describe("break offsets", () => {
 
   test("a path breaks after its separators", () => {
     const offsets = codeBreakOffsets("src/lib/typography.ts")
-    // After each slash, and after the dot before the extension.
+
     expect(offsets.has(4)).toBe(true)
     expect(offsets.has(8)).toBe(true)
   })
 
   test("a long unbroken identifier still offers somewhere to break", () => {
-    // The emergency rule exists for exactly this: text with no separator, no
-    // case change and no digit, which would otherwise overflow its container.
     expect(codeBreakOffsets("abcdefghijklmnopqrst").size).toBeGreaterThan(0)
   })
 })
 
 describe("every offered break is one the optimizer can take", () => {
   test("no price reaches the threshold that forbids breaking", () => {
-    // A penalty at or above FORBIDDEN_PENALTY is not an expensive break, it is
-    // no break at all. Pricing a rung above the threshold silently removes it.
     const sampled = [
       "GachaManager.cs",
       "src/lib/typography.ts",

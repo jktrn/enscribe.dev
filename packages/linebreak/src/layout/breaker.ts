@@ -44,7 +44,7 @@ type ActiveNode = {
   readonly breakKind: BreakKind
 }
 
-type Sums = {
+export type Sums = {
   readonly width: readonly number[]
   readonly stretch: readonly number[]
   readonly shrink: readonly number[]
@@ -66,7 +66,7 @@ const lineDemerits = (ratio: number, penalty: number) => {
   return base ** 2 - penalty ** 2
 }
 
-const prefixSums = (items: readonly Item[]): Sums => {
+export const prefixSums = (items: readonly Item[]): Sums => {
   const width = [0]
   const stretch = [0]
   const shrink = [0]
@@ -129,7 +129,6 @@ type Step = {
   readonly actives: ActiveNode[]
 
   readonly admitted: Array<ActiveNode | null>
-  readonly bestDemerits: number[]
   readonly minimum: number
 
   readonly rescue: { node: ActiveNode; ratio: number } | null
@@ -166,12 +165,6 @@ const stepTo = (
 ): Step => {
   const { items, tolerance } = search
   const admitted: Array<ActiveNode | null> = [null, null, null, null]
-  const bestDemerits = [
-    Number.POSITIVE_INFINITY,
-    Number.POSITIVE_INFINITY,
-    Number.POSITIVE_INFINITY,
-    Number.POSITIVE_INFINITY,
-  ]
   const survivors: ActiveNode[] = []
   let minimum = Number.POSITIVE_INFINITY
   let rescue: { node: ActiveNode; ratio: number; distance: number } | null =
@@ -209,8 +202,7 @@ const stepTo = (
       demerits += policy.demerits.fitnessJump
     }
 
-    if (demerits < (bestDemerits[fitness] as number)) {
-      bestDemerits[fitness] = demerits
+    if (demerits < (admitted[fitness]?.demerits ?? Number.POSITIVE_INFINITY)) {
       admitted[fitness] = {
         position: to,
         line: active.line + 1,
@@ -227,7 +219,6 @@ const stepTo = (
   return {
     actives: survivors,
     admitted,
-    bestDemerits,
     minimum,
     rescue: rescue && { node: rescue.node, ratio: rescue.ratio },
   }
@@ -329,7 +320,7 @@ export const breakParagraph = (
     const ceiling = step.minimum + policy.demerits.fitnessJump
     for (let fitness = 0; fitness < 4; fitness += 1) {
       const candidate = step.admitted[fitness]
-      if (candidate && (step.bestDemerits[fitness] as number) <= ceiling) {
+      if (candidate && candidate.demerits <= ceiling) {
         actives.push(candidate)
       }
     }
@@ -347,8 +338,8 @@ export const breakParagraph = (
 export const breakParagraphWithFallback = (
   items: readonly Item[],
   target: number,
+  sums: Sums = prefixSums(items),
 ): BreakResult => {
-  const sums = prefixSums(items)
   const pass = (options: BreakOptions) =>
     breakParagraph(items, target, { ...options, sums })
 

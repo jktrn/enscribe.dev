@@ -1,18 +1,9 @@
 import type { Page } from "@playwright/test"
 
-/** A long, markup-heavy article: code spans, favicon links, images, footnotes. */
 export const ARTICLE = "/blog/japan-retrospective"
 
-/**
- * Loads a page and lets the typesetter reach every block.
- *
- * Blocks are typeset as they approach the viewport, so a full scroll is what
- * queues the whole document. Without it a spec only ever sees the first screen.
- */
 export const sweepViewport = async (page: Page) => {
   await page.evaluate(async () => {
-    // Bounded: the article is long enough that an unbounded per-viewport walk
-    // outlives the default action timeout.
     const steps = Math.min(
       60,
       Math.ceil(document.body.scrollHeight / innerHeight),
@@ -27,21 +18,12 @@ export const sweepViewport = async (page: Page) => {
   await waitForQuiet(page)
 }
 
-/**
- * Waits until typesetting stops changing the page.
- *
- * Blocks are typeset in idle time, so how long that takes depends on what else
- * the machine is doing — three browser projects in parallel is enough to push it
- * past any fixed delay. Waiting on the work itself rather than on a duration is
- * what keeps these specs from failing on a busy machine and, worse, passing on a
- * quiet one while asserting against a half-typeset page.
- */
 export const waitForQuiet = async (page: Page, settleMs = 500) => {
   await page
     .waitForFunction(
       (quietMs) => {
         const lines = document.querySelectorAll(
-          "[data-linebreak-typeset] > .lb-line",
+          "[data-linebreak-typeset] > [data-linebreak-break]",
         ).length
         const state = (
           window as { __lbQuiet?: { lines: number; since: number } }
@@ -56,10 +38,7 @@ export const waitForQuiet = async (page: Page, settleMs = 500) => {
       settleMs,
       { timeout: 20_000, polling: 100 },
     )
-    .catch(() => {
-      // A page with no prose at all never reports lines; the specs that use one
-      // assert on its emptiness themselves.
-    })
+    .catch(() => {})
 }
 
 export const settleTypeset = async (page: Page, path = ARTICLE) => {
@@ -68,7 +47,6 @@ export const settleTypeset = async (page: Page, path = ARTICLE) => {
   await sweepViewport(page)
 }
 
-/** The same URL rendered with JavaScript disabled — the correctness baseline. */
 export const nativeText = async (page: Page, path = ARTICLE) => {
   const context = await page
     .context()
@@ -92,12 +70,12 @@ export const nativeText = async (page: Page, path = ARTICLE) => {
 export type LineReport = {
   typesetBlocks: number
   totalLines: number
-  /** Non-final lines reaching the container's inline end within tolerance. */
+
   justifiedLines: number
   shortLines: number
   worstGapPx: number
   overflowingBlocks: number
-  /** Blocks taller than their line count — a line the browser wrapped. */
+
   wrappedBlocks: number
   hyphenLines: number
   liveText: string
@@ -114,12 +92,13 @@ export const measureLines = (page: Page) =>
     let wrappedBlocks = 0
 
     for (const block of blocks) {
-      const lines = [...block.querySelectorAll(":scope > .lb-line")]
+      const lines = [
+        ...block.querySelectorAll(":scope > [data-linebreak-break]"),
+      ]
       totalLines += lines.length
       const style = getComputedStyle(block)
       const lineHeight = Number.parseFloat(style.lineHeight)
-      // Lines are text rows, so the height they are compared against has to
-      // exclude the block's own padding.
+
       const contentHeight =
         block.clientHeight -
         Number.parseFloat(style.paddingTop) -
@@ -135,10 +114,10 @@ export const measureLines = (page: Page) =>
         const gap =
           line.getBoundingClientRect().width -
           range.getBoundingClientRect().width
-        // A Range measures real nodes only, so it cannot see the hyphen drawn
-        // as generated content at a hyphenated break. That hyphen genuinely
-        // occupies the remaining space, so allow its advance on those lines.
-        const allowed = line.classList.contains("lb-hyphen") ? 12 : 1.5
+
+        const allowed = line.matches('[data-linebreak-break="hyphen"]')
+          ? 12
+          : 1.5
         if (gap <= allowed) justifiedLines += 1
         else {
           shortLines += 1
@@ -155,7 +134,8 @@ export const measureLines = (page: Page) =>
       worstGapPx: Math.round(worstGapPx * 10) / 10,
       overflowingBlocks,
       wrappedBlocks,
-      hyphenLines: document.querySelectorAll(".lb-hyphen").length,
+      hyphenLines: document.querySelectorAll('[data-linebreak-break="hyphen"]')
+        .length,
       liveText:
         document
           .querySelector("main")

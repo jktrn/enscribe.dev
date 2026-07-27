@@ -251,9 +251,8 @@ export const compileBlock = (context: CompileContext): CompileResult => {
   const items: Item[] = []
 
   for (const [runIndex, run] of block.runs.entries()) {
-    const edges = runEdgeWidths(block, run)
-
     if (run.kind === "anchor") {
+      const edges = runEdgeWidths(block, run)
       const width = edges.leading + edges.trailing
       if (run.affinity === "previous") pending.onto(items, width)
       else pending.defer(width)
@@ -279,6 +278,7 @@ export const compileBlock = (context: CompileContext): CompileResult => {
     }
 
     if (run.kind === "atom") {
+      const edges = runEdgeWidths(block, run)
       items.push({
         kind: "box",
         width: atomWidth(run) + edges.leading + edges.trailing + pending.take(),

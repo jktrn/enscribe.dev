@@ -8,6 +8,9 @@ export const DECORATION = "[data-linebreak-decoration][aria-hidden='true']"
 
 export const hasVisibleText = (text: string) => /[^\t\n\f\r ]/u.test(text)
 
+export const collapseWhitespace = (text: string) =>
+  text.replace(/[\t\n\f\r ]+/gu, " ")
+
 export type SourceRange = { start: number; end: number }
 
 type RunBase = {

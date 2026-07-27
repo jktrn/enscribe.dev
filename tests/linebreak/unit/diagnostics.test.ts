@@ -10,10 +10,6 @@ import {
 const element = () => ({}) as HTMLElement
 const node = () => ({}) as Element
 
-/**
- * Exhaustiveness is enforced by the compiler: adding a variant to Diagnostic
- * without adding a case here fails typecheck on the `never` assignment.
- */
 const describeDiagnostic = (diagnostic: Diagnostic): DiagnosticKind => {
   switch (diagnostic.kind) {
     case "unsupported-element":
@@ -138,10 +134,6 @@ test("ordinary outcomes never reach the sink", () => {
     received.push(diagnostic),
   )
 
-  // A block with no text, one that fits on a single line, and a measure too
-  // narrow to justify are all things this package correctly has no opinion
-  // about. Metadata chrome — a byline, a date, a tag — reaches it the same way
-  // prose does, and reporting each one buries the failures that matter.
   emit({ kind: "empty-content", element: element() })
   emit({ kind: "single-line", element: element() })
   emit({

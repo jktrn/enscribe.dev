@@ -8,7 +8,7 @@
     "test": "bun run test:unit",
     "test:unit": "bun test unit",
     "test:package": "bun test package",
-    "test:e2e": "playwright test --config e2e/playwright.config.ts",
+    "test:e2e": "bun run --cwd ../.. build && playwright test --config e2e/playwright.config.ts",
     "check": "bun run typecheck && bun run test:unit && bun run test:package && bun run test:e2e"
   },
   "dependencies": {

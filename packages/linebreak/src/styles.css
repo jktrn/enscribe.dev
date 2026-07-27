@@ -4,17 +4,18 @@
   hyphens: manual;
 }
 
-[data-linebreak-typeset] > .lb-line {
+[data-linebreak-typeset] > [data-linebreak-break] {
   display: block;
   text-align: justify;
   text-align-last: justify;
 }
 
-[data-linebreak-typeset] > .lb-line-flush {
+[data-linebreak-typeset] > [data-linebreak-break="forced"],
+[data-linebreak-typeset] > [data-linebreak-break]:last-child {
   text-align-last: start;
 }
 
-[data-linebreak-typeset] > .lb-hyphen::after {
+[data-linebreak-typeset] > [data-linebreak-break="hyphen"]::after {
   content: "-";
 }
 

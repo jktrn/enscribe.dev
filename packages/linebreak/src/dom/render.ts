@@ -1,9 +1,7 @@
 import type { Line } from "../layout/breaker"
 import { type ExtractedBlock, type InlineRun, LINE_SEPARATOR } from "./extract"
 
-export const LINE_CLASS = "lb-line"
-export const FLUSH_LINE_CLASS = "lb-line-flush"
-export const HYPHEN_CLASS = "lb-hyphen"
+export const LINE_SELECTOR = "[data-linebreak-break]"
 export const TYPESET_ATTRIBUTE = "data-linebreak-typeset"
 
 const appendLine = (
@@ -144,13 +142,8 @@ export const renderLines = (
   const lineElements: HTMLElement[] = []
   let nextRun = 0
 
-  for (const [index, line] of lines.entries()) {
-    const isLast = index === lines.length - 1
+  for (const line of lines) {
     const target = document.createElement("span")
-
-    const flush = isLast || line.breakKind === "forced"
-    target.className = flush ? `${LINE_CLASS} ${FLUSH_LINE_CLASS}` : LINE_CLASS
-
     target.dataset.linebreakBreak = line.breakKind
 
     const overflow = line.naturalWidth - targetWidth
@@ -161,8 +154,6 @@ export const renderLines = (
     const rendered = appendLine(target, block, line, nextRun)
     if (!rendered) return null
     nextRun = rendered.nextRun
-
-    if (line.breakKind === "hyphen") target.classList.add(HYPHEN_CLASS)
 
     output.appendChild(target)
     lineElements.push(target)

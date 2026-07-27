@@ -24,8 +24,6 @@ describe("hyphenation offsets", () => {
     const word = "typesetting"
     const offsets = hyphenationOffsets(word)
 
-    // Reassembling at every offset must reproduce the word exactly — proof no
-    // soft hyphen leaked into the offsets.
     for (const offset of offsets) {
       expect(word.slice(0, offset) + word.slice(offset)).toBe(word)
     }

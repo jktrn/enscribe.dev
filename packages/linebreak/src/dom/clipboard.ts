@@ -1,64 +1,61 @@
-import { FLUSH_LINE_CLASS, HYPHEN_CLASS, LINE_CLASS } from "./render"
+import type { BreakKind } from "../layout/breaker"
+import { LINE_SELECTOR } from "./render"
 
-const BLOCK_TAGS = new Set([
-  "ADDRESS",
-  "ARTICLE",
-  "ASIDE",
-  "BLOCKQUOTE",
-  "DD",
-  "DETAILS",
-  "DIALOG",
-  "DIV",
-  "DL",
-  "DT",
-  "FIELDSET",
-  "FIGCAPTION",
-  "FIGURE",
-  "FOOTER",
-  "FORM",
-  "H1",
-  "H2",
-  "H3",
-  "H4",
-  "H5",
-  "H6",
-  "HEADER",
-  "HGROUP",
-  "HR",
-  "LI",
-  "MAIN",
-  "NAV",
-  "OL",
-  "P",
-  "PRE",
-  "SEARCH",
-  "SECTION",
-  "SUMMARY",
-  "TABLE",
-  "TD",
-  "TH",
-  "TR",
-  "UL",
-])
+const generatesBlockBox = (display: string) =>
+  display !== "contents" && display !== "none" && !display.startsWith("inline")
 
-const plainText = (root: ParentNode) => {
+const clippedText = (node: Text, range: Range) => {
+  const start = node === range.startContainer ? range.startOffset : 0
+  const end = node === range.endContainer ? range.endOffset : node.data.length
+  return node.data.slice(start, end)
+}
+
+const lineJoin = (line: HTMLElement, range: Range) => {
+  const next = line.nextSibling
+  if (!next || !range.intersectsNode(next)) return ""
+  const kind = line.dataset.linebreakBreak as BreakKind | undefined
+  if (kind === "space") return " "
+  if (kind === "forced") return "\n"
+  return ""
+}
+
+const plainText = (range: Range) => {
   let text = ""
+
   const walk = (node: Node) => {
     if (node.nodeType === Node.TEXT_NODE) {
-      text += node.textContent ?? ""
+      text += clippedText(node as Text, range)
       return
     }
     if (!(node instanceof Element)) return
+
+    const { display } = getComputedStyle(node)
+    if (display === "none") return
     if (node.tagName === "BR") {
       text += "\n"
       return
     }
-    for (const child of node.childNodes) walk(child)
-    if (BLOCK_TAGS.has(node.tagName) && text !== "" && !text.endsWith("\n")) {
+
+    walkChildren(node)
+
+    if (node.matches(LINE_SELECTOR)) {
+      text += lineJoin(node as HTMLElement, range)
+      return
+    }
+    if (generatesBlockBox(display) && text !== "" && !text.endsWith("\n")) {
       text += "\n"
     }
   }
-  for (const child of root.childNodes) walk(child)
+
+  const walkChildren = (node: Node) => {
+    for (const child of node.childNodes) {
+      if (range.intersectsNode(child)) walk(child)
+    }
+  }
+
+  const root = range.commonAncestorContainer
+  if (root.nodeType === Node.TEXT_NODE) return clippedText(root as Text, range)
+  walkChildren(root)
   return text
 }
 
@@ -66,20 +63,22 @@ export const cleanCopiedLinebreaks = (event: ClipboardEvent) => {
   const selection = getSelection()
   if (!selection || selection.rangeCount !== 1 || !event.clipboardData) return
 
+  const range = selection.getRangeAt(0)
   const holder = document.createElement("div")
-  holder.appendChild(selection.getRangeAt(0).cloneContents())
+  holder.appendChild(range.cloneContents())
 
-  const lines = holder.querySelectorAll<HTMLElement>(`.${LINE_CLASS}`)
+  const lines = holder.querySelectorAll<HTMLElement>(LINE_SELECTOR)
   if (lines.length === 0) return
+
+  const text = plainText(range)
 
   for (const line of lines) {
     if (line.nextSibling) {
-      const kind = line.dataset.linebreakBreak
+      const kind = line.dataset.linebreakBreak as BreakKind | undefined
       if (kind === "space") line.appendChild(document.createTextNode(" "))
 
       if (kind === "forced") line.appendChild(document.createElement("br"))
     }
-    line.classList.remove(LINE_CLASS, FLUSH_LINE_CLASS, HYPHEN_CLASS)
     line.replaceWith(...line.childNodes)
   }
   for (const element of holder.querySelectorAll<HTMLElement>("*")) {
@@ -88,7 +87,7 @@ export const cleanCopiedLinebreaks = (event: ClipboardEvent) => {
     }
   }
 
-  event.clipboardData.setData("text/plain", plainText(holder))
+  event.clipboardData.setData("text/plain", text)
   event.clipboardData.setData("text/html", holder.innerHTML)
   event.preventDefault()
 }

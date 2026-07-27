@@ -1,5 +1,6 @@
 import {
   type AnchorRun,
+  collapseWhitespace,
   hasVisibleText,
   type InlineRun,
   LINE_SEPARATOR,
@@ -88,7 +89,7 @@ export class Collapser {
   }
 
   private takeText(raw: RawText) {
-    let value = raw.text.replace(/[\t\n\f\r ]+/gu, " ")
+    let value = collapseWhitespace(raw.text)
     if (value.startsWith(" ")) {
       this.contributeSpace(raw)
       value = value.slice(1)

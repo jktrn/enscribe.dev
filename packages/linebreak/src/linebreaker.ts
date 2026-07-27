@@ -1,4 +1,9 @@
-import { breakParagraphWithFallback, type Line } from "./layout/breaker"
+import {
+  breakParagraphWithFallback,
+  type Line,
+  prefixSums,
+  type Sums,
+} from "./layout/breaker"
 import { compileBlock } from "./layout/compile"
 import {
   createDiagnosticEmitter,
@@ -18,7 +23,7 @@ import {
   type FontMetrics,
 } from "./text/measure"
 import { policy } from "./policy"
-import { LINE_CLASS, renderLines } from "./dom/render"
+import { LINE_SELECTOR, renderLines } from "./dom/render"
 import {
   type AuthoredContent,
   captureAuthored,
@@ -40,6 +45,7 @@ import type {
 type Measurement = {
   block: ExtractedBlock
   items: Item[]
+  sums: Sums
   authored: AuthoredContent
 
   under: MeasurementBasis
@@ -92,12 +98,12 @@ const contentHeight = (element: HTMLElement, style: CSSStyleDeclaration) =>
   cssPixels(style.paddingBottom)
 
 const anyLineWrapped = (element: HTMLElement) => {
-  for (const line of element.querySelectorAll<HTMLElement>(`.${LINE_CLASS}`)) {
+  const range = document.createRange()
+  for (const line of element.querySelectorAll<HTMLElement>(LINE_SELECTOR)) {
     const walker = document.createTreeWalker(line, NodeFilter.SHOW_TEXT)
     let bandBottom = Number.NEGATIVE_INFINITY
     let rows = 0
     for (let node = walker.nextNode(); node; node = walker.nextNode()) {
-      const range = document.createRange()
       range.selectNodeContents(node)
       for (const rect of range.getClientRects()) {
         if (rect.width === 0) continue
@@ -195,6 +201,7 @@ class BrowserLinebreaker implements Linebreaker {
     const solved = breakParagraphWithFallback(
       measurement.items,
       width - policy.fit.safetyMarginPx,
+      measurement.sums,
     )
     if (!solved.ok) {
       return this.decline(handle, {
@@ -322,15 +329,14 @@ class BrowserLinebreaker implements Linebreaker {
       const solved = breakParagraphWithFallback(
         attempt.plan.measurement.items,
         target,
+        attempt.plan.measurement.sums,
       )
       if (!solved.ok) {
-        this.emit({ kind: "no-feasible-breaking", element, width: target })
-        this.restoreElement(element)
-        results.set(attempt.handle, {
-          element,
-          state: "native",
-          reason: "no-feasible-breaking",
-        })
+        this.revert(
+          attempt,
+          { kind: "no-feasible-breaking", element, width: target },
+          results,
+        )
         return false
       }
       attempt.lines = solved.lines
@@ -347,13 +353,7 @@ class BrowserLinebreaker implements Linebreaker {
       if (!written) throw new Error("line content could not be rebuilt")
       return true
     } catch (cause) {
-      this.emit({ kind: "render-failed", element, cause })
-      this.restoreElement(element)
-      results.set(attempt.handle, {
-        element,
-        state: "native",
-        reason: "render-failed",
-      })
+      this.revert(attempt, { kind: "render-failed", element, cause }, results)
       return false
     }
   }
@@ -391,13 +391,7 @@ class BrowserLinebreaker implements Linebreaker {
       }
 
       for (const { attempt, diagnostic } of failed) {
-        this.emit(diagnostic)
-        this.restoreElement(attempt.plan.element)
-        results.set(attempt.handle, {
-          element: attempt.plan.element,
-          state: "native",
-          reason: diagnostic.kind,
-        })
+        this.revert(attempt, diagnostic, results)
       }
 
       pending = retry.filter((attempt) => this.write(attempt, results))
@@ -469,6 +463,21 @@ class BrowserLinebreaker implements Linebreaker {
     this.measurements.clear()
     this.metrics.clear()
     this.destroyed = true
+  }
+
+  private revert(
+    attempt: Attempt,
+    diagnostic: Diagnostic,
+    results: Map<LinebreakPlan, LinebreakResult>,
+  ) {
+    const { element } = attempt.plan
+    this.emit(diagnostic)
+    this.restoreElement(element)
+    results.set(attempt.handle, {
+      element,
+      state: "native",
+      reason: diagnostic.kind,
+    })
   }
 
   private decline(
@@ -554,6 +563,7 @@ class BrowserLinebreaker implements Linebreaker {
       measurement: {
         block: extracted.block,
         items: compiled.items,
+        sums: prefixSums(compiled.items),
         authored,
         under: basis,
       },

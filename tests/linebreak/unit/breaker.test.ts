@@ -13,17 +13,6 @@ import {
 } from "@linebreak/layout/items"
 import { FORBIDDEN_PENALTY, policy } from "@linebreak/policy"
 
-/**
- * Proportions matter here. A line only has real adjustment range when it holds
- * many words; a fixture with wide words and few spaces makes almost every
- * breakpoint infeasible — correct Knuth-Plass behavior, but useless for testing
- * anything else. These widths approximate prose at a comfortable measure.
- *
- * The optimizer is a general Knuth-Plass implementation and handles shrinkable
- * glue. CSS justification cannot compress spaces, so the renderer supplies the
- * shrink a tight line needs as a negative word-spacing and lets justification
- * fill the remainder; that arrangement is asserted under "shipped policy".
- */
 const SPACE = 10
 const WORD = 25
 const MEASURE = 400
@@ -33,11 +22,6 @@ const source = { start: 0, end: 0 }
 
 const box = (width: number): Item => ({ kind: "box", width, source })
 
-/**
- * Glue standing for a real space character, so its source spans one character.
- * A zero-length span marks glue with no text behind it — the paragraph's
- * finishing glue — which the renderer cannot hang word-spacing on.
- */
 const glue = (shrinkRatio = TEX_SHRINK): Item => ({
   kind: "glue",
   width: SPACE,
@@ -79,7 +63,7 @@ describe("breakpoint legality", () => {
     const items: Item[] = [box(10), glue(), glue(), box(10), ...finish()]
 
     expect(breakPenalty(items, 1)).toBe(0)
-    // The second glue follows glue, not a box.
+
     expect(breakPenalty(items, 2)).toBeNull()
   })
 
@@ -100,7 +84,7 @@ describe("breakpoint legality", () => {
 
   test("the terminator forbids breaking at its finishing glue", () => {
     const items = [box(10), ...finish()]
-    // items[1] is the forbidden penalty, items[2] the infinite glue.
+
     expect(breakPenalty(items, 2)).toBeNull()
   })
 })
@@ -111,7 +95,6 @@ describe("feasibility", () => {
   })
 
   test("an interior line with no stretchable glue is infinitely bad", () => {
-    // Adjacent boxes cannot be separated and neither part could stretch.
     expect(breakParagraph([box(350), box(350), ...finish()], MEASURE).ok).toBe(
       false,
     )
@@ -141,9 +124,7 @@ describe("the last line is free", () => {
 
     const last = result.lines.at(-1)
     expect(last).toBeDefined()
-    // Infinite finishing stretch absorbs the slack, so the ratio is ~0 no
-    // matter how little text the line holds. This is why the cost function
-    // needs no special case for the final line.
+
     expect(Math.abs(last?.adjustmentRatio ?? 1)).toBeLessThan(0.001)
   })
 })
@@ -162,15 +143,13 @@ describe("squared demerits minimise the worst line", () => {
       .slice(0, -1)
       .map((line) => line.adjustmentRatio)
     expect(interior.length).toBeGreaterThan(1)
-    // The squaring in (1 + badness)^2 minimises the maximum, so the cost of the
-    // wide word is spread rather than dumped on a single line.
+
     expect(Math.max(...interior)).toBeLessThanOrEqual(policy.fit.tolerance)
   })
 })
 
 describe("discretionaries", () => {
   test("a taken discretionary marks the line for a hyphen", () => {
-    // A word too wide to fit whole at the end of the line, whose halves fit.
     const items: Item[] = [
       ...Array.from({ length: 9 }, () => [box(WORD), glue()]).flat(),
       discretionary({ preWidth: 90, postWidth: 100, noBreakWidth: 185 }),
@@ -184,8 +163,6 @@ describe("discretionaries", () => {
   })
 
   test("an untaken discretionary contributes its whole-word width", () => {
-    // Whole-word width differs from pre + post, as kerning makes it. The line
-    // must report the whole-word width, never the sum of the halves.
     const whole = discretionary({
       preWidth: 60,
       postWidth: 50,
@@ -201,10 +178,6 @@ describe("discretionaries", () => {
   })
 
   test("a code break marks no hyphen, because it draws none", () => {
-    // A break inside an identifier wraps without adding a character. Marking
-    // the line for a hyphen would both show one the author never wrote and make
-    // the rendered line wider than the width the optimizer fitted — wide enough
-    // that the browser wraps it and the paragraph falls back.
     const items: Item[] = [
       ...Array.from({ length: 11 }, () => [box(WORD), glue()]).flat(),
       discretionary({
@@ -225,8 +198,6 @@ describe("discretionaries", () => {
   })
 
   test("only a hyphenating break counts as flagged", () => {
-    // TeX's alpha exists because two hyphenated lines in a row read badly. Two
-    // lines that wrapped inside an identifier do not.
     expect(isFlaggedBreak(discretionary({ hyphen: true }))).toBe(true)
     expect(isFlaggedBreak(discretionary({ hyphen: false, preWidth: 0 }))).toBe(
       false,
@@ -244,13 +215,11 @@ describe("discretionaries", () => {
     expect(result.ok).toBe(true)
     if (!result.ok || result.lines.length < 2) return
 
-    // The continuation line carries only the post-break half.
     expect(result.lines[1]?.naturalWidth).toBe(100)
   })
 })
 
 describe("authored breaks", () => {
-  /** Words, then a `<br>`, then more words. */
   const withBreak = (before: number, after: number): Item[] => [
     ...Array.from({ length: before }, (_, index) =>
       index > 0 ? [glue(), box(WORD)] : [box(WORD)],
@@ -263,8 +232,6 @@ describe("authored breaks", () => {
   ]
 
   test("a forced break ends its line however short the line is", () => {
-    // Three words on a 400px measure is nowhere near full. Without the break
-    // the optimizer would happily carry on.
     const result = breakParagraph(withBreak(3, 20), MEASURE)
 
     expect(result.ok).toBe(true)
@@ -275,9 +242,6 @@ describe("authored breaks", () => {
   })
 
   test("a forced break costs a short line nothing", () => {
-    // Infinite fill absorbs the slack, so the line is not merely tolerated —
-    // it is free, exactly as the paragraph's own last line is. Three words on a
-    // 400px measure would otherwise be ruinously loose.
     const result = breakParagraph(withBreak(3, 20), MEASURE)
 
     expect(result.ok).toBe(true)
@@ -297,10 +261,6 @@ describe("authored breaks", () => {
   })
 
   test("a break with nothing after it is declined, not set as an empty line", () => {
-    // A trailing `<br>` describes a line holding nothing, which a renderer that
-    // makes one element per line cannot express. `compileBlock` drops such a
-    // break before it reaches here; reaching here anyway, the optimizer refuses
-    // to propose the line rather than emitting `end <= start`.
     const trailing: Item[] = [
       ...Array.from({ length: 12 }, (_, index) =>
         index > 0 ? [glue(), box(WORD)] : [box(WORD)],
@@ -310,9 +270,6 @@ describe("authored breaks", () => {
     ]
     const result = breakParagraph(trailing, MEASURE, { force: true })
 
-    // Declining is the correct outcome, and asserting it is what makes this
-    // test fail if the empty-line guard is ever removed — without the guard the
-    // same fixture returns ok with a line whose end precedes its start.
     expect(result.ok).toBe(false)
   })
 
@@ -330,9 +287,6 @@ describe("authored breaks", () => {
 
 describe("what a break did to the text", () => {
   test("a break at a penalty consumed no space and drew no hyphen", () => {
-    // The break opportunity the segmenter finds after an authored hyphen —
-    // "apartment-|style". Rejoining the lines with a space there would put a
-    // character in the reader's copy that the author never wrote.
     const items: Item[] = []
     for (let index = 0; index < 24; index += 1) {
       if (index > 0) items.push(glue())
@@ -352,9 +306,7 @@ describe("what a break did to the text", () => {
 
     expect(result.ok).toBe(true)
     if (!result.ok) return
-    // The line that ends at the inserted penalty is the one under test. It must
-    // say it consumed nothing: a "hyphen" here draws a hyphen the author never
-    // wrote, and a "space" puts one into the reader's clipboard.
+
     const atPenalty = result.lines.find((line) => line.end === 23)
     expect(atPenalty).toBeDefined()
     expect(atPenalty?.breakKind).toBe("none")
@@ -362,10 +314,6 @@ describe("what a break did to the text", () => {
   })
 
   test("a break just before a space still reports the space it ate", () => {
-    // Breaking at a zero-width penalty discards the glue after it, so that
-    // space is gone from the rendered text as surely as if the break had landed
-    // on it. Reporting "none" here is what makes the clipboard run two words
-    // together — a `<wbr>` immediately before a space is the reachable case.
     const items: Item[] = []
     for (let index = 0; index < 24; index += 1) {
       if (index > 0) items.push(glue())
@@ -397,8 +345,7 @@ describe("what a break did to the text", () => {
     for (const line of result.lines.slice(0, -1)) {
       expect(line.breakKind).toBe("space")
     }
-    // A paragraph ends at a forced break like any other; nothing follows it
-    // in the DOM, so nothing is rejoined there.
+
     expect(result.lines.at(-1)?.breakKind).toBe("forced")
   })
 })
@@ -410,8 +357,7 @@ describe("penalties", () => {
       for (let index = 0; index < 24; index += 1) {
         if (index > 0) items.push(glue())
         items.push(box(WORD))
-        // A candidate break sitting one word short of where the optimizer
-        // would otherwise land.
+
         if (index === 10) {
           items.push({
             kind: "penalty",
@@ -431,17 +377,13 @@ describe("penalties", () => {
     expect(neutral.ok).toBe(true)
     expect(attractive.ok).toBe(true)
     if (!neutral.ok || !attractive.ok) return
-    // With -p^2 subtracted the attractive point wins; if the penalty were added
-    // linearly instead, both layouts would agree.
+
     expect(attractive.lines[0]?.end).not.toBe(neutral.lines[0]?.end)
   })
 })
 
 describe("tolerance", () => {
   test("bounds looseness only — a tight line is limited by r >= -1, not by tolerance", () => {
-    // Words that pack tightly produce negative ratios. However small the
-    // tolerance, those lines stay feasible; this is TeX's rule, not an
-    // oversight.
     const result = breakParagraph(evenWords(30), MEASURE, { tolerance: 0.05 })
 
     expect(result.ok).toBe(true)
@@ -454,8 +396,6 @@ describe("tolerance", () => {
   })
 
   test("the relaxed pass rescues a paragraph the strict pass declines", () => {
-    // Wide words leave every line needing to stretch, so a low tolerance has
-    // nothing feasible to choose.
     const items = paragraph(Array.from({ length: 9 }, () => 90))
 
     const strict = breakParagraph(items, MEASURE, { tolerance: 0.5 })
@@ -467,8 +407,6 @@ describe("tolerance", () => {
 })
 
 describe("the final pass", () => {
-  // Words too wide to fit the measure however they are grouped. Without
-  // forcing, every active node is retired and the paragraph is abandoned.
   const unbreakable = () =>
     paragraph(Array.from({ length: 12 }, () => MEASURE - SPACE))
 
@@ -513,9 +451,6 @@ describe("the final pass", () => {
   })
 
   test("a forced line reports the spaces the renderer compresses", () => {
-    // The renderer makes an overfull line fit with negative word-spacing, so a
-    // forced line is only renderable if it says how many spaces to spread that
-    // across.
     const items = paragraph([...Array.from({ length: 8 }, () => 120)])
     const result = breakParagraph(items, MEASURE, { force: true })
 
@@ -530,19 +465,10 @@ describe("the final pass", () => {
 
 describe("shipped policy", () => {
   test("glue shrinks, and the renderer supplies what CSS cannot", () => {
-    // CSS justification only stretches, so a line set tighter than natural is
-    // produced by authoring a negative word-spacing sized to make it fit, after
-    // which justification fills the remainder. Removing shrink instead was
-    // measurably worse: 41 more lines on one article, average stretch 77%
-    // higher, and rivers where there had been none.
     expect(policy.glue.shrink).toBeGreaterThan(0)
   })
 
   test("the last line does not count the finishing glue as a space", () => {
-    // The renderer divides a line's overflow by this count to size the negative
-    // word-spacing. Counting the finishing glue — which has no space character
-    // behind it — spreads the shrink one space too thin, and the last line of
-    // every tight paragraph ends up wide enough to wrap.
     const items = evenWords(23)
     const result = breakParagraph(items, MEASURE)
 
@@ -556,7 +482,7 @@ describe("shipped policy", () => {
     for (let index = last.start; index < last.end; index += 1) {
       if (items[index]?.kind === "glue") glueItems += 1
     }
-    // Exactly one glue item in range is the terminator's, and it is not a space.
+
     expect(glueItems).toBeGreaterThan(0)
     expect(last.spaceCount).toBe(glueItems - 1)
   })
@@ -568,15 +494,12 @@ describe("shipped policy", () => {
     if (!result.ok) return
     for (const line of result.lines.slice(0, -1)) {
       if (line.adjustmentRatio >= 0) continue
-      // Without a space to absorb it, a shrink has nowhere to go.
+
       expect(line.spaceCount).toBeGreaterThan(0)
     }
   })
 
   test("hyphenation is off by default", () => {
-    // A break inside a word puts a line boundary there, and the browser reports
-    // that boundary as a newline, so the rendered text would stop matching the
-    // authored text. Callers opt in.
     expect(policy.hyphenate).toBe(false)
   })
 })
