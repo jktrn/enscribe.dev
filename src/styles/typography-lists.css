@@ -48,7 +48,7 @@ prose-content {
       margin-block: 0 1em;
     }
 
-    > :is(blockquote, figure, details, table, pre, math-display, file-tree, tab-group, step-list),
+    > :is(blockquote, figure, details, table, table-scroll, pre, math-display, file-tree, tab-group, step-list),
     > .expressive-code {
       margin-block: 1em;
     }

@@ -3,7 +3,7 @@ import {
   type HastContent,
   type HastVisitorContext,
 } from "satteri"
-import type { Text } from "hast"
+import type { Parents, Text } from "hast"
 
 const CAPS_RUN = /[A-Z]{2,}\d*/g
 const ROMAN_NUMERAL =
@@ -61,7 +61,7 @@ const acronymParts = (source: string) => {
 }
 
 const isExcluded = (node: Text, context: HastVisitorContext) => {
-  let ancestor = context.parent(node)
+  let ancestor: Readonly<Parents> | undefined = context.parent(node)
   while (ancestor) {
     if (ancestor.type === "element") {
       if (

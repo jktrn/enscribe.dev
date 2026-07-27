@@ -14,13 +14,13 @@ Although during the trip we had no prior map or visualization of the actual path
 
 ![Day 5 Map 2](./assets/day-5-map-2-dark.webp)
 
-- (I): [Romon Building](#romon-building)
-- (II): [Senbon Torii (Start)](#senbon-torii-start)
-- (III): [Kumataka Shrine & Shin-Ike Pond](#kumataka-shrine--shin-ike-pond)
-- (IV): [Yotsutsuji Intersection](#yotsutsuji-intersection)
-- (V): [Ichinomine Shrine (Summit)](#ichinomine-shrine-summit)
-- (VI): [Descent and Breakfast (Tea and Eggs)](#descent-and-breakfast-tea-and-eggs)
-- (VII): [Kojigamine Observation Deck](#kojigamine-observation-deck)
+- (I): [Romon Building](#day-5-romon-building)
+- (II): [Senbon Torii (Start)](#day-5-senbon-torii-start)
+- (III): [Kumataka Shrine & Shin-Ike Pond](#day-5-kumataka-shrine--shin-ike-pond)
+- (IV): [Yotsutsuji Intersection](#day-5-yotsutsuji-intersection)
+- (V): [Ichinomine Shrine (Summit)](#day-5-ichinomine-shrine-summit)
+- (VI): [Descent and Breakfast (Tea and Eggs)](#day-5-descent-and-breakfast-tea-and-eggs)
+- (VII): [Kojigamine Observation Deck](#day-5-kojigamine-observation-deck)
 
 ### Romon building
 

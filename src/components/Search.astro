@@ -203,7 +203,7 @@ import SearchIcon from "@/assets/icons/search.svg"
     const target = event.target as Element
     if (target.closest?.("#search-trigger")) open()
     if (target.closest?.("#search-dialog a")) dialog?.close()
-    if (event.target === dialog) dialog.close()
+    if (event.target === dialog) dialog?.close()
   })
 
   document.addEventListener("keydown", (event) => {

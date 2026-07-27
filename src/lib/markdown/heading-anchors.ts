@@ -1,6 +1,7 @@
 import GithubSlugger from "github-slugger"
 import { h } from "hastscript"
 import { defineHastPlugin } from "satteri"
+import { plainText } from "./hast-text"
 
 export function headingAnchors() {
   const slugger = new GithubSlugger()
@@ -13,7 +14,7 @@ export function headingAnchors() {
         const id =
           typeof existing === "string" && existing
             ? existing
-            : slugger.slug(ctx.textContent(node))
+            : slugger.slug(plainText(node))
         if (!id) return
         if (existing !== id) ctx.setProperty(node, "id", id)
         ctx.appendChild(

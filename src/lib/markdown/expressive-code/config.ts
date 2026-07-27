@@ -11,8 +11,7 @@ import { pluginCodeTones } from "./tones"
 export const ecOptions: SatteriExpressiveCodeOptions = {
   themes: ["vitesse-light", "vitesse-dark"],
   useDarkModeMediaQuery: true,
-  themeCssSelector: (theme) =>
-    `[data-theme="${theme.name === "vitesse-dark" ? "dark" : "light"}"]`,
+  themeCssSelector: (theme) => `[data-theme="${theme.type}"]`,
   plugins: [
     pluginCollapsibleSections(),
     pluginLineNumbers(),

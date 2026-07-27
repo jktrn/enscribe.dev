@@ -6,5 +6,5 @@
     }
   },
   "include": [".astro/types.d.ts", "**/*"],
-  "exclude": ["dist", "packages", "tests"]
+  "exclude": ["dist", "packages", "tests/linebreak"]
 }

@@ -145,7 +145,7 @@
       this.resizeObserver?.disconnect()
     }
 
-    metrics(): { columns: number; gap: number } {
+    metrics(): { columns: number; gap: number; cell: number } {
       const styles = getComputedStyle(this)
       const width =
         this.clientWidth -

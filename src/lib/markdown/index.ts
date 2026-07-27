@@ -5,6 +5,7 @@ import { blockExpressiveCode, inlineExpressiveCode } from "./expressive-code"
 import { externalLinks } from "./external-links"
 import { frontmatterInline } from "./frontmatter-inline"
 import { headingAnchors } from "./heading-anchors"
+import { headingNamespace } from "./heading-namespace"
 import { inlineSvg } from "./inline-svg"
 import { linkFavicons } from "./link-favicons"
 import {
@@ -40,6 +41,7 @@ export const hastPlugins = [
   inlineAcronyms,
   blockExpressiveCode,
   normalizeListItemFlow,
+  headingNamespace,
   headingAnchors,
   captureTocHeadings,
   tableScroll,

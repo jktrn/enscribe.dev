@@ -29,7 +29,7 @@ const [nameHtml, descriptionHtml] = await Promise.all([
         {thumbnail ? (
           <ThemedBannerImage raster={thumbnail} />
         ) : (
-          <Image src={image} alt="" width={640} height={336} />
+          image && <Image src={image} alt="" width={640} height={336} />
         )}
       </a>
     )}

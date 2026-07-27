@@ -300,6 +300,7 @@ describe("selectCachedDiscordPresence", () => {
     })
     expect(event?.event_type).toBe("no_activity")
     if (event?.event_type !== "no_activity") return
+    if (!cached) return
 
     expect(nextDiscordPresenceState(cached, event)).toEqual({
       activity: cached.activity,
