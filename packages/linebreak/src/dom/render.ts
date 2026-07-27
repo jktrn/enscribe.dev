@@ -1,119 +1,112 @@
-import type { OptimizedLine } from "../layout/line-model"
-import type { ExtractedBlock } from "./extract"
-import type { AuthoredSpacing } from "./spacing"
+import type { Line } from "../layout/breaker"
+import { type ExtractedBlock, type InlineRun, LINE_SEPARATOR } from "./extract"
 
-const appendRange = (
-  target: Node,
-  extracted: ExtractedBlock,
-  rawStart: number,
-  rawEnd: number,
-  firstItemIndex: number,
+export const LINE_SELECTOR = "[data-linebreak-break]"
+export const TYPESET_ATTRIBUTE = "data-linebreak-typeset"
+
+const appendLine = (
+  target: HTMLElement,
+  block: ExtractedBlock,
+  line: Line,
+  fromRun: number,
 ) => {
-  let start = rawStart
-  let end = rawEnd
-  while (extracted.text[start] === " ") start += 1
-  while (end > start && extracted.text[end - 1] === " ") end -= 1
+  const blank = (offset: number) =>
+    block.text[offset] === " " || block.text[offset] === LINE_SEPARATOR
+  let start = line.sourceStart
+  let end = line.sourceEnd
+  while (start < end && blank(start)) start += 1
+  while (end > start && blank(end - 1)) end -= 1
 
   let lastBranch: Node | null = null
   let previousWrappers: HTMLElement[] = []
-  const previousClones: HTMLElement[] = []
-  const trailingEdges: {
-    nodes: HTMLElement[]
-    target: HTMLElement
-  }[] = []
-  let nextItemIndex = firstItemIndex
-  const isBeforeLine = (item: ExtractedBlock["items"][number]) =>
-    item.kind === "anchor"
-      ? item.affinity === "previous"
-        ? item.start <= rawStart
-        : item.start < rawStart
-      : item.end <= rawStart
-  const isAfterLine = (item: ExtractedBlock["items"][number]) =>
-    item.kind === "anchor"
-      ? item.affinity === "previous"
-        ? item.start > rawEnd
-        : item.start >= rawEnd
-      : item.start >= rawEnd
+  const openClones: HTMLElement[] = []
+  const trailingEdges: Array<{ nodes: HTMLElement[]; target: HTMLElement }> = []
+  let nextRun = fromRun
+
+  const beforeLine = (run: InlineRun) =>
+    run.kind === "anchor"
+      ? run.affinity === "previous"
+        ? run.start <= line.sourceStart
+        : run.start < line.sourceStart
+      : run.end <= line.sourceStart
+  const afterLine = (run: InlineRun) =>
+    run.kind === "anchor"
+      ? run.affinity === "previous"
+        ? run.start > line.sourceEnd
+        : run.start >= line.sourceEnd
+      : run.start >= line.sourceEnd
 
   while (
-    nextItemIndex < extracted.items.length &&
-    isBeforeLine(extracted.items[nextItemIndex])
+    nextRun < block.runs.length &&
+    beforeLine(block.runs[nextRun] as InlineRun)
   ) {
-    nextItemIndex += 1
+    nextRun += 1
   }
 
-  for (
-    let itemIndex = nextItemIndex;
-    itemIndex < extracted.items.length;
-    itemIndex += 1
-  ) {
-    const item = extracted.items[itemIndex]
-    if (isAfterLine(item)) break
-    const sliceStart = Math.max(start, item.start)
-    const sliceEnd = Math.min(end, item.end)
-    const isAnchor = item.kind === "anchor"
-    if (isAnchor || item.end <= rawEnd) nextItemIndex = itemIndex + 1
+  for (let index = nextRun; index < block.runs.length; index += 1) {
+    const run = block.runs[index] as InlineRun
+    if (afterLine(run)) break
+    const sliceStart = Math.max(start, run.start)
+    const sliceEnd = Math.min(end, run.end)
+    const isAnchor = run.kind === "anchor"
+    if (isAnchor || run.end <= line.sourceEnd) nextRun = index + 1
     if (!isAnchor && sliceStart >= sliceEnd) continue
 
-    let commonWrapperCount = 0
+    let shared = 0
     while (
-      commonWrapperCount < item.wrappers.length &&
-      item.wrappers[commonWrapperCount] === previousWrappers[commonWrapperCount]
+      shared < run.wrappers.length &&
+      run.wrappers[shared] === previousWrappers[shared]
     ) {
-      commonWrapperCount += 1
+      shared += 1
     }
 
-    previousClones.length = commonWrapperCount
-    let branch: Node = previousClones.at(-1) ?? target
-    for (
-      let index = commonWrapperCount;
-      index < item.wrappers.length;
-      index += 1
-    ) {
-      const wrapper = item.wrappers[index]
-      const info = extracted.wrappers.get(wrapper)
+    openClones.length = shared
+    let branch: Node = openClones.at(-1) ?? target
+    for (let depth = shared; depth < run.wrappers.length; depth += 1) {
+      const wrapper = run.wrappers[depth] as HTMLElement
+      const info = block.wrappers.get(wrapper)
       if (!info) return null
-      const fragment = {
-        startsWrapper: rawStart <= info.start,
-        endsWrapper: rawEnd >= info.end,
-      }
+      const startsWrapper = line.sourceStart <= info.start
+      const endsWrapper = line.sourceEnd >= info.end
+
       const clone = wrapper.cloneNode(false) as HTMLElement
-      clone.removeAttribute("id")
-      clone.dataset.kpInlineFragment = ""
-      if (fragment.startsWrapper) clone.dataset.kpFragmentStart = ""
-      if (fragment.endsWrapper) clone.dataset.kpFragmentEnd = ""
+
+      if (!startsWrapper) clone.removeAttribute("id")
+      clone.dataset.linebreakFragment = ""
+      if (startsWrapper) clone.dataset.linebreakFragmentStart = ""
+      if (endsWrapper) clone.dataset.linebreakFragmentEnd = ""
       if (
-        fragment.startsWrapper &&
-        (isAnchor || sliceStart === item.start) &&
-        info.firstItem === itemIndex
+        startsWrapper &&
+        (isAnchor || sliceStart === run.start) &&
+        info.firstRun === index
       ) {
         clone.append(...info.leading.nodes.map((node) => node.cloneNode(true)))
       }
       branch.appendChild(clone)
-      if (fragment.endsWrapper) {
+      if (endsWrapper)
         trailingEdges.push({ nodes: info.trailing.nodes, target: clone })
-      }
       branch = clone
-      previousClones.push(clone)
+      openClones.push(clone)
     }
-    if (item.kind === "box") {
-      branch.appendChild(item.sourceElement.cloneNode(true))
-    } else if (item.kind === "text") {
+
+    if (run.kind === "atom") {
+      branch.appendChild(run.sourceElement.cloneNode(true))
+    } else if (run.kind === "text") {
       branch.appendChild(
-        document.createTextNode(
-          item.text.slice(sliceStart - item.start, sliceEnd - item.start),
+        target.ownerDocument.createTextNode(
+          run.text.slice(sliceStart - run.start, sliceEnd - run.start),
         ),
       )
     }
     lastBranch = branch
-    previousWrappers = item.wrappers
+    previousWrappers = run.wrappers
   }
 
   for (const edge of trailingEdges) {
     edge.target.append(...edge.nodes.map((node) => node.cloneNode(true)))
   }
 
-  return lastBranch ? { lastBranch, nextItemIndex } : null
+  return lastBranch ? { lastBranch, nextRun } : null
 }
 
 export const preserveImageAttributes = (
@@ -122,22 +115,15 @@ export const preserveImageAttributes = (
   attributes: readonly string[],
 ) => {
   if (attributes.length === 0) return
-  const images = block.querySelectorAll<HTMLImageElement>("img")
-  if (images.length === 0) return
+  const originals = block.querySelectorAll<HTMLImageElement>("img")
+  const replacements = replacement.querySelectorAll<HTMLImageElement>("img")
+  if (originals.length !== replacements.length) return
 
-  const current = new Map<string, HTMLImageElement[]>()
-  for (const image of images) {
-    const source = image.getAttribute("src") ?? ""
-    const matches = current.get(source) ?? []
-    matches.push(image)
-    current.set(source, matches)
-  }
-  for (const matches of current.values()) matches.reverse()
-  for (const image of replacement.querySelectorAll<HTMLImageElement>("img")) {
-    const source = current.get(image.getAttribute("src") ?? "")?.pop()
-    if (!source) continue
+  for (const [index, image] of replacements.entries()) {
+    const original = originals[index]
+    if (!original) continue
     for (const attribute of attributes) {
-      const value = source.getAttribute(attribute)
+      const value = original.getAttribute(attribute)
       if (value === null) image.removeAttribute(attribute)
       else image.setAttribute(attribute, value)
     }
@@ -145,69 +131,36 @@ export const preserveImageAttributes = (
 }
 
 export const renderLines = (
-  block: HTMLElement,
-  extracted: ExtractedBlock,
-  lines: OptimizedLine[],
-  authoredSpacing: AuthoredSpacing,
-  preserveImageAttributesList: readonly string[] = [],
+  element: HTMLElement,
+  block: ExtractedBlock,
+  lines: readonly Line[],
+  targetWidth: number,
+  preservedImageAttributes: readonly string[],
 ) => {
+  const document = element.ownerDocument
   const output = document.createDocumentFragment()
   const lineElements: HTMLElement[] = []
-  let firstItemIndex = 0
+  let nextRun = 0
 
-  for (let index = 0; index < lines.length; index += 1) {
-    const line = lines[index]
-    const isLast = index === lines.length - 1
+  for (const line of lines) {
     const target = document.createElement("span")
-    target.className = isLast ? "kp-line kp-final-line" : "kp-line"
-    target.style.setProperty(
-      "--kp-base-word-spacing",
-      authoredSpacing.wordSpacing,
-    )
-    target.style.setProperty(
-      "--kp-word-spacing-delta",
-      `${isLast ? 0 : line.wordSpacing}px`,
-    )
-    target.style.setProperty(
-      "--kp-base-letter-spacing",
-      authoredSpacing.letterSpacing,
-    )
-    target.style.setProperty(
-      "--kp-letter-spacing-delta",
-      `${isLast ? 0 : line.letterSpacing}px`,
-    )
+    target.dataset.linebreakBreak = line.breakKind
 
-    const rendered = appendRange(
-      target,
-      extracted,
-      line.start,
-      line.end,
-      firstItemIndex,
-    )
-    if (!rendered) return null
-    firstItemIndex = rendered.nextItemIndex
-
-    if (line.discretionaryHyphen) {
-      const hyphen = document.createElement("span")
-      hyphen.className = "kp-hyphen"
-      hyphen.setAttribute("aria-hidden", "true")
-      hyphen.textContent = "-"
-      rendered.lastBranch.appendChild(hyphen)
+    const overflow = line.naturalWidth - targetWidth
+    if (overflow > 0 && line.spaceCount > 0) {
+      target.style.wordSpacing = `${-(overflow / line.spaceCount)}px`
     }
+
+    const rendered = appendLine(target, block, line, nextRun)
+    if (!rendered) return null
+    nextRun = rendered.nextRun
 
     output.appendChild(target)
     lineElements.push(target)
-    if (!isLast) {
-      const lineBreak = document.createElement("br")
-      lineBreak.className = "kp-break"
-      lineBreak.dataset.break = line.breakKind
-      output.appendChild(lineBreak)
-    }
   }
 
-  preserveImageAttributes(block, output, preserveImageAttributesList)
-  block.replaceChildren(output)
-  block.dataset.kpJustified = ""
-  block.dataset.kpLines = String(lines.length)
+  preserveImageAttributes(element, output, preservedImageAttributes)
+  element.replaceChildren(output)
+  element.setAttribute(TYPESET_ATTRIBUTE, String(lines.length))
   return lineElements
 }

@@ -40,6 +40,7 @@ type Props = {
 
 const { crumbs, wide } = Astro.props
 const actions = Astro.slots.has("actions")
+const hasToc = Astro.slots.has("toc") && !wide
 ---
 
 <html lang={SITE.locale} dir={SITE.dir}>
@@ -47,14 +48,14 @@ const actions = Astro.slots.has("actions")
     <slot name="head" />
   </MetaHead>
   <body>
-    <page-grid>
+    <page-grid data-toc={hasToc || undefined}>
       <page-header>
         <page-nav>
           <Sidebar crumbs={crumbs} actions={actions}
             ><slot name="actions" slot="actions" /></Sidebar
           >
         </page-nav>
-        {Astro.slots.has("toc") && !wide && (
+        {hasToc && (
             <page-toc><slot name="toc" /></page-toc>
           )}
       </page-header>
@@ -92,7 +93,7 @@ const actions = Astro.slots.has("actions")
       grid-template-rows: auto 1fr;
       grid-template-areas: "nav toc" "nav content";
 
-      &:not(:has(page-toc)) {
+      &:not([data-toc]) {
         grid-template-areas: "nav content" "nav content";
       }
     }
@@ -204,6 +205,11 @@ const actions = Astro.slots.has("actions")
   }
 
   @media (width >= 64rem) {
+    page-grid:not([data-toc]) page-content:not([data-wide]) {
+      grid-column: 3 / 13;
+      max-inline-size: var(--measure);
+    }
+
     page-content[data-wide] {
       grid-column: 3 / 13;
     }

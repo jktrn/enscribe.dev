@@ -1,27 +1,17 @@
 {
   "name": "@enscribe/linebreak",
   "version": "0.1.0",
-  "description": "Browser-first Knuth–Plass line breaking for rich inline HTML",
+  "private": true,
+  "description": "Knuth–Plass line breaking for this site's prose",
   "type": "module",
   "packageManager": "bun@1.3.14",
   "license": "MIT",
   "author": "jktrn",
-  "keywords": [
-    "knuth-plass",
-    "line-breaking",
-    "typography",
-    "justification",
-    "unicode",
-    "browser"
+  "files": [
+    "dist"
   ],
   "sideEffects": [
     "./dist/styles.css"
-  ],
-  "files": [
-    "dist",
-    "README.md",
-    "CHANGELOG.md",
-    "LICENSE"
   ],
   "exports": {
     ".": {
@@ -36,8 +26,7 @@
   "scripts": {
     "build": "tsdown",
     "typecheck": "tsc --noEmit",
-    "check": "bun run typecheck && bun run build",
-    "prepack": "bun run check"
+    "check": "bun run typecheck && bun run build"
   },
   "dependencies": {
     "@chenglou/pretext": "0.0.8",
@@ -48,11 +37,7 @@
     "@types/hyphen": "1.14.0",
     "publint": "0.3.21",
     "tsdown": "0.22.12",
-    "typescript": "6.0.2",
-    "unrun": "0.3.1"
-  },
-  "publishConfig": {
-    "access": "public"
+    "typescript": "6.0.2"
   },
   "engines": {
     "node": ">=18"

@@ -1,2 +1,2 @@
-declare const stylesheet: string
-export default stylesheet
+declare const styles: string
+export default styles

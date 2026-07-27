@@ -1,14 +1,12 @@
-export { cleanCopiedLinebreaks } from "./dom/copy"
-export { createLinebreaker } from "./linebreaker/linebreaker"
-
+export { cleanCopiedLinebreaks } from "./dom/clipboard"
+export { createLinebreaker } from "./linebreaker"
 export type {
-  LinebreakError,
+  Diagnostic,
+  DiagnosticKind,
+  DiagnosticSink,
   LinebreakMetrics,
   LinebreakPlan,
   LinebreakResult,
   Linebreaker,
   LinebreakerOptions,
-  NativeReason,
-  PretextPreparationPhase,
-  PretextPreparationStat,
 } from "./types"

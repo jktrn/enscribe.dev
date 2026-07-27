@@ -1,101 +1,174 @@
 import { expect, test } from "@playwright/test"
-import { invoke, openFixture } from "../support/fixture"
+import { nativeText, settleTypeset } from "../support/page"
 
-test("no-wrap extraction preserves break ownership", async ({ page }) => {
-  await openFixture(page)
+test.use({ viewport: { width: 1440, height: 900 } })
 
-  expect(await invoke(page, "nowrapExtraction")).toEqual({
-    collapsed: {
-      text: "aaaa bbbb cccc dddd",
-      items: [
-        { kind: "text", start: 0, end: 10 },
-        { kind: "anchor", start: 10, end: 10 },
-        { kind: "text", start: 10, end: 19 },
-      ],
-      breakRestrictions: [
-        { start: 1, end: 9 },
-        { start: 11, end: 19 },
-      ],
-    },
-    trailingSpace: {
-      text: "aaaa bbbb",
-      items: [
-        { kind: "text", start: 0, end: 5 },
-        { kind: "text", start: 5, end: 9 },
-      ],
-      breakRestrictions: [{ start: 1, end: 6 }],
-    },
-    emptyInline: {
-      text: "aaaa\ufffcbbbb",
-      items: [
-        { kind: "text", start: 0, end: 4 },
-        { kind: "box", start: 4, end: 5 },
-        { kind: "text", start: 5, end: 9 },
-      ],
-      breakRestrictions: [{ start: 1, end: 9 }],
-    },
+const rejoinedText = (page: import("@playwright/test").Page) =>
+  page.evaluate(() => {
+    const rejoin = (block: Element) => {
+      let text = ""
+      const lines = [
+        ...block.querySelectorAll(":scope > [data-linebreak-break]"),
+      ]
+      for (const [index, line] of lines.entries()) {
+        text += line.textContent ?? ""
+        if (index === lines.length - 1) continue
+
+        if ((line as HTMLElement).dataset.linebreakBreak === "space") {
+          text += " "
+        }
+      }
+      return text
+    }
+
+    const main = document.querySelector("main")
+    if (!main) return ""
+    for (const block of main.querySelectorAll("[data-linebreak-typeset]")) {
+      block.textContent = rejoin(block)
+    }
+    return main.innerText.replace(/\s+/gu, " ").trim()
   })
+
+test("rendered text matches the JavaScript-disabled render", async ({
+  page,
+  browserName,
+}) => {
+  const plain = await nativeText(page)
+  await settleTypeset(page)
+  const live = await rejoinedText(page)
+
+  if (browserName === "webkit") {
+    expect(live.replaceAll(" ", "")).toBe(plain.replaceAll(" ", ""))
+    return
+  }
+  expect(live).toBe(plain)
 })
 
-test("planning reads computed styles without redundant element lookups", async ({
-  page,
-}) => {
-  await openFixture(page)
+const copyFrom = (page: import("@playwright/test").Page, selector: string) =>
+  page.evaluate((blockSelector) => {
+    const block = document.querySelector(blockSelector)
+    if (!block) return null
+    const selection = getSelection()
+    selection?.removeAllRanges()
+    const range = document.createRange()
+    range.selectNodeContents(block)
+    selection?.addRange(range)
 
-  const reads = await invoke(page, "styleReads")
-  expect(reads.cachedParagraphs).toBe(1)
-  expect(reads.unique).toBeGreaterThan(0)
-  expect(reads.total).toBe(reads.unique)
-  expect(reads.repeated).toBe(0)
-  expect(reads.maximum).toBe(1)
+    const event = new ClipboardEvent("copy", {
+      clipboardData: new DataTransfer(),
+      bubbles: true,
+      cancelable: true,
+    })
+    if (!event.clipboardData) return null
+    document.dispatchEvent(event)
+    return {
+      plain: event.clipboardData.getData("text/plain"),
+
+      characters: (block.textContent ?? "").replace(/\s+/gu, ""),
+    }
+  }, selector)
+
+test("copying restores the space a break consumed", async ({ page }) => {
+  await settleTypeset(page)
+  const copied = await copyFrom(page, "[data-linebreak-typeset]")
+
+  expect(copied).not.toBeNull()
+  if (!copied) return
+  expect(copied.plain.length).toBeGreaterThan(0)
+
+  expect(copied.plain).not.toMatch(/\p{L}\n\p{L}/u)
+  expect(copied.plain).not.toContain("￼")
 })
 
-test("computed display classifies inline text, atoms, and native fallback", async ({
+test("copying keeps the newline an authored break stands for", async ({
   page,
 }) => {
-  await openFixture(page)
+  await settleTypeset(page, "/music")
 
-  const content = await invoke(page, "classifyInlineContent")
-  expect(content.hidden?.text).not.toContain("hidden text")
-  expect(content.contents?.wrapperTags).toContain("span")
-  expect(content.inlineBoxes?.boxTags).toEqual(["span", "kbd"])
-  expect(content.blockLink).toBeNull()
-  expect(content.input).toBeNull()
-  expect(content.customInline?.wrapperTags).toContain("linebreak-example")
-  expect(content.nativeImage?.boxTags).toEqual(["img"])
-  expect(content.nativeRenderers?.boxTags).toEqual([
-    "svg",
-    "math",
-    "ruby",
-    "span",
-    "img",
-  ])
-  expect(content.nbsp?.text).toContain("This\u00a0pair")
-  expect(content.nbsp?.text).toContain("thin\u2009space")
-  expect(content.nbsp?.text).not.toMatch(/[\t\n\f\r]/u)
+  const copied = await copyFrom(
+    page,
+    '[data-linebreak-typeset]:has(> [data-linebreak-break="forced"]:not(:last-child))',
+  )
+
+  expect(copied).not.toBeNull()
+  if (!copied) return
+
+  const parts = copied.plain.split("\n").filter((part) => part.trim())
+  expect(parts.length).toBeGreaterThan(1)
+
+  expect(copied.plain.replace(/\s+/gu, "")).toBe(copied.characters)
 })
 
-test("cached extraction and authored restoration share one detached template", async ({
+test("copying keeps inline math and ruby in the surrounding text", async ({
   page,
 }) => {
-  await openFixture(page)
+  await settleTypeset(page)
+  await page.evaluate(() => {
+    const block = document.createElement("p")
+    block.dataset.copyFixture = ""
+    block.dataset.linebreakTypeset = "1"
+    block.innerHTML =
+      '<span data-linebreak-break="none">Before <math><mi>x</mi><mo>+</mo><mn>1</mn></math> and <ruby>漢<rp>(</rp><rt>kan</rt><rp>)</rp></ruby> after</span>'
+    document.body.append(block)
+  })
 
-  const template = await invoke(page, "templateOwnership")
-  expect(template.ownership).toEqual({
-    cloneMatchesSource: true,
-    distinctRoots: true,
-    everyReferenceUsesTemplate: true,
-    noReferenceUsesSource: true,
-    wrappersResolve: true,
-    directTextUsesTemplateRoot: true,
+  const copied = await copyFrom(page, "[data-copy-fixture]")
+
+  expect(copied?.plain).toBe("Before x+1 and 漢kan after")
+})
+
+test("a hyphenated break is an element boundary", async ({ page }) => {
+  await settleTypeset(page)
+
+  const boundary = await page.evaluate(() => {
+    const line = document.querySelector(
+      '[data-linebreak-typeset] > [data-linebreak-break="hyphen"]',
+    )
+    const block = line?.parentElement
+    if (!line || !block) return null
+    const next = line.nextElementSibling
+    const before = line.textContent?.trim().split(/\s+/u).at(-1) ?? ""
+    const after = next?.textContent?.trim().split(/\s+/u)[0] ?? ""
+    return {
+      whole: `${before}${after}`,
+      intactWhenRejoined: (block.textContent ?? "").includes(
+        `${before}${after}`,
+      ),
+    }
   })
-  expect(template.behavior).toMatchObject({
-    firstResult: { state: "typeset" },
-    secondResult: { state: "typeset" },
-    rendered: true,
-    detachedWrappersRemainDetached: true,
-    detachedMutationExcluded: true,
-    restoredExactly: true,
+
+  expect(boundary).not.toBeNull()
+  expect(boundary?.intactWhenRejoined).toBe(true)
+})
+
+test("inline code and decorated links survive being split", async ({
+  page,
+}) => {
+  await settleTypeset(page)
+
+  const fragments = await page.evaluate(() => {
+    const cut = [
+      ...document.querySelectorAll(
+        "[data-linebreak-typeset] [data-linebreak-fragment]",
+      ),
+    ]
+    const openEnded = cut.filter(
+      (element) =>
+        !element.hasAttribute("data-linebreak-fragment-start") ||
+        !element.hasAttribute("data-linebreak-fragment-end"),
+    )
+    return {
+      total: cut.length,
+      suppressed: openEnded.every((element) => {
+        const style = getComputedStyle(element)
+        if (!element.hasAttribute("data-linebreak-fragment-start")) {
+          return Number.parseFloat(style.paddingInlineStart) === 0
+        }
+        return Number.parseFloat(style.paddingInlineEnd) === 0
+      }),
+    }
   })
-  expect(template.behavior.detachedWrapperCount).toBeGreaterThan(0)
+
+  expect(fragments.total).toBeGreaterThan(0)
+  expect(fragments.suppressed).toBe(true)
 })
