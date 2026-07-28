@@ -75,7 +75,7 @@ code[data-code-path] svg {
 }
 
 [data-acronym] {
-  font-variant-caps: all-small-caps;
+  font-family: "MD Lorien SC", var(--font-sans);
 }
 
 prose-content {

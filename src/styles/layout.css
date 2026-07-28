@@ -20,6 +20,9 @@
 
   --grid-max-width: 75.94rem;
   --grid-gutter: var(--space-s-m);
+  /* --grid-gutter at its clamp maximum — the value it holds once the grid is
+     width-capped. Must match the upper bound of --space-s-m. */
+  --grid-gutter-max: 1.6875rem;
   --grid-columns: 12;
   --grid-edge: max(
     var(--grid-gutter),
