@@ -13,7 +13,7 @@
   },
   "scripts": {
     "dev": "bun run media:prepare && bun run fonts:prepare && bun run linebreak:build && astro dev",
-    "build": "astro check && bun run media:prepare && bun run fonts:prepare && bun run favicons:check && bun run linebreak:build && astro build --force && pagefind --site dist",
+    "build": "bun run media:prepare && bun run fonts:prepare && bun run favicons:check && bun run linebreak:build && astro check && astro build --force && pagefind --site dist",
     "preview": "astro preview",
     "preview:cloudflare": "bun run build && wrangler dev",
     "deploy:cloudflare": "bun run build && wrangler deploy",
