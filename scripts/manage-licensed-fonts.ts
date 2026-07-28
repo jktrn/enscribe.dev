@@ -10,13 +10,23 @@ import {
 const webFonts = [
   {
     localPath: "src/assets/fonts/MDLorien-Regular.woff2",
-    sha256: "e16471f7c0944b00895a71c3654f39fadd093736e664856d462612978ffdd66f",
-    size: 82_536,
+    sha256: "674251f4e92f683701efdf191f6e38d31045f339eaa8b4d223f2ba74893697c3",
+    size: 82_392,
   },
   {
     localPath: "src/assets/fonts/MDLorien-Italic.woff2",
-    sha256: "97625f0151e3a3a6846be286431613f3b6666cbae21223e400a2c58d37bef5c1",
-    size: 118_200,
+    sha256: "0b7b1f3efaa5305afbb2ceb97ae5e9a94bf0e6f0dfc3732cbeb5184229a31579",
+    size: 118_180,
+  },
+  {
+    localPath: "src/assets/fonts/MDLorienSC-Regular.woff2",
+    sha256: "f7705505e55c90510fe7f719c4a4797836c0769df73f2f7e57fd747ce436b60e",
+    size: 82_288,
+  },
+  {
+    localPath: "src/assets/fonts/MDLorienSC-Italic.woff2",
+    sha256: "e243cff1f354b48a7ff604dca89f7c4c1cbd0ad39678fe71ad7b1ee2e91dfa57",
+    size: 117_988,
   },
 ] as const
 

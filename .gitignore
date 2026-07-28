@@ -17,6 +17,8 @@ public/favicons/
 
 src/assets/fonts/MDLorien-Regular.woff2
 src/assets/fonts/MDLorien-Italic.woff2
+src/assets/fonts/MDLorienSC-Regular.woff2
+src/assets/fonts/MDLorienSC-Italic.woff2
 src/assets/fonts/*.woff2.*.tmp
 graphics/fonts/MDLorien-Regular.otf
 graphics/fonts/MDLorien-Italic.otf

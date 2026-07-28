@@ -15,6 +15,22 @@
 }
 
 @font-face {
+  font-family: "MD Lorien SC";
+  src: url("../assets/fonts/MDLorienSC-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "MD Lorien SC";
+  src: url("../assets/fonts/MDLorienSC-Italic.woff2") format("woff2");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
   font-family: "MD Lorien Fallback";
   src: local("Georgia");
   font-weight: 100 900;

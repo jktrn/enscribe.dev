@@ -2,6 +2,7 @@
 import { ClientRouter } from "astro:transitions"
 import sansWoff2 from "@/assets/fonts/MDLorien-Regular.woff2?url"
 import sansItalicWoff2 from "@/assets/fonts/MDLorien-Italic.woff2?url"
+import sansScWoff2 from "@/assets/fonts/MDLorienSC-Regular.woff2?url"
 import { SITE } from "@/consts"
 ---
 
@@ -59,6 +60,13 @@ import { SITE } from "@/consts"
   <link
     rel="preload"
     href={sansItalicWoff2}
+    as="font"
+    type="font/woff2"
+    crossorigin
+  >
+  <link
+    rel="preload"
+    href={sansScWoff2}
     as="font"
     type="font/woff2"
     crossorigin
