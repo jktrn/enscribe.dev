@@ -17,7 +17,7 @@ describe("hyphenation offsets", () => {
 
   test("declines words shorter than the policy minimum", () => {
     expect(hyphenationOffsets("cat")).toEqual([])
-    expect(hyphenationOffsets("apple")).toEqual([])
+    expect(hyphenationOffsets("idea")).toEqual([])
   })
 
   test("returns offsets into the original word, not the marked string", () => {

@@ -1,18 +1,20 @@
 export const policy = {
   glue: {
     stretch: 1 / 2,
-    shrink: 0.6,
+    shrink: 1 / 2,
   },
   fit: {
     tolerance: 1,
-    relaxedTolerance: 2.5,
+    relaxedTolerance: 1.26,
+    emergencyStretchSpaces: 14,
     safetyMarginPx: 0.5,
     rewrapAttempts: 3,
     rewrapReduction: 0.01,
   },
   demerits: {
-    consecutiveFlagged: 3_000,
-    fitnessJump: 3_000,
+    linePenalty: 10,
+    consecutiveFlagged: 10_000,
+    fitnessJump: 10_000,
   },
   penalty: {
     hyphen: 50,
@@ -20,7 +22,7 @@ export const policy = {
   hyphenate: false,
   limits: {
     maximumCharacters: 3_000,
-    minimumHyphenatedWordLength: 6,
+    minimumHyphenatedWordLength: 5,
   },
 } as const
 

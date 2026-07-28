@@ -32,6 +32,7 @@ export type BreakResult =
 export type BreakOptions = {
   readonly tolerance?: number
   readonly force?: boolean
+  readonly emergencyStretch?: number
   readonly sums?: Sums
 }
 
@@ -61,7 +62,7 @@ const fitnessClass = (ratio: number) => {
 const badness = (ratio: number) => 100 * Math.abs(ratio) ** 3
 
 const lineDemerits = (ratio: number, penalty: number) => {
-  const base = 1 + badness(ratio)
+  const base = policy.demerits.linePenalty + badness(ratio)
   if (penalty >= 0) return (base + penalty) ** 2
   if (isForced(penalty)) return base ** 2
   return base ** 2 - penalty ** 2
@@ -124,6 +125,8 @@ type Search = {
   readonly sums: Sums
   readonly target: number
   readonly tolerance: number
+
+  readonly emergencyStretch: number
 }
 
 type Step = {
@@ -151,8 +154,10 @@ const measureLine = (search: Search, from: ActiveNode, to: number) => {
   const shrink = (sums.shrink[to] as number) - (sums.shrink[start] as number)
 
   let ratio = 0
-  if (slack > 0)
-    ratio = stretch > 0 ? slack / stretch : Number.POSITIVE_INFINITY
+  if (slack > 0) {
+    const stretchable = stretch + search.emergencyStretch
+    ratio = stretchable > 0 ? slack / stretchable : Number.POSITIVE_INFINITY
+  }
   if (slack < 0) ratio = shrink > 0 ? slack / shrink : Number.NEGATIVE_INFINITY
   return { natural, ratio, shrink }
 }
@@ -291,6 +296,7 @@ export const breakParagraph = (
     sums: options.sums ?? prefixSums(items),
     target,
     tolerance: options.tolerance ?? policy.fit.tolerance,
+    emergencyStretch: options.emergencyStretch ?? 0,
   }
 
   let actives: ActiveNode[] = [
@@ -351,5 +357,29 @@ export const breakParagraphWithFallback = (
   const relaxed = pass({ tolerance: policy.fit.relaxedTolerance })
   if (relaxed.ok) return relaxed
 
-  return pass({ tolerance: policy.fit.relaxedTolerance, force: true })
+  let glueWidth = 0
+  let glueCount = 0
+  for (const item of items) {
+    if (item.kind === "glue") {
+      glueWidth += item.width
+      glueCount += 1
+    }
+  }
+  const emergencyStretch =
+    glueCount > 0
+      ? (glueWidth / glueCount) * policy.fit.emergencyStretchSpaces
+      : 0
+  if (emergencyStretch > 0) {
+    const emergency = pass({
+      tolerance: policy.fit.relaxedTolerance,
+      emergencyStretch,
+    })
+    if (emergency.ok) return emergency
+  }
+
+  return pass({
+    tolerance: policy.fit.relaxedTolerance,
+    emergencyStretch,
+    force: true,
+  })
 }
