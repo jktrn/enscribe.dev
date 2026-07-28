@@ -167,6 +167,13 @@ Rendering clones inline elements, so it cannot preserve their event listeners or
 arbitrary object state. `preserveImageAttributes` covers image attributes that
 change after load.
 
+Canvas measurement uses `measureText`, but its font string cannot represent
+`font-variant-caps`, `font-variant-numeric`, or `font-feature-settings`. Glyph
+substitutions such as small caps and old-style figures can change advance widths
+without changing the font that canvas resolves, so `measureText` returns the
+wrong width without reporting an error. enscribe.dev avoids this mismatch by
+baking those features into the served font files.
+
 ## Rendered DOM
 
 Typesetting replaces the element's children and adds
@@ -257,8 +264,23 @@ The implementation has five stages:
 2. `@chenglou/pretext` measures the text for each computed typography.
 3. Compilation converts the measured runs into boxes, adjustable spaces, and
    break penalties.
-4. The Knuth–Plass search chooses a complete set of breaks. It first uses the
-   normal tolerance, then a relaxed tolerance, then a forced fallback.
+4. The Knuth–Plass search chooses a complete set of breaks by trying four passes
+   modeled on TeX's line breaker, in order:
+   1. The search begins with a strict pass that accepts adjustment ratios up to
+      1 (`\pretolerance=100`).
+   2. If the strict pass cannot find a complete set of breaks, the relaxed pass
+      raises the limit to 1.26 (`\tolerance=200`).
+   3. If the relaxed pass also fails, the emergency pass adds roughly 3 em of
+      stretch to each line's badness denominator, following TeX's
+      `\emergencystretch`. This keeps over-tolerance lines finite so they can
+      compete on demerits instead of reducing the search to a single rescued
+      path.
+   4. If none of the first three passes finds a complete set of breaks, the
+      forced pass makes one final attempt to complete the paragraph.
+
+   Demerits use TeX's formula and constants: `\linepenalty=10`,
+   `\hyphenpenalty=50`, and 10,000 for both double-hyphen and adjacent-fitness
+   demerits.
 5. Rendering rebuilds the inline DOM and verifies that every generated line
    stayed on one browser row.
 
