@@ -40,6 +40,8 @@ const FLUSH_BUDGET_MS = 6
 const IDLE_TIMEOUT_MS = 200
 const RESIZE_SETTLE_MS = 150
 const WIDTH_TOLERANCE = 0.5
+const UNSTABLE_RESIZE_LIMIT = 4
+const UNSTABLE_RESIZE_WINDOW_MS = 8000
 
 type FlushDeadline = { timeRemaining: () => number }
 
@@ -162,6 +164,7 @@ export const typesetProse = (containers: readonly HTMLElement[]) => {
   )
   for (const block of blocks) viewport.observe(block)
 
+  const resizeHistory = new WeakMap<Element, number[]>()
   const measure = new ResizeObserver((entries) => {
     if (stopped) return
     let resized = false
@@ -171,7 +174,25 @@ export const typesetProse = (containers: readonly HTMLElement[]) => {
       measures.set(entry.target, width)
 
       if (previous === undefined) continue
-      if (Math.abs(previous - width) > WIDTH_TOLERANCE) resized = true
+      if (Math.abs(previous - width) <= WIDTH_TOLERANCE) continue
+
+      const now = performance.now()
+      const history = (resizeHistory.get(entry.target) ?? []).filter(
+        (at) => now - at < UNSTABLE_RESIZE_WINDOW_MS,
+      )
+      history.push(now)
+      resizeHistory.set(entry.target, history)
+      if (history.length > UNSTABLE_RESIZE_LIMIT) {
+        measure.unobserve(entry.target)
+        if (import.meta.env.DEV) {
+          console.warn(
+            "linebreak: container width is unstable; leaving it as-is",
+            entry.target,
+          )
+        }
+        continue
+      }
+      resized = true
     }
     if (!resized) return
 
