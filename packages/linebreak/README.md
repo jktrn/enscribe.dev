@@ -174,6 +174,13 @@ without changing the font that canvas resolves, so `measureText` returns the
 wrong width without reporting an error. enscribe.dev avoids this mismatch by
 baking those features into the served font files.
 
+The measured element's width must not depend on its own content, as with a
+shrink-to-fit flex item under `align-items: flex-start` in a column container.
+Authored text and generated line spans have different max-content widths, so
+typesetting such an element changes the measure it was planned against, and an
+integration that restores on container resize will oscillate between native
+and typeset indefinitely.
+
 ## Rendered DOM
 
 Typesetting replaces the element's children and adds
