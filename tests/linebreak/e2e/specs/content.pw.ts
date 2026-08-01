@@ -156,3 +156,27 @@ test("inline code and decorated links survive being split", async ({
   expect(fragments.total).toBeGreaterThan(0)
   expect(fragments.suppressed).toBe(true)
 })
+
+test("an edit to a typeset paragraph survives the next reflow", async ({
+  page,
+}) => {
+  await settleTypeset(page)
+
+  const edited = "Rewritten by the consumer after the paragraph was typeset."
+  const applied = await page.evaluate((text) => {
+    const block = document.querySelector("[data-linebreak-typeset]")
+    if (!block) return false
+    block.textContent = text
+    return true
+  }, edited)
+  expect(applied).toBe(true)
+
+  await page.setViewportSize({ width: 1180, height: 900 })
+  await page.waitForTimeout(1200)
+
+  const survived = await page.evaluate(() => {
+    const main = document.querySelector("main")
+    return (main?.textContent ?? "").replace(/\s+/gu, " ")
+  })
+  expect(survived).toContain(edited)
+})

@@ -1,6 +1,7 @@
 import { handleCopy } from "./dom/clipboard"
 import { proseBlocks } from "./dom/discover"
 import { createLinebreaker } from "./linebreaker"
+import { engineDefaults } from "./policy"
 import type {
   Linebreaker,
   LinebreakerOptions,
@@ -56,7 +57,6 @@ const DEFAULT_MARGIN = "200% 0px"
 const DEFAULT_BLOCKS_PER_SLICE = 12
 const DEFAULT_SLICE_MS = 6
 const RESIZE_SETTLE_MS = 150
-const WIDTH_EPSILON = 0.5
 
 type PauseReason = "resize" | "print" | "stopped"
 
@@ -267,7 +267,8 @@ class BrowserTypesetter<Token> implements Typesetter {
         const previous = this.widths.get(entry.target)
         this.widths.set(entry.target, width)
         if (previous === undefined) continue
-        if (Math.abs(previous - width) > WIDTH_EPSILON) moved = true
+        if (Math.abs(previous - width) > engineDefaults.widthEpsilon)
+          moved = true
       }
       if (!moved) return
 

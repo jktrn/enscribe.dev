@@ -326,12 +326,11 @@ class BrowserLinebreaker implements Linebreaker {
       font: computedFont(style),
       letterSpacing: cssPixels(style.letterSpacing),
     }
-    const ours = element.hasAttribute(TYPESET_ATTRIBUTE)
     let measurement = this.measurements.get(element)
     if (
       measurement &&
-      (!sameBasis(measurement.under, basis) ||
-        (!ours && measurement.text !== authoredText(element)))
+      (measurement.text !== authoredText(element) ||
+        !sameBasis(measurement.under, basis))
     ) {
       this.restoreElement(element)
       this.measurements.delete(element)
@@ -475,7 +474,7 @@ class BrowserLinebreaker implements Linebreaker {
       )
       deltas.push(observed - draft.width)
     }
-    if (deltas.length === 0) return 0
+    if (deltas.length < 2) return 0
     deltas.sort((a, b) => a - b)
     const middle = deltas.length >> 1
     return deltas.length % 2
@@ -490,7 +489,10 @@ class BrowserLinebreaker implements Linebreaker {
   ): FailureReason | null {
     const style = styleOf(element)
 
-    if (Math.abs(contentWidth(element, style) - expectedWidth) > 1) {
+    if (
+      Math.abs(contentWidth(element, style) - expectedWidth) >
+      engineDefaults.widthEpsilon
+    ) {
       return "unstable-width"
     }
     if (!Number.isFinite(resolvedLineHeight(style))) {
@@ -521,15 +523,27 @@ class BrowserLinebreaker implements Linebreaker {
     })
   }
 
+  private disown(element: HTMLElement) {
+    element.removeAttribute(TYPESET_ATTRIBUTE)
+    this.live.delete(element)
+  }
+
   private restoreElement(element: HTMLElement) {
     const measurement = this.measurements.get(element)
-    if (measurement) {
-      restoreAuthored(
-        element,
-        measurement.authored,
-        this.preservedImageAttributes,
-      )
+    if (!measurement) {
+      this.live.delete(element)
+      return
     }
+    if (measurement.text !== authoredText(element)) {
+      this.measurements.delete(element)
+      this.disown(element)
+      return
+    }
+    restoreAuthored(
+      element,
+      measurement.authored,
+      this.preservedImageAttributes,
+    )
     this.live.delete(element)
   }
 
