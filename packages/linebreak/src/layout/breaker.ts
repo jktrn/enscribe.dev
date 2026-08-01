@@ -1,39 +1,68 @@
-import { policy } from "../policy"
 import {
   breakPenalty,
   drawsHyphen,
   isFlaggedBreak,
   isForced,
+  isParagraphEnd,
   isRenderedSpace,
   type Item,
   lineEndWidth,
   lineStartWidth,
   passThroughWidth,
 } from "./items"
+import { type LayoutPolicy, resolvePolicy } from "./policy"
 
-export type BreakKind = "space" | "hyphen" | "forced" | "none"
+/**
+ * What ended a line.
+ *
+ * `end` is the paragraph terminator; `forced` is an authored break such as
+ * `<br>`. TeX models both as `\penalty-10000`, but consumers need to tell them
+ * apart — only `forced` corresponds to a newline in the source text.
+ */
+export type BreakKind = "space" | "hyphen" | "forced" | "none" | "end"
 
 export type Line = {
+  /** Item index of the first item on the line, inclusive. */
   readonly start: number
+  /** Item index of the breakpoint that ended the line, exclusive. */
   readonly end: number
   readonly sourceStart: number
   readonly sourceEnd: number
   readonly naturalWidth: number
   readonly spaceCount: number
+  readonly stretch: number
   readonly shrink: number
   readonly adjustmentRatio: number
   readonly breakKind: BreakKind
 }
 
-export type BreakResult =
-  | { readonly ok: true; readonly lines: readonly Line[] }
-  | { readonly ok: false }
+/** Which pass of TeX's fallback ladder produced a result. */
+export type LayoutPass = "pretolerance" | "tolerance" | "emergency" | "forced"
 
-export type BreakOptions = {
-  readonly tolerance?: number
-  readonly force?: boolean
+export type LayoutResult =
+  | {
+      readonly ok: true
+      readonly lines: readonly Line[]
+      readonly pass: LayoutPass
+      readonly demerits: number
+    }
+  | { readonly ok: false; readonly reason: "empty" | "infeasible" }
+
+export type LayoutOptions = {
+  readonly policy?: Partial<LayoutPolicy>
+  /**
+   * TeX `\emergencystretch`, in the same units as the item widths.
+   * `"auto"` derives roughly 3.5em from the mean glue width.
+   */
+  readonly emergencyStretch?: number | "auto"
+}
+
+export type PassOptions = {
+  /** Threshold as badness, matching TeX's `\tolerance`. */
+  readonly tolerance: number
+  readonly policy?: Partial<LayoutPolicy>
   readonly emergencyStretch?: number
-  readonly sums?: Sums
+  readonly force?: boolean
 }
 
 type ActiveNode = {
@@ -46,29 +75,24 @@ type ActiveNode = {
   readonly breakKind: BreakKind
 }
 
-export type Sums = {
+type Sums = {
   readonly width: readonly number[]
   readonly stretch: readonly number[]
   readonly shrink: readonly number[]
 }
 
-const fitnessClass = (ratio: number) => {
-  if (ratio < -0.5) return 0
-  if (ratio < 0.5) return 1
-  if (ratio < 1) return 2
-  return 3
-}
+/**
+ * Prefix sums are memoized on array identity so that re-solving the same items
+ * at a different measure stays O(1) per candidate line. Keeping the cache
+ * private also removes the hazard of a caller supplying sums that do not match
+ * their items.
+ */
+const sumsCache = new WeakMap<readonly Item[], Sums>()
 
-const badness = (ratio: number) => 100 * Math.abs(ratio) ** 3
+const prefixSums = (items: readonly Item[]): Sums => {
+  const cached = sumsCache.get(items)
+  if (cached) return cached
 
-const lineDemerits = (ratio: number, penalty: number) => {
-  const base = policy.demerits.linePenalty + badness(ratio)
-  if (penalty >= 0) return (base + penalty) ** 2
-  if (isForced(penalty)) return base ** 2
-  return base ** 2 - penalty ** 2
-}
-
-export const prefixSums = (items: readonly Item[]): Sums => {
   const width = [0]
   const stretch = [0]
   const shrink = [0]
@@ -82,9 +106,57 @@ export const prefixSums = (items: readonly Item[]): Sums => {
       (shrink[index] as number) + (item.kind === "glue" ? item.shrink : 0),
     )
   }
-  return { width, stretch, shrink }
+  const sums = { width, stretch, shrink }
+  sumsCache.set(items, sums)
+  return sums
 }
 
+/**
+ * Fitness classes, using the adjustment-ratio bands from Knuth & Plass p.1155.
+ * TeX classifies on integer badness instead, whose crossovers sit at
+ * r = 0.50169 and r = 1.0 — a mismatch band under 1% wide, which only ever
+ * changes whether `\adjdemerits` is charged.
+ *
+ * The numbering runs tight -> very loose, the reverse of tex.web. Only
+ * `|difference| > 1` is ever tested, so the direction does not matter.
+ */
+const fitnessClass = (ratio: number) => {
+  if (ratio < -0.5) return 0
+  if (ratio < 0.5) return 1
+  if (ratio < 1) return 2
+  return 3
+}
+
+const badness = (ratio: number) => 100 * Math.abs(ratio) ** 3
+
+/**
+ * TeX §859:
+ *
+ * ```
+ * d := line_penalty + b;
+ * if abs(d) >= 10000 then d := 100000000 else d := d*d;
+ * if pi > 0 then d := d + pi*pi
+ * else if pi > eject_penalty then d := d - pi*pi;
+ * ```
+ *
+ * Note the positive-penalty case is additive. The 1981 paper instead squares
+ * the sum, `(l + b + p)^2`, which couples badness to penalty; TeX82 avoids
+ * that deliberately and this package follows TeX82.
+ */
+const lineDemerits = (
+  ratio: number,
+  penaltyValue: number,
+  policy: LayoutPolicy,
+) => {
+  const base = policy.linePenalty + badness(ratio)
+  const squared = Math.abs(base) >= 10_000 ? 100_000_000 : base ** 2
+  if (penaltyValue > 0) return squared + penaltyValue ** 2
+  if (isForced(penaltyValue)) return squared
+  if (penaltyValue < 0) return squared - penaltyValue ** 2
+  return squared
+}
+
+/** Index of the first item on the line that starts after a break at `position`. */
 const lineStart = (items: readonly Item[], position: number) => {
   if (position >= 0 && items[position]?.kind === "discretionary") {
     return position + 1
@@ -103,17 +175,17 @@ const breakKindAt = (items: readonly Item[], position: number): BreakKind => {
   const item = items[position]
   if (drawsHyphen(item)) return "hyphen"
   if (isRenderedSpace(item)) return "space"
-  if (item?.kind === "penalty" && isForced(item.penalty)) return "forced"
-  for (
-    let index = position + 1;
-    index < lineStart(items, position);
-    index += 1
-  ) {
+  if (item?.kind === "penalty" && isForced(item.penalty)) {
+    return isParagraphEnd(items, position) ? "end" : "forced"
+  }
+  const limit = lineStart(items, position)
+  for (let index = position + 1; index < limit; index += 1) {
     if (isRenderedSpace(items[index])) return "space"
   }
   return "none"
 }
 
+/** How far a ratio sits outside the feasible band, for rescue ranking. */
 const bandDistance = (ratio: number, tolerance: number) => {
   if (ratio < -1) return -1 - ratio
   if (ratio > tolerance) return ratio - tolerance
@@ -124,17 +196,15 @@ type Search = {
   readonly items: readonly Item[]
   readonly sums: Sums
   readonly target: number
-  readonly tolerance: number
-
+  readonly toleranceRatio: number
   readonly emergencyStretch: number
+  readonly policy: LayoutPolicy
 }
 
 type Step = {
   readonly actives: ActiveNode[]
-
   readonly admitted: Array<ActiveNode | null>
   readonly minimum: number
-
   readonly rescue: { node: ActiveNode; ratio: number } | null
 }
 
@@ -149,42 +219,71 @@ const measureLine = (search: Search, from: ActiveNode, to: number) => {
     (sums.width[start] as number) +
     leading +
     (endItem ? lineEndWidth(endItem) : 0)
-  const slack = search.target - natural
+
   const stretch = (sums.stretch[to] as number) - (sums.stretch[start] as number)
   const shrink = (sums.shrink[to] as number) - (sums.shrink[start] as number)
 
+  if (!Number.isFinite(natural)) {
+    return { natural: Number.NaN, ratio: Number.NEGATIVE_INFINITY, stretch, shrink }
+  }
+
+  const slack = search.target - natural
   let ratio = 0
   if (slack > 0) {
     const stretchable = stretch + search.emergencyStretch
     ratio = stretchable > 0 ? slack / stretchable : Number.POSITIVE_INFINITY
   }
   if (slack < 0) ratio = shrink > 0 ? slack / shrink : Number.NEGATIVE_INFINITY
-  return { natural, ratio, shrink }
+  return { natural, ratio, stretch, shrink }
 }
 
 const stepTo = (
   search: Search,
   actives: readonly ActiveNode[],
   to: number,
-  penalty: number,
+  penaltyValue: number,
   forced: boolean,
 ): Step => {
-  const { items, tolerance } = search
+  const { items, toleranceRatio, policy } = search
   const admitted: Array<ActiveNode | null> = [null, null, null, null]
   const survivors: ActiveNode[] = []
+  const kind = breakKindAt(items, to)
+  const flaggedHere = isFlaggedBreak(items[to])
+  const atParagraphEnd = isParagraphEnd(items, to)
   let minimum = Number.POSITIVE_INFINITY
-  let rescue: { node: ActiveNode; ratio: number; distance: number } | null =
-    null
+  let rescue: { node: ActiveNode; ratio: number; distance: number } | null = null
 
   for (const active of actives) {
+    // The line would be empty, which inverts the measured range. Two adjacent
+    // forced breaks legitimately produce a blank line, so admit one at zero
+    // badness rather than deactivating the node on a garbage ratio.
+    if (lineStart(items, active.position) >= to) {
+      if (!forced) {
+        survivors.push(active)
+        continue
+      }
+      const demerits = active.demerits + lineDemerits(0, penaltyValue, policy)
+      if (demerits < (admitted[1]?.demerits ?? Number.POSITIVE_INFINITY)) {
+        admitted[1] = {
+          position: to,
+          line: active.line + 1,
+          fitness: 1,
+          demerits,
+          previous: active,
+          ratio: 0,
+          breakKind: kind,
+        }
+        if (demerits < minimum) minimum = demerits
+      }
+      continue
+    }
+
     const { ratio } = measureLine(search, active, to)
 
     const tooLong = ratio < -1
     if (!tooLong && !forced) survivors.push(active)
 
-    if (lineStart(items, active.position) >= to) continue
-
-    const distance = bandDistance(ratio, tolerance)
+    const distance = bandDistance(ratio, toleranceRatio)
     if (
       !rescue ||
       distance < rescue.distance ||
@@ -193,19 +292,17 @@ const stepTo = (
       rescue = { node: active, ratio, distance }
     }
 
-    if (ratio < -1 || ratio > tolerance) continue
+    if (ratio < -1 || ratio > toleranceRatio) continue
 
     const fitness = fitnessClass(ratio)
-    let demerits = active.demerits + lineDemerits(ratio, penalty)
-    if (
-      active.position >= 0 &&
-      isFlaggedBreak(items[active.position]) &&
-      isFlaggedBreak(items[to])
-    ) {
-      demerits += policy.demerits.consecutiveFlagged
+    let demerits = active.demerits + lineDemerits(ratio, penaltyValue, policy)
+
+    if (active.position >= 0 && isFlaggedBreak(items[active.position])) {
+      if (flaggedHere) demerits += policy.doubleHyphenDemerits
+      else if (atParagraphEnd) demerits += policy.finalHyphenDemerits
     }
-    if (active.line > 0 && Math.abs(fitness - active.fitness) > 1) {
-      demerits += policy.demerits.fitnessJump
+    if (Math.abs(fitness - active.fitness) > 1) {
+      demerits += policy.adjDemerits
     }
 
     if (demerits < (admitted[fitness]?.demerits ?? Number.POSITIVE_INFINITY)) {
@@ -216,7 +313,7 @@ const stepTo = (
         demerits,
         previous: active,
         ratio,
-        breakKind: breakKindAt(items, to),
+        breakKind: kind,
       }
       if (demerits < minimum) minimum = demerits
     }
@@ -230,6 +327,7 @@ const stepTo = (
   }
 }
 
+/** TeX's `artificial_demerits`: rescue a line at zero cost on the final pass. */
 const forcedNode = (
   items: readonly Item[],
   rescue: { node: ActiveNode; ratio: number },
@@ -256,14 +354,19 @@ const linesFrom = (search: Search, final: ActiveNode): Line[] => {
     node = node.previous
   ) {
     const from = node.previous
-    const { natural, shrink } = measureLine(search, from, node.position)
-    const start = lineStart(items, from.position)
+    // A blank line between two forced breaks has no items at all; clamping
+    // keeps `start <= end` so callers can slice without a special case.
+    const start = Math.min(lineStart(items, from.position), node.position)
+    const empty = start >= node.position
+    const { natural, stretch, shrink } = empty
+      ? { natural: 0, stretch: 0, shrink: 0 }
+      : measureLine(search, from, node.position)
     const breakItem = items[node.position]
 
     const sourceEnd =
       breakItem?.kind === "discretionary"
         ? breakItem.breakOffset
-        : (breakItem?.source.start ?? items.at(-1)?.source.end ?? 0)
+        : (breakItem?.source?.start ?? items.at(-1)?.source?.end ?? 0)
 
     let spaceCount = 0
     for (let index = start; index < node.position; index += 1) {
@@ -273,10 +376,11 @@ const linesFrom = (search: Search, final: ActiveNode): Line[] => {
     lines.push({
       start,
       end: node.position,
-      sourceStart: items[start]?.source.start ?? sourceEnd,
+      sourceStart: items[start]?.source?.start ?? sourceEnd,
       sourceEnd,
       naturalWidth: natural,
       spaceCount,
+      stretch,
       shrink,
       adjustmentRatio: node.ratio,
       breakKind: node.breakKind,
@@ -285,18 +389,30 @@ const linesFrom = (search: Search, final: ActiveNode): Line[] => {
   return lines.reverse()
 }
 
-export const breakParagraph = (
+/**
+ * One `try_break` pass at an explicit tolerance.
+ *
+ * Most callers want {@link breakParagraph}, which runs TeX's full fallback
+ * ladder. This entry point exists for differential testing against
+ * `\tracingparagraphs=1` output and for callers implementing their own ladder.
+ */
+export const breakParagraphOnce = (
   items: readonly Item[],
-  target: number,
-  options: BreakOptions = {},
-): BreakResult => {
-  if (items.length === 0) return { ok: false }
+  measure: number,
+  options: PassOptions,
+): LayoutResult => {
+  if (items.length === 0) return { ok: false, reason: "empty" }
+
+  const policy = resolvePolicy(options.policy)
   const search: Search = {
     items,
-    sums: options.sums ?? prefixSums(items),
-    target,
-    tolerance: options.tolerance ?? policy.fit.tolerance,
+    sums: prefixSums(items),
+    target: measure,
+    // Tolerance is published as badness, matching TeX; the search compares
+    // adjustment ratios, so invert `badness(r) = 100 * r^3` here.
+    toleranceRatio: (options.tolerance / 100) ** (1 / 3),
     emergencyStretch: options.emergencyStretch ?? 0,
+    policy,
   }
 
   let actives: ActiveNode[] = [
@@ -312,73 +428,101 @@ export const breakParagraph = (
   ]
 
   for (let to = 0; to < items.length; to += 1) {
-    const penalty = breakPenalty(items, to)
-    if (penalty === null) continue
-    const forced = isForced(penalty)
-    const step = stepTo(search, actives, to, penalty, forced)
+    const penaltyValue = breakPenalty(items, to)
+    if (penaltyValue === null) continue
+    const forced = isForced(penaltyValue)
+    const step = stepTo(search, actives, to, penaltyValue, forced)
     actives = step.actives
 
     if (step.minimum === Number.POSITIVE_INFINITY) {
       if (actives.length > 0) continue
-      if (!options.force || !step.rescue) return { ok: false }
+      if (!options.force || !step.rescue) return { ok: false, reason: "infeasible" }
       actives = [forcedNode(items, step.rescue, to)]
       continue
     }
 
-    const ceiling = step.minimum + policy.demerits.fitnessJump
+    const ceiling = step.minimum + policy.adjDemerits
     for (let fitness = 0; fitness < 4; fitness += 1) {
       const candidate = step.admitted[fitness]
-      if (candidate && candidate.demerits <= ceiling) {
-        actives.push(candidate)
-      }
+      if (candidate && candidate.demerits <= ceiling) actives.push(candidate)
     }
-    if (forced) actives = actives.filter((node) => node.position === to)
   }
 
   const final = actives.reduce<ActiveNode | null>(
     (best, node) => (!best || node.demerits < best.demerits ? node : best),
     null,
   )
-  if (!final || final.line === 0) return { ok: false }
-  return { ok: true, lines: linesFrom(search, final) }
+  if (!final || final.line === 0) return { ok: false, reason: "infeasible" }
+  return {
+    ok: true,
+    lines: linesFrom(search, final),
+    pass: options.force ? "forced" : "tolerance",
+    demerits: final.demerits,
+  }
 }
 
-export const breakParagraphWithFallback = (
-  items: readonly Item[],
-  target: number,
-  sums: Sums = prefixSums(items),
-): BreakResult => {
-  const pass = (options: BreakOptions) =>
-    breakParagraph(items, target, { ...options, sums })
-
-  const strict = pass({ tolerance: policy.fit.tolerance })
-  if (strict.ok) return strict
-
-  const relaxed = pass({ tolerance: policy.fit.relaxedTolerance })
-  if (relaxed.ok) return relaxed
-
-  let glueWidth = 0
-  let glueCount = 0
+const meanGlueWidth = (items: readonly Item[]) => {
+  let total = 0
+  let count = 0
   for (const item of items) {
-    if (item.kind === "glue") {
-      glueWidth += item.width
-      glueCount += 1
+    if (item.kind === "glue" && item.width > 0) {
+      total += item.width
+      count += 1
     }
   }
+  return count > 0 ? total / count : 0
+}
+
+/** Roughly 3.5em at a typical 0.25em space, following TeX's `\emergencystretch`. */
+const EMERGENCY_STRETCH_SPACES = 14
+
+/**
+ * TeX's four-pass ladder: `\pretolerance`, then `\tolerance`, then
+ * `\emergencystretch`, then artificial demerits.
+ *
+ * Emergency stretch is added to the badness *denominator*, never as real glue —
+ * this is `background[2] := background[2] + emergency_stretch` in tex.web. It
+ * keeps over-tolerance lines finite so they compete on demerits instead of
+ * collapsing the search to a single rescued path.
+ */
+export const breakParagraph = (
+  items: readonly Item[],
+  measure: number,
+  options: LayoutOptions = {},
+): LayoutResult => {
+  if (items.length === 0) return { ok: false, reason: "empty" }
+  const policy = resolvePolicy(options.policy)
+  const shared = { policy: options.policy }
+
+  const strict = breakParagraphOnce(items, measure, {
+    ...shared,
+    tolerance: policy.pretolerance,
+  })
+  if (strict.ok) return { ...strict, pass: "pretolerance" }
+
+  const relaxed = breakParagraphOnce(items, measure, {
+    ...shared,
+    tolerance: policy.tolerance,
+  })
+  if (relaxed.ok) return { ...relaxed, pass: "tolerance" }
+
   const emergencyStretch =
-    glueCount > 0
-      ? (glueWidth / glueCount) * policy.fit.emergencyStretchSpaces
-      : 0
+    options.emergencyStretch === undefined || options.emergencyStretch === "auto"
+      ? meanGlueWidth(items) * EMERGENCY_STRETCH_SPACES
+      : options.emergencyStretch
+
   if (emergencyStretch > 0) {
-    const emergency = pass({
-      tolerance: policy.fit.relaxedTolerance,
+    const emergency = breakParagraphOnce(items, measure, {
+      ...shared,
+      tolerance: policy.tolerance,
       emergencyStretch,
     })
-    if (emergency.ok) return emergency
+    if (emergency.ok) return { ...emergency, pass: "emergency" }
   }
 
-  return pass({
-    tolerance: policy.fit.relaxedTolerance,
+  return breakParagraphOnce(items, measure, {
+    ...shared,
+    tolerance: policy.tolerance,
     emergencyStretch,
     force: true,
   })

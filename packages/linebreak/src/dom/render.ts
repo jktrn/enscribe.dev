@@ -1,8 +1,9 @@
 import type { Line } from "../layout/breaker"
 import { type ExtractedBlock, type InlineRun, LINE_SEPARATOR } from "./extract"
 
-export const LINE_SELECTOR = "[data-linebreak-break]"
+export const LINE_SELECTOR = "[data-linebreak-line]"
 export const TYPESET_ATTRIBUTE = "data-linebreak-typeset"
+export const TYPESET_SELECTOR = "[data-linebreak-typeset]"
 
 const appendLine = (
   target: HTMLElement,
@@ -144,7 +145,7 @@ export const renderLines = (
 
   for (const line of lines) {
     const target = document.createElement("span")
-    target.dataset.linebreakBreak = line.breakKind
+    target.dataset.linebreakLine = line.breakKind
 
     const overflow = Math.min(line.naturalWidth - targetWidth, line.shrink)
     if (overflow > 0 && line.spaceCount > 0) {
@@ -154,6 +155,14 @@ export const renderLines = (
     const rendered = appendLine(target, block, line, nextRun)
     if (!rendered) return null
     nextRun = rendered.nextRun
+
+    // Put the consumed inter-word space back. A trailing space at the end of a
+    // line box is hung and dropped for justification (CSS Text 3 §5.3), so it
+    // is visually inert — but without it, find-in-page, scroll-to-text,
+    // translation, and `textContent` all break across every line boundary.
+    if (line.breakKind === "space") {
+      target.appendChild(document.createTextNode(" "))
+    }
 
     output.appendChild(target)
     lineElements.push(target)

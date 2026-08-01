@@ -1,4 +1,4 @@
-import type { Diagnostic } from "../diagnostics"
+import type { ComposeReason } from "../types"
 import {
   breakAllowedAt,
   codeWrapper,
@@ -7,11 +7,16 @@ import {
   type InlineRun,
   runEdgeWidths,
 } from "../dom/extract"
-import { policy } from "../policy"
 import { codeBreakOffsets } from "../text/code-breaks"
 import { hyphenationOffsets, usesEnglishHyphenation } from "../text/hyphenate"
 import type { FontMetrics } from "../text/measure"
-import { forcedBreak, type Item, paragraphTerminator } from "./items"
+import { type Item, lineBreak, paragraphEnd } from "./items"
+import {
+  defaultGlue,
+  type GlueElasticity,
+  type LayoutPolicy,
+  webDefaults,
+} from "./policy"
 
 export type CompileContext = {
   block: ExtractedBlock
@@ -21,11 +26,14 @@ export type CompileContext = {
   locale: string
 
   hyphenate?: boolean
+  policy?: LayoutPolicy
+  glue?: GlueElasticity
+  maximumCharacters?: number
 }
 
 export type CompileResult =
   | { ok: true; items: Item[] }
-  | { ok: false; diagnostic: Diagnostic }
+  | { ok: false; reason: ComposeReason }
 
 type WordBreak = { at: number; penalty: number; flagged: boolean }
 
@@ -36,11 +44,16 @@ type Word = {
   readonly breaks: readonly WordBreak[]
 }
 
-const glueFor = (width: number, start: number, end: number): Item => ({
+const glueFor = (
+  width: number,
+  start: number,
+  end: number,
+  elasticity: GlueElasticity,
+): Item => ({
   kind: "glue",
   width,
-  stretch: width * policy.glue.stretch,
-  shrink: width * policy.glue.shrink,
+  stretch: width * elasticity.stretch,
+  shrink: width * elasticity.shrink,
   source: { start, end },
 })
 
@@ -107,7 +120,7 @@ const breaksInside = (
   context: CompileContext,
   text: string,
   start: number,
-  options: { inCode: boolean; hyphenates: boolean },
+  options: { inCode: boolean; hyphenates: boolean; policy: LayoutPolicy },
 ): WordBreak[] => {
   const { breakRestrictions } = context.block
   const breaks: WordBreak[] = []
@@ -121,7 +134,11 @@ const breaksInside = (
   } else if (options.hyphenates) {
     for (const at of hyphenationOffsets(text)) {
       if (breakAllowedAt(breakRestrictions, start + at)) {
-        breaks.push({ at, penalty: policy.penalty.hyphen, flagged: true })
+        breaks.push({
+          at,
+          penalty: options.policy.hyphenPenalty,
+          flagged: true,
+        })
       }
     }
   }
@@ -153,6 +170,13 @@ class PendingEdge {
   }
 }
 
+/**
+ * Characters that already read as a break opportunity to a reader. Breaking
+ * after one costs `\exhyphenpenalty` and counts as a flagged (hyphenated)
+ * break, so `state-of-the-art` does not stack hyphen-ended lines.
+ */
+const EXISTING_HYPHEN = /[-‐‒–—]/u
+
 const compileText = (
   context: CompileContext,
   run: Extract<InlineRun, { kind: "text" }>,
@@ -160,15 +184,11 @@ const compileText = (
   pending: PendingEdge,
   items: Item[],
   hyphenatesHere: boolean,
-): Diagnostic | null => {
+  policy: LayoutPolicy,
+  elasticity: GlueElasticity,
+): ComposeReason | null => {
   const measured = metrics.measureParagraph(run.text)
-  if (!measured) {
-    return {
-      kind: "segmentation-mismatch",
-      element: run.sourceElement,
-      detail: `segmentation did not reproduce ${JSON.stringify(run.text.slice(0, 40))}`,
-    }
-  }
+  if (!measured) return "segmentation-mismatch"
 
   const { breakRestrictions } = context.block
   const edges = runEdgeWidths(context.block, run)
@@ -186,11 +206,14 @@ const compileText = (
       segment.kind === "break-opportunity" ||
       previousKind === "break-opportunity"
     if (atBoundary && breakAllowedAt(breakRestrictions, start)) {
+      const afterHyphen = EXISTING_HYPHEN.test(
+        context.block.text[start - 1] ?? "",
+      )
       items.push({
         kind: "penalty",
         width: 0,
-        penalty: 0,
-        flagged: false,
+        penalty: afterHyphen ? policy.exHyphenPenalty : 0,
+        flagged: afterHyphen,
         source: { start, end: start },
       })
     }
@@ -198,7 +221,7 @@ const compileText = (
 
     if (segment.kind === "space") {
       if (breakAllowedAt(breakRestrictions, start)) {
-        items.push(glueFor(segment.width, start, end))
+        items.push(glueFor(segment.width, start, end, elasticity))
       } else {
         items.push({
           kind: "box",
@@ -225,6 +248,7 @@ const compileText = (
         breaks: breaksInside(context, segment.text, start, {
           inCode,
           hyphenates,
+          policy,
         }),
       },
       metrics,
@@ -244,9 +268,10 @@ const compileText = (
 export const compileBlock = (context: CompileContext): CompileResult => {
   const { block, metricsFor, atomWidth } = context
   const separates = breaksSomething(block.runs)
+  const policy = context.policy ?? webDefaults
+  const elasticity = context.glue ?? defaultGlue
   const hyphenates =
-    (context.hyphenate ?? policy.hyphenate) &&
-    usesEnglishHyphenation(context.locale)
+    (context.hyphenate ?? false) && usesEnglishHyphenation(context.locale)
   const pending = new PendingEdge()
   const items: Item[] = []
 
@@ -263,7 +288,7 @@ export const compileBlock = (context: CompileContext): CompileResult => {
       if (!separates[runIndex]) continue
       items.push(
         ...(run.forced
-          ? forcedBreak(run.start, run.end)
+          ? lineBreak(run.start, run.end)
           : [
               {
                 kind: "penalty" as const,
@@ -288,17 +313,7 @@ export const compileBlock = (context: CompileContext): CompileResult => {
     }
 
     const metrics = metricsFor(run)
-    if (!metrics) {
-      return {
-        ok: false,
-        diagnostic: {
-          kind: "measurement-unavailable",
-          element: block.wrappers.keys().next().value ?? run.sourceElement,
-          node: run.sourceElement,
-          property: "unresolved typography",
-        },
-      }
-    }
+    if (!metrics) return { ok: false, reason: "unmeasurable" }
 
     const failure = compileText(
       context,
@@ -307,20 +322,14 @@ export const compileBlock = (context: CompileContext): CompileResult => {
       pending,
       items,
       hyphenates,
+      policy,
+      elasticity,
     )
-    if (failure) return { ok: false, diagnostic: failure }
+    if (failure) return { ok: false, reason: failure }
   }
 
-  if (items.length === 0) {
-    return {
-      ok: false,
-      diagnostic: {
-        kind: "empty-content",
-        element: block.runs[0]?.sourceElement as HTMLElement,
-      },
-    }
-  }
+  if (items.length === 0) return { ok: false, reason: "empty" }
 
-  items.push(...paragraphTerminator(block.text.length))
+  items.push(...paragraphEnd(block.text.length))
   return { ok: true, items }
 }

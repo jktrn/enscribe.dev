@@ -1,29 +1,20 @@
-import {
-  breakParagraphWithFallback,
-  type Line,
-  prefixSums,
-  type Sums,
-} from "./layout/breaker"
+import { breakParagraph, type Line } from "./layout/breaker"
 import { compileBlock } from "./layout/compile"
-import {
-  createDiagnosticEmitter,
-  type Diagnostic,
-  type EmitDiagnostic,
-} from "./diagnostics"
+import type { Item } from "./layout/items"
+import { defaultGlue, resolvePolicy } from "./layout/policy"
 import {
   type ExtractedBlock,
   extractBlock,
   type InlineRun,
   outerWidth,
 } from "./dom/extract"
-import type { Item } from "./layout/items"
 import {
   configureLocale,
   createFontMetrics,
   type FontMetrics,
 } from "./text/measure"
-import { policy } from "./policy"
-import { LINE_SELECTOR, renderLines } from "./dom/render"
+import { engineDefaults } from "./policy"
+import { LINE_SELECTOR, renderLines, TYPESET_ATTRIBUTE } from "./dom/render"
 import {
   type AuthoredContent,
   captureAuthored,
@@ -35,26 +26,46 @@ import {
   cssPixels,
   unmodellableProperty,
 } from "./dom/style"
-import type {
-  LinebreakPlan,
-  LinebreakResult,
-  Linebreaker,
-  LinebreakerOptions,
+import {
+  COMPOSITION_BRAND,
+  type Composition,
+  type ComposeReason,
+  type DeclineReason,
+  type FailureReason,
+  type Linebreaker,
+  type LinebreakerOptions,
+  type LinebreakerStats,
+  type Outcome,
+  type SkipReason,
 } from "./types"
 
-type Measurement = {
-  block: ExtractedBlock
-  items: Item[]
-  sums: Sums
-  authored: AuthoredContent
-
-  under: MeasurementBasis
+type MeasurementBasis = {
+  readonly locale: string
+  readonly font: string
+  readonly letterSpacing: number
 }
 
-type MeasurementBasis = {
-  locale: string
-  font: string
-  letterSpacing: number
+type Measurement = {
+  readonly block: ExtractedBlock
+  readonly items: Item[]
+  readonly authored: AuthoredContent
+  readonly under: MeasurementBasis
+  /**
+   * Cheap content signature. Without it an edited paragraph re-renders its old
+   * text from the cached run list, silently.
+   */
+  readonly signature: string
+  /** Recent content-box widths, for detecting content-dependent width. */
+  readonly widths: number[]
+}
+
+/** Per-composition state that callers have no business seeing. */
+type Draft = {
+  readonly measurement: Measurement
+  readonly width: number
+  lines: readonly Line[]
+  reduction: number
+  round: number
 }
 
 const sameBasis = (a: MeasurementBasis, b: MeasurementBasis) =>
@@ -62,30 +73,31 @@ const sameBasis = (a: MeasurementBasis, b: MeasurementBasis) =>
   a.font === b.font &&
   a.letterSpacing === b.letterSpacing
 
-type ReadyPlan = {
-  state: "ready"
-  element: HTMLElement
-  measurement: Measurement
-  lines: readonly Line[]
-  width: number
+const SKIP_REASONS: ReadonlySet<string> = new Set([
+  "single-line",
+  "empty",
+  "too-narrow",
+  "already-typeset",
+])
+
+/** Skips are worth retrying when the geometry changes; declines are not. */
+const RETRYABLE: ReadonlySet<string> = new Set(["too-narrow", "single-line"])
+
+const signatureOf = (element: HTMLElement) => {
+  const text = element.textContent ?? ""
+  let hash = 0x811c9dc5
+  for (let index = 0; index < text.length; index += 1) {
+    hash ^= text.charCodeAt(index)
+    hash = Math.imul(hash, 0x01000193)
+  }
+  return `${text.length}:${(hash >>> 0).toString(36)}`
 }
 
-type NativePlan = {
-  state: "native"
-  element: HTMLElement
-  reason: Diagnostic["kind"]
-}
+const viewOf = (element: HTMLElement) =>
+  element.ownerDocument.defaultView ?? globalThis
 
-type PlanRecord = ReadyPlan | NativePlan
-
-type Attempt = {
-  readonly handle: LinebreakPlan
-  readonly plan: ReadyPlan
-  readonly width: number
-  reduction: number
-  lines: readonly Line[]
-  round: number
-}
+const styleOf = (element: HTMLElement) =>
+  viewOf(element).getComputedStyle(element)
 
 const contentWidth = (element: HTMLElement, style: CSSStyleDeclaration) =>
   element.clientWidth -
@@ -97,17 +109,42 @@ const contentHeight = (element: HTMLElement, style: CSSStyleDeclaration) =>
   cssPixels(style.paddingTop) -
   cssPixels(style.paddingBottom)
 
+const resolvedLineHeight = (style: CSSStyleDeclaration) => {
+  const value = Number.parseFloat(style.lineHeight)
+  if (Number.isFinite(value)) return value
+  const fontSize = Number.parseFloat(style.fontSize)
+  return Number.isFinite(fontSize) ? fontSize * 1.2 : Number.NaN
+}
+
+/**
+ * Whether any rendered line spilled onto a second row.
+ *
+ * Walks leaf elements as well as text: a line whose overflow is an image,
+ * inline math, or a CSS-drawn icon has no text on the second row, and would
+ * otherwise verify as a success.
+ */
 const anyLineWrapped = (element: HTMLElement) => {
+  const document = element.ownerDocument
   const range = document.createRange()
   for (const line of element.querySelectorAll<HTMLElement>(LINE_SELECTOR)) {
-    const walker = document.createTreeWalker(line, NodeFilter.SHOW_TEXT)
     let bandBottom = Number.NEGATIVE_INFINITY
     let rows = 0
+    const walker = document.createTreeWalker(
+      line,
+      NodeFilter.SHOW_TEXT | NodeFilter.SHOW_ELEMENT,
+    )
     for (let node = walker.nextNode(); node; node = walker.nextNode()) {
-      range.selectNodeContents(node)
-      for (const rect of range.getClientRects()) {
+      let rects: DOMRectList
+      if (node.nodeType === Node.TEXT_NODE) {
+        range.selectNodeContents(node)
+        rects = range.getClientRects()
+      } else if (node instanceof Element && node.childElementCount === 0) {
+        rects = node.getClientRects()
+      } else {
+        continue
+      }
+      for (const rect of rects) {
         if (rect.width === 0) continue
-
         if (rect.top >= bandBottom - 2) rows += 1
         bandBottom = Math.max(bandBottom, rect.bottom)
       }
@@ -117,400 +154,421 @@ const anyLineWrapped = (element: HTMLElement) => {
   return false
 }
 
-const resolvedLineHeight = (style: CSSStyleDeclaration) => {
-  const value = Number.parseFloat(style.lineHeight)
-  if (Number.isFinite(value)) return value
-
-  const fontSize = Number.parseFloat(style.fontSize)
-  return Number.isFinite(fontSize) ? fontSize * 1.2 : Number.NaN
-}
+/**
+ * An element whose own width depends on its content — a shrink-to-fit flex
+ * item, say — never settles: typesetting changes its max-content width, which
+ * changes the measure, which changes the typesetting.
+ *
+ * The tell is a cycle, not a rate, so a reader dragging a window edge is never
+ * mistaken for one.
+ */
+const widthOscillates = (widths: readonly number[]) =>
+  widths.length >= 3 &&
+  Math.abs((widths.at(-1) as number) - (widths.at(-3) as number)) <= 0.5 &&
+  Math.abs((widths.at(-1) as number) - (widths.at(-2) as number)) > 0.5
 
 class BrowserLinebreaker implements Linebreaker {
   private readonly minimumWidth: number
-  private readonly defaultLocale: string
+  private readonly safetyMargin: number
+  private readonly maximumRetries: number
+  private readonly defaultLocale: string | undefined
   private readonly preservedImageAttributes: readonly string[]
   private readonly hyphenate: boolean
-  private readonly emit: EmitDiagnostic
-  private readonly measurements = new Map<HTMLElement, Measurement>()
-  private readonly metrics = new Map<string, FontMetrics>()
-  private readonly plans = new WeakMap<LinebreakPlan, PlanRecord>()
-  private destroyed = false
+  private readonly policy: ReturnType<typeof resolvePolicy>
+  private readonly glue: { stretch: number; shrink: number }
+  private readonly report: ((outcome: Outcome) => void) | undefined
 
-  constructor(options: LinebreakerOptions) {
-    this.minimumWidth = options.minimumWidth ?? 0
-    this.defaultLocale =
-      options.locale || document.documentElement.lang || "en-US"
+  /** Weak, so a detached paragraph drops its measurement and authored clone. */
+  private readonly measurements = new WeakMap<HTMLElement, Measurement>()
+  /**
+   * Strong, but only for elements that are currently typeset and therefore
+   * genuinely need restoring. Pruned on `isConnected` after every apply.
+   */
+  private readonly live = new Set<HTMLElement>()
+  /** Outcomes that will not change until the caller resets the element. */
+  private readonly remembered = new Map<
+    HTMLElement,
+    SkipReason | DeclineReason
+  >()
+  private readonly metrics = new Map<string, FontMetrics>()
+  private readonly drafts = new WeakMap<Composition, Draft>()
+  private readonly counters = {
+    typeset: 0,
+    skipped: 0,
+    declined: 0,
+    failed: 0,
+    retries: 0,
+  }
+  private disposed = false
+  private writing = false
+
+  constructor(options: LinebreakerOptions = {}) {
+    this.minimumWidth = options.minimumWidth ?? engineDefaults.minimumWidth
+    this.safetyMargin = options.safetyMargin ?? engineDefaults.safetyMargin
+    this.maximumRetries = options.retries ?? engineDefaults.retries
+    this.defaultLocale = options.locale || undefined
     this.preservedImageAttributes = options.preserveImageAttributes ?? []
-    this.hyphenate = options.hyphenate ?? policy.hyphenate
-    this.emit = createDiagnosticEmitter(options.onDiagnostic)
+    this.hyphenate = options.hyphenate ?? false
+    this.policy = resolvePolicy(options.policy)
+    this.glue = { ...defaultGlue, ...options.glue }
+    this.report = options.onOutcome
   }
 
-  plan(element: HTMLElement): LinebreakPlan {
-    const handle: LinebreakPlan = { element }
-    if (this.destroyed) {
-      this.plans.set(handle, {
-        state: "native",
-        element,
-        reason: "render-failed",
-      })
-      return handle
+  compose(elements: Iterable<HTMLElement>): readonly Composition[] {
+    this.assertUsable()
+    const out: Composition[] = []
+    const seen = new Set<HTMLElement>()
+    for (const element of elements) {
+      if (seen.has(element)) continue
+      seen.add(element)
+      out.push(this.composeOne(element))
+    }
+    return out
+  }
+
+  apply(compositions: Iterable<Composition>): readonly Outcome[] {
+    this.assertUsable()
+    if (this.writing) {
+      throw new TypeError(
+        "linebreak: apply() re-entered, probably from an onOutcome handler",
+      )
     }
 
-    const style = getComputedStyle(element)
+    const order = [...compositions]
+    const results = new Map<Composition, Outcome>()
+    const ready: Composition[] = []
+
+    for (const composition of order) {
+      if (composition?.brand !== COMPOSITION_BRAND) {
+        throw new TypeError("linebreak: apply() received a foreign composition")
+      }
+      if (composition.status === "ready") {
+        if (!this.drafts.has(composition)) {
+          throw new TypeError("linebreak: this composition was already applied")
+        }
+        ready.push(composition)
+        continue
+      }
+      results.set(composition, {
+        element: composition.element,
+        status: composition.status,
+        reason: composition.reason,
+      } as Outcome)
+    }
+
+    this.writing = true
+    try {
+      const written = ready.filter((composition) =>
+        this.write(composition, results),
+      )
+      this.settle(written, results)
+    } finally {
+      this.writing = false
+      for (const composition of ready) this.drafts.delete(composition)
+    }
+
+    for (const element of this.live) {
+      if (!element.isConnected) this.live.delete(element)
+    }
+
+    const outcomes = order.map(
+      (composition): Outcome =>
+        results.get(composition) ?? {
+          element: composition.element,
+          status: "failed",
+          reason: "render-failed",
+        },
+    )
+    for (const outcome of outcomes) {
+      if (outcome.status === "skipped") this.counters.skipped += 1
+      if (outcome.status === "declined") this.counters.declined += 1
+      this.report?.(outcome)
+    }
+    return outcomes
+  }
+
+  typeset(elements: Iterable<HTMLElement>): readonly Outcome[] {
+    return this.apply(this.compose(elements))
+  }
+
+  restore(elements?: Iterable<HTMLElement>) {
+    for (const element of elements ?? [...this.live]) {
+      this.restoreElement(element)
+    }
+  }
+
+  reset(elements?: Iterable<HTMLElement>) {
+    for (const element of elements ?? [...this.live]) {
+      this.restoreElement(element)
+      this.measurements.delete(element)
+      this.remembered.delete(element)
+    }
+    if (!elements) {
+      this.remembered.clear()
+      this.metrics.clear()
+    }
+  }
+
+  /** Forget only the outcomes that a geometry change could plausibly flip. */
+  refresh() {
+    for (const [element, reason] of this.remembered) {
+      if (RETRYABLE.has(reason)) this.remembered.delete(element)
+    }
+  }
+
+  stats(): LinebreakerStats {
+    return {
+      ...this.counters,
+      liveElements: this.live.size,
+      cachedFonts: this.metrics.size,
+    }
+  }
+
+  dispose() {
+    if (this.disposed) return
+    this.restore()
+    this.live.clear()
+    this.remembered.clear()
+    this.metrics.clear()
+    this.disposed = true
+  }
+
+  // ── internals ────────────────────────────────────────────────────────────
+
+  private assertUsable() {
+    if (this.disposed) {
+      throw new TypeError("linebreak: this linebreaker has been disposed")
+    }
+  }
+
+  private settled(
+    element: HTMLElement,
+    status: "skipped" | "declined",
+    reason: SkipReason | DeclineReason,
+    width = 0,
+    remember = true,
+  ): Composition {
+    if (remember) this.remembered.set(element, reason)
+    return {
+      brand: COMPOSITION_BRAND,
+      element,
+      status,
+      lines: 0,
+      width,
+      reason,
+    } as Composition
+  }
+
+  private composeOne(element: HTMLElement): Composition {
+    const already = this.remembered.get(element)
+    if (already !== undefined) {
+      const status = RETRYABLE.has(already) ? "skipped" : "declined"
+      return this.settled(element, status as "skipped", already, 0, false)
+    }
+
+    const style = styleOf(element)
     if (style.direction !== "ltr") {
-      return this.decline(handle, {
-        kind: "unsupported-direction",
-        element,
-        direction: style.direction,
-      })
+      return this.settled(element, "declined", "unsupported-direction")
+    }
+    const writingMode = style.writingMode
+    if (writingMode && !writingMode.startsWith("horizontal")) {
+      return this.settled(element, "declined", "unsupported-writing-mode")
     }
 
     const width = contentWidth(element, style)
     if (width < this.minimumWidth) {
-      return this.decline(handle, {
-        kind: "insufficient-width",
-        element,
-        width,
-        minimum: this.minimumWidth,
-      })
+      // Not remembered permanently: widening the container lets it back in.
+      return this.settled(element, "skipped", "too-narrow", width, false)
     }
 
     const locale =
-      element.closest<HTMLElement>("[lang]")?.getAttribute("lang") ??
-      this.defaultLocale
+      element.closest<HTMLElement>("[lang]")?.getAttribute("lang") ||
+      this.defaultLocale ||
+      element.ownerDocument.documentElement.lang ||
+      "en-US"
 
     const basis: MeasurementBasis = {
       locale,
       font: computedFont(style),
       letterSpacing: cssPixels(style.letterSpacing),
     }
+    const signature = signatureOf(element)
 
     let measurement = this.measurements.get(element)
-    if (measurement && !sameBasis(measurement.under, basis)) {
-      this.restoreElement(element)
+    if (
+      measurement &&
+      (!sameBasis(measurement.under, basis) ||
+        measurement.signature !== signature)
+    ) {
+      // Superseded: re-measure from whatever is in the DOM now.
       this.measurements.delete(element)
       measurement = undefined
     }
     if (!measurement) {
-      const built = this.measure(element, style, basis)
-      if (!built.ok) return this.decline(handle, built.diagnostic)
+      const built = this.measure(element, style, basis, signature)
+      if (!built.ok) {
+        const status = SKIP_REASONS.has(built.reason) ? "skipped" : "declined"
+        return this.settled(element, status as "skipped", built.reason)
+      }
       measurement = built.measurement
       this.measurements.set(element, measurement)
     }
 
-    const solved = breakParagraphWithFallback(
+    measurement.widths.push(width)
+    if (measurement.widths.length > 4) measurement.widths.shift()
+    if (widthOscillates(measurement.widths)) {
+      this.restoreElement(element)
+      return this.settled(element, "declined", "unstable-width", width)
+    }
+
+    const solved = breakParagraph(
       measurement.items,
-      width - policy.fit.safetyMarginPx,
-      measurement.sums,
+      width - this.safetyMargin,
+      { policy: this.policy },
     )
     if (!solved.ok) {
-      return this.decline(handle, {
-        kind: "no-feasible-breaking",
-        element,
-        width,
-      })
+      return this.settled(element, "declined", "no-feasible-breaking")
     }
-
     if (solved.lines.length < 2) {
-      return this.decline(handle, { kind: "single-line", element })
+      return this.settled(element, "skipped", "single-line", width, false)
     }
 
-    this.plans.set(handle, {
-      state: "ready",
+    const composition = {
+      brand: COMPOSITION_BRAND,
       element,
-      measurement,
-      lines: solved.lines,
+      status: "ready",
+      lines: solved.lines.length,
       width,
+    } as Composition
+    this.drafts.set(composition, {
+      measurement,
+      width,
+      lines: solved.lines,
+      reduction: 0,
+      round: 0,
     })
-    return handle
-  }
-
-  commit(plan: LinebreakPlan): LinebreakResult
-  commit(plans: Iterable<LinebreakPlan>): LinebreakResult[]
-  commit(
-    input: LinebreakPlan | Iterable<LinebreakPlan>,
-  ): LinebreakResult | LinebreakResult[] {
-    const single = !isIterable(input)
-    const handles = single
-      ? [input as LinebreakPlan]
-      : [...(input as Iterable<LinebreakPlan>)]
-    const results = this.commitAll(handles)
-    return single ? (results[0] as LinebreakResult) : results
-  }
-
-  private commitAll(handles: LinebreakPlan[]): LinebreakResult[] {
-    const results = new Map<LinebreakPlan, LinebreakResult>()
-    const duplicates = new Map<LinebreakPlan, HTMLElement>()
-    const attempts = this.writeAll(handles, results, duplicates)
-    this.settle(attempts, results)
-
-    const byElement = new Map<HTMLElement, LinebreakResult>()
-    for (const result of results.values()) byElement.set(result.element, result)
-
-    return handles.map((handle) => {
-      const own = results.get(handle)
-      if (own) return own
-      const element = duplicates.get(handle)
-      if (element) {
-        const shared = byElement.get(element)
-        if (shared) return shared
-      }
-      return {
-        element: handle.element,
-        state: "native",
-        reason: "render-failed",
-      }
-    })
-  }
-
-  private writeAll(
-    handles: LinebreakPlan[],
-    results: Map<LinebreakPlan, LinebreakResult>,
-    duplicates: Map<LinebreakPlan, HTMLElement>,
-  ): Attempt[] {
-    const seen = new Set<HTMLElement>()
-    const ready: Array<{ attempt: Attempt; reuse: boolean }> = []
-
-    for (const handle of handles) {
-      const record = this.plans.get(handle)
-      this.plans.delete(handle)
-      if (record && record.state === "ready" && seen.has(record.element)) {
-        duplicates.set(handle, record.element)
-        continue
-      }
-      if (!record || record.state === "native") {
-        results.set(handle, {
-          element: record?.element ?? handle.element,
-          state: "native",
-          reason: record?.reason ?? "render-failed",
-        })
-        continue
-      }
-      seen.add(record.element)
-
-      if (this.measurements.get(record.element) !== record.measurement) {
-        this.emit({ kind: "stale-plan", element: record.element })
-        results.set(handle, {
-          element: record.element,
-          state: "native",
-          reason: "stale-plan",
-        })
-        continue
-      }
-
-      const style = getComputedStyle(record.element)
-      const width = contentWidth(record.element, style)
-      if (width < this.minimumWidth) {
-        results.set(handle, {
-          element: record.element,
-          state: "native",
-          reason: "insufficient-width",
-        })
-        continue
-      }
-
-      ready.push({
-        attempt: {
-          handle,
-          plan: record,
-          width,
-          reduction: 0,
-          lines: record.lines,
-          round: 0,
-        },
-        reuse: Math.abs(width - record.width) <= 0.5,
-      })
-    }
-
-    return ready
-      .filter(({ attempt, reuse }) => this.write(attempt, results, reuse))
-      .map(({ attempt }) => attempt)
+    return composition
   }
 
   private write(
-    attempt: Attempt,
-    results: Map<LinebreakPlan, LinebreakResult>,
-    reuse = false,
+    composition: Composition,
+    results: Map<Composition, Outcome>,
   ): boolean {
-    const { element } = attempt.plan
-    const target = attempt.width - policy.fit.safetyMarginPx - attempt.reduction
+    const draft = this.drafts.get(composition)
+    if (!draft) return false
+    const { element } = composition
+    const target = draft.width - this.safetyMargin - draft.reduction
 
-    if (!reuse) {
-      const solved = breakParagraphWithFallback(
-        attempt.plan.measurement.items,
-        target,
-        attempt.plan.measurement.sums,
-      )
+    if (draft.reduction > 0) {
+      const solved = breakParagraph(draft.measurement.items, target, {
+        policy: this.policy,
+      })
       if (!solved.ok) {
-        this.revert(
-          attempt,
-          { kind: "no-feasible-breaking", element, width: target },
-          results,
-        )
+        this.revert(composition, "no-feasible-breaking", results)
         return false
       }
-      attempt.lines = solved.lines
+      draft.lines = solved.lines
     }
 
     try {
       const written = renderLines(
         element,
-        attempt.plan.measurement.block,
-        attempt.lines,
+        draft.measurement.block,
+        draft.lines,
         target,
         this.preservedImageAttributes,
       )
       if (!written) throw new Error("line content could not be rebuilt")
+      this.live.add(element)
       return true
     } catch (cause) {
-      this.revert(attempt, { kind: "render-failed", element, cause }, results)
+      this.revert(composition, "render-failed", results, cause)
       return false
     }
   }
 
   private settle(
-    attempts: Attempt[],
-    results: Map<LinebreakPlan, LinebreakResult>,
+    written: readonly Composition[],
+    results: Map<Composition, Outcome>,
   ) {
-    let pending = attempts
+    let pending = written
     while (pending.length > 0) {
-      const retry: Attempt[] = []
-      const failed: Array<{ attempt: Attempt; diagnostic: Diagnostic }> = []
+      const retry: Composition[] = []
 
-      for (const attempt of pending) {
-        const diagnostic = this.verify(attempt)
-        if (!diagnostic) {
-          results.set(attempt.handle, {
-            element: attempt.plan.element,
-            state: "typeset",
-            lineCount: attempt.lines.length,
+      for (const composition of pending) {
+        const draft = this.drafts.get(composition)
+        if (!draft) continue
+        const failure = this.verify(composition.element, draft.lines.length)
+        if (!failure) {
+          this.counters.typeset += 1
+          results.set(composition, {
+            element: composition.element,
+            status: "typeset",
+            lines: draft.lines.length,
+            retries: draft.round,
           })
-        } else if (
-          diagnostic.kind === "line-wrapped" &&
-          attempt.round < policy.fit.rewrapAttempts
-        ) {
-          attempt.round += 1
-          attempt.reduction =
-            attempt.width *
-            policy.fit.rewrapReduction *
-            3 ** (attempt.round - 1)
-          retry.push(attempt)
-        } else {
-          failed.push({ attempt, diagnostic })
+          continue
         }
+        if (failure === "lines-wrapped" && draft.round < this.maximumRetries) {
+          draft.round += 1
+          this.counters.retries += 1
+          draft.reduction =
+            draft.width * engineDefaults.retryReduction * 3 ** (draft.round - 1)
+          retry.push(composition)
+          continue
+        }
+        this.revert(composition, failure, results)
       }
 
-      for (const { attempt, diagnostic } of failed) {
-        this.revert(attempt, diagnostic, results)
-      }
-
-      pending = retry.filter((attempt) => this.write(attempt, results))
+      pending = retry.filter((composition) => this.write(composition, results))
     }
   }
 
-  private verify(attempt: Attempt): Diagnostic | null {
-    const { element } = attempt.plan
-    const style = getComputedStyle(element)
+  private verify(
+    element: HTMLElement,
+    lineCount: number,
+  ): "lines-wrapped" | "line-height-unresolved" | null {
+    const style = styleOf(element)
     const lineHeight = resolvedLineHeight(style)
-    if (!Number.isFinite(lineHeight)) {
-      return {
-        kind: "line-height-unresolved",
-        element,
-        value: style.lineHeight,
-      }
-    }
-
+    if (!Number.isFinite(lineHeight)) return "line-height-unresolved"
     const height = contentHeight(element, style)
-    if (height <= (attempt.lines.length + 0.5) * lineHeight) return null
+    if (height <= (lineCount + 0.5) * lineHeight) return null
     if (!anyLineWrapped(element)) return null
-    return {
-      kind: "line-wrapped",
-      element,
-      expectedLines: attempt.lines.length,
-      renderedHeight: height,
-      lineHeight,
-    }
-  }
-
-  typeset(element: HTMLElement): LinebreakResult
-  typeset(elements: Iterable<HTMLElement>): LinebreakResult[]
-  typeset(
-    input: HTMLElement | Iterable<HTMLElement>,
-  ): LinebreakResult | LinebreakResult[] {
-    if (!isIterable(input)) return this.commit(this.plan(input))
-    return this.commit([...input].map((element) => this.plan(element)))
-  }
-
-  restore(input: HTMLElement | Iterable<HTMLElement>) {
-    const elements = isIterable(input) ? input : [input]
-    for (const element of elements) this.restoreElement(element)
-  }
-
-  invalidate(input?: HTMLElement | Iterable<HTMLElement>) {
-    const elements = input
-      ? isIterable(input)
-        ? input
-        : [input]
-      : [...this.measurements.keys()]
-    for (const element of elements) {
-      this.restoreElement(element)
-      this.measurements.delete(element)
-    }
-
-    if (input === undefined) this.metrics.clear()
-  }
-
-  readMetrics() {
-    return {
-      cachedParagraphs: this.measurements.size,
-      cachedTypographies: this.metrics.size,
-    }
-  }
-
-  destroy() {
-    if (this.destroyed) return
-    for (const element of this.measurements.keys()) this.restoreElement(element)
-    this.measurements.clear()
-    this.metrics.clear()
-    this.destroyed = true
+    return "lines-wrapped"
   }
 
   private revert(
-    attempt: Attempt,
-    diagnostic: Diagnostic,
-    results: Map<LinebreakPlan, LinebreakResult>,
+    composition: Composition,
+    reason: FailureReason,
+    results: Map<Composition, Outcome>,
+    cause?: unknown,
   ) {
-    const { element } = attempt.plan
-    this.emit(diagnostic)
-    this.restoreElement(element)
-    results.set(attempt.handle, {
-      element,
-      state: "native",
-      reason: diagnostic.kind,
+    this.restoreElement(composition.element)
+    this.counters.failed += 1
+    if (reason !== "lines-wrapped") {
+      this.remembered.set(
+        composition.element,
+        reason as unknown as DeclineReason,
+      )
+    }
+    results.set(composition, {
+      element: composition.element,
+      status: "failed",
+      reason,
+      cause,
     })
-  }
-
-  private decline(
-    handle: LinebreakPlan,
-    diagnostic: Diagnostic,
-  ): LinebreakPlan {
-    this.emit(diagnostic)
-    this.plans.set(handle, {
-      state: "native",
-      element: handle.element,
-      reason: diagnostic.kind,
-    })
-    return handle
   }
 
   private restoreElement(element: HTMLElement) {
     const measurement = this.measurements.get(element)
-    if (!measurement) return
-    restoreAuthored(
-      element,
-      measurement.authored,
-      this.preservedImageAttributes,
-    )
+    if (measurement) {
+      restoreAuthored(
+        element,
+        measurement.authored,
+        this.preservedImageAttributes,
+      )
+    }
+    this.live.delete(element)
   }
 
   private metricsFor(font: string, letterSpacing: number, locale: string) {
@@ -526,26 +584,26 @@ class BrowserLinebreaker implements Linebreaker {
     element: HTMLElement,
     style: CSSStyleDeclaration,
     basis: MeasurementBasis,
+    signature: string,
   ):
     | { ok: true; measurement: Measurement }
-    | { ok: false; diagnostic: Diagnostic } {
-    const styleOf = createStyleReader(element, style)
-    const extracted = extractBlock(element, styleOf)
-    if (!extracted.ok) return { ok: false, diagnostic: extracted.diagnostic }
+    | { ok: false; reason: ComposeReason } {
+    if (element.hasAttribute(TYPESET_ATTRIBUTE)) {
+      // Measuring generated lines would capture them as "authored" content.
+      return { ok: false, reason: "unsupported-content" }
+    }
+
+    const reader = createStyleReader(element, style)
+    const extracted = extractBlock(element, reader)
+    if (!extracted.ok) return { ok: false, reason: extracted.reason }
 
     configureLocale(basis.locale)
-    let unmodellable: Diagnostic | null = null
+    let unmodellable: ComposeReason | null = null
 
     const metricsFor = (run: InlineRun): FontMetrics | null => {
-      const runStyle = styleOf(run.sourceElement)
-      const property = unmodellableProperty(runStyle)
-      if (property) {
-        unmodellable ??= {
-          kind: "measurement-unavailable",
-          element,
-          node: run.sourceElement,
-          property,
-        }
+      const runStyle = reader(run.sourceElement)
+      if (unmodellableProperty(runStyle)) {
+        unmodellable ??= "unmeasurable"
         return null
       }
       return this.metricsFor(
@@ -555,36 +613,32 @@ class BrowserLinebreaker implements Linebreaker {
       )
     }
 
-    const atomWidth = (run: InlineRun) => outerWidth(run.sourceElement, styleOf)
-
     const authored = captureAuthored(element)
     const compiled = compileBlock({
       block: extracted.block,
       metricsFor,
-      atomWidth,
+      atomWidth: (run: InlineRun) => outerWidth(run.sourceElement, reader),
       locale: basis.locale,
       hyphenate: this.hyphenate,
+      policy: this.policy,
+      glue: this.glue,
     })
-    if (unmodellable) return { ok: false, diagnostic: unmodellable }
-    if (!compiled.ok) return { ok: false, diagnostic: compiled.diagnostic }
+    if (unmodellable) return { ok: false, reason: unmodellable }
+    if (!compiled.ok) return { ok: false, reason: compiled.reason }
 
     return {
       ok: true,
       measurement: {
         block: extracted.block,
         items: compiled.items,
-        sums: prefixSums(compiled.items),
         authored,
         under: basis,
+        signature,
+        widths: [],
       },
     }
   }
 }
-
-const isIterable = <Value>(
-  value: Value | Iterable<Value>,
-): value is Iterable<Value> =>
-  typeof (value as Iterable<Value>)?.[Symbol.iterator] === "function"
 
 export const createLinebreaker = (
   options: LinebreakerOptions = {},

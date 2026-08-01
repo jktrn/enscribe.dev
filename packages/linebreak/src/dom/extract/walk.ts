@@ -1,4 +1,4 @@
-import type { Diagnostic } from "../../diagnostics"
+import type { ComposeReason } from "../../types"
 import type { StyleReader } from "../style"
 import { DECORATION, OBJECT_REPLACEMENT } from "./runs"
 
@@ -59,40 +59,28 @@ const elementLayout = (element: Element, display: string): Layout => {
 
 export class RawCollector {
   readonly raws: Raw[] = []
-  private rejected: Diagnostic | undefined
+  private rejected: ComposeReason | undefined
 
   constructor(
     private readonly block: HTMLElement,
     private readonly styleOf: StyleReader,
   ) {}
 
-  collect(): Diagnostic | null {
+  collect(): ComposeReason | null {
     const style = this.styleOf(this.block)
     const noWrapOwner = style.textWrapMode === "nowrap" ? this.block : undefined
     const collapses = style.whiteSpaceCollapse === "collapse"
 
     for (const child of this.block.childNodes) {
       if (!this.visit(child, [], noWrapOwner, collapses)) {
-        return (
-          this.rejected ?? {
-            kind: "unsupported-element",
-            element: this.block,
-            node: this.block,
-            detail: "unsupported inline content",
-          }
-        )
+        return this.rejected ?? "unsupported-content"
       }
     }
     return null
   }
 
-  private reject(node: Element, detail: string) {
-    this.rejected ??= {
-      kind: "unsupported-element",
-      element: this.block,
-      node,
-      detail,
-    }
+  private reject(_node: Element, _detail: string) {
+    this.rejected ??= "unsupported-content"
     return false
   }
 

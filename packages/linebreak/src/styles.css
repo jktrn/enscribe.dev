@@ -1,38 +1,64 @@
-[data-linebreak-typeset] {
-  text-align: start;
-  text-wrap: wrap;
-  hyphens: manual;
+/*
+ * Two layers, ordered by the package.
+ *
+ * `linebreak.core` holds rules the output is not correct without — a consumer
+ * who overrides them gets run-together text. `linebreak.theme` holds the
+ * presentation, which consumers are meant to override.
+ *
+ * Everything is layered so that unlayered consumer CSS wins without needing
+ * `!important`; unlayered rules beat every layered rule regardless of
+ * specificity.
+ */
+@layer linebreak.core, linebreak.theme;
+
+@layer linebreak.core {
+  [data-linebreak-typeset] > [data-linebreak-line] {
+    display: block;
+  }
+
+  /* Strip the cut edges of an inline wrapper split across lines. */
+  [data-linebreak-typeset]
+    [data-linebreak-fragment]:not([data-linebreak-fragment-start]) {
+    padding-inline-start: 0;
+    margin-inline-start: 0;
+    border-inline-start-width: 0;
+    border-start-start-radius: 0;
+    border-end-start-radius: 0;
+  }
+
+  [data-linebreak-typeset]
+    [data-linebreak-fragment]:not([data-linebreak-fragment-end]) {
+    padding-inline-end: 0;
+    margin-inline-end: 0;
+    border-inline-end-width: 0;
+    border-start-end-radius: 0;
+    border-end-end-radius: 0;
+  }
 }
 
-[data-linebreak-typeset] > [data-linebreak-break] {
-  display: block;
-  text-align: justify;
-  text-align-last: justify;
-}
+@layer linebreak.theme {
+  [data-linebreak-typeset] {
+    /* The package has already chosen the breaks; keep the browser out of it. */
+    text-wrap: wrap;
+    hyphens: manual;
+  }
 
-[data-linebreak-typeset] > [data-linebreak-break="forced"],
-[data-linebreak-typeset] > [data-linebreak-break]:last-child {
-  text-align-last: start;
-}
+  [data-linebreak-typeset] > [data-linebreak-line] {
+    text-align: justify;
+    text-align-last: justify;
+  }
 
-[data-linebreak-typeset] > [data-linebreak-break="hyphen"]::after {
-  content: "-";
-}
+  /* A line the author ended, and the last line, stay ragged. */
+  [data-linebreak-typeset] > [data-linebreak-line="forced"],
+  [data-linebreak-typeset] > [data-linebreak-line="end"] {
+    text-align-last: start;
+  }
 
-[data-linebreak-typeset]
-  [data-linebreak-fragment]:not([data-linebreak-fragment-start]) {
-  padding-inline-start: 0;
-  margin-inline-start: 0;
-  border-inline-start-width: 0;
-  border-start-start-radius: 0;
-  border-end-start-radius: 0;
-}
-
-[data-linebreak-typeset]
-  [data-linebreak-fragment]:not([data-linebreak-fragment-end]) {
-  padding-inline-end: 0;
-  margin-inline-end: 0;
-  border-inline-end-width: 0;
-  border-start-end-radius: 0;
-  border-end-end-radius: 0;
+  /*
+   * U+2010 HYPHEN rather than U+002D. Generated content stays out of
+   * `textContent` and the clipboard, so a hyphenated word rejoins when copied.
+   */
+  [data-linebreak-typeset] > [data-linebreak-line="hyphen"]::after {
+    content: var(--linebreak-hyphen, "\2010");
+  }
 }

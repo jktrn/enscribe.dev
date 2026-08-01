@@ -1,6 +1,14 @@
 import type { BreakKind } from "../layout/breaker"
-import { LINE_SELECTOR } from "./render"
+import { LINE_SELECTOR, TYPESET_SELECTOR } from "./render"
 
+/**
+ * One span per line changes how the browser serializes a selection: each line
+ * is a block box, so it contributes a newline that was never in the source.
+ *
+ * Lines that consumed a space now carry a real trailing space text node, so
+ * only the newline needs undoing. A line ended by an authored `<br>` keeps its
+ * newline; the paragraph's last line keeps the block boundary it always had.
+ */
 const generatesBlockBox = (element: Element, display: string) =>
   display !== "contents" &&
   display !== "none" &&
@@ -13,14 +21,8 @@ const clippedText = (node: Text, range: Range) => {
   return node.data.slice(start, end)
 }
 
-const lineJoin = (line: HTMLElement, range: Range) => {
-  const next = line.nextSibling
-  if (!next || !range.intersectsNode(next)) return ""
-  const kind = line.dataset.linebreakBreak as BreakKind | undefined
-  if (kind === "space") return " "
-  if (kind === "forced") return "\n"
-  return ""
-}
+const lineKind = (line: HTMLElement) =>
+  line.dataset.linebreakLine as BreakKind | undefined
 
 const plainText = (range: Range) => {
   let text = ""
@@ -42,7 +44,11 @@ const plainText = (range: Range) => {
     walkChildren(node)
 
     if (node.matches(LINE_SELECTOR)) {
-      text += lineJoin(node as HTMLElement, range)
+      const next = node.nextSibling
+      if (!next || !range.intersectsNode(next)) return
+      // "space" lines already carry their trailing space; "none" and "hyphen"
+      // breaks consumed no character at all.
+      if (lineKind(node as HTMLElement) === "forced") text += "\n"
       return
     }
     if (
@@ -66,11 +72,30 @@ const plainText = (range: Range) => {
   return text
 }
 
-export const cleanCopiedLinebreaks = (event: ClipboardEvent) => {
+/**
+ * Register on `document` to keep copied text faithful:
+ *
+ * ```ts
+ * document.addEventListener("copy", handleCopy, { signal })
+ * ```
+ *
+ * A selection containing no generated lines is left entirely alone.
+ */
+export const handleCopy = (event: ClipboardEvent) => {
   const selection = getSelection()
   if (!selection || selection.rangeCount !== 1 || !event.clipboardData) return
 
   const range = selection.getRangeAt(0)
+  // Cheap rejection before cloning anything: most copies are not ours.
+  const container = range.commonAncestorContainer
+  const scope =
+    container.nodeType === Node.ELEMENT_NODE
+      ? (container as Element)
+      : container.parentElement
+  if (!scope?.closest(TYPESET_SELECTOR) && !scope?.querySelector(LINE_SELECTOR)) {
+    return
+  }
+
   const holder = document.createElement("div")
   holder.appendChild(range.cloneContents())
 
@@ -80,11 +105,8 @@ export const cleanCopiedLinebreaks = (event: ClipboardEvent) => {
   const text = plainText(range)
 
   for (const line of lines) {
-    if (line.nextSibling) {
-      const kind = line.dataset.linebreakBreak as BreakKind | undefined
-      if (kind === "space") line.appendChild(document.createTextNode(" "))
-
-      if (kind === "forced") line.appendChild(document.createElement("br"))
+    if (line.nextSibling && lineKind(line) === "forced") {
+      line.appendChild(document.createElement("br"))
     }
     line.replaceWith(...line.childNodes)
   }

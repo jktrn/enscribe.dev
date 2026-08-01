@@ -1,2 +1,3 @@
-declare const styles: string
-export default styles
+// The stylesheet has no JS exports; this only satisfies
+// `noUncheckedSideEffectImports` for `import "...styles.css"`.
+export {}

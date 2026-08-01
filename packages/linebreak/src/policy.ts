@@ -1,33 +1,22 @@
-export const policy = {
-  glue: {
-    stretch: 1 / 2,
-    shrink: 1 / 2,
-  },
-  fit: {
-    tolerance: 1,
-    relaxedTolerance: 1.26,
-    emergencyStretchSpaces: 14,
-    safetyMarginPx: 0.5,
-    rewrapAttempts: 3,
-    rewrapReduction: 0.01,
-  },
-  demerits: {
-    linePenalty: 10,
-    consecutiveFlagged: 10_000,
-    fitnessJump: 10_000,
-  },
-  penalty: {
-    hyphen: 50,
-  },
-  hyphenate: false,
-  limits: {
-    maximumCharacters: 3_000,
-    minimumHyphenatedWordLength: 5,
-  },
-} as const
-
-export const INFINITE_STRETCH = 100_000
-
-export const FORBIDDEN_PENALTY = 1_000
-
-export const FORCED_PENALTY = -1_000
+/**
+ * Defaults for the DOM engine. Typographic constants live in
+ * `layout/policy.ts`; these are the browser-specific ones.
+ */
+export const engineDefaults = Object.freeze({
+  /**
+   * Content box width below which an element is left to the browser. Zero
+   * would let `display: none` elements through and burn a full measure.
+   */
+  minimumWidth: 240,
+  /**
+   * Sub-pixel pad against browser layout quantization. Canvas returns
+   * unquantized doubles while layout quantizes to 1/64 px (Blink, WebKit) or
+   * 1/60 px (Gecko), so the measure is shaved slightly.
+   */
+  safetyMargin: 0.5,
+  /** Re-solve rounds when a rendered line wraps anyway: 1%, 3%, 9%. */
+  retries: 3,
+  retryReduction: 0.01,
+  /** Refuse paragraphs longer than this; the search is superlinear in breaks. */
+  maximumCharacters: 3_000,
+})

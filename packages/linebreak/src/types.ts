@@ -1,51 +1,154 @@
-import type { Diagnostic, DiagnosticKind, DiagnosticSink } from "./diagnostics"
+import type { GlueElasticity, LayoutPolicy } from "./layout/policy"
+
+/**
+ * Nothing is wrong. The element was left to the browser on purpose, and a
+ * different width or a content change might well change that.
+ */
+export type SkipReason =
+  | "single-line"
+  | "empty"
+  | "too-narrow"
+  | "already-typeset"
+
+/**
+ * The content cannot be modelled. A capability gap — worth knowing about, not
+ * worth panicking about.
+ */
+export type DeclineReason =
+  | "unsupported-content"
+  | "unsupported-direction"
+  | "unsupported-writing-mode"
+  | "too-long"
+  | "unmeasurable"
+  | "segmentation-mismatch"
+  | "no-feasible-breaking"
+  | "unstable-width"
+
+/** What `compose` can conclude before anything is written. */
+export type ComposeReason = SkipReason | DeclineReason
+
+/** Tried, wrote, put it back. Always worth knowing about. */
+export type FailureReason =
+  | "lines-wrapped"
+  | "line-height-unresolved"
+  | "no-feasible-breaking"
+  | "render-failed"
+
+/**
+ * Invariant: anything whose status is not `"typeset"` is left in browser line
+ * breaking. The three non-typeset arms differ only in why.
+ */
+export type Outcome =
+  | {
+      readonly element: HTMLElement
+      readonly status: "typeset"
+      readonly lines: number
+      /** Re-solves needed before the rendered lines fit. Usually 0. */
+      readonly retries: number
+    }
+  | {
+      readonly element: HTMLElement
+      readonly status: "skipped"
+      readonly reason: SkipReason
+    }
+  | {
+      readonly element: HTMLElement
+      readonly status: "declined"
+      readonly reason: DeclineReason
+    }
+  | {
+      readonly element: HTMLElement
+      readonly status: "failed"
+      readonly reason: FailureReason
+      readonly cause?: unknown
+    }
+
+/** True for outcomes that need no attention: a success or a deliberate skip. */
+export const isExpected = (outcome: Outcome) =>
+  outcome.status === "typeset" || outcome.status === "skipped"
+
+declare const brand: unique symbol
+
+export const COMPOSITION_BRAND = Symbol("linebreak.composition") as symbol & {
+  readonly [brand]: never
+}
+
+/**
+ * The result of measuring one element, before anything is written.
+ *
+ * Inspect it to decide whether the write is worth it — `lines` is how many
+ * lines it would produce. Compositions are single-use.
+ */
+export type Composition = {
+  readonly brand: typeof COMPOSITION_BRAND
+  readonly element: HTMLElement
+  readonly status: "ready" | "skipped" | "declined"
+  /** Lines this would render. Zero unless `status` is `"ready"`. */
+  readonly lines: number
+  readonly width: number
+  readonly reason?: SkipReason | DeclineReason
+}
 
 export type LinebreakerOptions = {
+  /** Falls back to the nearest `lang`, then `<html lang>`, then `en-US`. */
   locale?: string
+  /** Content box width below which an element is left alone. Default 240. */
   minimumWidth?: number
-  onDiagnostic?: DiagnosticSink
+  /** Dictionary hyphenation inside words. English only. Default false. */
   hyphenate?: boolean
+  /** Copied between original and rebuilt images at the same index. */
   preserveImageAttributes?: readonly string[]
+
+  /** TeX tuning: tolerances, demerits, penalties. */
+  policy?: Partial<LayoutPolicy>
+  /** Interword elasticity as a fraction of the measured space width. */
+  glue?: Partial<GlueElasticity>
+  /** Sub-pixel pad against browser layout quantization. Default 0.5. */
+  safetyMargin?: number
+  /** Re-solve rounds when a rendered line wraps anyway. Default 3. */
+  retries?: number
+  /** Refuse paragraphs longer than this many collapsed characters. */
+  maximumCharacters?: number
+
+  onOutcome?: (outcome: Outcome) => void
 }
 
-export type LinebreakPlan = {
-  readonly element: HTMLElement
+export type LinebreakerStats = {
+  readonly typeset: number
+  readonly skipped: number
+  readonly declined: number
+  readonly failed: number
+  readonly retries: number
+  readonly liveElements: number
+  readonly cachedFonts: number
 }
 
-export type LinebreakResult =
-  | {
-      readonly element: HTMLElement
-      readonly state: "typeset"
-      readonly lineCount: number
-    }
-  | {
-      readonly element: HTMLElement
-      readonly state: "native"
-      readonly reason: DiagnosticKind
-    }
-
-export type LinebreakMetrics = {
-  cachedParagraphs: number
-  cachedTypographies: number
-}
-
+/**
+ * The DOM engine: measure, write, verify, restore. One element at a time, with
+ * no lifetime management — see `@enscribe/linebreak/auto` for that.
+ *
+ * Every method takes an iterable. A single element is `typeset([element])`.
+ */
 export interface Linebreaker {
-  plan(element: HTMLElement): LinebreakPlan
+  /** Layout reads only. Never writes the DOM. */
+  compose(elements: Iterable<HTMLElement>): readonly Composition[]
 
-  commit(plan: LinebreakPlan): LinebreakResult
-  commit(plans: Iterable<LinebreakPlan>): LinebreakResult[]
+  /** Writes, then verifies and retries. Compositions are single-use. */
+  apply(compositions: Iterable<Composition>): readonly Outcome[]
 
-  typeset(element: HTMLElement): LinebreakResult
-  typeset(elements: Iterable<HTMLElement>): LinebreakResult[]
+  /** `compose` then `apply`, batched. The default path. */
+  typeset(elements: Iterable<HTMLElement>): readonly Outcome[]
 
-  restore(element: HTMLElement): void
-  restore(elements: Iterable<HTMLElement>): void
+  /** Put authored content back. Defaults to every typeset element. */
+  restore(elements?: Iterable<HTMLElement>): void
 
-  invalidate(element?: HTMLElement): void
-  invalidate(elements: Iterable<HTMLElement>): void
-  readMetrics(): LinebreakMetrics
+  /** Restore and drop cached measurements. Safe around a content edit. */
+  reset(elements?: Iterable<HTMLElement>): void
 
-  destroy(): void
+  /** Forget outcomes a geometry change could flip, keeping measurements. */
+  refresh(): void
+
+  stats(): LinebreakerStats
+
+  dispose(): void
 }
-
-export type { Diagnostic, DiagnosticKind, DiagnosticSink }

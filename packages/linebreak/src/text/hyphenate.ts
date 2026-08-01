@@ -1,5 +1,5 @@
 import englishHyphenation from "hyphen/en-us"
-import { policy } from "../policy"
+import { hyphenationLimits } from "../layout/policy"
 
 const { hyphenateSync } = englishHyphenation
 
@@ -21,10 +21,10 @@ export const usesEnglishHyphenation = (locale: string) => {
 }
 
 export const hyphenationOffsets = (word: string): number[] => {
-  if (word.length < policy.limits.minimumHyphenatedWordLength) return []
+  if (word.length < hyphenationLimits.minimumWordLength) return []
 
   const marked = hyphenateSync(word, {
-    minWordLength: policy.limits.minimumHyphenatedWordLength,
+    minWordLength: hyphenationLimits.minimumWordLength,
   })
   if (!marked.includes(SOFT_HYPHEN)) return []
 

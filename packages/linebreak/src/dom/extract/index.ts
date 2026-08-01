@@ -1,4 +1,4 @@
-import { policy } from "../../policy"
+import { engineDefaults } from "../../policy"
 import type { StyleReader } from "../style"
 import { Collapser } from "./collapse"
 import type { ExtractResult } from "./runs"
@@ -11,22 +11,12 @@ export const extractBlock = (
 ): ExtractResult => {
   const collector = new RawCollector(block, styleOf)
   const rejected = collector.collect()
-  if (rejected) return { ok: false, diagnostic: rejected }
+  if (rejected) return { ok: false, reason: rejected }
 
   const { text, runs, breakRestrictions } = Collapser.collapse(collector.raws)
-  if (text.length === 0) {
-    return { ok: false, diagnostic: { kind: "empty-content", element: block } }
-  }
-  if (text.length > policy.limits.maximumCharacters) {
-    return {
-      ok: false,
-      diagnostic: {
-        kind: "content-too-long",
-        element: block,
-        length: text.length,
-        maximum: policy.limits.maximumCharacters,
-      },
-    }
+  if (text.length === 0) return { ok: false, reason: "empty" }
+  if (text.length > engineDefaults.maximumCharacters) {
+    return { ok: false, reason: "too-long" }
   }
 
   return {
