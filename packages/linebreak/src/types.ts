@@ -93,18 +93,11 @@ export type LinebreakerStats = {
 
 export interface Linebreaker {
   compose(elements: Iterable<HTMLElement>): readonly Composition[]
-
   apply(compositions: Iterable<Composition>): readonly Outcome[]
-
   typeset(elements: Iterable<HTMLElement>): readonly Outcome[]
-
   restore(elements?: Iterable<HTMLElement>): void
-
   reset(elements?: Iterable<HTMLElement>): void
-
   refresh(): void
-
   stats(): LinebreakerStats
-
   dispose(): void
 }
