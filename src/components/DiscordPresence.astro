@@ -285,7 +285,7 @@ import "@/styles/marquee.css"
     type DiscordActivity,
     type DiscordPresenceState,
     discordAssetUrl,
-    formatDiscordDuration,
+    formatDiscordCompleted,
     formatDiscordElapsed,
     nextDiscordPresenceState,
     parseDiscordStreamEvent,
@@ -444,7 +444,9 @@ import "@/styles/marquee.css"
       const previous = this.state
       const activityChanged =
         JSON.stringify(state.activity) !== JSON.stringify(previous?.activity) ||
-        state.is_active !== previous?.is_active
+        state.is_active !== previous?.is_active ||
+        state.duration_ms !== previous?.duration_ms ||
+        state.ended_at_ms !== previous?.ended_at_ms
       const statusChanged = state.status !== previous?.status
       this.state = state
       if (!activityChanged && !statusChanged) return
@@ -480,19 +482,13 @@ import "@/styles/marquee.css"
 
       const startMs = activity?.start_ms
       if (state.is_active && startMs != null) {
-        const elapsed = document.createElement("discord-line")
-        elapsed.setAttribute("data-elapsed", "")
-        const updateElapsed = () => {
-          elapsed.textContent = formatDiscordElapsed(startMs)
-        }
-        updateElapsed()
-        meta.appendChild(elapsed)
-        this.tickerId = window.setInterval(updateElapsed, 1_000)
-      } else if (!state.is_active && state.duration_ms != null) {
-        const duration = document.createElement("discord-line")
-        duration.setAttribute("data-elapsed", "")
-        duration.textContent = `for ${formatDiscordDuration(state.duration_ms)}`
-        meta.appendChild(duration)
+        this.appendTicker(meta, () => formatDiscordElapsed(startMs), 1_000)
+      } else if (!state.is_active && activity) {
+        this.appendTicker(
+          meta,
+          () => formatDiscordCompleted(state.duration_ms, state.ended_at_ms),
+          30_000,
+        )
       }
 
       const art = activityArt(activity)
@@ -538,6 +534,23 @@ import "@/styles/marquee.css"
       spinner.setAttribute("role", "status")
       spinner.setAttribute("aria-label", "Loading Discord activity")
       this.querySelector("discord-activity")?.replaceChildren(spinner)
+    }
+
+    appendTicker(
+      meta: HTMLElement,
+      text: () => string | null,
+      intervalMs: number,
+    ) {
+      const initial = text()
+      if (initial === null) return
+
+      const line = document.createElement("discord-line")
+      line.setAttribute("data-elapsed", "")
+      line.textContent = initial
+      meta.appendChild(line)
+      this.tickerId = window.setInterval(() => {
+        line.textContent = text() ?? line.textContent
+      }, intervalMs)
     }
 
     stopTicker() {

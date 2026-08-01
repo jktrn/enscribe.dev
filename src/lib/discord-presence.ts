@@ -27,6 +27,9 @@ interface NoActivityEvent {
   event_type: "no_activity"
   timestamp_ms: number
   status: DiscordStatus
+  last_activity: DiscordActivity | null
+  ended_at_ms: number | null
+  duration_ms: number | null
 }
 
 interface KeepaliveEvent {
@@ -43,7 +46,7 @@ export interface DiscordPresenceState {
   status: DiscordStatus
   is_active: boolean
   duration_ms: number | null
-  duration_pending: boolean
+  ended_at_ms: number | null
 }
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
@@ -59,6 +62,11 @@ const isOptionalFiniteNumber = (
   value: unknown,
 ): value is number | null | undefined =>
   value === undefined || value === null || isFiniteNumber(value)
+
+const isOptionalDuration = (
+  value: unknown,
+): value is number | null | undefined =>
+  isOptionalFiniteNumber(value) && (typeof value !== "number" || value >= 0)
 
 const isDiscordStatus = (value: unknown): value is DiscordStatus =>
   value === null ||
@@ -98,12 +106,18 @@ export const parseDiscordStreamEvent = (
     if (
       value.event_type === "no_activity" &&
       isFiniteNumber(value.timestamp_ms) &&
-      isDiscordStatus(value.status)
+      isDiscordStatus(value.status) &&
+      (value.last_activity == null || isActivity(value.last_activity)) &&
+      isOptionalFiniteNumber(value.ended_at_ms) &&
+      isOptionalDuration(value.duration_ms)
     ) {
       return {
         event_type: "no_activity",
         timestamp_ms: value.timestamp_ms,
         status: value.status,
+        last_activity: value.last_activity ?? null,
+        ended_at_ms: value.ended_at_ms ?? null,
+        duration_ms: value.duration_ms ?? null,
       }
     }
 
@@ -128,6 +142,17 @@ export const parseDiscordStreamEvent = (
   }
 }
 
+const isSamePresence = (
+  current: DiscordPresenceState | null,
+  next: DiscordPresenceState,
+): boolean =>
+  current !== null &&
+  current.status === next.status &&
+  current.is_active === next.is_active &&
+  current.duration_ms === next.duration_ms &&
+  current.ended_at_ms === next.ended_at_ms &&
+  JSON.stringify(current.activity) === JSON.stringify(next.activity)
+
 export const nextDiscordPresenceState = (
   current: DiscordPresenceState | null,
   event: DiscordStreamEvent,
@@ -135,27 +160,27 @@ export const nextDiscordPresenceState = (
   if (event.event_type === "keepalive") return current
 
   if (event.event_type === "no_activity") {
-    if (
-      current &&
-      !current.is_active &&
-      !current.duration_pending &&
-      current.status === event.status
-    )
-      return current
+    const next: DiscordPresenceState = event.last_activity
+      ? {
+          activity: event.last_activity,
+          status: event.status,
+          is_active: false,
+          duration_ms: event.duration_ms,
+          ended_at_ms: event.ended_at_ms,
+        }
+      : {
+          activity: current?.activity ?? null,
+          status: event.status,
+          is_active: false,
+          duration_ms: current?.is_active
+            ? null
+            : (current?.duration_ms ?? null),
+          ended_at_ms: current?.is_active
+            ? null
+            : (current?.ended_at_ms ?? null),
+        }
 
-    const durationMs =
-      (current?.is_active || current?.duration_pending) &&
-      current.activity?.start_ms != null
-        ? Math.max(event.timestamp_ms - current.activity.start_ms, 0)
-        : (current?.duration_ms ?? null)
-
-    return {
-      activity: current?.activity ?? null,
-      status: event.status,
-      is_active: false,
-      duration_ms: durationMs,
-      duration_pending: false,
-    }
+    return isSamePresence(current, next) ? current : next
   }
 
   return {
@@ -163,7 +188,7 @@ export const nextDiscordPresenceState = (
     status: event.status,
     is_active: true,
     duration_ms: null,
-    duration_pending: true,
+    ended_at_ms: null,
   }
 }
 
@@ -177,30 +202,18 @@ export const selectCachedDiscordPresence = (
       !isRecord(candidate) ||
       !(candidate.activity === null || isActivity(candidate.activity)) ||
       !isDiscordStatus(candidate.status) ||
-      (candidate.is_active !== undefined &&
-        typeof candidate.is_active !== "boolean") ||
-      (candidate.duration_ms !== undefined &&
-        candidate.duration_ms !== null &&
-        (!isFiniteNumber(candidate.duration_ms) ||
-          candidate.duration_ms < 0)) ||
-      (candidate.duration_pending !== undefined &&
-        typeof candidate.duration_pending !== "boolean")
+      !isOptionalDuration(candidate.duration_ms) ||
+      !isOptionalFiniteNumber(candidate.ended_at_ms)
     ) {
       continue
     }
 
-    const durationMs =
-      typeof candidate.duration_ms === "number" ? candidate.duration_ms : null
     states.push({
       activity: candidate.activity,
       status: candidate.status,
       is_active: false,
-      duration_ms: durationMs,
-      duration_pending:
-        candidate.activity !== null &&
-        candidate.activity.start_ms != null &&
-        durationMs === null &&
-        (candidate.duration_pending === true || candidate.is_active === true),
+      duration_ms: candidate.duration_ms ?? null,
+      ended_at_ms: candidate.ended_at_ms ?? null,
     })
   }
 
@@ -219,6 +232,27 @@ export const formatDiscordDuration = (durationMs: number): string => {
   const seconds = totalSeconds % 60
   const pad = (value: number) => value.toString().padStart(2, "0")
   return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`
+}
+
+const formatDiscordAgo = (endedAtMs: number, nowMs: number): string => {
+  const minutes = Math.floor((nowMs - endedAtMs) / 60_000)
+  if (minutes < 1) return "just now"
+  if (minutes < 60) return `${minutes}m ago`
+
+  const hours = Math.floor(minutes / 60)
+  if (hours < 24) return `${hours}h ago`
+  return `${Math.floor(hours / 24)}d ago`
+}
+
+export const formatDiscordCompleted = (
+  durationMs: number | null,
+  endedAtMs: number | null,
+  nowMs = Date.now(),
+): string | null => {
+  const parts: string[] = []
+  if (durationMs != null) parts.push(`for ${formatDiscordDuration(durationMs)}`)
+  if (endedAtMs != null) parts.push(formatDiscordAgo(endedAtMs, nowMs))
+  return parts.length > 0 ? parts.join(" · ") : null
 }
 
 export const discordAssetUrl = (
