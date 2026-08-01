@@ -1,28 +1,36 @@
 import type { GlueElasticity, LayoutPolicy } from "./layout/policy"
 
-export type SkipReason =
-  | "single-line"
-  | "empty"
-  | "too-narrow"
-  | "already-typeset"
+export const SKIP_REASONS = [
+  "single-line",
+  "empty",
+  "too-narrow",
+  "already-typeset",
+] as const
 
-export type DeclineReason =
-  | "unsupported-content"
-  | "unsupported-direction"
-  | "unsupported-writing-mode"
-  | "too-long"
-  | "unmeasurable"
-  | "segmentation-mismatch"
-  | "no-feasible-breaking"
+export type SkipReason = (typeof SKIP_REASONS)[number]
+
+export const DECLINE_REASONS = [
+  "unsupported-content",
+  "unsupported-direction",
+  "unsupported-writing-mode",
+  "too-long",
+  "unmeasurable",
+  "segmentation-mismatch",
+  "no-feasible-breaking",
+] as const
+
+export type DeclineReason = (typeof DECLINE_REASONS)[number]
 
 export type ComposeReason = SkipReason | DeclineReason
 
-export type FailureReason =
-  | "layout-mismatch"
-  | "unstable-width"
-  | "line-height-unresolved"
-  | "no-feasible-breaking"
-  | "render-failed"
+export const FAILURE_REASONS = [
+  "layout-mismatch",
+  "unstable-width",
+  "line-height-unresolved",
+  "render-failed",
+] as const
+
+export type FailureReason = (typeof FAILURE_REASONS)[number]
 
 export type Outcome =
   | {
@@ -60,10 +68,10 @@ export const COMPOSITION_BRAND = Symbol("linebreak.composition") as symbol & {
 export type Composition = {
   readonly brand: typeof COMPOSITION_BRAND
   readonly element: HTMLElement
-  readonly status: "ready" | "skipped" | "declined"
+  readonly status: "ready" | "skipped" | "declined" | "failed"
   readonly lines: number
   readonly width: number
-  readonly reason?: SkipReason | DeclineReason
+  readonly reason?: SkipReason | DeclineReason | FailureReason
 }
 
 export type LinebreakerOptions = {

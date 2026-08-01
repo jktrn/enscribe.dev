@@ -12,6 +12,7 @@ import {
   configureLocale,
   createFontMetrics,
   type FontMetrics,
+  invalidateMeasurements,
 } from "./text/measure"
 import { engineDefaults } from "./policy"
 import { LINE_SELECTOR, renderLines, TYPESET_ATTRIBUTE } from "./dom/render"
@@ -31,6 +32,8 @@ import {
   COMPOSITION_BRAND,
   type Composition,
   type ComposeReason,
+  DECLINE_REASONS,
+  SKIP_REASONS,
   type DeclineReason,
   type FailureReason,
   type Linebreaker,
@@ -67,16 +70,21 @@ const sameBasis = (a: MeasurementBasis, b: MeasurementBasis) =>
   a.font === b.font &&
   a.letterSpacing === b.letterSpacing
 
-const SKIP_REASONS: ReadonlySet<string> = new Set([
-  "single-line",
-  "empty",
-  "too-narrow",
-  "already-typeset",
-])
+const SKIPPED: ReadonlySet<string> = new Set(SKIP_REASONS)
+const DECLINED: ReadonlySet<string> = new Set(DECLINE_REASONS)
 
 const TRANSIENT: ReadonlySet<string> = new Set(["already-typeset"])
 
-const RETRYABLE: ReadonlySet<string> = new Set(["too-narrow", "single-line"])
+const WIDTH_DEPENDENT: ReadonlySet<string> = new Set([
+  "no-feasible-breaking",
+  "unstable-width",
+])
+
+const statusFor = (reason: string) => {
+  if (SKIPPED.has(reason)) return "skipped" as const
+  if (DECLINED.has(reason)) return "declined" as const
+  return "failed" as const
+}
 
 const viewOf = (element: HTMLElement) =>
   element.ownerDocument.defaultView ?? globalThis
@@ -115,6 +123,7 @@ class BrowserLinebreaker implements Linebreaker {
   private readonly minimumWidth: number
   private readonly safetyMargin: number
   private readonly maximumRetries: number
+  private readonly maximumCharacters: number
   private readonly defaultLocale: string | undefined
   private readonly preservedImageAttributes: readonly string[]
   private readonly hyphenate: boolean
@@ -124,10 +133,7 @@ class BrowserLinebreaker implements Linebreaker {
 
   private readonly measurements = new WeakMap<HTMLElement, Measurement>()
   private readonly live = new Set<HTMLElement>()
-  private readonly remembered = new Map<
-    HTMLElement,
-    SkipReason | DeclineReason
-  >()
+  private readonly remembered = new Map<HTMLElement, ComposeReason | FailureReason>()
   private readonly metrics = new Map<string, FontMetrics>()
   private readonly drafts = new WeakMap<Composition, Draft>()
   private readonly counters = {
@@ -144,6 +150,8 @@ class BrowserLinebreaker implements Linebreaker {
     this.minimumWidth = options.minimumWidth ?? engineDefaults.minimumWidth
     this.safetyMargin = options.safetyMargin ?? engineDefaults.safetyMargin
     this.maximumRetries = options.retries ?? engineDefaults.retries
+    this.maximumCharacters =
+      options.maximumCharacters ?? engineDefaults.maximumCharacters
     this.defaultLocale = options.locale || undefined
     this.preservedImageAttributes = options.preserveImageAttributes ?? []
     this.hyphenate = options.hyphenate ?? false
@@ -241,15 +249,14 @@ class BrowserLinebreaker implements Linebreaker {
       this.measurements.delete(element)
       this.remembered.delete(element)
     }
-    if (!elements) {
-      this.remembered.clear()
-      this.metrics.clear()
-    }
+    if (!elements) this.remembered.clear()
+    this.metrics.clear()
+    invalidateMeasurements()
   }
 
   refresh() {
     for (const [element, reason] of this.remembered) {
-      if (RETRYABLE.has(reason)) this.remembered.delete(element)
+      if (WIDTH_DEPENDENT.has(reason)) this.remembered.delete(element)
     }
   }
 
@@ -278,8 +285,8 @@ class BrowserLinebreaker implements Linebreaker {
 
   private settled(
     element: HTMLElement,
-    status: "skipped" | "declined",
-    reason: SkipReason | DeclineReason,
+    status: "skipped" | "declined" | "failed",
+    reason: ComposeReason | FailureReason,
     width = 0,
     remember = true,
   ): Composition {
@@ -297,8 +304,7 @@ class BrowserLinebreaker implements Linebreaker {
   private composeOne(element: HTMLElement): Composition {
     const already = this.remembered.get(element)
     if (already !== undefined) {
-      const status = RETRYABLE.has(already) ? "skipped" : "declined"
-      return this.settled(element, status as "skipped", already, 0, false)
+      return this.settled(element, statusFor(already), already, 0, false)
     }
 
     const style = styleOf(element)
@@ -339,10 +345,9 @@ class BrowserLinebreaker implements Linebreaker {
     if (!measurement) {
       const built = this.measure(element, style, basis)
       if (!built.ok) {
-        const status = SKIP_REASONS.has(built.reason) ? "skipped" : "declined"
         return this.settled(
           element,
-          status as "skipped",
+          statusFor(built.reason),
           built.reason,
           width,
           !TRANSIENT.has(built.reason),
@@ -395,7 +400,7 @@ class BrowserLinebreaker implements Linebreaker {
         policy: this.policy,
       })
       if (!solved.ok) {
-        this.revert(composition, "no-feasible-breaking", results)
+        this.revert(composition, "layout-mismatch", results)
         return false
       }
       draft.lines = solved.lines
@@ -510,10 +515,7 @@ class BrowserLinebreaker implements Linebreaker {
     this.restoreElement(composition.element)
     this.counters.failed += 1
     if (reason !== "layout-mismatch") {
-      this.remembered.set(
-        composition.element,
-        reason as unknown as DeclineReason,
-      )
+      this.remembered.set(composition.element, reason)
     }
     results.set(composition, {
       element: composition.element,
@@ -568,7 +570,7 @@ class BrowserLinebreaker implements Linebreaker {
     }
 
     const reader = createStyleReader(element, style)
-    const extracted = extractBlock(element, reader)
+    const extracted = extractBlock(element, reader, this.maximumCharacters)
     if (!extracted.ok) return { ok: false, reason: extracted.reason }
 
     configureLocale(basis.locale)

@@ -131,7 +131,9 @@ type Outcome =
 `unsupported-content`, `unsupported-direction`, `unsupported-writing-mode`,
 `too-long`, `unmeasurable`, `segmentation-mismatch`, `no-feasible-breaking`.
 `failed` means it was written and reverted: `layout-mismatch`, `unstable-width`,
-`line-height-unresolved`, `render-failed`.
+`line-height-unresolved`, `render-failed`. The three reason sets are disjoint,
+so an element that is remembered from an earlier pass replays under the same
+status it first reported.
 
 `isExpected(outcome)` is true for successes and skips. `consoleReporter()`
 reports declines and failures and stays quiet about skips, which on a long page
@@ -152,7 +154,7 @@ twice, or applying one from another instance.
 | `glue` | `{ stretch: 1/2, shrink: 1/3 }` | Interword elasticity, as a fraction of the space. |
 | `safetyMargin` | `0.5` | Sub-pixel pad against layout quantization. |
 | `retries` | `3` | Re-solve rounds when a rendered line wraps anyway. |
-| `maximumCharacters` | `3000` | Refuse longer paragraphs. |
+| `maximumCharacters` | `3000` | Refuse paragraphs longer than this many collapsed characters. |
 | `onOutcome` | — | Streams every outcome. |
 
 ## The optimizer

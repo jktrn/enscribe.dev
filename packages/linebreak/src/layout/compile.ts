@@ -28,7 +28,6 @@ export type CompileContext = {
   hyphenate?: boolean
   policy?: LayoutPolicy
   glue?: GlueElasticity
-  maximumCharacters?: number
 }
 
 export type CompileResult =

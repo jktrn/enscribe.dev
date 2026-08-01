@@ -1,10 +1,13 @@
 import { expect, test } from "bun:test"
 import manifest from "@linebreak/../package.json" with { type: "json" }
 import {
+  DECLINE_REASONS,
   type DeclineReason,
+  FAILURE_REASONS,
   type FailureReason,
   isExpected,
   type Outcome,
+  SKIP_REASONS,
   type SkipReason,
 } from "@linebreak/types"
 import { consoleReporter } from "@linebreak/report"
@@ -111,4 +114,22 @@ test("the optimizer is reachable without pulling in the DOM engine", () => {
     types: expect.any(String),
     default: expect.any(String),
   })
+})
+
+test("the three reason sets are disjoint, so replay can classify them", () => {
+  // `revert()` stores FailureReasons in the same map as skips and declines, and
+  // `composeOne` classifies a remembered reason by set membership. Overlap
+  // between the sets makes that classification ambiguous — which is how
+  // `render-failed` used to replay as `{ status: "declined" }`, a state the
+  // Outcome union says cannot exist.
+  const all = [...SKIP_REASONS, ...DECLINE_REASONS, ...FAILURE_REASONS]
+  expect(new Set(all).size).toBe(all.length)
+
+  for (const reason of SKIP_REASONS) expect(isExpected(skipped(reason))).toBe(true)
+  for (const reason of DECLINE_REASONS) {
+    expect(isExpected(declined(reason))).toBe(false)
+  }
+  for (const reason of FAILURE_REASONS) {
+    expect(isExpected(failed(reason))).toBe(false)
+  }
 })

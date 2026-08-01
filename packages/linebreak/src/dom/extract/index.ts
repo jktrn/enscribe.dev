@@ -8,6 +8,7 @@ import { buildWrapperInfo } from "./wrappers"
 export const extractBlock = (
   block: HTMLElement,
   styleOf: StyleReader,
+  maximumCharacters: number = engineDefaults.maximumCharacters,
 ): ExtractResult => {
   const collector = new RawCollector(block, styleOf)
   const rejected = collector.collect()
@@ -15,7 +16,7 @@ export const extractBlock = (
 
   const { text, runs, breakRestrictions } = Collapser.collapse(collector.raws)
   if (text.length === 0) return { ok: false, reason: "empty" }
-  if (text.length > engineDefaults.maximumCharacters) {
+  if (text.length > maximumCharacters) {
     return { ok: false, reason: "too-long" }
   }
 
