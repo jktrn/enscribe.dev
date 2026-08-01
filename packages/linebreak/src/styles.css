@@ -2,7 +2,8 @@
 
 @layer linebreak.core {
   [data-linebreak-typeset] > [data-linebreak-line] {
-    display: block;
+    display: inline;
+    white-space: nowrap;
   }
 
   [data-linebreak-typeset]
@@ -26,18 +27,10 @@
 
 @layer linebreak.theme {
   [data-linebreak-typeset] {
+    text-align: justify;
+    text-align-last: start;
     text-wrap: wrap;
     hyphens: manual;
-  }
-
-  [data-linebreak-typeset] > [data-linebreak-line] {
-    text-align: justify;
-    text-align-last: justify;
-  }
-
-  [data-linebreak-typeset] > [data-linebreak-line="forced"],
-  [data-linebreak-typeset] > [data-linebreak-line="end"] {
-    text-align-last: start;
   }
 
   [data-linebreak-typeset] > [data-linebreak-line="hyphen"]::after {

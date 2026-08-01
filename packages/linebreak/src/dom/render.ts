@@ -142,9 +142,17 @@ export const renderLines = (
   const output = document.createDocumentFragment()
   const lineElements: HTMLElement[] = []
   let nextRun = 0
-  let previousKind: Line["breakKind"] | null = null
 
-  for (const line of lines) {
+  const separate = (kind: Line["breakKind"]) => {
+    if (kind === "forced") return document.createElement("br")
+    if (kind === "space") return document.createTextNode(" ")
+    return document.createElement("wbr")
+  }
+
+  for (const [index, line] of lines.entries()) {
+    const previous = lines[index - 1]
+    if (previous) output.appendChild(separate(previous.breakKind))
+
     const target = document.createElement("span")
     target.dataset.linebreakLine = line.breakKind
 
@@ -152,11 +160,6 @@ export const renderLines = (
     if (overflow > 0 && line.spaceCount > 0) {
       target.style.wordSpacing = `${-(overflow / line.spaceCount)}px`
     }
-
-    if (previousKind === "space") {
-      target.appendChild(document.createTextNode(" "))
-    }
-    previousKind = line.breakKind
 
     const rendered = appendLine(target, block, line, nextRun)
     if (!rendered) return null

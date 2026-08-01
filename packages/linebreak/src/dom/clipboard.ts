@@ -1,4 +1,3 @@
-import type { BreakKind } from "../layout/breaker"
 import { LINE_SELECTOR, TYPESET_SELECTOR } from "./render"
 
 const generatesBlockBox = (element: Element, display: string) =>
@@ -12,9 +11,6 @@ const clippedText = (node: Text, range: Range) => {
   const end = node === range.endContainer ? range.endOffset : node.data.length
   return node.data.slice(start, end)
 }
-
-const lineKind = (line: HTMLElement) =>
-  line.dataset.linebreakLine as BreakKind | undefined
 
 const plainText = (range: Range) => {
   let text = ""
@@ -35,12 +31,6 @@ const plainText = (range: Range) => {
 
     walkChildren(node)
 
-    if (node.matches(LINE_SELECTOR)) {
-      const next = node.nextSibling
-      if (!next || !range.intersectsNode(next)) return
-      if (lineKind(node as HTMLElement) === "forced") text += "\n"
-      return
-    }
     if (
       generatesBlockBox(node, display) &&
       text !== "" &&
@@ -81,16 +71,11 @@ export const handleCopy = (event: ClipboardEvent) => {
 
   const holder = document.createElement("div")
   holder.appendChild(range.cloneContents())
-
-  const lines = holder.querySelectorAll<HTMLElement>(LINE_SELECTOR)
-  if (lines.length === 0) return
+  if (!holder.querySelector(LINE_SELECTOR)) return
 
   const text = plainText(range)
 
-  for (const line of lines) {
-    if (line.nextSibling && lineKind(line) === "forced") {
-      line.appendChild(document.createElement("br"))
-    }
+  for (const line of holder.querySelectorAll<HTMLElement>(LINE_SELECTOR)) {
     line.replaceWith(...line.childNodes)
   }
   for (const element of holder.querySelectorAll<HTMLElement>("*")) {

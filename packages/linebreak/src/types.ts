@@ -18,7 +18,7 @@ export type DeclineReason =
 export type ComposeReason = SkipReason | DeclineReason
 
 export type FailureReason =
-  | "lines-wrapped"
+  | "layout-mismatch"
   | "unstable-width"
   | "line-height-unresolved"
   | "no-feasible-breaking"

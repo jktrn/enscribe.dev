@@ -130,7 +130,7 @@ type Outcome =
 `already-typeset`. `declined` means the content cannot be modelled:
 `unsupported-content`, `unsupported-direction`, `unsupported-writing-mode`,
 `too-long`, `unmeasurable`, `segmentation-mismatch`, `no-feasible-breaking`.
-`failed` means it was written and reverted: `lines-wrapped`, `unstable-width`,
+`failed` means it was written and reverted: `layout-mismatch`, `unstable-width`,
 `line-height-unresolved`, `render-failed`.
 
 `isExpected(outcome)` is true for successes and skips. `consoleReporter()`
@@ -214,22 +214,35 @@ implemented.
 ```html
 <p data-linebreak-typeset="3">
   <span data-linebreak-line="space">First line</span>
-  <span data-linebreak-line="hyphen"> Second li</span>
+  <span data-linebreak-line="hyphen">Second li</span><wbr>
   <span data-linebreak-line="end">ne and the rest.</span>
 </p>
 ```
+
+The paragraph stays a single inline formatting context. Each line is an inline
+span that cannot wrap internally, and the break opportunity sits between spans:
+a space where the break consumed one, `<wbr>` where it consumed nothing, and a
+real `<br>` for an authored break. The browser then places one span per line,
+and `text-align: justify` on the paragraph stretches each line to the measure.
 
 `data-linebreak-line` records what ended the line: `space` (the break consumed
 an inter-word space), `hyphen` (a word was split and the stylesheet draws the
 hyphen), `forced` (an authored `<br>`), `none` (no character was consumed), and
 `end` (the paragraph's last line).
 
-A break that consumed an inter-word space puts it back, at the start of the
-following line. Leading white space on a line is removed during white space
-processing, so it costs nothing visually — whereas a *trailing* space gets
-stretched by justification and wraps to a second, empty row. Without it,
-copied text, `textContent` and translation run words together at every line
-boundary.
+Rendering this way rather than as one block per line matters for two reasons.
+
+The paragraph keeps its intrinsic size. A stack of block lines reports a
+`max-content` width of its longest line, which is narrower than the measure it
+was solved against — by exactly the amount justification stretches. Any
+container sized by its contents then shrinks, which changes the measure, which
+invalidates the lines. Inline segments report the same `max-content` as the
+authored text, so nothing moves.
+
+And the text stays one run. Block lines segment the rendered text, so
+find-in-page, scroll-to-text fragments, translation and `textContent` all break
+at every line boundary. Verified in Chromium: searching a phrase that spans a
+line break succeeds here and fails under block-per-line.
 
 When a break cuts through an inline wrapper, each copy gets
 `data-linebreak-fragment`, and the outermost copies also get
@@ -290,10 +303,11 @@ old-style figures change advance widths without changing the font canvas
 resolves — measurement is then wrong with no error. Bake those features into
 the served font files.
 
-An element whose width depends on its own content, such as a shrink-to-fit flex
-item, cannot settle: typesetting changes the measure it was planned against.
-This is detected after the write and reported as `unstable-width`, and the
-element is left ragged.
+An element whose width depends on its own content — a shrink-to-fit flex item,
+a float, `width: fit-content` — is handled: inline segments preserve the
+paragraph's `max-content`, so typesetting does not change the measure. If a
+layout still moves after a write, the element is restored and reported as
+`unstable-width`.
 
 ## Development
 

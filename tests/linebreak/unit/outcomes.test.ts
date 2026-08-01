@@ -56,7 +56,7 @@ test("every reason is a plain string, so it survives serialisation", () => {
   const reasons: Outcome[] = [
     skipped("empty"),
     declined("too-long"),
-    failed("lines-wrapped"),
+    failed("layout-mismatch"),
   ]
   for (const outcome of reasons) {
     if (outcome.status === "typeset") continue

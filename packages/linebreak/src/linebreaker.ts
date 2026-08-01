@@ -98,11 +98,6 @@ const contentWidth = (element: HTMLElement, style: CSSStyleDeclaration) =>
   cssPixels(style.paddingInlineStart) -
   cssPixels(style.paddingInlineEnd)
 
-const contentHeight = (element: HTMLElement, style: CSSStyleDeclaration) =>
-  element.clientHeight -
-  cssPixels(style.paddingTop) -
-  cssPixels(style.paddingBottom)
-
 const resolvedLineHeight = (style: CSSStyleDeclaration) => {
   const value = Number.parseFloat(style.lineHeight)
   if (Number.isFinite(value)) return value
@@ -110,35 +105,19 @@ const resolvedLineHeight = (style: CSSStyleDeclaration) => {
   return Number.isFinite(fontSize) ? fontSize * 1.2 : Number.NaN
 }
 
-const anyLineWrapped = (element: HTMLElement) => {
-  const document = element.ownerDocument
-  const range = document.createRange()
-  for (const line of element.querySelectorAll<HTMLElement>(LINE_SELECTOR)) {
-    let bandBottom = Number.NEGATIVE_INFINITY
-    let rows = 0
-    const walker = document.createTreeWalker(
-      line,
-      NodeFilter.SHOW_TEXT | NodeFilter.SHOW_ELEMENT,
-    )
-    for (let node = walker.nextNode(); node; node = walker.nextNode()) {
-      let rects: DOMRectList
-      if (node.nodeType === Node.TEXT_NODE) {
-        range.selectNodeContents(node)
-        rects = range.getClientRects()
-      } else if (node instanceof Element && node.childElementCount === 0) {
-        rects = node.getClientRects()
-      } else {
-        continue
-      }
-      for (const rect of rects) {
-        if (rect.width === 0) continue
-        if (rect.top >= bandBottom - 2) rows += 1
-        bandBottom = Math.max(bandBottom, rect.bottom)
-      }
-      if (rows > 1) return true
-    }
+const layoutMismatch = (element: HTMLElement, lineCount: number) => {
+  const segments = element.querySelectorAll<HTMLElement>(LINE_SELECTOR)
+  if (segments.length !== lineCount) return true
+
+  const rows = new Set<number>()
+  for (const segment of segments) {
+    const rect = segment.getBoundingClientRect()
+    if (rect.width === 0 && rect.height === 0) continue
+    rows.add(Math.round(rect.top))
   }
-  return false
+  if (rows.size !== lineCount) return true
+
+  return element.scrollWidth > element.clientWidth + 1
 }
 
 class BrowserLinebreaker implements Linebreaker {
@@ -160,7 +139,6 @@ class BrowserLinebreaker implements Linebreaker {
   >()
   private readonly metrics = new Map<string, FontMetrics>()
   private readonly drafts = new WeakMap<Composition, Draft>()
-  private readonly drift = new WeakMap<HTMLElement, number>()
   private readonly counters = {
     typeset: 0,
     skipped: 0,
@@ -484,7 +462,10 @@ class BrowserLinebreaker implements Linebreaker {
           })
           continue
         }
-        if (failure === "lines-wrapped" && draft.round < this.maximumRetries) {
+        if (
+          failure === "layout-mismatch" &&
+          draft.round < this.maximumRetries
+        ) {
           draft.round += 1
           this.counters.retries += 1
           draft.reduction =
@@ -525,21 +506,13 @@ class BrowserLinebreaker implements Linebreaker {
   ): FailureReason | null {
     const style = styleOf(element)
 
-    const moved = contentWidth(element, style) - expectedWidth
-    if (Math.abs(moved) > this.safetyMargin * 2) {
-      const direction = Math.sign(moved)
-      if (this.drift.get(element) === direction) return "unstable-width"
-      this.drift.set(element, direction)
-    } else {
-      this.drift.delete(element)
+    if (Math.abs(contentWidth(element, style) - expectedWidth) > 1) {
+      return "unstable-width"
     }
-
-    const lineHeight = resolvedLineHeight(style)
-    if (!Number.isFinite(lineHeight)) return "line-height-unresolved"
-    const height = contentHeight(element, style)
-    if (height <= (lineCount + 0.5) * lineHeight) return null
-    if (!anyLineWrapped(element)) return null
-    return "lines-wrapped"
+    if (!Number.isFinite(resolvedLineHeight(style))) {
+      return "line-height-unresolved"
+    }
+    return layoutMismatch(element, lineCount) ? "layout-mismatch" : null
   }
 
   private revert(
@@ -550,7 +523,7 @@ class BrowserLinebreaker implements Linebreaker {
   ) {
     this.restoreElement(composition.element)
     this.counters.failed += 1
-    if (reason !== "lines-wrapped") {
+    if (reason !== "layout-mismatch") {
       this.remembered.set(
         composition.element,
         reason as unknown as DeclineReason,
