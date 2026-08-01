@@ -50,14 +50,9 @@ type Measurement = {
   readonly items: Item[]
   readonly authored: AuthoredContent
   readonly under: MeasurementBasis
-  /**
-   * Cheap content signature. Without it an edited paragraph re-renders its old
-   * text from the cached run list, silently.
-   */
   readonly signature: string
 }
 
-/** Per-composition state that callers have no business seeing. */
 type Draft = {
   readonly measurement: Measurement
   readonly width: number
@@ -78,10 +73,8 @@ const SKIP_REASONS: ReadonlySet<string> = new Set([
   "already-typeset",
 ])
 
-/** Conclusions a later attempt could legitimately reach differently. */
 const TRANSIENT: ReadonlySet<string> = new Set(["already-typeset"])
 
-/** Skips are worth retrying when the geometry changes; declines are not. */
 const RETRYABLE: ReadonlySet<string> = new Set(["too-narrow", "single-line"])
 
 const signatureOf = (element: HTMLElement) => {
@@ -117,13 +110,6 @@ const resolvedLineHeight = (style: CSSStyleDeclaration) => {
   return Number.isFinite(fontSize) ? fontSize * 1.2 : Number.NaN
 }
 
-/**
- * Whether any rendered line spilled onto a second row.
- *
- * Walks leaf elements as well as text: a line whose overflow is an image,
- * inline math, or a CSS-drawn icon has no text on the second row, and would
- * otherwise verify as a success.
- */
 const anyLineWrapped = (element: HTMLElement) => {
   const document = element.ownerDocument
   const range = document.createRange()
@@ -166,21 +152,14 @@ class BrowserLinebreaker implements Linebreaker {
   private readonly glue: { stretch: number; shrink: number }
   private readonly report: ((outcome: Outcome) => void) | undefined
 
-  /** Weak, so a detached paragraph drops its measurement and authored clone. */
   private readonly measurements = new WeakMap<HTMLElement, Measurement>()
-  /**
-   * Strong, but only for elements that are currently typeset and therefore
-   * genuinely need restoring. Pruned on `isConnected` after every apply.
-   */
   private readonly live = new Set<HTMLElement>()
-  /** Outcomes that will not change until the caller resets the element. */
   private readonly remembered = new Map<
     HTMLElement,
     SkipReason | DeclineReason
   >()
   private readonly metrics = new Map<string, FontMetrics>()
   private readonly drafts = new WeakMap<Composition, Draft>()
-  /** Signed direction of the last unexplained width move, per element. */
   private readonly drift = new WeakMap<HTMLElement, number>()
   private readonly counters = {
     typeset: 0,
@@ -299,7 +278,6 @@ class BrowserLinebreaker implements Linebreaker {
     }
   }
 
-  /** Forget only the outcomes that a geometry change could plausibly flip. */
   refresh() {
     for (const [element, reason] of this.remembered) {
       if (RETRYABLE.has(reason)) this.remembered.delete(element)
@@ -322,8 +300,6 @@ class BrowserLinebreaker implements Linebreaker {
     this.metrics.clear()
     this.disposed = true
   }
-
-  // ── internals ────────────────────────────────────────────────────────────
 
   private assertUsable() {
     if (this.disposed) {
@@ -367,7 +343,6 @@ class BrowserLinebreaker implements Linebreaker {
 
     const width = contentWidth(element, style)
     if (width < this.minimumWidth) {
-      // Not remembered permanently: widening the container lets it back in.
       return this.settled(element, "skipped", "too-narrow", width, false)
     }
 
@@ -382,11 +357,6 @@ class BrowserLinebreaker implements Linebreaker {
       font: computedFont(style),
       letterSpacing: cssPixels(style.letterSpacing),
     }
-    // The signature guards against an element whose content changed under us.
-    // It can only be read while the authored content is in the DOM: once this
-    // element is typeset, `textContent` is our own reassembly, which will not
-    // match. When we already own the element we know its content, so trust the
-    // cached measurement instead.
     const ours = element.hasAttribute(TYPESET_ATTRIBUTE)
     const signature = ours ? null : signatureOf(element)
 
@@ -396,8 +366,6 @@ class BrowserLinebreaker implements Linebreaker {
       (!sameBasis(measurement.under, basis) ||
         (signature !== null && measurement.signature !== signature))
     ) {
-      // Superseded. Put the authored content back before re-measuring, or the
-      // generated lines would be captured as if they were authored.
       this.restoreElement(element)
       this.measurements.delete(element)
       measurement = undefined
@@ -531,13 +499,6 @@ class BrowserLinebreaker implements Linebreaker {
     }
   }
 
-  /**
-   * How far the whole batch moved, as the median per-element width change.
-   *
-   * Writing a batch can shift every element at once — a disappearing document
-   * scrollbar is the common case. Subtracting the median leaves only what an
-   * element did to *itself*, so a page-wide shift is never mistaken for one.
-   */
   private commonShift(pending: readonly Composition[]): number {
     const deltas: number[] = []
     for (const composition of pending) {
@@ -564,13 +525,6 @@ class BrowserLinebreaker implements Linebreaker {
   ): FailureReason | null {
     const style = styleOf(element)
 
-    // An element whose own width depends on its content — a shrink-to-fit flex
-    // item, say — never settles: the lines just written have a different
-    // max-content width than the authored text did, so the measure they were
-    // solved against no longer exists.
-    //
-    // Require two consecutive moves in the same direction before giving up.
-    // One is indistinguishable from ordinary reflow; a cycle is not.
     const moved = contentWidth(element, style) - expectedWidth
     if (Math.abs(moved) > this.safetyMargin * 2) {
       const direction = Math.sign(moved)
@@ -640,9 +594,6 @@ class BrowserLinebreaker implements Linebreaker {
     | { ok: true; measurement: Measurement }
     | { ok: false; reason: ComposeReason } {
     if (element.hasAttribute(TYPESET_ATTRIBUTE)) {
-      // Generated lines are still in place and there is no authored snapshot
-      // to fall back on, so measuring would capture our own output. Decline,
-      // but do not remember it — a reset makes this element eligible again.
       return { ok: false, reason: "already-typeset" }
     }
 

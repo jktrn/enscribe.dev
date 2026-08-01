@@ -6,22 +6,10 @@ export { ATTRIBUTES } from "./attributes"
 export { LINE_SELECTOR, TYPESET_SELECTOR }
 
 export type ReporterOptions = {
-  /**
-   * `"failed"` reports only reverted writes. `"declined"` (the default) adds
-   * content the engine could not model. `"all"` includes routine skips, which
-   * on a long page means most paragraphs.
-   */
   level?: "failed" | "declined" | "all"
   prefix?: string
 }
 
-/**
- * A ready-made `onOutcome` handler for development.
- *
- * ```ts
- * createTypesetter({ onOutcome: import.meta.env.DEV ? consoleReporter() : undefined })
- * ```
- */
 export const consoleReporter = (options: ReporterOptions = {}) => {
   const level = options.level ?? "declined"
   const prefix = options.prefix ?? "linebreak"

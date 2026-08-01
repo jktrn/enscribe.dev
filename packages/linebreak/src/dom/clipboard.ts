@@ -1,14 +1,6 @@
 import type { BreakKind } from "../layout/breaker"
 import { LINE_SELECTOR, TYPESET_SELECTOR } from "./render"
 
-/**
- * One span per line changes how the browser serializes a selection: each line
- * is a block box, so it contributes a newline that was never in the source.
- *
- * Lines that consumed a space now carry a real trailing space text node, so
- * only the newline needs undoing. A line ended by an authored `<br>` keeps its
- * newline; the paragraph's last line keeps the block boundary it always had.
- */
 const generatesBlockBox = (element: Element, display: string) =>
   display !== "contents" &&
   display !== "none" &&
@@ -46,8 +38,6 @@ const plainText = (range: Range) => {
     if (node.matches(LINE_SELECTOR)) {
       const next = node.nextSibling
       if (!next || !range.intersectsNode(next)) return
-      // "space" lines already carry their trailing space; "none" and "hyphen"
-      // breaks consumed no character at all.
       if (lineKind(node as HTMLElement) === "forced") text += "\n"
       return
     }
@@ -72,27 +62,20 @@ const plainText = (range: Range) => {
   return text
 }
 
-/**
- * Register on `document` to keep copied text faithful:
- *
- * ```ts
- * document.addEventListener("copy", handleCopy, { signal })
- * ```
- *
- * A selection containing no generated lines is left entirely alone.
- */
 export const handleCopy = (event: ClipboardEvent) => {
   const selection = getSelection()
   if (!selection || selection.rangeCount !== 1 || !event.clipboardData) return
 
   const range = selection.getRangeAt(0)
-  // Cheap rejection before cloning anything: most copies are not ours.
   const container = range.commonAncestorContainer
   const scope =
     container.nodeType === Node.ELEMENT_NODE
       ? (container as Element)
       : container.parentElement
-  if (!scope?.closest(TYPESET_SELECTOR) && !scope?.querySelector(LINE_SELECTOR)) {
+  if (
+    !scope?.closest(TYPESET_SELECTOR) &&
+    !scope?.querySelector(LINE_SELECTOR)
+  ) {
     return
   }
 

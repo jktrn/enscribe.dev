@@ -170,11 +170,6 @@ class PendingEdge {
   }
 }
 
-/**
- * Characters that already read as a break opportunity to a reader. Breaking
- * after one costs `\exhyphenpenalty` and counts as a flagged (hyphenated)
- * break, so `state-of-the-art` does not stack hyphen-ended lines.
- */
 const EXISTING_HYPHEN = /[-‐‒–—]/u
 
 const compileText = (

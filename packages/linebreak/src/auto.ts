@@ -1,19 +1,3 @@
-/**
- * `@enscribe/linebreak/auto` — progressive enhancement with a lifetime.
- *
- * Owns everything you would otherwise write yourself: discovery, waiting for
- * fonts, viewport laziness, frame-budgeted batching, reflow on resize, the
- * guard against elements whose width depends on their own content, print, and
- * clipboard repair.
- *
- * ```ts
- * import { createTypesetter } from "@enscribe/linebreak/auto"
- * import "@enscribe/linebreak/styles.css"
- *
- * createTypesetter().start()
- * ```
- */
-
 import { handleCopy } from "./dom/clipboard"
 import { proseBlocks } from "./dom/discover"
 import { createLinebreaker } from "./linebreaker"
@@ -25,32 +9,20 @@ import type {
 } from "./types"
 
 export type TypesetterOptions<Token = void> = LinebreakerOptions & {
-  /** Where to look. Default `"[data-linebreak-root]"`, else `<body>`. */
   roots?: string | Iterable<Element>
-  /** Extra selector for content to leave ragged, on top of the defaults. */
   skip?: string
-  /** Final say per candidate paragraph. */
   filter?: (element: HTMLElement) => boolean
-  /** Replace discovery entirely. */
   blocks?: (root: Element) => Iterable<HTMLElement>
 
-  /** Typeset only what is near the viewport. Default on, 200% lookahead. */
   lazy?: boolean | { margin?: string }
-  /** Per-frame work budget. */
   budget?: { blocksPerSlice?: number; sliceMs?: number }
 
-  /** Wait for fonts, and re-measure when more arrive. Default true. */
   fonts?: boolean
-  /** Reflow when a paragraph's width changes. Default true. */
   resize?: boolean
-  /** Restore authored content while printing. Default true. */
   print?: boolean
-  /** Register the `copy` handler on `document`. Default true. */
   copy?: boolean
 
-  /** Runs immediately before any DOM-mutating phase, including restore. */
   beforeWrite?: () => Token
-  /** Runs immediately after, with whatever `beforeWrite` returned. */
   afterWrite?: (token: Token) => void
 
   signal?: AbortSignal
@@ -64,23 +36,14 @@ export type TypesetterStats = LinebreakerStats & {
 }
 
 export interface Typesetter {
-  /**
-   * Resolves when the queue is empty and no reflow is pending. Re-arms
-   * whenever new work appears, so read it fresh each time.
-   */
   readonly settled: Promise<void>
 
-  /** Wait for fonts, discover blocks, start observing. Idempotent. */
   start(): Promise<void>
-  /** Restore everything and stop observing. Measurements are kept. */
   stop(): void
 
-  /** Width or typography changed: restore and re-queue, keeping measurements. */
   refresh(): void
-  /** Content changed: re-run discovery. */
   rescan(): void
 
-  /** Typeset now, synchronously, ignoring laziness and the frame budget. */
   typeset(elements?: Iterable<HTMLElement>): readonly Outcome[]
 
   stats(): TypesetterStats
@@ -95,7 +58,6 @@ const DEFAULT_SLICE_MS = 6
 const RESIZE_SETTLE_MS = 150
 const WIDTH_EPSILON = 0.5
 
-/** Why work is currently held. A boolean cannot express overlapping holds. */
 type PauseReason = "resize" | "print" | "stopped"
 
 class BrowserTypesetter<Token> implements Typesetter {
@@ -106,7 +68,6 @@ class BrowserTypesetter<Token> implements Typesetter {
 
   private readonly queued = new Set<HTMLElement>()
   private readonly known = new Set<HTMLElement>()
-  /** Blocks currently near the viewport, so a reflow re-does only those. */
   private readonly visible = new Set<HTMLElement>()
   private readonly paused = new Set<PauseReason>(["stopped"])
   private readonly widths = new WeakMap<Element, number>()
@@ -157,7 +118,6 @@ class BrowserTypesetter<Token> implements Typesetter {
     if (this.options.fonts !== false && document.fonts) {
       await document.fonts.ready
       if (generation !== this.generation || this.disposed) return
-      // Faces that arrive later invalidate measurements taken before them.
       document.fonts.addEventListener("loadingdone", this.onFontsChanged, {
         signal: this.options.signal,
       })
@@ -193,10 +153,6 @@ class BrowserTypesetter<Token> implements Typesetter {
     this.schedule()
   }
 
-  /**
-   * Re-queue what a reflow should redo. With laziness on that is only what is
-   * near the viewport; the rest re-queues itself when it scrolls back in.
-   */
   private requeue() {
     const targets = this.lazy ? this.visible : this.known
     for (const block of targets) {
@@ -252,8 +208,6 @@ class BrowserTypesetter<Token> implements Typesetter {
     this.disposed = true
   }
 
-  // ── internals ────────────────────────────────────────────────────────────
-
   private get lazy() {
     return this.options.lazy !== false
   }
@@ -264,7 +218,10 @@ class BrowserTypesetter<Token> implements Typesetter {
       typeof roots === "string" || roots === undefined
         ? [...document.querySelectorAll(roots ?? DEFAULT_ROOTS)]
         : [...roots]
-    if (targets.length === 0 && (roots === undefined || roots === DEFAULT_ROOTS)) {
+    if (
+      targets.length === 0 &&
+      (roots === undefined || roots === DEFAULT_ROOTS)
+    ) {
       targets.push(document.body)
     }
     const out: HTMLElement[] = []
@@ -280,9 +237,6 @@ class BrowserTypesetter<Token> implements Typesetter {
         if (this.paused.has("stopped")) return
         for (const entry of entries) {
           const block = entry.target as HTMLElement
-          // Deliberately not unobserved: staying subscribed is what lets a
-          // reflow re-do only what is on screen, so the cost of a resize does
-          // not grow with how far the reader has scrolled.
           if (entry.isIntersecting) {
             this.visible.add(block)
             this.queued.add(block)
@@ -352,7 +306,6 @@ class BrowserTypesetter<Token> implements Typesetter {
     const slice: HTMLElement[] = []
 
     for (const block of this.queued) {
-      // Budget is checked before taking work, so a slice cannot overshoot.
       if (
         slice.length >= this.blocksPerSlice ||
         (slice.length > 0 && performance.now() - started >= this.sliceMs)
@@ -368,7 +321,6 @@ class BrowserTypesetter<Token> implements Typesetter {
       try {
         this.write(slice)
       } catch (cause) {
-        // One bad paragraph must not stop the pipeline for the whole page.
         this.options.onOutcome?.({
           element: slice[0] as HTMLElement,
           status: "failed",
@@ -394,10 +346,6 @@ class BrowserTypesetter<Token> implements Typesetter {
   private restoreAll() {
     const token = this.options.beforeWrite?.() as Token
     try {
-      // Drive this off what was discovered rather than off the engine's own
-      // notion of which elements are live. A block holding lines solved for a
-      // stale measure must be put back even if that bookkeeping has drifted;
-      // restoring an element that is not typeset is a no-op.
       this.linebreaker.restore(this.known)
     } finally {
       this.options.afterWrite?.(token)
@@ -419,8 +367,6 @@ class BrowserTypesetter<Token> implements Typesetter {
 
   private readonly onBeforePrint = () => {
     this.paused.add("print")
-    // Clearing the settle timer matters: otherwise a resize moments before
-    // ⌘P un-pauses mid-job and typesets at the print measure.
     clearTimeout(this.settleTimer)
     this.settleTimer = undefined
     this.paused.delete("resize")
@@ -437,10 +383,6 @@ class BrowserTypesetter<Token> implements Typesetter {
     if (this.paused.has("stopped")) return
     const token = this.options.beforeWrite?.() as Token
     try {
-      // Widths measured against the previous faces are now wrong, so drop the
-      // measurements outright. Restoring first would empty the live set and
-      // leave `reset()` nothing to find, and the stale metrics would then be
-      // reused the next time these blocks are composed.
       this.linebreaker.reset(this.known)
     } finally {
       this.options.afterWrite?.(token)

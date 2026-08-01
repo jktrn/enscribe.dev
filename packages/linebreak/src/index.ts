@@ -1,11 +1,3 @@
-/**
- * `@enscribe/linebreak` — the DOM engine.
- *
- * Measures an element, chooses breaks for the paragraph as a whole, and
- * rebuilds it with one span per line. Bring your own scheduler; if you would
- * rather not, use `@enscribe/linebreak/auto`.
- */
-
 export { handleCopy } from "./dom/clipboard"
 export {
   DEFAULT_SKIP,
@@ -13,7 +5,12 @@ export {
   proseBlocks,
 } from "./dom/discover"
 export { createLinebreaker } from "./linebreaker"
-export { ATTRIBUTES, consoleReporter, LINE_SELECTOR, TYPESET_SELECTOR } from "./report"
+export {
+  ATTRIBUTES,
+  consoleReporter,
+  LINE_SELECTOR,
+  TYPESET_SELECTOR,
+} from "./report"
 export {
   type Composition,
   type ComposeReason,

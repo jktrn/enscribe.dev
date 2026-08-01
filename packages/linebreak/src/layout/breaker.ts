@@ -12,19 +12,10 @@ import {
 } from "./items"
 import { type LayoutPolicy, resolvePolicy } from "./policy"
 
-/**
- * What ended a line.
- *
- * `end` is the paragraph terminator; `forced` is an authored break such as
- * `<br>`. TeX models both as `\penalty-10000`, but consumers need to tell them
- * apart — only `forced` corresponds to a newline in the source text.
- */
 export type BreakKind = "space" | "hyphen" | "forced" | "none" | "end"
 
 export type Line = {
-  /** Item index of the first item on the line, inclusive. */
   readonly start: number
-  /** Item index of the breakpoint that ended the line, exclusive. */
   readonly end: number
   readonly sourceStart: number
   readonly sourceEnd: number
@@ -36,7 +27,6 @@ export type Line = {
   readonly breakKind: BreakKind
 }
 
-/** Which pass of TeX's fallback ladder produced a result. */
 export type LayoutPass = "pretolerance" | "tolerance" | "emergency" | "forced"
 
 export type LayoutResult =
@@ -50,15 +40,10 @@ export type LayoutResult =
 
 export type LayoutOptions = {
   readonly policy?: Partial<LayoutPolicy>
-  /**
-   * TeX `\emergencystretch`, in the same units as the item widths.
-   * `"auto"` derives roughly 3.5em from the mean glue width.
-   */
   readonly emergencyStretch?: number | "auto"
 }
 
 export type PassOptions = {
-  /** Threshold as badness, matching TeX's `\tolerance`. */
   readonly tolerance: number
   readonly policy?: Partial<LayoutPolicy>
   readonly emergencyStretch?: number
@@ -81,12 +66,6 @@ type Sums = {
   readonly shrink: readonly number[]
 }
 
-/**
- * Prefix sums are memoized on array identity so that re-solving the same items
- * at a different measure stays O(1) per candidate line. Keeping the cache
- * private also removes the hazard of a caller supplying sums that do not match
- * their items.
- */
 const sumsCache = new WeakMap<readonly Item[], Sums>()
 
 const prefixSums = (items: readonly Item[]): Sums => {
@@ -111,15 +90,6 @@ const prefixSums = (items: readonly Item[]): Sums => {
   return sums
 }
 
-/**
- * Fitness classes, using the adjustment-ratio bands from Knuth & Plass p.1155.
- * TeX classifies on integer badness instead, whose crossovers sit at
- * r = 0.50169 and r = 1.0 — a mismatch band under 1% wide, which only ever
- * changes whether `\adjdemerits` is charged.
- *
- * The numbering runs tight -> very loose, the reverse of tex.web. Only
- * `|difference| > 1` is ever tested, so the direction does not matter.
- */
 const fitnessClass = (ratio: number) => {
   if (ratio < -0.5) return 0
   if (ratio < 0.5) return 1
@@ -129,20 +99,6 @@ const fitnessClass = (ratio: number) => {
 
 const badness = (ratio: number) => 100 * Math.abs(ratio) ** 3
 
-/**
- * TeX §859:
- *
- * ```
- * d := line_penalty + b;
- * if abs(d) >= 10000 then d := 100000000 else d := d*d;
- * if pi > 0 then d := d + pi*pi
- * else if pi > eject_penalty then d := d - pi*pi;
- * ```
- *
- * Note the positive-penalty case is additive. The 1981 paper instead squares
- * the sum, `(l + b + p)^2`, which couples badness to penalty; TeX82 avoids
- * that deliberately and this package follows TeX82.
- */
 const lineDemerits = (
   ratio: number,
   penaltyValue: number,
@@ -156,7 +112,6 @@ const lineDemerits = (
   return squared
 }
 
-/** Index of the first item on the line that starts after a break at `position`. */
 const lineStart = (items: readonly Item[], position: number) => {
   if (position >= 0 && items[position]?.kind === "discretionary") {
     return position + 1
@@ -185,7 +140,6 @@ const breakKindAt = (items: readonly Item[], position: number): BreakKind => {
   return "none"
 }
 
-/** How far a ratio sits outside the feasible band, for rescue ranking. */
 const bandDistance = (ratio: number, tolerance: number) => {
   if (ratio < -1) return -1 - ratio
   if (ratio > tolerance) return ratio - tolerance
@@ -224,7 +178,12 @@ const measureLine = (search: Search, from: ActiveNode, to: number) => {
   const shrink = (sums.shrink[to] as number) - (sums.shrink[start] as number)
 
   if (!Number.isFinite(natural)) {
-    return { natural: Number.NaN, ratio: Number.NEGATIVE_INFINITY, stretch, shrink }
+    return {
+      natural: Number.NaN,
+      ratio: Number.NEGATIVE_INFINITY,
+      stretch,
+      shrink,
+    }
   }
 
   const slack = search.target - natural
@@ -251,12 +210,10 @@ const stepTo = (
   const flaggedHere = isFlaggedBreak(items[to])
   const atParagraphEnd = isParagraphEnd(items, to)
   let minimum = Number.POSITIVE_INFINITY
-  let rescue: { node: ActiveNode; ratio: number; distance: number } | null = null
+  let rescue: { node: ActiveNode; ratio: number; distance: number } | null =
+    null
 
   for (const active of actives) {
-    // The line would be empty, which inverts the measured range. Two adjacent
-    // forced breaks legitimately produce a blank line, so admit one at zero
-    // badness rather than deactivating the node on a garbage ratio.
     if (lineStart(items, active.position) >= to) {
       if (!forced) {
         survivors.push(active)
@@ -327,7 +284,6 @@ const stepTo = (
   }
 }
 
-/** TeX's `artificial_demerits`: rescue a line at zero cost on the final pass. */
 const forcedNode = (
   items: readonly Item[],
   rescue: { node: ActiveNode; ratio: number },
@@ -354,8 +310,6 @@ const linesFrom = (search: Search, final: ActiveNode): Line[] => {
     node = node.previous
   ) {
     const from = node.previous
-    // A blank line between two forced breaks has no items at all; clamping
-    // keeps `start <= end` so callers can slice without a special case.
     const start = Math.min(lineStart(items, from.position), node.position)
     const empty = start >= node.position
     const { natural, stretch, shrink } = empty
@@ -389,13 +343,6 @@ const linesFrom = (search: Search, final: ActiveNode): Line[] => {
   return lines.reverse()
 }
 
-/**
- * One `try_break` pass at an explicit tolerance.
- *
- * Most callers want {@link breakParagraph}, which runs TeX's full fallback
- * ladder. This entry point exists for differential testing against
- * `\tracingparagraphs=1` output and for callers implementing their own ladder.
- */
 export const breakParagraphOnce = (
   items: readonly Item[],
   measure: number,
@@ -408,8 +355,6 @@ export const breakParagraphOnce = (
     items,
     sums: prefixSums(items),
     target: measure,
-    // Tolerance is published as badness, matching TeX; the search compares
-    // adjustment ratios, so invert `badness(r) = 100 * r^3` here.
     toleranceRatio: (options.tolerance / 100) ** (1 / 3),
     emergencyStretch: options.emergencyStretch ?? 0,
     policy,
@@ -436,7 +381,8 @@ export const breakParagraphOnce = (
 
     if (step.minimum === Number.POSITIVE_INFINITY) {
       if (actives.length > 0) continue
-      if (!options.force || !step.rescue) return { ok: false, reason: "infeasible" }
+      if (!options.force || !step.rescue)
+        return { ok: false, reason: "infeasible" }
       actives = [forcedNode(items, step.rescue, to)]
       continue
     }
@@ -473,18 +419,8 @@ const meanGlueWidth = (items: readonly Item[]) => {
   return count > 0 ? total / count : 0
 }
 
-/** Roughly 3.5em at a typical 0.25em space, following TeX's `\emergencystretch`. */
 const EMERGENCY_STRETCH_SPACES = 14
 
-/**
- * TeX's four-pass ladder: `\pretolerance`, then `\tolerance`, then
- * `\emergencystretch`, then artificial demerits.
- *
- * Emergency stretch is added to the badness *denominator*, never as real glue —
- * this is `background[2] := background[2] + emergency_stretch` in tex.web. It
- * keeps over-tolerance lines finite so they compete on demerits instead of
- * collapsing the search to a single rescued path.
- */
 export const breakParagraph = (
   items: readonly Item[],
   measure: number,
@@ -507,7 +443,8 @@ export const breakParagraph = (
   if (relaxed.ok) return { ...relaxed, pass: "tolerance" }
 
   const emergencyStretch =
-    options.emergencyStretch === undefined || options.emergencyStretch === "auto"
+    options.emergencyStretch === undefined ||
+    options.emergencyStretch === "auto"
       ? meanGlueWidth(items) * EMERGENCY_STRETCH_SPACES
       : options.emergencyStretch
 

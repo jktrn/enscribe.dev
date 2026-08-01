@@ -1,8 +1,5 @@
 import { describe, expect, test } from "bun:test"
-import {
-  breakParagraph,
-  breakParagraphOnce,
-} from "@linebreak/layout/breaker"
+import { breakParagraph, breakParagraphOnce } from "@linebreak/layout/breaker"
 import {
   breakPenalty,
   type Discretionary,
@@ -47,7 +44,6 @@ const paragraph = (widths: number[]): Item[] => {
 const evenWords = (count: number) =>
   paragraph(Array.from({ length: count }, () => WORD))
 
-/** One pass at `\pretolerance`, which is what the old default did. */
 const strictPass = (items: readonly Item[], measure = MEASURE, force = false) =>
   breakParagraphOnce(items, measure, {
     tolerance: texDefaults.pretolerance,
@@ -138,24 +134,24 @@ describe("the last line is free", () => {
 })
 
 describe("demerits follow TeX82, not the 1981 paper", () => {
-  // TeX §859 adds the penalty's square: (l + b)^2 + p^2. The paper squares the
-  // sum instead, which couples badness to penalty. The difference is visible
-  // as a different chosen break, so compare against a hand-computed optimum.
   const withPenalty = (penalty: number): Item[] => {
     const items: Item[] = []
     for (let index = 0; index < 24; index += 1) {
       if (index > 0) items.push(glue())
       items.push(box(WORD))
       if (index === 10) {
-        items.push({ kind: "penalty", width: 0, penalty, flagged: false, source })
+        items.push({
+          kind: "penalty",
+          width: 0,
+          penalty,
+          flagged: false,
+          source,
+        })
       }
     }
     return [...items, ...finish()]
   }
 
-  // Two words that exactly fill the measure, then one too wide to join them.
-  // The penalty is the only legal breakpoint, so total demerits are known in
-  // closed form: (linePenalty + 0)^2 twice, plus whatever the penalty costs.
   const pinnedPenalty = (penalty: number): Item[] => [
     box(195),
     glue(),
@@ -178,8 +174,6 @@ describe("demerits follow TeX82, not the 1981 paper", () => {
 
     expect(free.lines).toHaveLength(2)
     expect(free.demerits).toBeCloseTo(200, 6)
-    // TeX82 (tex.web:16901): (l+b)^2 + p^2 -> 200 + 2500.
-    // The 1981 paper's (l+b+p)^2 would give 200 + 20*50 + 2500 = 3700.
     expect(costly.demerits).toBeCloseTo(2_700, 6)
   })
 
@@ -225,7 +219,10 @@ describe("hyphen demerits", () => {
     const runs = (lines: readonly { breakKind: string }[]) => {
       let pairs = 0
       for (let i = 1; i < lines.length; i += 1) {
-        if (lines[i - 1]?.breakKind === "hyphen" && lines[i]?.breakKind === "hyphen") {
+        if (
+          lines[i - 1]?.breakKind === "hyphen" &&
+          lines[i]?.breakKind === "hyphen"
+        ) {
           pairs += 1
         }
       }
@@ -244,7 +241,6 @@ describe("hyphen demerits", () => {
     })
     expect(cheap.ok && dear.ok).toBe(true)
     if (!cheap.ok || !dear.ok) return
-    // A hyphen on the penultimate line is what the charge targets.
     const penultimate = (r: typeof cheap) =>
       r.ok ? r.lines.at(-2)?.breakKind : undefined
     if (penultimate(cheap) === "hyphen") {
@@ -254,23 +250,10 @@ describe("hyphen demerits", () => {
 })
 
 describe("fitness classes", () => {
-  // Two short words followed by one too wide to join them. Breaking anywhere
-  // else is infeasible, so the only thing that can move the demerit total is
-  // the fitness charge itself. (The line needs interior glue to be stretchable
-  // at all — the glue at the break is consumed, not carried.)
-  const pinned = () => [
-    box(30),
-    glue(),
-    box(30),
-    glue(),
-    box(390),
-    ...finish(),
-  ]
+  const pinned = () => [box(30), glue(), box(30), glue(), box(390), ...finish()]
   const LOOSE_TOLERANCE = 1e9
 
   test("adjDemerits is charged on the first line too", () => {
-    // TeX seeds the root node at decent_fit and charges \adjdemerits from the
-    // very first line. A guard exempting it would halve the difference here.
     const free = breakParagraphOnce(pinned(), MEASURE, {
       tolerance: LOOSE_TOLERANCE,
       policy: { adjDemerits: 0 },
@@ -282,7 +265,6 @@ describe("fitness classes", () => {
     expect(free.ok && charged.ok).toBe(true)
     if (!free.ok || !charged.ok) return
     expect(charged.lines).toHaveLength(2)
-    // Once for the very loose opening line, once for the decent line after it.
     expect(charged.demerits - free.demerits).toBe(20_000)
   })
 
@@ -401,7 +383,6 @@ describe("authored breaks", () => {
   })
 
   test("two adjacent forced breaks produce a blank line, not a failure", () => {
-    // Regression: the search used to abandon the whole paragraph here.
     const items: Item[] = [
       ...words(6),
       ...lineBreak(0, 1),
@@ -434,7 +415,13 @@ describe("what a break did to the text", () => {
       if (index > 0) items.push(glue())
       items.push(box(WORD))
       if (index === 11) {
-        items.push({ kind: "penalty", width: 0, penalty: 0, flagged: false, source })
+        items.push({
+          kind: "penalty",
+          width: 0,
+          penalty: 0,
+          flagged: false,
+          source,
+        })
         items.push(box(WORD))
       }
     }
@@ -457,8 +444,6 @@ describe("what a break did to the text", () => {
   })
 
   test("the paragraph's last line reports 'end', never 'forced'", () => {
-    // `forced` means an authored <br>; the terminator is not one, and styling
-    // or clipboard code keying off `forced` must not catch the last line.
     const result = strictPass(evenWords(40))
     expect(result.ok).toBe(true)
     if (!result.ok) return
@@ -481,9 +466,9 @@ describe("tolerance is expressed as badness, like TeX", () => {
     })
     expect(result.ok).toBe(true)
     if (!result.ok) return
-    expect(
-      result.lines.slice(0, -1).every((l) => l.adjustmentRatio < 0),
-    ).toBe(true)
+    expect(result.lines.slice(0, -1).every((l) => l.adjustmentRatio < 0)).toBe(
+      true,
+    )
   })
 
   test("the relaxed pass rescues a paragraph the strict pass declines", () => {
@@ -513,9 +498,6 @@ describe("the fallback ladder", () => {
   })
 
   test("emergency stretch rescues it, and reports which pass did", () => {
-    // Emergency stretch goes into the badness denominator, so over-tolerance
-    // lines stay finite and compete on demerits instead of collapsing to a
-    // single rescued path. Without it this doubles words onto overfull lines.
     const result = breakParagraph(unbreakable(), MEASURE)
     expect(result.ok).toBe(true)
     if (!result.ok) return
@@ -545,7 +527,9 @@ describe("the fallback ladder", () => {
     const forcing = strictPass(evenWords(40), MEASURE, true)
     expect(plain.ok && forcing.ok).toBe(true)
     if (!plain.ok || !forcing.ok) return
-    expect(forcing.lines.map((l) => l.end)).toEqual(plain.lines.map((l) => l.end))
+    expect(forcing.lines.map((l) => l.end)).toEqual(
+      plain.lines.map((l) => l.end),
+    )
   })
 
   test("a forced line reports the spaces the renderer compresses", () => {

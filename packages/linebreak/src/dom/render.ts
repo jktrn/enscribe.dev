@@ -153,13 +153,6 @@ export const renderLines = (
       target.style.wordSpacing = `${-(overflow / line.spaceCount)}px`
     }
 
-    // Put the consumed inter-word space back, at the *start* of the following
-    // line rather than the end of the one that ate it. Without it, copied
-    // text, `textContent`, and translation all run words together at every
-    // line boundary. Leading white space on a line is removed during white
-    // space processing (CSS Text 3 §4.1.1), so it costs nothing visually — a
-    // trailing space would instead be stretched by justification and wrap to a
-    // second, empty row.
     if (previousKind === "space") {
       target.appendChild(document.createTextNode(" "))
     }

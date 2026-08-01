@@ -10,11 +10,6 @@ const lowercaseOrDigitPattern = /[\p{Ll}\p{N}]/u
 const uppercasePattern = /\p{Lu}/u
 const lowercasePattern = /\p{Ll}/u
 
-/**
- * Break costs inside `<code>`, on TeX's penalty scale where 10000 forbids a
- * break outright. Ordered from "a reader expects a break here" to "only if the
- * alternative is an overfull line". Frozen so it can back a configuration UI.
- */
 export const codeBreakPenalties = Object.freeze({
   separator: 3_000,
   closingDelimiter: 4_500,

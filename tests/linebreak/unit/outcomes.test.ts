@@ -69,7 +69,11 @@ test("every reason is a plain string, so it survives serialisation", () => {
 
 test("the default reporter stays quiet about routine skips", () => {
   const seen: string[] = []
-  const original = { debug: console.debug, warn: console.warn, info: console.info }
+  const original = {
+    debug: console.debug,
+    warn: console.warn,
+    info: console.info,
+  }
   console.debug = (message: string) => seen.push(`debug:${message}`)
   console.warn = (message: string) => seen.push(`warn:${message}`)
   console.info = (message: string) => seen.push(`info:${message}`)
@@ -94,12 +98,10 @@ test("the manifest is ready to publish", () => {
   expect(manifest.repository?.url).toContain("github.com")
   expect(manifest.keywords?.length).toBeGreaterThan(0)
   expect(manifest.files).toEqual(["dist"])
-  // CSS must not be tree-shaken away as side-effect-free.
   expect(manifest.sideEffects).toEqual(["*.css"])
 })
 
 test("the optimizer is reachable without pulling in the DOM engine", () => {
-  // `toHaveProperty` reads "." as a path separator, so compare keys directly.
   const subpaths = Object.keys(manifest.exports)
   expect(subpaths).toContain("./layout")
   expect(subpaths).toContain("./auto")

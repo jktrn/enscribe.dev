@@ -65,9 +65,6 @@ test("the packed package works for Node, TypeScript, and browser consumers", asy
 
     const tarball = join(temporaryDirectory, packed.filename)
     const entries = run("tar", ["-tf", tarball]).trim().split("\n").sort()
-    // Shared chunks carry content hashes, so assert the contract rather than
-    // the file list: the metadata ships, every declared export resolves, and
-    // nothing outside `dist` escapes.
     for (const required of [
       "package/LICENSE",
       "package/README.md",
@@ -76,7 +73,9 @@ test("the packed package works for Node, TypeScript, and browser consumers", asy
       expect(entries).toContain(required)
     }
     for (const entry of entries) {
-      expect(entry).toMatch(/^package\/(dist\/|LICENSE$|README\.md$|package\.json$)/)
+      expect(entry).toMatch(
+        /^package\/(dist\/|LICENSE$|README\.md$|package\.json$)/,
+      )
     }
 
     const packedManifest = JSON.parse(
@@ -103,11 +102,9 @@ test("the packed package works for Node, TypeScript, and browser consumers", asy
         hyphen: "1.14.1",
       },
     })
-    // The packed manifest must be publishable, not merely buildable.
     expect(manifest.private).toBeUndefined()
     expect(manifest.publishConfig?.access).toBe("public")
     expect(manifest.keywords?.length).toBeGreaterThan(0)
-    // Each tier is reachable, and `types` leads so resolvers see it first.
     const subpaths = Object.keys(manifest.exports)
     for (const required of [
       ".",
@@ -153,8 +150,6 @@ test("the packed package works for Node, TypeScript, and browser consumers", asy
 
     await writeFile(
       join(consumer, "runtime.mjs"),
-      // The optimizer and the attribute contract must both run under Node with
-      // no DOM shim; the DOM tiers are only imported for their types.
       `import { box, breakParagraph, glue, paragraphEnd } from "@enscribe/linebreak/layout"
 import { ATTRIBUTES } from "@enscribe/linebreak/attributes"
 

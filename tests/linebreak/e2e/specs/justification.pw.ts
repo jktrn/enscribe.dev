@@ -97,7 +97,6 @@ test("hyphens are drawn, and never as text nodes", async ({ page }) => {
     }
   })
 
-  // U+2010 HYPHEN, not the U+002D hyphen-minus a keyboard produces.
   expect(hyphen?.generated).toBe('"\u2010"')
   expect(hyphen?.inTextContent).toBe(false)
 })

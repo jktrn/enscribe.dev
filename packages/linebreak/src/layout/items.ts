@@ -1,8 +1,4 @@
-import {
-  EJECT_PENALTY,
-  INFINITE_PENALTY,
-  INFINITE_STRETCH,
-} from "./policy"
+import { EJECT_PENALTY, INFINITE_PENALTY, INFINITE_STRETCH } from "./policy"
 
 export type ItemSource = { readonly start: number; readonly end: number }
 
@@ -41,7 +37,7 @@ export type Discretionary = {
 
 export type Item = Box | Glue | Penalty | Discretionary
 
-export const box =(width: number, source?: ItemSource): Box => ({
+export const box = (width: number, source?: ItemSource): Box => ({
   kind: "box",
   width,
   source,
@@ -119,13 +115,6 @@ export const lineEndWidth = (item: Item): number => {
 export const lineStartWidth = (item: Item): number =>
   item.kind === "discretionary" ? item.postWidth : 0
 
-/**
- * The penalty for breaking at `index`, or `null` if no break is legal there.
- *
- * Follows TeX §868: glue is a legal breakpoint only when preceded by a
- * non-discardable item, a penalty is legal below `\inf_penalty`, and a box is
- * never a breakpoint.
- */
 export const breakPenalty = (items: readonly Item[], index: number) => {
   const item = items[index]
   if (!item) return null
@@ -149,19 +138,10 @@ export const drawsHyphen = (item: Item | undefined) =>
 export const isFlaggedBreak = (item: Item | undefined) =>
   item?.kind === "penalty" ? item.flagged : drawsHyphen(item)
 
-/**
- * Whether this glue stands for a real space in the source text, as opposed to
- * synthetic glue such as `\parfillskip`.
- *
- * Glue with no `source` is assumed to be a space, which is what a caller
- * laying out plain strings means. Synthetic glue carries a degenerate source
- * (`start === end`) and is excluded.
- */
 export const isRenderedSpace = (item: Item | undefined) =>
   item?.kind === "glue" &&
   (item.source === undefined || item.source.end > item.source.start)
 
-/** TeX's `\nobreak\hfil\break` — an authored forced line break. */
 export const lineBreak = (offset = 0, end = offset): Item[] => {
   const source = { start: offset, end: offset }
   return [
@@ -171,10 +151,6 @@ export const lineBreak = (offset = 0, end = offset): Item[] => {
   ]
 }
 
-/**
- * TeX's `\parfillskip=0pt plus 1fil` followed by `\penalty-10000`.
- * Every paragraph must end with this.
- */
 export const paragraphEnd = (offset = 0): Item[] => {
   const source = { start: offset, end: offset }
   return [
@@ -184,10 +160,6 @@ export const paragraphEnd = (offset = 0): Item[] => {
   ]
 }
 
-/**
- * True when `index` addresses the `\penalty-10000` that terminates a
- * paragraph, as opposed to an authored `<br>`.
- */
 export const isParagraphEnd = (items: readonly Item[], index: number) =>
   index === items.length - 1 &&
   items[index]?.kind === "penalty" &&

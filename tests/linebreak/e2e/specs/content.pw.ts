@@ -3,13 +3,6 @@ import { nativeText, settleTypeset } from "../support/page"
 
 test.use({ viewport: { width: 1440, height: 900 } })
 
-/**
- * Read the typeset text back with no reassembly at all.
- *
- * A line that consumed a space keeps a real trailing space, so `textContent`
- * is already correct — which is what makes find-in-page, scroll-to-text and
- * translation work across a line break.
- */
 const rejoinedText = (page: import("@playwright/test").Page) =>
   page.evaluate(() => {
     const main = document.querySelector("main")
