@@ -48,7 +48,7 @@ test("skips and successes need no attention; declines and failures do", () => {
   ).toBe(true)
 
   expect(isExpected(declined("unsupported-content"))).toBe(false)
-  expect(isExpected(declined("unstable-width"))).toBe(false)
+  expect(isExpected(failed("unstable-width"))).toBe(false)
   expect(isExpected(failed("render-failed"))).toBe(false)
 })
 

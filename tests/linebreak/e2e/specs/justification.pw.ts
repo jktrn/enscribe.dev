@@ -32,13 +32,13 @@ test("a line that ends a run of text stays ragged", async ({ page }) => {
     for (const block of document.querySelectorAll("[data-linebreak-typeset]")) {
       const lines = [
         ...block.querySelectorAll<HTMLElement>(
-          ":scope > [data-linebreak-break]",
+          ":scope > [data-linebreak-line]",
         ),
       ]
       for (const [index, line] of lines.entries()) {
         const ragged = getComputedStyle(line).textAlignLast !== "justify"
         const isFlush =
-          index === lines.length - 1 || line.dataset.linebreakBreak === "forced"
+          index === lines.length - 1 || line.dataset.linebreakLine === "forced"
         if (isFlush) {
           flush += 1
           if (ragged) raggedFlush += 1
@@ -66,7 +66,7 @@ test("an authored line break ends its line", async ({ page }) => {
     let forcedLines = 0
     for (const block of document.querySelectorAll("[data-linebreak-typeset]")) {
       const forced = block.querySelectorAll(
-        ':scope > [data-linebreak-break="forced"]',
+        ':scope > [data-linebreak-line="forced"]',
       )
       if (forced.length === 0) continue
       blocksWithBreaks += 1
@@ -87,7 +87,7 @@ test("hyphens are drawn, and never as text nodes", async ({ page }) => {
 
   const hyphen = await page.evaluate(() => {
     const line = document.querySelector(
-      '[data-linebreak-typeset] > [data-linebreak-break="hyphen"]',
+      '[data-linebreak-typeset] > [data-linebreak-line="hyphen"]',
     )
     if (!line) return null
     return {
@@ -97,7 +97,8 @@ test("hyphens are drawn, and never as text nodes", async ({ page }) => {
     }
   })
 
-  expect(hyphen?.generated).toBe('"-"')
+  // U+2010 HYPHEN, not the U+002D hyphen-minus a keyboard produces.
+  expect(hyphen?.generated).toBe('"\u2010"')
   expect(hyphen?.inTextContent).toBe(false)
 })
 

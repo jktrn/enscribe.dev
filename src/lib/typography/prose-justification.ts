@@ -28,7 +28,6 @@ class ProseJustificationElement extends HTMLElement {
     const { signal } = this.#listeners
 
     this.#typesetter = createTypesetter<ReadingAnchor | null>({
-      roots: "[data-typeset-root]",
       skip: SKIP,
       minimumWidth: 240,
       hyphenate: true,

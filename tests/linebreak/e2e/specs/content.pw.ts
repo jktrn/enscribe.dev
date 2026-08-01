@@ -3,28 +3,19 @@ import { nativeText, settleTypeset } from "../support/page"
 
 test.use({ viewport: { width: 1440, height: 900 } })
 
+/**
+ * Read the typeset text back with no reassembly at all.
+ *
+ * A line that consumed a space keeps a real trailing space, so `textContent`
+ * is already correct — which is what makes find-in-page, scroll-to-text and
+ * translation work across a line break.
+ */
 const rejoinedText = (page: import("@playwright/test").Page) =>
   page.evaluate(() => {
-    const rejoin = (block: Element) => {
-      let text = ""
-      const lines = [
-        ...block.querySelectorAll(":scope > [data-linebreak-break]"),
-      ]
-      for (const [index, line] of lines.entries()) {
-        text += line.textContent ?? ""
-        if (index === lines.length - 1) continue
-
-        if ((line as HTMLElement).dataset.linebreakBreak === "space") {
-          text += " "
-        }
-      }
-      return text
-    }
-
     const main = document.querySelector("main")
     if (!main) return ""
     for (const block of main.querySelectorAll("[data-linebreak-typeset]")) {
-      block.textContent = rejoin(block)
+      block.textContent = block.textContent ?? ""
     }
     return main.innerText.replace(/\s+/gu, " ").trim()
   })
@@ -87,7 +78,7 @@ test("copying keeps the newline an authored break stands for", async ({
 
   const copied = await copyFrom(
     page,
-    '[data-linebreak-typeset]:has(> [data-linebreak-break="forced"]:not(:last-child))',
+    '[data-linebreak-typeset]:has(> [data-linebreak-line="forced"])',
   )
 
   expect(copied).not.toBeNull()
@@ -108,7 +99,7 @@ test("copying keeps inline math and ruby in the surrounding text", async ({
     block.dataset.copyFixture = ""
     block.dataset.linebreakTypeset = "1"
     block.innerHTML =
-      '<span data-linebreak-break="none">Before <math><mi>x</mi><mo>+</mo><mn>1</mn></math> and <ruby>漢<rp>(</rp><rt>kan</rt><rp>)</rp></ruby> after</span>'
+      '<span data-linebreak-line="none">Before <math><mi>x</mi><mo>+</mo><mn>1</mn></math> and <ruby>漢<rp>(</rp><rt>kan</rt><rp>)</rp></ruby> after</span>'
     document.body.append(block)
   })
 
@@ -122,7 +113,7 @@ test("a hyphenated break is an element boundary", async ({ page }) => {
 
   const boundary = await page.evaluate(() => {
     const line = document.querySelector(
-      '[data-linebreak-typeset] > [data-linebreak-break="hyphen"]',
+      '[data-linebreak-typeset] > [data-linebreak-line="hyphen"]',
     )
     const block = line?.parentElement
     if (!line || !block) return null

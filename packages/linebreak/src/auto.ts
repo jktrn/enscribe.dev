@@ -394,7 +394,11 @@ class BrowserTypesetter<Token> implements Typesetter {
   private restoreAll() {
     const token = this.options.beforeWrite?.() as Token
     try {
-      this.linebreaker.restore()
+      // Drive this off what was discovered rather than off the engine's own
+      // notion of which elements are live. A block holding lines solved for a
+      // stale measure must be put back even if that bookkeeping has drifted;
+      // restoring an element that is not typeset is a no-op.
+      this.linebreaker.restore(this.known)
     } finally {
       this.options.afterWrite?.(token)
     }
@@ -431,8 +435,16 @@ class BrowserTypesetter<Token> implements Typesetter {
 
   private readonly onFontsChanged = () => {
     if (this.paused.has("stopped")) return
-    this.restoreAll()
-    this.linebreaker.reset()
+    const token = this.options.beforeWrite?.() as Token
+    try {
+      // Widths measured against the previous faces are now wrong, so drop the
+      // measurements outright. Restoring first would empty the live set and
+      // leave `reset()` nothing to find, and the stale metrics would then be
+      // reused the next time these blocks are composed.
+      this.linebreaker.reset(this.known)
+    } finally {
+      this.options.afterWrite?.(token)
+    }
     this.requeue()
     this.schedule()
   }

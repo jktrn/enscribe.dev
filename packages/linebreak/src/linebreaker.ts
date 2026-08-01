@@ -78,6 +78,9 @@ const SKIP_REASONS: ReadonlySet<string> = new Set([
   "already-typeset",
 ])
 
+/** Conclusions a later attempt could legitimately reach differently. */
+const TRANSIENT: ReadonlySet<string> = new Set(["already-typeset"])
+
 /** Skips are worth retrying when the geometry changes; declines are not. */
 const RETRYABLE: ReadonlySet<string> = new Set(["too-narrow", "single-line"])
 
@@ -177,6 +180,8 @@ class BrowserLinebreaker implements Linebreaker {
   >()
   private readonly metrics = new Map<string, FontMetrics>()
   private readonly drafts = new WeakMap<Composition, Draft>()
+  /** Signed direction of the last unexplained width move, per element. */
+  private readonly drift = new WeakMap<HTMLElement, number>()
   private readonly counters = {
     typeset: 0,
     skipped: 0,
@@ -377,23 +382,42 @@ class BrowserLinebreaker implements Linebreaker {
       font: computedFont(style),
       letterSpacing: cssPixels(style.letterSpacing),
     }
-    const signature = signatureOf(element)
+    // The signature guards against an element whose content changed under us.
+    // It can only be read while the authored content is in the DOM: once this
+    // element is typeset, `textContent` is our own reassembly, which will not
+    // match. When we already own the element we know its content, so trust the
+    // cached measurement instead.
+    const ours = element.hasAttribute(TYPESET_ATTRIBUTE)
+    const signature = ours ? null : signatureOf(element)
 
     let measurement = this.measurements.get(element)
     if (
       measurement &&
       (!sameBasis(measurement.under, basis) ||
-        measurement.signature !== signature)
+        (signature !== null && measurement.signature !== signature))
     ) {
-      // Superseded: re-measure from whatever is in the DOM now.
+      // Superseded. Put the authored content back before re-measuring, or the
+      // generated lines would be captured as if they were authored.
+      this.restoreElement(element)
       this.measurements.delete(element)
       measurement = undefined
     }
     if (!measurement) {
-      const built = this.measure(element, style, basis, signature)
+      const built = this.measure(
+        element,
+        style,
+        basis,
+        signature ?? signatureOf(element),
+      )
       if (!built.ok) {
         const status = SKIP_REASONS.has(built.reason) ? "skipped" : "declined"
-        return this.settled(element, status as "skipped", built.reason)
+        return this.settled(
+          element,
+          status as "skipped",
+          built.reason,
+          width,
+          !TRANSIENT.has(built.reason),
+        )
       }
       measurement = built.measurement
       this.measurements.set(element, measurement)
@@ -472,6 +496,7 @@ class BrowserLinebreaker implements Linebreaker {
     let pending = written
     while (pending.length > 0) {
       const retry: Composition[] = []
+      const shift = this.commonShift(pending)
 
       for (const composition of pending) {
         const draft = this.drafts.get(composition)
@@ -479,7 +504,7 @@ class BrowserLinebreaker implements Linebreaker {
         const failure = this.verify(
           composition.element,
           draft.lines.length,
-          draft.width,
+          draft.width + shift,
         )
         if (!failure) {
           this.counters.typeset += 1
@@ -506,20 +531,53 @@ class BrowserLinebreaker implements Linebreaker {
     }
   }
 
+  /**
+   * How far the whole batch moved, as the median per-element width change.
+   *
+   * Writing a batch can shift every element at once — a disappearing document
+   * scrollbar is the common case. Subtracting the median leaves only what an
+   * element did to *itself*, so a page-wide shift is never mistaken for one.
+   */
+  private commonShift(pending: readonly Composition[]): number {
+    const deltas: number[] = []
+    for (const composition of pending) {
+      const draft = this.drafts.get(composition)
+      if (!draft) continue
+      const observed = contentWidth(
+        composition.element,
+        styleOf(composition.element),
+      )
+      deltas.push(observed - draft.width)
+    }
+    if (deltas.length === 0) return 0
+    deltas.sort((a, b) => a - b)
+    const middle = deltas.length >> 1
+    return deltas.length % 2
+      ? (deltas[middle] as number)
+      : ((deltas[middle - 1] as number) + (deltas[middle] as number)) / 2
+  }
+
   private verify(
     element: HTMLElement,
     lineCount: number,
-    composedWidth: number,
+    expectedWidth: number,
   ): FailureReason | null {
     const style = styleOf(element)
 
     // An element whose own width depends on its content — a shrink-to-fit flex
-    // item, say — never settles: the lines we just wrote have a different
-    // max-content width than the authored text did, so the measure we solved
-    // against no longer exists. Catch it here rather than letting the
-    // consumer's resize handler discover it as an infinite loop.
-    if (Math.abs(contentWidth(element, style) - composedWidth) > 1) {
-      return "unstable-width"
+    // item, say — never settles: the lines just written have a different
+    // max-content width than the authored text did, so the measure they were
+    // solved against no longer exists.
+    //
+    // Require two consecutive moves in the same direction before giving up.
+    // One is indistinguishable from ordinary reflow; a cycle is not.
+    const moved = contentWidth(element, style) - expectedWidth
+    if (Math.abs(moved) > this.safetyMargin * 2) {
+      const direction = Math.sign(moved)
+      if (this.drift.get(element) === direction) return "unstable-width"
+      this.drift.set(element, direction)
+    } else {
+      this.drift.delete(element)
     }
 
     const lineHeight = resolvedLineHeight(style)
@@ -582,8 +640,10 @@ class BrowserLinebreaker implements Linebreaker {
     | { ok: true; measurement: Measurement }
     | { ok: false; reason: ComposeReason } {
     if (element.hasAttribute(TYPESET_ATTRIBUTE)) {
-      // Measuring generated lines would capture them as "authored" content.
-      return { ok: false, reason: "unsupported-content" }
+      // Generated lines are still in place and there is no authored snapshot
+      // to fall back on, so measuring would capture our own output. Decline,
+      // but do not remember it — a reset makes this element eligible again.
+      return { ok: false, reason: "already-typeset" }
     }
 
     const reader = createStyleReader(element, style)

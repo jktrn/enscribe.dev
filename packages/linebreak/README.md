@@ -1,329 +1,309 @@
 # @enscribe/linebreak
 
-`@enscribe/linebreak` chooses line breaks for justified browser text with the
-Knuth–Plass algorithm. It measures the text and inline content in an element,
-selects breaks for the paragraph as a whole, and rebuilds the element with one
-span per line.
+Knuth–Plass line breaking for justified web text.
 
-This is a private workspace package for enscribe.dev and is not published to npm.
+The browser breaks paragraphs one line at a time, taking as much as fits and
+moving on. TeX considers the paragraph as a whole and picks the set of breaks
+with the lowest total cost, which is why justified TeX has even word spacing
+and justified HTML has rivers. This package does what TeX does: it measures an
+element, solves for the whole paragraph, and rebuilds it with one span per
+line.
 
-## Basic use
-
-Import the JavaScript API and its stylesheet:
-
-```ts
-import { cleanCopiedLinebreaks, createLinebreaker } from "@enscribe/linebreak"
-import "@enscribe/linebreak/styles.css"
-
-const linebreaker = createLinebreaker({
-  locale: document.documentElement.lang,
-  minimumWidth: 240,
-  hyphenate: true,
-  preserveImageAttributes: ["data-loaded"],
-  onDiagnostic: (diagnostic) => {
-    console.warn(diagnostic.kind, diagnostic.element)
-  },
-})
-
-const blocks = [...document.querySelectorAll<HTMLElement>(".prose p")]
-const plans = blocks.map((block) => linebreaker.plan(block))
-const results = linebreaker.commit(plans)
-
-document.addEventListener("copy", cleanCopiedLinebreaks)
+```sh
+npm install @enscribe/linebreak
 ```
 
-Create every plan in a batch before calling `commit`. Planning reads layout;
-committing rewrites the elements and checks the result. Keeping those phases
-separate avoids alternating a layout read and DOM write for every paragraph.
+## Three ways in
 
-For one element, `typeset(element)` is shorthand for
-`commit(plan(element))`. Both methods also accept an iterable:
+| Import | You get | DOM | Dependencies |
+| --- | --- | --- | --- |
+| `@enscribe/linebreak/auto` | Progressive enhancement with a lifetime | yes | — |
+| `@enscribe/linebreak` | The DOM engine; bring your own scheduler | yes | `@chenglou/pretext` |
+| `@enscribe/linebreak/layout` | The optimizer alone | no | none |
+
+Import direction is strictly downward, so taking the optimizer does not drag
+in the DOM code.
+
+## Zero config
 
 ```ts
-const results = linebreaker.typeset(blocks)
+import { createTypesetter } from "@enscribe/linebreak/auto"
+import "@enscribe/linebreak/styles.css"
 
-for (const result of results) {
-  if (result.state === "typeset") {
-    console.log(result.lineCount)
-  } else {
-    console.log(result.reason)
-  }
+createTypesetter().start()
+```
+
+```html
+<article data-linebreak-root>
+  <p>Prose here.</p>
+</article>
+```
+
+That is the whole thing. Discovery, waiting for fonts, viewport laziness,
+frame-budgeted batching, reflow on resize, print, and clipboard repair are all
+on by default. Without JavaScript the browser justifies the same paragraphs
+greedily, so the page degrades cleanly.
+
+`start()` resolves once fonts have settled and the first blocks are written.
+`settled` resolves whenever the queue drains, which is what a screenshot test
+wants:
+
+```ts
+const typesetter = createTypesetter()
+await typesetter.start()
+await typesetter.settled
+```
+
+### Options
+
+| Option | Default | Behaviour |
+| --- | --- | --- |
+| `roots` | `[data-linebreak-root]`, else `<body>` | Where to look for paragraphs. |
+| `skip` | — | Extra selector to leave ragged, on top of the built-in list. |
+| `filter` | — | Final say per candidate paragraph. |
+| `blocks` | — | Replace discovery entirely. |
+| `lazy` | `true` | Typeset near the viewport first. `{ margin }` to tune. |
+| `budget` | 12 blocks / 6 ms | Per-frame work budget. |
+| `fonts` | `true` | Wait for fonts, and re-measure when more arrive. |
+| `resize` | `true` | Reflow when a paragraph's width changes. |
+| `print` | `true` | Restore authored content while printing. |
+| `copy` | `true` | Register the `copy` handler on `document`. |
+| `beforeWrite` / `afterWrite` | — | Bracket every DOM-mutating phase, restores included. |
+| `signal` | — | Aborting disposes the typesetter. |
+
+Plus every [engine option](#engine-options).
+
+`beforeWrite`/`afterWrite` exist because rewriting a paragraph changes its
+height. Whatever they return is threaded through, so a reading anchor is:
+
+```ts
+createTypesetter({ beforeWrite: captureAnchor, afterWrite: restoreAnchor })
+```
+
+### Verbs
+
+`start` and `stop` toggle the whole thing. `refresh` re-solves at a new measure
+while keeping measurements — the right response to a layout mode change.
+`rescan` re-runs discovery after content changes. `typeset` forces work through
+immediately, ignoring laziness. `dispose` tears everything down and restores.
+
+## The engine
+
+For a consumer who already owns a scheduler:
+
+```ts
+import { createLinebreaker, proseBlocks } from "@enscribe/linebreak"
+
+const linebreaker = createLinebreaker({ hyphenate: true })
+const outcomes = linebreaker.typeset(proseBlocks(article))
+```
+
+`typeset` is `compose` then `apply`, batched. Splitting them lets you inspect
+before writing — `compose` performs layout reads and never touches the DOM,
+`apply` writes:
+
+```ts
+const compositions = linebreaker.compose(blocks)
+const worthIt = compositions.filter((c) => c.status === "ready" && c.lines >= 4)
+linebreaker.apply(worthIt)
+```
+
+Keep the phases separate. Interleaving a read and a write per paragraph forces
+a synchronous layout flush per paragraph; batching costs one.
+
+Every method takes an iterable. A single element is `typeset([element])`.
+
+### Outcomes
+
+Content never throws. Each element comes back with a status, and the invariant
+is simple: **anything that is not `typeset` was left in browser line breaking.**
+
+```ts
+type Outcome =
+  | { element: HTMLElement; status: "typeset"; lines: number; retries: number }
+  | { element: HTMLElement; status: "skipped"; reason: SkipReason }
+  | { element: HTMLElement; status: "declined"; reason: DeclineReason }
+  | { element: HTMLElement; status: "failed"; reason: FailureReason; cause?: unknown }
+```
+
+`skipped` is routine and expected — `single-line`, `empty`, `too-narrow`,
+`already-typeset`. `declined` means the content cannot be modelled:
+`unsupported-content`, `unsupported-direction`, `unsupported-writing-mode`,
+`too-long`, `unmeasurable`, `segmentation-mismatch`, `no-feasible-breaking`.
+`failed` means it was written and reverted: `lines-wrapped`, `unstable-width`,
+`line-height-unresolved`, `render-failed`.
+
+`isExpected(outcome)` is true for successes and skips. `consoleReporter()`
+reports declines and failures and stays quiet about skips, which on a long page
+are most paragraphs.
+
+Programmer errors do throw: using a disposed instance, applying a composition
+twice, or applying one from another instance.
+
+### Engine options
+
+| Option | Default | Behaviour |
+| --- | --- | --- |
+| `locale` | nearest `lang`, then `<html lang>`, then `en-US` | Segmentation locale. |
+| `minimumWidth` | `240` | Leave narrower elements alone. |
+| `hyphenate` | `false` | Dictionary hyphenation. English only. |
+| `preserveImageAttributes` | `[]` | Copied between original and rebuilt images. |
+| `policy` | TeX's | Tolerances, demerits, penalties. See below. |
+| `glue` | `{ stretch: 1/2, shrink: 1/3 }` | Interword elasticity, as a fraction of the space. |
+| `safetyMargin` | `0.5` | Sub-pixel pad against layout quantization. |
+| `retries` | `3` | Re-solve rounds when a rendered line wraps anyway. |
+| `maximumCharacters` | `3000` | Refuse longer paragraphs. |
+| `onOutcome` | — | Streams every outcome. |
+
+## The optimizer
+
+`@enscribe/linebreak/layout` has no DOM and no dependencies. Give it items with
+widths and a measure:
+
+```ts
+import { box, breakParagraph, glue, paragraphEnd } from "@enscribe/linebreak/layout"
+
+const items = [box(40), glue(4, 2, 1.33), box(55), ...paragraphEnd()]
+const result = breakParagraph(items, 380)
+
+if (result.ok) {
+  for (const line of result.lines) draw(line)
 }
 ```
 
-## Site block discovery
+Items are boxes, glue, penalties, and discretionaries, as in the paper.
+`lineBreak()` builds TeX's `\nobreak\hfil\break`; `paragraphEnd()` builds
+`\parfillskip` plus `\penalty-10000`, and every paragraph must end with it.
 
-The enscribe.dev integration discovers prose below each
-`[data-typeset-root]`. It uses computed `display` values to find leaf blocks, so
-flex containers can make normally inline children eligible for typesetting. For
-example, a title link becomes a block when it is a flex item.
+`breakParagraph` runs TeX's full ladder and reports which pass succeeded.
+`breakParagraphOnce` is a single pass at an explicit tolerance, for
+differential testing against `\tracingparagraphs=1`.
 
-Add `data-typeset-skip` to an element that should remain ragged. The collector
-skips that element and its descendants.
+### Fidelity
 
-## Options
+This follows TeX82 rather than the 1981 paper wherever the two disagree, since
+every constant it ships comes from `plain.tex`. Most visibly, demerits for a
+positive penalty are `(linepenalty + badness)² + penalty²` (tex.web §859), not
+the paper's `(1 + badness + penalty)²`.
 
-| Option | Default | Behavior |
+`texDefaults` is `plain.tex` verbatim, frozen:
+
+| | | |
 | --- | --- | --- |
-| `locale` | `<html lang>`, then `en-US` | Sets the fallback locale for segmentation. The nearest `lang` attribute on each element takes precedence. |
-| `minimumWidth` | `0` | Returns `insufficient-width` and leaves the element unchanged when its content box is narrower than this value. |
-| `hyphenate` | `false` | Allows dictionary-based breaks inside English words. |
-| `preserveImageAttributes` | `[]` | Copies the named attributes between original and rebuilt images at the same DOM index when their counts match. |
-| `onDiagnostic` | none | Receives failures that need attention. Expected native outcomes are filtered out. |
+| `pretolerance` | 100 | first-pass badness threshold |
+| `tolerance` | 200 | threshold for later passes |
+| `linePenalty` | 10 | `\linepenalty` |
+| `hyphenPenalty` | 50 | `\hyphenpenalty` |
+| `exHyphenPenalty` | 50 | `\exhyphenpenalty` |
+| `adjDemerits` | 10000 | `\adjdemerits` |
+| `doubleHyphenDemerits` | 10000 | `\doublehyphendemerits` |
+| `finalHyphenDemerits` | 5000 | `\finalhyphendemerits` |
 
-Dictionary hyphenation is limited to English locale tags. Text inside `<code>`
-uses separate break rules for paths, operators, identifiers, and letter-number
-boundaries whether or not dictionary hyphenation is enabled.
+Tolerances are badness values, as in TeX, so `\tolerance=400` transfers
+directly. The four passes are `\pretolerance`, `\tolerance`,
+`\emergencystretch`, then artificial demerits. Emergency stretch goes into the
+badness denominator rather than being added as real glue, matching
+`background[2] := background[2] + emergency_stretch`.
 
-## Results
+Known divergences: hyphenation points are compiled once and are live in every
+pass, where TeX's first pass runs without them; and `\looseness` is not
+implemented.
 
-A successful result includes the number of rendered lines:
-
-```ts
-type LinebreakResult =
-  | {
-      element: HTMLElement
-      state: "typeset"
-      lineCount: number
-    }
-  | {
-      element: HTMLElement
-      state: "native"
-      reason: DiagnosticKind
-    }
-```
-
-`native` means the plan did not create a new set of line spans. Authored content
-stays in place if the element has not been typeset. If it has, a native result
-may leave the generated lines in place. Call `restore()` or `invalidate()` before
-planning when you need to start from the authored content.
-
-A plan returns `native` when the element does not need typesetting, uses
-unsupported content, cannot be rendered reliably, or refers to a cached
-measurement that is no longer current.
-
-## Lifecycle
-
-`restore(element)` replaces generated lines with the captured authored content.
-It also accepts an iterable.
-
-`invalidate(element)` restores the element and removes its cached measurement.
-Call it after changing the element's content or any style that affects
-measurement. With no argument, `invalidate()` restores every cached element and
-clears the typography cache.
-
-An outstanding plan becomes stale when its cached measurement is discarded or
-replaced. `invalidate()` and `destroy()` discard measurements; a later `plan()`
-replaces one when the element's locale, font, or letter spacing has changed.
-Committing a stale plan returns `stale-plan` without changing the element. Use a
-new plan after `invalidate()`, or the replacement plan after a typography
-change. `restore()` keeps the measurement, so existing plans remain valid.
-
-`readMetrics()` returns the current cache sizes:
-
-```ts
-const {
-  cachedParagraphs,
-  cachedTypographies,
-} = linebreaker.readMetrics()
-```
-
-`destroy()` restores every cached element, clears both caches, and disables the
-instance. Create another linebreaker before typesetting again.
-
-## Supported content
-
-The package supports left-to-right elements whose text uses normal CSS
-whitespace collapsing. It reads computed styles, so the element must be
-connected to the document and its fonts must be loaded before planning.
-
-Text can contain ordinary inline HTML, `<br>`, `<wbr>`, images, inline math,
-ruby, disabled inputs, and elements whose display creates an atomic inline box.
-The package clones inline wrappers when a break crosses them.
-
-These attributes describe content that needs special treatment:
-
-| Attribute | Use |
-| --- | --- |
-| `data-linebreak-atom` | Measures the element as one indivisible inline object. |
-| `data-linebreak-decoration` with `aria-hidden="true"` | Excludes a direct decorative child from text while including its width with the surrounding wrapper. |
-| `data-linebreak-decoration-position="after"` | Assigns that decoration to the wrapper's trailing edge. Without it, the decoration belongs to the leading edge. |
-
-`text-wrap-mode: nowrap` prevents automatic breaks inside its range. An authored
-`<br>` or `<wbr>` still applies.
-
-A plan returns `native` when the element contains layout the package cannot
-model. This includes:
-
-- right-to-left direction;
-- non-collapsing whitespace;
-- nested block layout;
-- enabled `<input>` elements;
-- nonzero `word-spacing`;
-- a `text-transform` value other than `none`;
-- more than 3,000 collapsed characters.
-
-Rendering clones inline elements, so it cannot preserve their event listeners or
-arbitrary object state. `preserveImageAttributes` covers image attributes that
-change after load.
-
-Canvas measurement uses `measureText`, but its font string cannot represent
-`font-variant-caps`, `font-variant-numeric`, or `font-feature-settings`. Glyph
-substitutions such as small caps and old-style figures can change advance widths
-without changing the font that canvas resolves, so `measureText` returns the
-wrong width without reporting an error. enscribe.dev avoids this mismatch by
-baking those features into the served font files.
-
-The measured element's width must not depend on its own content, as with a
-shrink-to-fit flex item under `align-items: flex-start` in a column container.
-Authored text and generated line spans have different max-content widths, so
-typesetting such an element changes the measure it was planned against, and an
-integration that restores on container resize will oscillate between native
-and typeset indefinitely.
-
-## Rendered DOM
-
-Typesetting replaces the element's children and adds
-`data-linebreak-typeset="<line count>"`. Each direct child is a line span:
+## The rendered DOM
 
 ```html
 <p data-linebreak-typeset="3">
-  <span data-linebreak-break="space">First line</span>
-  <span data-linebreak-break="hyphen">Second line</span>
-  <span data-linebreak-break="forced">Third line</span>
+  <span data-linebreak-line="space">First line</span>
+  <span data-linebreak-line="hyphen"> Second li</span>
+  <span data-linebreak-line="end">ne and the rest.</span>
 </p>
 ```
 
-The value of `data-linebreak-break` records what ended the line:
+`data-linebreak-line` records what ended the line: `space` (the break consumed
+an inter-word space), `hyphen` (a word was split and the stylesheet draws the
+hyphen), `forced` (an authored `<br>`), `none` (no character was consumed), and
+`end` (the paragraph's last line).
 
-| Value | Meaning |
+A break that consumed an inter-word space puts it back, at the start of the
+following line. Leading white space on a line is removed during white space
+processing, so it costs nothing visually — whereas a *trailing* space gets
+stretched by justification and wraps to a second, empty row. Without it,
+copied text, `textContent` and translation run words together at every line
+boundary.
+
+When a break cuts through an inline wrapper, each copy gets
+`data-linebreak-fragment`, and the outermost copies also get
+`-fragment-start` / `-fragment-end`. Only the first fragment keeps the `id`.
+
+Import the stylesheet. It ships two cascade layers: `linebreak.core` holds
+rules the output is not correct without, and `linebreak.theme` holds
+presentation you are meant to override. Both are layered, so unlayered CSS in
+your own project wins without `!important`. The hyphen is
+`var(--linebreak-hyphen, "\2010")`.
+
+## Attributes it reads
+
+Import them from `@enscribe/linebreak/attributes` — a subpath with no imports
+at all, so a build-time pipeline can share the contract with the runtime.
+
+| Attribute | Use |
 | --- | --- |
-| `space` | The break consumed an inter-word space. |
-| `hyphen` | The break split a word and the stylesheet draws a hyphen. |
-| `forced` | An authored `<br>` ended the line. |
-| `none` | The break consumed no character, as with a code break or `<wbr>`. |
+| `data-linebreak-root` | Look for paragraphs under here. |
+| `data-linebreak-skip` | Leave this subtree ragged. |
+| `data-linebreak-atom` | Measure as one indivisible inline object. |
+| `data-linebreak-decoration` with `aria-hidden="true"` | A decorative child whose width counts but whose text does not. |
+| `data-linebreak-decoration-position="after"` | Assign that decoration to the trailing edge. |
 
-The stylesheet makes each line a block and justifies it. The last line and lines
-ended by `<br>` remain ragged. A hyphen is generated with `::after`, so it does
-not enter copied text or `textContent`.
+`text-wrap-mode: nowrap` prevents automatic breaks inside its range; an
+authored `<br>` or `<wbr>` still applies.
 
-When a line break cuts through an inline wrapper, each copy receives
-`data-linebreak-fragment`. The copies at the original start and end also receive
-`data-linebreak-fragment-start` and `data-linebreak-fragment-end`. The stylesheet
-removes padding, borders, margins, and corner radii from the cut edges. Only the
-first fragment keeps the original `id`.
+## Copying
 
-## Copying text
-
-One span per line changes the browser's normal text extraction. A visual break
-may stand for a consumed space, an authored newline, or no character at all.
-
-Register `cleanCopiedLinebreaks` on `document` to correct both clipboard formats:
+One span per line changes how the browser serializes a selection. Register the
+handler and copied text comes out as authored:
 
 ```ts
-const controller = new AbortController()
-
-document.addEventListener("copy", cleanCopiedLinebreaks, {
-  signal: controller.signal,
-})
-
-controller.abort()
+import { handleCopy } from "@enscribe/linebreak"
+document.addEventListener("copy", handleCopy, { signal })
 ```
 
-The handler only intercepts a selection that contains generated line spans. It
-reconstructs plain text from the live range, restores spaces and `<br>` elements
-where the break kind requires them, removes generated line wrappers, and strips
-`data-linebreak-*` attributes from the HTML copy.
+`createTypesetter` does this for you unless you pass `copy: false`. A selection
+containing no generated lines is left alone.
 
-A hyphenated break creates a real DOM boundary inside a word. Generated hyphens
-stay out of the text, and copying rejoins the word, but browser find-in-page may
-treat the two fragments as separate text.
+## What it will not do
 
-## Diagnostics
+Left-to-right, horizontal writing mode, and normal whitespace collapsing only.
+Elements are declined for right-to-left direction, vertical writing modes,
+nested block layout, enabled `<input>`s, nonzero `word-spacing`, a
+`text-transform` other than `none`, and more than 3,000 collapsed characters.
 
-`onDiagnostic` reports unsupported content, stale plans, and layout failures:
+The element must be in the document with fonts loaded before it is measured;
+`createTypesetter` handles the waiting.
 
-| Kind | Meaning |
-| --- | --- |
-| `unsupported-element` | The element contains layout the extractor cannot represent. |
-| `content-too-long` | Collapsed text exceeds the 3,000-character limit. |
-| `segmentation-mismatch` | Measured segments do not reproduce the extracted text. |
-| `measurement-unavailable` | A required width or typography could not be measured. |
-| `stale-plan` | The plan refers to a cached measurement that was discarded or replaced. The element is unchanged. |
-| `no-feasible-breaking` | The optimizer could not cover the paragraph at the requested width. |
-| `line-wrapped` | A generated line wrapped inside its own span after retries. |
-| `line-height-unresolved` | Verification could not determine a numeric line height. |
-| `render-failed` | Rebuilding the DOM failed. |
+Rendering clones inline elements, so event listeners and arbitrary object state
+on them are not preserved. `preserveImageAttributes` covers attributes that
+change after load.
 
-The following native outcomes do not call the diagnostic handler:
-`empty-content`, `single-line`, `insufficient-width`, and
-`unsupported-direction`. They still appear as the `reason` on a native result.
+Canvas `measureText` cannot express `font-variant-caps`, `font-variant-numeric`
+or `font-feature-settings`, so glyph substitutions such as small caps and
+old-style figures change advance widths without changing the font canvas
+resolves — measurement is then wrong with no error. Bake those features into
+the served font files.
 
-Exceptions thrown by the diagnostic handler are ignored so a reporting failure
-cannot stop typesetting.
-
-## How layout works
-
-The implementation has five stages:
-
-1. DOM extraction collapses whitespace across inline boundaries and records
-   text, atomic content, authored breaks, wrapper edges, and no-wrap ranges.
-2. `@chenglou/pretext` measures the text for each computed typography.
-3. Compilation converts the measured runs into boxes, adjustable spaces, and
-   break penalties.
-4. The Knuth–Plass search chooses a complete set of breaks by trying four passes
-   modeled on TeX's line breaker, in order:
-   1. The search begins with a strict pass that accepts adjustment ratios up to
-      1 (`\pretolerance=100`).
-   2. If the strict pass cannot find a complete set of breaks, the relaxed pass
-      raises the limit to 1.26 (`\tolerance=200`).
-   3. If the relaxed pass also fails, the emergency pass adds roughly 3 em of
-      stretch to each line's badness denominator, following TeX's
-      `\emergencystretch`. This keeps over-tolerance lines finite so they can
-      compete on demerits instead of reducing the search to a single rescued
-      path.
-   4. If none of the first three passes finds a complete set of breaks, the
-      forced pass makes one final attempt to complete the paragraph.
-
-   Demerits use TeX's formula and constants: `\linepenalty=10`,
-   `\hyphenpenalty=50`, and 10,000 for both double-hyphen and adjacent-fitness
-   demerits.
-5. Rendering rebuilds the inline DOM and verifies that every generated line
-   stayed on one browser row.
-
-If verification finds a wrapped line, the package solves the paragraph again at
-measures reduced by 1%, 3%, and 9%. If all retries fail, it restores the authored
-content and returns a native result.
-
-Measurements are cached per element. Font metrics are shared by locale, resolved
-font, and letter spacing. Planning at a new width reuses those measurements and
-runs the line search again.
-
-## Source map
-
-| Path | Purpose |
-| --- | --- |
-| `src/linebreaker.ts` | Public lifecycle, caches, batching, retries, and restoration. |
-| `src/dom` | DOM extraction, style reads, rendering, clipboard cleanup, and authored snapshots. |
-| `src/text` | Text measurement, English hyphenation, and code break opportunities. |
-| `src/layout` | Item compilation and Knuth–Plass line search. |
-| `src/policy.ts` | Tolerances, penalties, limits, and spacing ratios. |
-| `tests/linebreak/unit` | Optimizer, hyphenation, diagnostics, and code-break tests. |
-| `tests/linebreak/e2e` | Chromium, Firefox, and WebKit checks against the built site. |
-| `tests/linebreak/package` | Packed-package and consumer checks. |
+An element whose width depends on its own content, such as a shrink-to-fit flex
+item, cannot settle: typesetting changes the measure it was planned against.
+This is detected after the write and reported as `unstable-width`, and the
+element is left ragged.
 
 ## Development
 
-Run commands from the repository root:
-
 ```sh
-bun run linebreak:build
-bun run --cwd tests/linebreak test:unit
-bun run --cwd tests/linebreak test:package
-bun run --cwd tests/linebreak test:e2e
-bun run linebreak:check
+bun run build          # tsdown, publint, arethetypeswrong
+bun run typecheck
+bun test               # from the repo root
 ```
 
-The E2E command builds the site before starting Playwright. The full
-`linebreak:check` command type-checks and builds the package, runs unit and
-package-consumer tests, builds the site, and runs the browser suite.
+`@chenglou/pretext` is a pre-1.0 dependency reached through non-public types.
+Pin it.
+
+MIT.

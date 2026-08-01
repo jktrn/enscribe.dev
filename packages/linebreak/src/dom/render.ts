@@ -142,6 +142,7 @@ export const renderLines = (
   const output = document.createDocumentFragment()
   const lineElements: HTMLElement[] = []
   let nextRun = 0
+  let previousKind: Line["breakKind"] | null = null
 
   for (const line of lines) {
     const target = document.createElement("span")
@@ -152,17 +153,21 @@ export const renderLines = (
       target.style.wordSpacing = `${-(overflow / line.spaceCount)}px`
     }
 
+    // Put the consumed inter-word space back, at the *start* of the following
+    // line rather than the end of the one that ate it. Without it, copied
+    // text, `textContent`, and translation all run words together at every
+    // line boundary. Leading white space on a line is removed during white
+    // space processing (CSS Text 3 §4.1.1), so it costs nothing visually — a
+    // trailing space would instead be stretched by justification and wrap to a
+    // second, empty row.
+    if (previousKind === "space") {
+      target.appendChild(document.createTextNode(" "))
+    }
+    previousKind = line.breakKind
+
     const rendered = appendLine(target, block, line, nextRun)
     if (!rendered) return null
     nextRun = rendered.nextRun
-
-    // Put the consumed inter-word space back. A trailing space at the end of a
-    // line box is hung and dropped for justification (CSS Text 3 §5.3), so it
-    // is visually inert — but without it, find-in-page, scroll-to-text,
-    // translation, and `textContent` all break across every line boundary.
-    if (line.breakKind === "space") {
-      target.appendChild(document.createTextNode(" "))
-    }
 
     output.appendChild(target)
     lineElements.push(target)

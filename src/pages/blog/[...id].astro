@@ -106,7 +106,7 @@ if (isSubpost(post.id)) {
         data-embedded={i > 0 || undefined}
         data-pagefind-body={entry.id === post.id ? "" : undefined}
       >
-        <header data-typeset-root>
+        <header data-linebreak-root>
           <h1><Fragment set:html={entryInline(entry, "title").html} /></h1>
           <post-meta>
             {authors.length > 0 && (
@@ -164,7 +164,7 @@ if (isSubpost(post.id)) {
             />
           </post-banner>
         )}
-        <prose-content data-typeset-root>
+        <prose-content data-linebreak-root>
           <Content />
         </prose-content>
       </article>
