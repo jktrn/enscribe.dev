@@ -2,6 +2,9 @@ import { preserveImageAttributes, TYPESET_ATTRIBUTE } from "./render"
 
 export type AuthoredContent = DocumentFragment
 
+export const authoredText = (element: { textContent: string | null }) =>
+  (element.textContent ?? "").replace(/\s+/gu, " ").trim()
+
 export const captureAuthored = (element: HTMLElement): AuthoredContent => {
   const fragment = element.ownerDocument.createDocumentFragment()
   for (const child of element.childNodes) {

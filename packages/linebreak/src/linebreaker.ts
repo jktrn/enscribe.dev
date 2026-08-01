@@ -17,6 +17,7 @@ import { engineDefaults } from "./policy"
 import { LINE_SELECTOR, renderLines, TYPESET_ATTRIBUTE } from "./dom/render"
 import {
   type AuthoredContent,
+  authoredText,
   captureAuthored,
   restoreAuthored,
 } from "./dom/restore"
@@ -50,7 +51,7 @@ type Measurement = {
   readonly items: Item[]
   readonly authored: AuthoredContent
   readonly under: MeasurementBasis
-  readonly signature: string
+  readonly text: string
 }
 
 type Draft = {
@@ -76,16 +77,6 @@ const SKIP_REASONS: ReadonlySet<string> = new Set([
 const TRANSIENT: ReadonlySet<string> = new Set(["already-typeset"])
 
 const RETRYABLE: ReadonlySet<string> = new Set(["too-narrow", "single-line"])
-
-const signatureOf = (element: HTMLElement) => {
-  const text = element.textContent ?? ""
-  let hash = 0x811c9dc5
-  for (let index = 0; index < text.length; index += 1) {
-    hash ^= text.charCodeAt(index)
-    hash = Math.imul(hash, 0x01000193)
-  }
-  return `${text.length}:${(hash >>> 0).toString(36)}`
-}
 
 const viewOf = (element: HTMLElement) =>
   element.ownerDocument.defaultView ?? globalThis
@@ -336,25 +327,18 @@ class BrowserLinebreaker implements Linebreaker {
       letterSpacing: cssPixels(style.letterSpacing),
     }
     const ours = element.hasAttribute(TYPESET_ATTRIBUTE)
-    const signature = ours ? null : signatureOf(element)
-
     let measurement = this.measurements.get(element)
     if (
       measurement &&
       (!sameBasis(measurement.under, basis) ||
-        (signature !== null && measurement.signature !== signature))
+        (!ours && measurement.text !== authoredText(element)))
     ) {
       this.restoreElement(element)
       this.measurements.delete(element)
       measurement = undefined
     }
     if (!measurement) {
-      const built = this.measure(
-        element,
-        style,
-        basis,
-        signature ?? signatureOf(element),
-      )
+      const built = this.measure(element, style, basis)
       if (!built.ok) {
         const status = SKIP_REASONS.has(built.reason) ? "skipped" : "declined"
         return this.settled(
@@ -562,7 +546,6 @@ class BrowserLinebreaker implements Linebreaker {
     element: HTMLElement,
     style: CSSStyleDeclaration,
     basis: MeasurementBasis,
-    signature: string,
   ):
     | { ok: true; measurement: Measurement }
     | { ok: false; reason: ComposeReason } {
@@ -590,6 +573,7 @@ class BrowserLinebreaker implements Linebreaker {
       )
     }
 
+    const text = authoredText(element)
     const authored = captureAuthored(element)
     const compiled = compileBlock({
       block: extracted.block,
@@ -610,7 +594,7 @@ class BrowserLinebreaker implements Linebreaker {
         items: compiled.items,
         authored,
         under: basis,
-        signature,
+        text,
       },
     }
   }
