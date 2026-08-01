@@ -1,6 +1,7 @@
 import { defineHastPlugin } from "satteri"
 import type { ElementContent } from "hast"
 import { assertLinkIconAsset, linkIconForHost } from "../link-icons"
+import { ATTRIBUTES } from "@enscribe/linebreak/attributes"
 
 const containsMedia = (children: readonly ElementContent[]): boolean =>
   children.some(
@@ -18,8 +19,8 @@ const icon = (asset: string) => ({
     "data-favicon": "",
     "data-favicon-position": "after",
     "data-favicon-icon": asset,
-    "data-linebreak-decoration": "",
-    "data-linebreak-decoration-position": "after",
+    [ATTRIBUTES.decoration]: "",
+    [ATTRIBUTES.decorationPosition]: "after",
     style: `--favicon-mask:url("${assertLinkIconAsset(asset)}")`,
   },
   children: [],
@@ -46,7 +47,7 @@ export const linkFavicons = defineHastPlugin({
           type: "element" as const,
           tagName: "span",
           properties: {
-            "data-linebreak-atom": "",
+            [ATTRIBUTES.atom]: "",
             "data-favicon-glue": "",
           },
           children: [{ type: "text" as const, value: suffix[1] }, favicon],

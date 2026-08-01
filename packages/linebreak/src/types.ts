@@ -22,7 +22,6 @@ export type DeclineReason =
   | "unmeasurable"
   | "segmentation-mismatch"
   | "no-feasible-breaking"
-  | "unstable-width"
 
 /** What `compose` can conclude before anything is written. */
 export type ComposeReason = SkipReason | DeclineReason
@@ -30,6 +29,8 @@ export type ComposeReason = SkipReason | DeclineReason
 /** Tried, wrote, put it back. Always worth knowing about. */
 export type FailureReason =
   | "lines-wrapped"
+  /** The element's own width depends on its content, so it can never settle. */
+  | "unstable-width"
   | "line-height-unresolved"
   | "no-feasible-breaking"
   | "render-failed"

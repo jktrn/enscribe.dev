@@ -47,6 +47,10 @@
       "types": "./dist/auto.d.ts",
       "default": "./dist/auto.js"
     },
+    "./attributes": {
+      "types": "./dist/attributes.d.ts",
+      "default": "./dist/attributes.js"
+    },
     "./styles.css": {
       "types": "./dist/styles.css.d.ts",
       "default": "./dist/styles.css"

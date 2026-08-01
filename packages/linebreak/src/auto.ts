@@ -106,6 +106,8 @@ class BrowserTypesetter<Token> implements Typesetter {
 
   private readonly queued = new Set<HTMLElement>()
   private readonly known = new Set<HTMLElement>()
+  /** Blocks currently near the viewport, so a reflow re-does only those. */
+  private readonly visible = new Set<HTMLElement>()
   private readonly paused = new Set<PauseReason>(["stopped"])
   private readonly widths = new WeakMap<Element, number>()
 
@@ -179,6 +181,7 @@ class BrowserTypesetter<Token> implements Typesetter {
     this.restoreAll()
     this.queued.clear()
     this.known.clear()
+    this.visible.clear()
     this.markSettled()
   }
 
@@ -186,8 +189,19 @@ class BrowserTypesetter<Token> implements Typesetter {
     if (this.paused.has("stopped")) return
     this.restoreAll()
     this.linebreaker.refresh()
-    for (const block of this.known) this.queued.add(block)
+    this.requeue()
     this.schedule()
+  }
+
+  /**
+   * Re-queue what a reflow should redo. With laziness on that is only what is
+   * near the viewport; the rest re-queues itself when it scrolls back in.
+   */
+  private requeue() {
+    const targets = this.lazy ? this.visible : this.known
+    for (const block of targets) {
+      if (block.isConnected) this.queued.add(block)
+    }
   }
 
   rescan() {
@@ -200,10 +214,10 @@ class BrowserTypesetter<Token> implements Typesetter {
       this.resizeObserver()?.observe(block)
     }
     for (const block of this.known) {
-      if (!block.isConnected) {
-        this.known.delete(block)
-        this.queued.delete(block)
-      }
+      if (block.isConnected) continue
+      this.known.delete(block)
+      this.queued.delete(block)
+      this.visible.delete(block)
     }
     this.schedule()
   }
@@ -265,10 +279,16 @@ class BrowserTypesetter<Token> implements Typesetter {
       (entries) => {
         if (this.paused.has("stopped")) return
         for (const entry of entries) {
-          if (!entry.isIntersecting) continue
-          // Deliberately not unobserved: a later restore re-queues only what
-          // is actually on screen, so reflow cost stays bounded.
-          this.queued.add(entry.target as HTMLElement)
+          const block = entry.target as HTMLElement
+          // Deliberately not unobserved: staying subscribed is what lets a
+          // reflow re-do only what is on screen, so the cost of a resize does
+          // not grow with how far the reader has scrolled.
+          if (entry.isIntersecting) {
+            this.visible.add(block)
+            this.queued.add(block)
+          } else {
+            this.visible.delete(block)
+          }
         }
         this.schedule()
       },
@@ -304,6 +324,7 @@ class BrowserTypesetter<Token> implements Typesetter {
         this.settleTimer = undefined
         this.paused.delete("resize")
         this.linebreaker.refresh()
+        this.requeue()
         this.schedule()
       }, RESIZE_SETTLE_MS)
     })
@@ -404,6 +425,7 @@ class BrowserTypesetter<Token> implements Typesetter {
 
   private readonly onAfterPrint = () => {
     this.paused.delete("print")
+    this.requeue()
     this.schedule()
   }
 
@@ -411,7 +433,7 @@ class BrowserTypesetter<Token> implements Typesetter {
     if (this.paused.has("stopped")) return
     this.restoreAll()
     this.linebreaker.reset()
-    for (const block of this.known) this.queued.add(block)
+    this.requeue()
     this.schedule()
   }
 }

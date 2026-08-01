@@ -21,8 +21,11 @@ describe("content layout safety", () => {
   test("desktop pages without a table of contents do not reserve its rail", async () => {
     const layout = await readFile("src/layouts/Layout.astro", "utf8")
 
+    // The rule spans the full grid, then caps the measure itself. The cap is
+    // spelled out in `calc` rather than `var(--measure)` so it cannot track
+    // the viewport-fluid gutter and re-typeset prose on every resize tick.
     expect(layout).toMatch(
-      /page-grid:not\(\[data-toc\]\) page-content:not\(\[data-wide\]\)\s*\{\s*grid-column:\s*3\s*\/\s*13;\s*max-inline-size:\s*var\(--measure\);/,
+      /page-grid:not\(\[data-toc\]\) page-content:not\(\[data-wide\]\)\s*\{\s*grid-column:\s*3\s*\/\s*13;[\s\S]*?max-inline-size:\s*calc\(/,
     )
   })
 

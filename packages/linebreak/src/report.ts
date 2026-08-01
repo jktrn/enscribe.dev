@@ -1,34 +1,9 @@
 import { LINE_SELECTOR, TYPESET_SELECTOR } from "./dom/render"
 import { isExpected, type Outcome } from "./types"
 
-export { LINE_SELECTOR, TYPESET_SELECTOR }
+export { ATTRIBUTES } from "./attributes"
 
-/**
- * The HTML contract, as constants rather than a table in a README.
- *
- * Build-time pipelines that emit `atom` markup should import this instead of
- * hand-typing the string — a rename should be a type error, not a silent
- * regression in line quality.
- */
-export const ATTRIBUTES = Object.freeze({
-  /** Written to a typeset element. Value is the line count. */
-  typeset: "data-linebreak-typeset",
-  /** Written to each generated line. Value is what ended it. */
-  line: "data-linebreak-line",
-  /** Written to each copy of an inline wrapper split across lines. */
-  fragment: "data-linebreak-fragment",
-  fragmentStart: "data-linebreak-fragment-start",
-  fragmentEnd: "data-linebreak-fragment-end",
-  /** Read: measure this element as one indivisible inline object. */
-  atom: "data-linebreak-atom",
-  /** Read: a decorative child whose width counts but whose text does not. */
-  decoration: "data-linebreak-decoration",
-  decorationPosition: "data-linebreak-decoration-position",
-  /** Read by `proseBlocks`: leave this subtree ragged. */
-  skip: "data-linebreak-skip",
-  /** Read by `createTypesetter`: look for paragraphs under here. */
-  root: "data-linebreak-root",
-})
+export { LINE_SELECTOR, TYPESET_SELECTOR }
 
 export type ReporterOptions = {
   /**

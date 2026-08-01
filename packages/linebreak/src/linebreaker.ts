@@ -55,8 +55,6 @@ type Measurement = {
    * text from the cached run list, silently.
    */
   readonly signature: string
-  /** Recent content-box widths, for detecting content-dependent width. */
-  readonly widths: number[]
 }
 
 /** Per-composition state that callers have no business seeing. */
@@ -153,19 +151,6 @@ const anyLineWrapped = (element: HTMLElement) => {
   }
   return false
 }
-
-/**
- * An element whose own width depends on its content — a shrink-to-fit flex
- * item, say — never settles: typesetting changes its max-content width, which
- * changes the measure, which changes the typesetting.
- *
- * The tell is a cycle, not a rate, so a reader dragging a window edge is never
- * mistaken for one.
- */
-const widthOscillates = (widths: readonly number[]) =>
-  widths.length >= 3 &&
-  Math.abs((widths.at(-1) as number) - (widths.at(-3) as number)) <= 0.5 &&
-  Math.abs((widths.at(-1) as number) - (widths.at(-2) as number)) > 0.5
 
 class BrowserLinebreaker implements Linebreaker {
   private readonly minimumWidth: number
@@ -414,13 +399,6 @@ class BrowserLinebreaker implements Linebreaker {
       this.measurements.set(element, measurement)
     }
 
-    measurement.widths.push(width)
-    if (measurement.widths.length > 4) measurement.widths.shift()
-    if (widthOscillates(measurement.widths)) {
-      this.restoreElement(element)
-      return this.settled(element, "declined", "unstable-width", width)
-    }
-
     const solved = breakParagraph(
       measurement.items,
       width - this.safetyMargin,
@@ -498,7 +476,11 @@ class BrowserLinebreaker implements Linebreaker {
       for (const composition of pending) {
         const draft = this.drafts.get(composition)
         if (!draft) continue
-        const failure = this.verify(composition.element, draft.lines.length)
+        const failure = this.verify(
+          composition.element,
+          draft.lines.length,
+          draft.width,
+        )
         if (!failure) {
           this.counters.typeset += 1
           results.set(composition, {
@@ -527,8 +509,19 @@ class BrowserLinebreaker implements Linebreaker {
   private verify(
     element: HTMLElement,
     lineCount: number,
-  ): "lines-wrapped" | "line-height-unresolved" | null {
+    composedWidth: number,
+  ): FailureReason | null {
     const style = styleOf(element)
+
+    // An element whose own width depends on its content — a shrink-to-fit flex
+    // item, say — never settles: the lines we just wrote have a different
+    // max-content width than the authored text did, so the measure we solved
+    // against no longer exists. Catch it here rather than letting the
+    // consumer's resize handler discover it as an infinite loop.
+    if (Math.abs(contentWidth(element, style) - composedWidth) > 1) {
+      return "unstable-width"
+    }
+
     const lineHeight = resolvedLineHeight(style)
     if (!Number.isFinite(lineHeight)) return "line-height-unresolved"
     const height = contentHeight(element, style)
@@ -634,7 +627,6 @@ class BrowserLinebreaker implements Linebreaker {
         authored,
         under: basis,
         signature,
-        widths: [],
       },
     }
   }

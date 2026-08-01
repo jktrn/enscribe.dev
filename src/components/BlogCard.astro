@@ -24,7 +24,7 @@ const raster = bannerRaster(post)
       </a>
     )}
   <entry-info data-typeset-root>
-    <a href={`/blog/${post.id}`} data-typeset-skip>
+    <a href={`/blog/${post.id}`} data-linebreak-skip>
       <Fragment set:html={entryInline(post, "title").html} />
     </a>
     <entry-meta>
