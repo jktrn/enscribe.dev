@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test"
 import type { Line } from "@linebreak/layout/breaker"
 import type { LineFit } from "@linebreak/layout/expansion"
 import type { ExtractedBlock, InlineRun } from "@linebreak/dom/extract"
-import { renderLines } from "@linebreak/dom/render"
+import { renderLines, tightenOverset } from "@linebreak/dom/render"
 
 const TEXT = "alpha beta gamma delta epsilon zeta eta theta"
 
@@ -11,6 +11,7 @@ type Node = {
   readonly style: Record<string, string>
   readonly dataset: Record<string, string>
   readonly children: Node[]
+  readonly measured: { width: number; calls: number }
   text: string
 }
 
@@ -23,14 +24,20 @@ const node = (
   append: (...children: Node[]) => void
   removeAttribute: (name: string) => void
   cloneNode: () => Node
+  getBoundingClientRect: () => DOMRect
 } => {
   const self = {
     tag,
     style: {} as Record<string, string>,
     dataset: {} as Record<string, string>,
     children: [] as Node[],
+    measured: { width: 0, calls: 0 },
     text: "",
     ownerDocument: document,
+    getBoundingClientRect: () => {
+      self.measured.calls += 1
+      return { width: self.measured.width } as DOMRect
+    },
     appendChild: (child: Node) => {
       self.children.push(child)
     },
@@ -122,6 +129,23 @@ const render = (
   return (rendered as unknown as Node[])[0] as Node
 }
 
+const settle = (
+  line: Line,
+  target: number,
+  fits: readonly LineFit[] | null,
+  realized: number,
+) => {
+  const span = render(line, target, fits)
+  span.measured.width = realized
+  const tightened = tightenOverset([
+    {
+      elements: [span as unknown as HTMLElement],
+      layout: { lines: [line], target, fits },
+    },
+  ])
+  return { span, tightened }
+}
+
 describe("the percentage the renderer writes", () => {
   test("a line the optimizer widened is set at that percentage", () => {
     const span = render(lineOf(), 310, [{ pct: 101, gain: 3, shrink: 7 }])
@@ -173,5 +197,81 @@ describe("the word-spacing rescue under expansion", () => {
     ])
 
     expect(span.style.wordSpacing).toBeUndefined()
+  })
+})
+
+describe("the width the font really delivered", () => {
+  test("a line that lands past the measure is tightened by the excess", () => {
+    const { span, tightened } = settle(
+      lineOf({ naturalWidth: 300 }),
+      310,
+      [{ pct: 98, gain: -6, shrink: 7 }],
+      312,
+    )
+
+    expect(tightened).toBe(1)
+    expect(span.style.wordSpacing).toBe(`${-(2 / 7)}px`)
+  })
+
+  test("the excess is charged on top of the rescue already written", () => {
+    const { span } = settle(
+      lineOf({ naturalWidth: 340, shrink: 30 }),
+      300,
+      [{ pct: 98, gain: -8, shrink: 9 }],
+      303,
+    )
+
+    expect(Number.parseFloat(span.style.wordSpacing as string)).toBeCloseTo(
+      -(12 / 7),
+      9,
+    )
+  })
+
+  test("a line may still reach past the measure by what it hangs", () => {
+    const { span, tightened } = settle(
+      lineOf({ naturalWidth: 300, hangEnd: 3 }),
+      310,
+      [{ pct: 98, gain: -6, shrink: 7 }],
+      313,
+    )
+
+    expect(tightened).toBe(0)
+    expect(span.style.wordSpacing).toBeUndefined()
+  })
+
+  test("a line the optimizer left at 100 per cent is never measured", () => {
+    const { span, tightened } = settle(
+      lineOf({ naturalWidth: 300 }),
+      310,
+      [{ pct: 100, gain: 0, shrink: 7 }],
+      312,
+    )
+
+    expect(tightened).toBe(0)
+    expect(span.measured.calls).toBe(0)
+  })
+
+  test("a line without a space to charge is left as it was written", () => {
+    const { span, tightened } = settle(
+      lineOf({ naturalWidth: 300, spaceCount: 0 }),
+      310,
+      [{ pct: 98, gain: -6, shrink: 7 }],
+      312,
+    )
+
+    expect(tightened).toBe(0)
+    expect(span.measured.calls).toBe(0)
+  })
+
+  test("a font with no width axis costs the renderer no measurement", () => {
+    const { span, tightened } = settle(
+      lineOf({ naturalWidth: 320 }),
+      310,
+      null,
+      312,
+    )
+
+    expect(tightened).toBe(0)
+    expect(span.measured.calls).toBe(0)
   })
 })

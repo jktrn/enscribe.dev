@@ -227,3 +227,48 @@ export const renderLines = (
   element.setAttribute(TYPESET_ATTRIBUTE, String(lines.length))
   return lineElements
 }
+
+export type WrittenLines = {
+  readonly elements: readonly HTMLElement[]
+  readonly layout: RenderedLayout
+}
+
+type Tightening = {
+  readonly element: HTMLElement
+  readonly spacing: number
+}
+
+const OVERSET_EPSILON = 0.05
+
+const oversetOf = (written: WrittenLines): Tightening[] => {
+  const { lines, target, fits } = written.layout
+  const tightenings: Tightening[] = []
+  if (!fits) return tightenings
+
+  for (const [index, element] of written.elements.entries()) {
+    const line = lines[index]
+    const pct = fits[index]?.pct
+    if (!line || pct === undefined || pct === 100) continue
+    if (line.spaceCount === 0) continue
+
+    const allowed = target + line.hangStart + line.hangEnd
+    const overset = element.getBoundingClientRect().width - allowed
+    if (overset <= OVERSET_EPSILON) continue
+
+    const spacing = Number.parseFloat(element.style.wordSpacing || "0")
+    tightenings.push({
+      element,
+      spacing: spacing - overset / line.spaceCount,
+    })
+  }
+  return tightenings
+}
+
+export const tightenOverset = (written: Iterable<WrittenLines>) => {
+  const tightenings: Tightening[] = []
+  for (const block of written) tightenings.push(...oversetOf(block))
+  for (const tightening of tightenings) {
+    tightening.element.style.wordSpacing = `${tightening.spacing}px`
+  }
+  return tightenings.length
+}

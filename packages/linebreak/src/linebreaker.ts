@@ -24,7 +24,9 @@ import {
   LINE_SELECTOR,
   renderLines,
   type RenderedLayout,
+  tightenOverset,
   TYPESET_ATTRIBUTE,
+  type WrittenLines,
 } from "./dom/render"
 import {
   type AuthoredContent,
@@ -77,6 +79,7 @@ type Draft = {
   lines: readonly Line[]
   reduction: number
   round: number
+  written?: WrittenLines
 }
 
 const sameBasis = (a: MeasurementBasis, b: MeasurementBasis) =>
@@ -444,13 +447,15 @@ class BrowserLinebreaker implements Linebreaker {
     }
 
     try {
+      const layout = this.layoutFor(draft, target)
       const written = renderLines(
         element,
         draft.measurement.block,
-        this.layoutFor(draft, target),
+        layout,
         this.preservedImageAttributes,
       )
       if (!written) throw new Error("line content could not be rebuilt")
+      draft.written = { elements: written, layout }
       this.live.add(element)
       return true
     } catch (cause) {
@@ -466,6 +471,7 @@ class BrowserLinebreaker implements Linebreaker {
     let pending = written
     while (pending.length > 0) {
       const retry: Composition[] = []
+      tightenOverset(this.writtenLines(pending))
       const shift = this.commonShift(pending)
 
       for (const composition of pending) {
@@ -501,6 +507,13 @@ class BrowserLinebreaker implements Linebreaker {
       }
 
       pending = retry.filter((composition) => this.write(composition, results))
+    }
+  }
+
+  private *writtenLines(pending: readonly Composition[]) {
+    for (const composition of pending) {
+      const written = this.drafts.get(composition)?.written
+      if (written) yield written
     }
   }
 
