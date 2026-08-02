@@ -125,7 +125,8 @@ test("the three reason sets are disjoint, so replay can classify them", () => {
   const all = [...SKIP_REASONS, ...DECLINE_REASONS, ...FAILURE_REASONS]
   expect(new Set(all).size).toBe(all.length)
 
-  for (const reason of SKIP_REASONS) expect(isExpected(skipped(reason))).toBe(true)
+  for (const reason of SKIP_REASONS)
+    expect(isExpected(skipped(reason))).toBe(true)
   for (const reason of DECLINE_REASONS) {
     expect(isExpected(declined(reason))).toBe(false)
   }

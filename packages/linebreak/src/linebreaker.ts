@@ -133,7 +133,10 @@ class BrowserLinebreaker implements Linebreaker {
 
   private readonly measurements = new WeakMap<HTMLElement, Measurement>()
   private readonly live = new Set<HTMLElement>()
-  private readonly remembered = new Map<HTMLElement, ComposeReason | FailureReason>()
+  private readonly remembered = new Map<
+    HTMLElement,
+    ComposeReason | FailureReason
+  >()
   private readonly metrics = new Map<string, FontMetrics>()
   private readonly drafts = new WeakMap<Composition, Draft>()
   private readonly counters = {
