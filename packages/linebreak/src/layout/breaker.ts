@@ -482,7 +482,7 @@ export const breakParagraph = (
 
   return breakParagraphOnce(items, measure, {
     ...shared,
-    tolerance: policy.tolerance,
+    tolerance: INFINITE_BADNESS,
     emergencyStretch,
     force: true,
   })
