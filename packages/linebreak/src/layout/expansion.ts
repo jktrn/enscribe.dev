@@ -41,12 +41,12 @@ const NEUTRAL: Choice = { pct: 100, gain: 0 }
 const widen = (
   scale: StretchScale,
   pool: number,
-  glue: number,
+  flex: number,
   slack: number,
 ): Choice => {
   const span = widestRatio(scale) - 1
   if (pool <= 0 || span <= 0) return NEUTRAL
-  const want = Math.min(slack / (glue + pool), 1) * pool
+  const want = Math.min(slack / flex, 1) * pool
 
   let chosen = NEUTRAL
   for (const step of scale.steps) {
@@ -61,12 +61,12 @@ const widen = (
 const narrow = (
   scale: StretchScale,
   pool: number,
-  glue: number,
+  flex: number,
   excess: number,
 ): Choice => {
   const span = 1 - narrowestRatio(scale)
   if (pool <= 0 || span <= 0) return NEUTRAL
-  const want = Math.min(excess / (glue + pool), 1) * pool
+  const want = Math.min(excess / flex, 1) * pool
 
   let chosen = NEUTRAL
   for (const step of scale.steps) {
@@ -99,5 +99,5 @@ export const fitLines = (
         : slack < 0
           ? narrow(scale, pool.shrink, line.shrink, -slack)
           : NEUTRAL
-    return { ...choice, shrink: line.shrink }
+    return { ...choice, shrink: line.shrink - pool.shrink }
   })

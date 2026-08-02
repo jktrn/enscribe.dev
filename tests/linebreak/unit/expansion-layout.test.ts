@@ -18,6 +18,11 @@ const NO_MARKS: ReadonlySet<number> = new Set()
 
 const expansion = buildExpansion(ITEMS, AFFINE, NO_MARKS)
 
+/** 200px of glyphs at a +-2% endpoint: 4px of give in either direction.
+ * The DP pools it into the line's own elasticity, so a Line arriving at the
+ * renderer already carries glue plus glyphs in `stretch` and `shrink`. */
+const POOL = (expansion.stretch[3] as number) - (expansion.stretch[0] as number)
+
 const lineOf = (overrides: Partial<Line> = {}): Line => ({
   start: 0,
   end: 3,
@@ -25,8 +30,8 @@ const lineOf = (overrides: Partial<Line> = {}): Line => ({
   sourceEnd: 3,
   naturalWidth: 210,
   spaceCount: 1,
-  stretch: SPACE_STRETCH,
-  shrink: SPACE_SHRINK,
+  stretch: SPACE_STRETCH + POOL,
+  shrink: SPACE_SHRINK + POOL,
   adjustmentRatio: 0,
   breakKind: "space",
   hangStart: 0,
@@ -40,9 +45,6 @@ const fitOne = (target: number, overrides: Partial<Line> = {}) =>
     gain: number
     shrink: number
   }
-
-/** 200px of glyphs at a +-2% endpoint: 4px of give in either direction. */
-const POOL = (expansion.stretch[3] as number) - (expansion.stretch[0] as number)
 
 describe("a line the breaker left short", () => {
   test("the glyphs take their pooled share, quantized down", () => {
@@ -66,7 +68,7 @@ describe("a line the breaker left short", () => {
   })
 
   test("a paragraph ending spends nothing, its slack being free", () => {
-    const fit = fitOne(300, { stretch: 100_000, breakKind: "end" })
+    const fit = fitOne(300, { stretch: 100_000 + POOL, breakKind: "end" })
 
     expect(fit.pct).toBe(100)
     expect(fit.gain).toBe(0)

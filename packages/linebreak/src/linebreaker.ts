@@ -537,9 +537,12 @@ class BrowserLinebreaker implements Linebreaker {
   }
 
   private layoutOptions(measurement: Measurement) {
-    return measurement.hangs
-      ? { policy: this.policy, hangs: measurement.hangs }
-      : { policy: this.policy }
+    const { hangs, expansion } = measurement
+    return {
+      policy: this.policy,
+      ...(hangs ? { hangs } : {}),
+      ...(expansion ? { expansion } : {}),
+    }
   }
 
   private verify(

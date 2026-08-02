@@ -10,6 +10,7 @@ import {
   lineStartWidth,
   passThroughWidth,
 } from "./items"
+import type { Expansion } from "./expansion"
 import { INFINITE_BADNESS, type LayoutPolicy, resolvePolicy } from "./policy"
 import type { Hangs } from "./protrusion"
 
@@ -45,6 +46,7 @@ export type LayoutOptions = {
   readonly policy?: Partial<LayoutPolicy>
   readonly emergencyStretch?: number | "auto"
   readonly hangs?: Hangs
+  readonly expansion?: Expansion
 }
 
 export type PassOptions = {
@@ -53,6 +55,7 @@ export type PassOptions = {
   readonly emergencyStretch?: number
   readonly force?: boolean
   readonly hangs?: Hangs
+  readonly expansion?: Expansion
 }
 
 type ActiveNode = {
@@ -74,27 +77,46 @@ type Sums = {
   readonly shrink: readonly number[]
 }
 
-const sumsCache = new WeakMap<readonly Item[], Sums>()
+type Cached = {
+  readonly expansion: Expansion | undefined
+  readonly sums: Sums
+}
 
-const prefixSums = (items: readonly Item[]): Sums => {
+const sumsCache = new WeakMap<readonly Item[], Cached>()
+
+const prefixSums = (
+  items: readonly Item[],
+  expansion: Expansion | undefined,
+): Sums => {
   const cached = sumsCache.get(items)
-  if (cached) return cached
+  if (cached && cached.expansion === expansion) return cached.sums
 
   const width = [0]
   const stretch = [0]
   const shrink = [0]
   for (let index = 0; index < items.length; index += 1) {
     const item = items[index] as Item
+    const glue = item.kind === "glue"
     width.push((width[index] as number) + passThroughWidth(item))
-    stretch.push(
-      (stretch[index] as number) + (item.kind === "glue" ? item.stretch : 0),
-    )
-    shrink.push(
-      (shrink[index] as number) + (item.kind === "glue" ? item.shrink : 0),
-    )
+    if (expansion) {
+      const { stretch: up, shrink: down } = expansion
+      stretch.push(
+        (stretch[index] as number) +
+          (glue ? item.stretch : 0) +
+          ((up[index + 1] as number) - (up[index] as number)),
+      )
+      shrink.push(
+        (shrink[index] as number) +
+          (glue ? item.shrink : 0) +
+          ((down[index + 1] as number) - (down[index] as number)),
+      )
+    } else {
+      stretch.push((stretch[index] as number) + (glue ? item.stretch : 0))
+      shrink.push((shrink[index] as number) + (glue ? item.shrink : 0))
+    }
   }
   const sums = { width, stretch, shrink }
-  sumsCache.set(items, sums)
+  sumsCache.set(items, { expansion, sums })
   return sums
 }
 
@@ -482,7 +504,7 @@ export const breakParagraphOnce = (
   const policy = resolvePolicy(options.policy)
   const search: Search = {
     items,
-    sums: prefixSums(items),
+    sums: prefixSums(items, options.expansion),
     target: measure,
     toleranceRatio: maximumRatio(options.tolerance),
     emergencyStretch: options.emergencyStretch ?? 0,
@@ -561,7 +583,11 @@ export const breakParagraph = (
 ): LayoutResult => {
   if (items.length === 0) return { ok: false, reason: "empty" }
   const policy = resolvePolicy(options.policy)
-  const shared = { policy: options.policy, hangs: options.hangs }
+  const shared = {
+    policy: options.policy,
+    hangs: options.hangs,
+    expansion: options.expansion,
+  }
 
   if (policy.pretolerance >= 0) {
     const strict = breakParagraphOnce(items, measure, {
