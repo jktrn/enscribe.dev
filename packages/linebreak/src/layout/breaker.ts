@@ -162,10 +162,10 @@ type Search = {
 }
 
 type Rescue = {
-  readonly node: ActiveNode
-  readonly ratio: number
-  readonly overfull: number
-  readonly excess: number
+  node: ActiveNode
+  ratio: number
+  overfull: number
+  excess: number
 }
 
 const betterRescue = (
@@ -186,7 +186,7 @@ type Step = {
   readonly actives: ActiveNode[]
   readonly admitted: Array<ActiveNode | null>
   readonly minimum: number
-  readonly rescue: { node: ActiveNode; ratio: number } | null
+  readonly rescue: Rescue | null
 }
 
 type Edge = {
@@ -309,8 +309,13 @@ const stepTo = (
     const excess = tooLong
       ? overflowOf(natural, search.target)
       : Math.max(0, ratio - toleranceRatio)
-    if (!rescue || betterRescue(overfull, excess, active, rescue)) {
+    if (rescue === null) {
       rescue = { node: active, ratio, overfull, excess }
+    } else if (betterRescue(overfull, excess, active, rescue)) {
+      rescue.node = active
+      rescue.ratio = ratio
+      rescue.overfull = overfull
+      rescue.excess = excess
     }
 
     if (!admissible(ratio, toleranceRatio)) continue
@@ -341,17 +346,12 @@ const stepTo = (
     }
   }
 
-  return {
-    actives: survivors,
-    admitted,
-    minimum,
-    rescue: rescue && { node: rescue.node, ratio: rescue.ratio },
-  }
+  return { actives: survivors, admitted, minimum, rescue }
 }
 
 const forcedNode = (
   items: readonly Item[],
-  rescue: { node: ActiveNode; ratio: number },
+  rescue: Rescue,
   to: number,
 ): ActiveNode => {
   const ratio = Number.isFinite(rescue.ratio) ? rescue.ratio : -1
