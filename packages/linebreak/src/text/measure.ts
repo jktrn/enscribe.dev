@@ -69,6 +69,42 @@ export const invalidateMeasurements = () => {
   clearCache()
 }
 
+const aligned = (view: PretextView, count: number) =>
+  view.widths.length === count &&
+  view.kinds.length === count &&
+  view.lineEndFitAdvances.length === count
+
+const segmentAt = (
+  view: PretextView,
+  index: number,
+  start: number,
+): MeasuredSegment => {
+  const text = view.segments[index] ?? ""
+  return {
+    text,
+    start,
+    end: start + text.length,
+    kind: segmentKind(view.kinds[index] ?? ""),
+    width: view.widths[index] ?? 0,
+    lineEndWidth: view.lineEndFitAdvances[index] ?? 0,
+  }
+}
+
+const measuredSegments = (view: PretextView, text: string) => {
+  const count = view.segments.length
+  if (!aligned(view, count)) return null
+
+  const segments: MeasuredSegment[] = []
+  let offset = 0
+  for (let index = 0; index < count; index += 1) {
+    const segment = segmentAt(view, index, offset)
+    offset = segment.end
+    segments.push(segment)
+  }
+
+  return offset === text.length ? segments : null
+}
+
 export const createFontMetrics = (
   font: string,
   letterSpacing: number,
@@ -105,35 +141,8 @@ export const createFontMetrics = (
     hyphenWidth,
     measureRun,
     measureParagraph(text) {
-      const view = prepare(text)
-      const count = view.segments.length
-      if (
-        view.widths.length !== count ||
-        view.kinds.length !== count ||
-        view.lineEndFitAdvances.length !== count
-      ) {
-        return null
-      }
-
-      const segments: MeasuredSegment[] = []
-      let offset = 0
-      for (let index = 0; index < count; index += 1) {
-        const segmentText = view.segments[index] ?? ""
-        const start = offset
-        offset += segmentText.length
-        segments.push({
-          text: segmentText,
-          start,
-          end: offset,
-          kind: segmentKind(view.kinds[index] ?? ""),
-          width: view.widths[index] ?? 0,
-          lineEndWidth: view.lineEndFitAdvances[index] ?? 0,
-        })
-      }
-
-      if (offset !== text.length) return null
-
-      return { segments, hyphenWidth }
+      const segments = measuredSegments(prepare(text), text)
+      return segments ? { segments, hyphenWidth } : null
     },
   }
 }

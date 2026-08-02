@@ -115,17 +115,17 @@ export const lineEndWidth = (item: Item): number => {
 export const lineStartWidth = (item: Item): number =>
   item.kind === "discretionary" ? item.postWidth : 0
 
+const glueBreakPenalty = (items: readonly Item[], index: number) => {
+  const previous = items[index - 1]
+  if (!previous) return null
+  if (previous.kind !== "box" && previous.kind !== "discretionary") return null
+  return 0
+}
+
 export const breakPenalty = (items: readonly Item[], index: number) => {
   const item = items[index]
   if (!item) return null
-  if (item.kind === "glue") {
-    const previous = items[index - 1]
-    if (!previous) return null
-    if (previous.kind !== "box" && previous.kind !== "discretionary") {
-      return null
-    }
-    return 0
-  }
+  if (item.kind === "glue") return glueBreakPenalty(items, index)
   if (item.kind === "penalty" || item.kind === "discretionary") {
     return isForbidden(item.penalty) ? null : item.penalty
   }

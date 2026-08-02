@@ -35,27 +35,38 @@ export type Hangs = {
   readonly end: Float64Array
 }
 
-export const buildHangs = (
+const endHangs = (
   items: readonly Item[],
-  startOf: ReadonlyMap<number, number>,
   endOf: ReadonlyMap<number, number>,
-): Hangs => {
-  const count = items.length
-
-  const end = new Float64Array(count)
+) => {
+  const end = new Float64Array(items.length)
   let carried = 0
-  for (let index = 0; index < count; index += 1) {
+  for (let index = 0; index < items.length; index += 1) {
     const item = items[index] as Item
     end[index] = lineEndWidth(item) > 0 ? (endOf.get(index) ?? 0) : carried
     if (item.kind === "box") carried = endOf.get(index) ?? 0
   }
+  return end
+}
 
-  const start = new Float64Array(count + 1)
+const startHangs = (
+  items: readonly Item[],
+  startOf: ReadonlyMap<number, number>,
+) => {
+  const start = new Float64Array(items.length + 1)
   let next = 0
-  for (let index = count - 1; index >= 0; index -= 1) {
+  for (let index = items.length - 1; index >= 0; index -= 1) {
     if ((items[index] as Item).kind === "box") next = startOf.get(index) ?? 0
     start[index] = next
   }
-
-  return { start, end }
+  return start
 }
+
+export const buildHangs = (
+  items: readonly Item[],
+  startOf: ReadonlyMap<number, number>,
+  endOf: ReadonlyMap<number, number>,
+): Hangs => ({
+  start: startHangs(items, startOf),
+  end: endHangs(items, endOf),
+})

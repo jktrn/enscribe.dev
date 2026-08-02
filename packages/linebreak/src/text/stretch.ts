@@ -23,6 +23,23 @@ export const narrowestRatio = (scale: StretchScale) =>
 export const widestRatio = (scale: StretchScale) =>
   (scale.steps.at(-1) as StretchStep).ratio
 
+const misbehaves = (sign: 1 | -1, ratio: number, previous: number) => {
+  if (!Number.isFinite(ratio) || ratio <= 0) return true
+  if (sign * (ratio - previous) < 0) return true
+  return Math.abs(ratio - previous) > STEP_RESPONSE_LIMIT
+}
+
+const recordStep = (
+  steps: StretchStep[],
+  step: StretchStep,
+  budget: number,
+  reach: number,
+) => {
+  if (reach > budget + BUDGET_SLACK) return true
+  if (step.ratio !== (steps.at(-1)?.ratio ?? 1)) steps.push(step)
+  return reach >= budget || steps.length === SIDE_LIMIT
+}
+
 const sideSteps = (
   sign: 1 | -1,
   budget: number,
@@ -34,15 +51,10 @@ const sideSteps = (
   for (const delta of LADDER) {
     const pct = 100 + sign * delta
     const ratio = probe(pct) / base
-    if (!Number.isFinite(ratio) || ratio <= 0) return null
-    if (sign * (ratio - previous) < 0) return null
-    if (Math.abs(ratio - previous) > STEP_RESPONSE_LIMIT) return null
+    if (misbehaves(sign, ratio, previous)) return null
     previous = ratio
-    const reach = sign * (ratio - 1)
-    if (reach > budget + BUDGET_SLACK) break
-    if (ratio !== (steps.at(-1)?.ratio ?? 1)) steps.push({ pct, ratio })
-    if (reach >= budget) break
-    if (steps.length === SIDE_LIMIT) break
+
+    if (recordStep(steps, { pct, ratio }, budget, sign * (ratio - 1))) break
   }
   return steps
 }
