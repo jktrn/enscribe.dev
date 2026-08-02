@@ -5,6 +5,40 @@ export const LINE_SELECTOR = "[data-linebreak-line]"
 export const TYPESET_ATTRIBUTE = "data-linebreak-typeset"
 export const TYPESET_SELECTOR = "[data-linebreak-typeset]"
 
+const PROBE_HANG = 16
+const PROBE_STYLE =
+  "position:absolute;top:-9999px;left:0;width:1000px;visibility:hidden;" +
+  "white-space:nowrap;font:16px/1 monospace"
+
+const honoured = new WeakMap<Document, boolean>()
+
+export const honoursHangingMargins = (document: Document) => {
+  const cached = honoured.get(document)
+  if (cached !== undefined) return cached
+
+  const host = document.body ?? document.documentElement
+  if (!host) return false
+
+  const probe = document.createElement("div")
+  probe.setAttribute("aria-hidden", "true")
+  probe.style.cssText = PROBE_STYLE
+  const anchor = document.createElement("span")
+  anchor.textContent = "."
+  const follower = document.createElement("span")
+  follower.textContent = "."
+  probe.append(anchor, follower)
+  host.appendChild(probe)
+
+  const before = follower.getBoundingClientRect().left
+  anchor.style.marginInlineEnd = `${-PROBE_HANG}px`
+  const after = follower.getBoundingClientRect().left
+  probe.remove()
+
+  const supported = before - after >= PROBE_HANG - 0.5
+  honoured.set(document, supported)
+  return supported
+}
+
 const appendLine = (
   target: HTMLElement,
   block: ExtractedBlock,

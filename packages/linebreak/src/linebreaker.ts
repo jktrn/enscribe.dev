@@ -16,7 +16,12 @@ import {
   invalidateMeasurements,
 } from "./text/measure"
 import { engineDefaults } from "./policy"
-import { LINE_SELECTOR, renderLines, TYPESET_ATTRIBUTE } from "./dom/render"
+import {
+  honoursHangingMargins,
+  LINE_SELECTOR,
+  renderLines,
+  TYPESET_ATTRIBUTE,
+} from "./dom/render"
 import {
   type AuthoredContent,
   authoredText,
@@ -163,6 +168,7 @@ class BrowserLinebreaker implements Linebreaker {
   }
   private disposed = false
   private writing = false
+  private hangable: boolean | null = null
 
   constructor(options: LinebreakerOptions = {}) {
     this.minimumWidth = options.minimumWidth ?? engineDefaults.minimumWidth
@@ -508,6 +514,12 @@ class BrowserLinebreaker implements Linebreaker {
       : ((deltas[middle - 1] as number) + (deltas[middle] as number)) / 2
   }
 
+  private protrudes(element: HTMLElement) {
+    if (!this.protrude) return false
+    this.hangable ??= honoursHangingMargins(element.ownerDocument)
+    return this.hangable
+  }
+
   private layoutOptions(measurement: Measurement) {
     return measurement.hangs
       ? { policy: this.policy, hangs: measurement.hangs }
@@ -626,7 +638,7 @@ class BrowserLinebreaker implements Linebreaker {
       atomWidth: (run: InlineRun) => outerWidth(run.sourceElement, reader),
       locale: basis.locale,
       hyphenate: this.hyphenate,
-      protrude: this.protrude,
+      protrude: this.protrudes(element),
       policy: this.policy,
       glue: this.glue,
     })

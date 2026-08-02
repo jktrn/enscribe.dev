@@ -255,7 +255,12 @@ absorbed an inline wrapper's padding or border, because in those cases the
 glyph is not the outermost painted thing on the line.
 
 `protrude: false` turns it off, and the layout is then identical to a build
-without the feature.
+without the feature. So does the engine: the whole feature rests on a negative
+`margin-inline-end` shortening a line box's advance, so the first paragraph
+typeset measures whether it does — two spans off-screen, one of them given a
+-16px end margin, and the other has to move. An engine that does not honour it
+would let the optimizer spend a credit the render cannot pay back, up to one
+hang per line, so protrusion turns itself off there instead.
 
 The table is derived from [microtype](https://ctan.org/pkg/microtype)
 (R Schlicht), LPPL 1.3c.
