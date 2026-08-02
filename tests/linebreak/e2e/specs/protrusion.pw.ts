@@ -1,10 +1,28 @@
 import { expect, test } from "@playwright/test"
 import { measureLines, settleTypeset } from "../support/page"
+import { PROTRUSION } from "../support/protrusion"
 
 test.use({ viewport: { width: 1440, height: 900 } })
 
-const edges = (page: import("@playwright/test").Page) =>
-  page.evaluate(() => {
+const edges = (
+  page: import("@playwright/test").Page,
+  table: typeof PROTRUSION,
+) =>
+  page.evaluate((codes: typeof PROTRUSION) => {
+    const canvas = document.createElement("canvas")
+    const context = canvas.getContext("2d")
+    if (!context) throw new Error("no 2d context to measure with")
+
+    const first = (text: string) => {
+      for (const character of text) return character
+      return ""
+    }
+    const last = (text: string) => {
+      let tail = ""
+      for (const character of text) tail = character
+      return tail
+    }
+
     let hung = 0
     let checkedStarts = 0
     let checkedEnds = 0
@@ -29,40 +47,57 @@ const edges = (page: import("@playwright/test").Page) =>
         Number.parseFloat(style.paddingInlineEnd || "0") -
         Number.parseFloat(style.borderInlineEndWidth || "0")
 
+      context.font = `${style.fontStyle} ${style.fontWeight} ${style.fontSize} ${style.fontFamily}`
+      const spacing = Number.parseFloat(style.letterSpacing) || 0
+      const advance = (character: string) =>
+        character === "" ? 0 : context.measureText(character).width + spacing
+      const hangOf = (character: string, side: "l" | "r") => {
+        const code = codes[character]?.[side] ?? 0
+        return code === 0 ? 0 : (code / 1000) * advance(character)
+      }
+
       for (const [index, line] of lines.entries()) {
         const rects = [...line.getClientRects()]
         if (rects.length === 0) continue
-        const startHang = Number.parseFloat(line.style.marginInlineStart || "0")
-        const endHang = Number.parseFloat(line.style.marginInlineEnd || "0")
-        if (startHang !== 0 || endHang !== 0) hung += 1
-        maxHang = Math.max(maxHang, -startHang, -endHang)
+        if (line.style.marginInlineStart || line.style.marginInlineEnd)
+          hung += 1
+        maxHang = Math.max(
+          maxHang,
+          -Number.parseFloat(line.style.marginInlineStart || "0"),
+          -Number.parseFloat(line.style.marginInlineEnd || "0"),
+        )
 
-        if (startHang !== 0 && rects.length === 1) {
+        const text = (line.textContent ?? "").trim()
+        const hyphen = line.dataset.linebreakLine === "hyphen"
+        const wantStart = hangOf(first(text), "l")
+        const wantEnd = hyphen ? hangOf("-", "r") : hangOf(last(text), "r")
+
+        if (wantStart > 0 && rects.length === 1) {
           checkedStarts += 1
           worstStart = Math.max(
             worstStart,
-            Math.abs((rects[0] as DOMRect).left - (left + startHang)),
+            Math.abs((rects[0] as DOMRect).left - (left - wantStart)),
           )
         }
         const ragged =
           index === lines.length - 1 ||
           line.dataset.linebreakLine === "forced" ||
           rects.length > 1
-        if (!ragged && endHang !== 0) {
+        if (!ragged && wantEnd > 0) {
           checkedEnds += 1
           worstEnd = Math.max(
             worstEnd,
-            Math.abs((rects[0] as DOMRect).right - (right - endHang)),
+            Math.abs((rects[0] as DOMRect).right - (right + wantEnd)),
           )
         }
       }
     }
     return { hung, checkedStarts, checkedEnds, worstStart, worstEnd, maxHang }
-  })
+  }, table)
 
 test("punctuation hangs past the measure on both sides", async ({ page }) => {
   await settleTypeset(page)
-  const report = await edges(page)
+  const report = await edges(page, PROTRUSION)
 
   expect(report.hung).toBeGreaterThan(50)
   expect(report.checkedStarts).toBeGreaterThan(0)
