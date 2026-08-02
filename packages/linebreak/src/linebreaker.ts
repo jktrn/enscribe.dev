@@ -148,6 +148,14 @@ const layoutMismatch = (
   return element.scrollWidth > element.clientWidth + 1 + slack
 }
 
+const engineLimits = (options: LinebreakerOptions) => ({
+  minimumWidth: options.minimumWidth ?? engineDefaults.minimumWidth,
+  safetyMargin: options.safetyMargin ?? engineDefaults.safetyMargin,
+  maximumRetries: options.retries ?? engineDefaults.retries,
+  maximumCharacters:
+    options.maximumCharacters ?? engineDefaults.maximumCharacters,
+})
+
 class BrowserLinebreaker implements Linebreaker {
   private readonly minimumWidth: number
   private readonly safetyMargin: number
@@ -182,11 +190,11 @@ class BrowserLinebreaker implements Linebreaker {
   private hangable: boolean | null = null
 
   constructor(options: LinebreakerOptions = {}) {
-    this.minimumWidth = options.minimumWidth ?? engineDefaults.minimumWidth
-    this.safetyMargin = options.safetyMargin ?? engineDefaults.safetyMargin
-    this.maximumRetries = options.retries ?? engineDefaults.retries
-    this.maximumCharacters =
-      options.maximumCharacters ?? engineDefaults.maximumCharacters
+    const limits = engineLimits(options)
+    this.minimumWidth = limits.minimumWidth
+    this.safetyMargin = limits.safetyMargin
+    this.maximumRetries = limits.maximumRetries
+    this.maximumCharacters = limits.maximumCharacters
     this.defaultLocale = options.locale || undefined
     this.preservedImageAttributes = options.preserveImageAttributes ?? []
     this.hyphenate = options.hyphenate ?? false
@@ -219,25 +227,7 @@ class BrowserLinebreaker implements Linebreaker {
 
     const order = [...compositions]
     const results = new Map<Composition, Outcome>()
-    const ready: Composition[] = []
-
-    for (const composition of order) {
-      if (composition?.brand !== COMPOSITION_BRAND) {
-        throw new TypeError("linebreak: apply() received a foreign composition")
-      }
-      if (composition.status === "ready") {
-        if (!this.drafts.has(composition)) {
-          throw new TypeError("linebreak: this composition was already applied")
-        }
-        ready.push(composition)
-        continue
-      }
-      results.set(composition, {
-        element: composition.element,
-        status: composition.status,
-        reason: composition.reason,
-      } as Outcome)
-    }
+    const ready = this.readyOf(order, results)
 
     this.writing = true
     try {
@@ -250,10 +240,45 @@ class BrowserLinebreaker implements Linebreaker {
       for (const composition of ready) this.drafts.delete(composition)
     }
 
+    this.forgetDisconnected()
+    return this.reportAll(order, results)
+  }
+
+  private readyOf(
+    order: readonly Composition[],
+    results: Map<Composition, Outcome>,
+  ) {
+    const ready: Composition[] = []
+    for (const composition of order) {
+      if (composition?.brand !== COMPOSITION_BRAND) {
+        throw new TypeError("linebreak: apply() received a foreign composition")
+      }
+      if (composition.status !== "ready") {
+        results.set(composition, {
+          element: composition.element,
+          status: composition.status,
+          reason: composition.reason,
+        } as Outcome)
+        continue
+      }
+      if (!this.drafts.has(composition)) {
+        throw new TypeError("linebreak: this composition was already applied")
+      }
+      ready.push(composition)
+    }
+    return ready
+  }
+
+  private forgetDisconnected() {
     for (const element of this.live) {
       if (!element.isConnected) this.live.delete(element)
     }
+  }
 
+  private reportAll(
+    order: readonly Composition[],
+    results: Map<Composition, Outcome>,
+  ) {
     const outcomes = order.map(
       (composition): Outcome =>
         results.get(composition) ?? {
@@ -339,62 +364,43 @@ class BrowserLinebreaker implements Linebreaker {
     } as Composition
   }
 
-  private composeOne(element: HTMLElement): Composition {
-    const already = this.remembered.get(element)
-    if (already !== undefined) {
-      return this.settled(element, statusFor(already), already, 0, false)
-    }
-
-    const style = styleOf(element)
-    if (style.direction !== "ltr") {
-      return this.settled(element, "declined", "unsupported-direction")
-    }
+  private unsupportedIn(style: CSSStyleDeclaration) {
+    if (style.direction !== "ltr") return "unsupported-direction" as const
     const writingMode = style.writingMode
     if (writingMode && !writingMode.startsWith("horizontal")) {
-      return this.settled(element, "declined", "unsupported-writing-mode")
+      return "unsupported-writing-mode" as const
     }
+    return null
+  }
 
-    const width = contentWidth(element, style)
-    if (width < this.minimumWidth) {
-      return this.settled(element, "skipped", "too-narrow", width, false)
-    }
-
-    const locale =
+  private localeFor(element: HTMLElement) {
+    return (
       element.closest<HTMLElement>("[lang]")?.getAttribute("lang") ||
       this.defaultLocale ||
       element.ownerDocument.documentElement.lang ||
       "en-US"
+    )
+  }
 
-    const basis: MeasurementBasis = {
-      locale,
-      font: computedFont(style),
-      letterSpacing: cssPixels(style.letterSpacing),
-    }
-    let measurement = this.measurements.get(element)
+  private reusableMeasurement(element: HTMLElement, basis: MeasurementBasis) {
+    const measurement = this.measurements.get(element)
+    if (!measurement) return undefined
     if (
-      measurement &&
-      (measurement.text !== authoredText(element) ||
-        !sameBasis(measurement.under, basis))
+      measurement.text === authoredText(element) &&
+      sameBasis(measurement.under, basis)
     ) {
-      this.restoreElement(element)
-      this.measurements.delete(element)
-      measurement = undefined
+      return measurement
     }
-    if (!measurement) {
-      const built = this.measure(element, style, basis)
-      if (!built.ok) {
-        return this.settled(
-          element,
-          statusFor(built.reason),
-          built.reason,
-          width,
-          !TRANSIENT.has(built.reason),
-        )
-      }
-      measurement = built.measurement
-      this.measurements.set(element, measurement)
-    }
+    this.restoreElement(element)
+    this.measurements.delete(element)
+    return undefined
+  }
 
+  private draftFor(
+    element: HTMLElement,
+    measurement: Measurement,
+    width: number,
+  ): Composition {
     const solved = breakParagraph(
       measurement.items,
       width - this.safetyMargin,
@@ -422,6 +428,45 @@ class BrowserLinebreaker implements Linebreaker {
       round: 0,
     })
     return composition
+  }
+
+  private composeOne(element: HTMLElement): Composition {
+    const already = this.remembered.get(element)
+    if (already !== undefined) {
+      return this.settled(element, statusFor(already), already, 0, false)
+    }
+
+    const style = styleOf(element)
+    const unsupported = this.unsupportedIn(style)
+    if (unsupported) return this.settled(element, "declined", unsupported)
+
+    const width = contentWidth(element, style)
+    if (width < this.minimumWidth) {
+      return this.settled(element, "skipped", "too-narrow", width, false)
+    }
+
+    const basis: MeasurementBasis = {
+      locale: this.localeFor(element),
+      font: computedFont(style),
+      letterSpacing: cssPixels(style.letterSpacing),
+    }
+    let measurement = this.reusableMeasurement(element, basis)
+    if (!measurement) {
+      const built = this.measure(element, style, basis)
+      if (!built.ok) {
+        return this.settled(
+          element,
+          statusFor(built.reason),
+          built.reason,
+          width,
+          !TRANSIENT.has(built.reason),
+        )
+      }
+      measurement = built.measurement
+      this.measurements.set(element, measurement)
+    }
+
+    return this.draftFor(element, measurement, width)
   }
 
   private write(
@@ -475,39 +520,51 @@ class BrowserLinebreaker implements Linebreaker {
       const shift = this.commonShift(pending)
 
       for (const composition of pending) {
-        const draft = this.drafts.get(composition)
-        if (!draft) continue
-        const failure = this.verify(
-          composition.element,
-          draft.lines,
-          draft.width + shift,
-        )
-        if (!failure) {
-          this.counters.typeset += 1
-          results.set(composition, {
-            element: composition.element,
-            status: "typeset",
-            lines: draft.lines.length,
-            retries: draft.round,
-          })
-          continue
-        }
-        if (
-          failure === "layout-mismatch" &&
-          draft.round < this.maximumRetries
-        ) {
-          draft.round += 1
-          this.counters.retries += 1
-          draft.reduction =
-            draft.width * engineDefaults.retryReduction * 3 ** (draft.round - 1)
-          retry.push(composition)
-          continue
-        }
-        this.revert(composition, failure, results)
+        if (this.settleOne(composition, shift, results)) retry.push(composition)
       }
 
       pending = retry.filter((composition) => this.write(composition, results))
     }
+  }
+
+  private scheduleRetry(draft: Draft) {
+    draft.round += 1
+    this.counters.retries += 1
+    draft.reduction =
+      draft.width * engineDefaults.retryReduction * 3 ** (draft.round - 1)
+  }
+
+  private settleOne(
+    composition: Composition,
+    shift: number,
+    results: Map<Composition, Outcome>,
+  ) {
+    const draft = this.drafts.get(composition)
+    if (!draft) return false
+
+    const failure = this.verify(
+      composition.element,
+      draft.lines,
+      draft.width + shift,
+    )
+    if (!failure) {
+      this.counters.typeset += 1
+      results.set(composition, {
+        element: composition.element,
+        status: "typeset",
+        lines: draft.lines.length,
+        retries: draft.round,
+      })
+      return false
+    }
+
+    if (failure === "layout-mismatch" && draft.round < this.maximumRetries) {
+      this.scheduleRetry(draft)
+      return true
+    }
+
+    this.revert(composition, failure, results)
+    return false
   }
 
   private *writtenLines(pending: readonly Composition[]) {
