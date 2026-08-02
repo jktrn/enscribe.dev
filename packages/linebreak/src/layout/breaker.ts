@@ -84,13 +84,7 @@ type Cached = {
 
 const sumsCache = new WeakMap<readonly Item[], Cached>()
 
-const prefixSums = (
-  items: readonly Item[],
-  expansion: Expansion | undefined,
-): Sums => {
-  const cached = sumsCache.get(items)
-  if (cached && cached.expansion === expansion) return cached.sums
-
+const plainSums = (items: readonly Item[]): Sums => {
   const width = [0]
   const stretch = [0]
   const shrink = [0]
@@ -98,24 +92,43 @@ const prefixSums = (
     const item = items[index] as Item
     const glue = item.kind === "glue"
     width.push((width[index] as number) + passThroughWidth(item))
-    if (expansion) {
-      const { stretch: up, shrink: down } = expansion
-      stretch.push(
-        (stretch[index] as number) +
-          (glue ? item.stretch : 0) +
-          ((up[index + 1] as number) - (up[index] as number)),
-      )
-      shrink.push(
-        (shrink[index] as number) +
-          (glue ? item.shrink : 0) +
-          ((down[index + 1] as number) - (down[index] as number)),
-      )
-    } else {
-      stretch.push((stretch[index] as number) + (glue ? item.stretch : 0))
-      shrink.push((shrink[index] as number) + (glue ? item.shrink : 0))
-    }
+    stretch.push((stretch[index] as number) + (glue ? item.stretch : 0))
+    shrink.push((shrink[index] as number) + (glue ? item.shrink : 0))
   }
-  const sums = { width, stretch, shrink }
+  return { width, stretch, shrink }
+}
+
+const expandedSums = (items: readonly Item[], expansion: Expansion): Sums => {
+  const { stretch: up, shrink: down } = expansion
+  const width = [0]
+  const stretch = [0]
+  const shrink = [0]
+  for (let index = 0; index < items.length; index += 1) {
+    const item = items[index] as Item
+    const glue = item.kind === "glue"
+    width.push((width[index] as number) + passThroughWidth(item))
+    stretch.push(
+      (stretch[index] as number) +
+        (glue ? item.stretch : 0) +
+        ((up[index + 1] as number) - (up[index] as number)),
+    )
+    shrink.push(
+      (shrink[index] as number) +
+        (glue ? item.shrink : 0) +
+        ((down[index + 1] as number) - (down[index] as number)),
+    )
+  }
+  return { width, stretch, shrink }
+}
+
+const prefixSums = (
+  items: readonly Item[],
+  expansion: Expansion | undefined,
+): Sums => {
+  const cached = sumsCache.get(items)
+  if (cached && cached.expansion === expansion) return cached.sums
+
+  const sums = expansion ? expandedSums(items, expansion) : plainSums(items)
   sumsCache.set(items, { expansion, sums })
   return sums
 }
@@ -156,6 +169,13 @@ const lineStart = (items: readonly Item[], position: number) => {
   return index
 }
 
+const hasRenderedSpace = (items: readonly Item[], from: number, to: number) => {
+  for (let index = from; index < to; index += 1) {
+    if (isRenderedSpace(items[index])) return true
+  }
+  return false
+}
+
 const breakKindAt = (items: readonly Item[], position: number): BreakKind => {
   const item = items[position]
   if (drawsHyphen(item)) return "hyphen"
@@ -164,10 +184,7 @@ const breakKindAt = (items: readonly Item[], position: number): BreakKind => {
     return isParagraphEnd(items, position) ? "end" : "forced"
   }
   const limit = lineStart(items, position)
-  for (let index = position + 1; index < limit; index += 1) {
-    if (isRenderedSpace(items[index])) return "space"
-  }
-  return "none"
+  return hasRenderedSpace(items, position + 1, limit) ? "space" : "none"
 }
 
 const maximumRatio = (tolerance: number) =>
@@ -449,49 +466,139 @@ const forcedNode = (search: Search, rescue: Rescue, to: number): ActiveNode => {
   }
 }
 
+const EMPTY_MEASURE = { natural: 0, stretch: 0, shrink: 0 }
+
+const sourceEndAt = (items: readonly Item[], position: number) => {
+  const breakItem = items[position]
+  if (breakItem?.kind === "discretionary") return breakItem.breakOffset
+  return breakItem?.source?.start ?? items.at(-1)?.source?.end ?? 0
+}
+
+const spacesBetween = (items: readonly Item[], from: number, to: number) => {
+  let spaceCount = 0
+  for (let index = from; index < to; index += 1) {
+    if (isRenderedSpace(items[index])) spaceCount += 1
+  }
+  return spaceCount
+}
+
+const lineTo = (search: Search, from: ActiveNode, node: ActiveNode): Line => {
+  const { items } = search
+  const start = Math.min(from.start, node.position)
+  const empty = start >= node.position
+  const { natural, stretch, shrink } = empty
+    ? EMPTY_MEASURE
+    : measureLine(search, from, edgeAt(search, node.position))
+  const sourceEnd = sourceEndAt(items, node.position)
+  const hangs = empty ? null : search.hangs
+
+  return {
+    start,
+    end: node.position,
+    sourceStart: items[start]?.source?.start ?? sourceEnd,
+    sourceEnd,
+    naturalWidth: natural,
+    spaceCount: spacesBetween(items, start, node.position),
+    stretch,
+    shrink,
+    adjustmentRatio: node.ratio,
+    breakKind: node.breakKind,
+    hangStart: hangs ? (hangs.start[from.position + 1] as number) : 0,
+    hangEnd: hangs ? (hangs.end[node.position] as number) : 0,
+  }
+}
+
 const linesFrom = (search: Search, final: ActiveNode): Line[] => {
-  const { items, hangs } = search
   const lines: Line[] = []
   for (
     let node: ActiveNode | null = final;
     node?.previous;
     node = node.previous
   ) {
-    const from = node.previous
-    const start = Math.min(from.start, node.position)
-    const empty = start >= node.position
-    const { natural, stretch, shrink } = empty
-      ? { natural: 0, stretch: 0, shrink: 0 }
-      : measureLine(search, from, edgeAt(search, node.position))
-    const breakItem = items[node.position]
-
-    const sourceEnd =
-      breakItem?.kind === "discretionary"
-        ? breakItem.breakOffset
-        : (breakItem?.source?.start ?? items.at(-1)?.source?.end ?? 0)
-
-    let spaceCount = 0
-    for (let index = start; index < node.position; index += 1) {
-      if (isRenderedSpace(items[index])) spaceCount += 1
-    }
-
-    lines.push({
-      start,
-      end: node.position,
-      sourceStart: items[start]?.source?.start ?? sourceEnd,
-      sourceEnd,
-      naturalWidth: natural,
-      spaceCount,
-      stretch,
-      shrink,
-      adjustmentRatio: node.ratio,
-      breakKind: node.breakKind,
-      hangStart:
-        empty || !hangs ? 0 : (hangs.start[from.position + 1] as number),
-      hangEnd: empty || !hangs ? 0 : (hangs.end[node.position] as number),
-    })
+    lines.push(lineTo(search, node.previous, node))
   }
   return lines.reverse()
+}
+
+const searchFor = (
+  items: readonly Item[],
+  measure: number,
+  options: PassOptions,
+): Search => ({
+  items,
+  sums: prefixSums(items, options.expansion),
+  target: measure,
+  toleranceRatio: maximumRatio(options.tolerance),
+  emergencyStretch: options.emergencyStretch ?? 0,
+  policy: resolvePolicy(options.policy),
+  rescuing: options.force === true,
+  hangs: options.hangs ?? null,
+})
+
+const initialNode = (search: Search): ActiveNode => ({
+  position: -1,
+  start: lineStart(search.items, -1),
+  leading: leadingWidth(search, -1),
+  flagged: false,
+  line: 0,
+  fitness: 1,
+  demerits: 0,
+  previous: null,
+  ratio: 0,
+  breakKind: "none",
+})
+
+const admitCandidates = (
+  actives: ActiveNode[],
+  step: Step,
+  adjDemerits: number,
+) => {
+  const ceiling = step.minimum + Math.abs(adjDemerits)
+  for (let fitness = 0; fitness < 4; fitness += 1) {
+    const candidate = step.admitted[fitness]
+    if (candidate && candidate.demerits <= ceiling) actives.push(candidate)
+  }
+}
+
+const afterStep = (
+  search: Search,
+  actives: ActiveNode[],
+  step: Step,
+  to: number,
+  force: boolean,
+): ActiveNode[] | null => {
+  if (step.minimum !== Number.POSITIVE_INFINITY) {
+    admitCandidates(actives, step, search.policy.adjDemerits)
+    return actives
+  }
+  if (actives.length > 0) return actives
+  if (!force || !step.rescue) return null
+  return [forcedNode(search, step.rescue, to)]
+}
+
+const runSearch = (search: Search, force: boolean): ActiveNode[] | null => {
+  const { items } = search
+  let actives: ActiveNode[] = [initialNode(search)]
+  const step = emptyStep()
+
+  for (let to = 0; to < items.length; to += 1) {
+    const penaltyValue = breakPenalty(items, to)
+    if (penaltyValue === null) continue
+
+    stepTo(search, actives, step, to, penaltyValue)
+    const next = afterStep(search, actives, step, to, force)
+    if (!next) return null
+    actives = next
+  }
+  return actives
+}
+
+const bestNode = (actives: readonly ActiveNode[]) => {
+  let best: ActiveNode | null = null
+  for (const node of actives) {
+    if (!best || node.demerits < best.demerits) best = node
+  }
+  return best
 }
 
 export const breakParagraphOnce = (
@@ -501,58 +608,11 @@ export const breakParagraphOnce = (
 ): LayoutResult => {
   if (items.length === 0) return { ok: false, reason: "empty" }
 
-  const policy = resolvePolicy(options.policy)
-  const search: Search = {
-    items,
-    sums: prefixSums(items, options.expansion),
-    target: measure,
-    toleranceRatio: maximumRatio(options.tolerance),
-    emergencyStretch: options.emergencyStretch ?? 0,
-    policy,
-    rescuing: options.force === true,
-    hangs: options.hangs ?? null,
-  }
+  const search = searchFor(items, measure, options)
+  const actives = runSearch(search, options.force === true)
+  if (!actives) return { ok: false, reason: "infeasible" }
 
-  let actives: ActiveNode[] = [
-    {
-      position: -1,
-      start: lineStart(items, -1),
-      leading: leadingWidth(search, -1),
-      flagged: false,
-      line: 0,
-      fitness: 1,
-      demerits: 0,
-      previous: null,
-      ratio: 0,
-      breakKind: "none",
-    },
-  ]
-
-  const step = emptyStep()
-  for (let to = 0; to < items.length; to += 1) {
-    const penaltyValue = breakPenalty(items, to)
-    if (penaltyValue === null) continue
-    stepTo(search, actives, step, to, penaltyValue)
-
-    if (step.minimum === Number.POSITIVE_INFINITY) {
-      if (actives.length > 0) continue
-      if (!options.force || !step.rescue)
-        return { ok: false, reason: "infeasible" }
-      actives = [forcedNode(search, step.rescue, to)]
-      continue
-    }
-
-    const ceiling = step.minimum + Math.abs(policy.adjDemerits)
-    for (let fitness = 0; fitness < 4; fitness += 1) {
-      const candidate = step.admitted[fitness]
-      if (candidate && candidate.demerits <= ceiling) actives.push(candidate)
-    }
-  }
-
-  const final = actives.reduce<ActiveNode | null>(
-    (best, node) => (!best || node.demerits < best.demerits ? node : best),
-    null,
-  )
+  const final = bestNode(actives)
   if (!final || final.line === 0) return { ok: false, reason: "infeasible" }
   return {
     ok: true,
@@ -575,6 +635,16 @@ const meanGlueWidth = (items: readonly Item[]) => {
 }
 
 const EMERGENCY_STRETCH_SPACES = 14
+
+const emergencyStretchFor = (
+  items: readonly Item[],
+  requested: LayoutOptions["emergencyStretch"],
+) => {
+  if (requested === undefined || requested === "auto") {
+    return meanGlueWidth(items) * EMERGENCY_STRETCH_SPACES
+  }
+  return requested
+}
 
 export const breakParagraph = (
   items: readonly Item[],
@@ -603,11 +673,7 @@ export const breakParagraph = (
   })
   if (relaxed.ok) return { ...relaxed, pass: "tolerance" }
 
-  const emergencyStretch =
-    options.emergencyStretch === undefined ||
-    options.emergencyStretch === "auto"
-      ? meanGlueWidth(items) * EMERGENCY_STRETCH_SPACES
-      : options.emergencyStretch
+  const emergencyStretch = emergencyStretchFor(items, options.emergencyStretch)
 
   if (emergencyStretch > 0) {
     const emergency = breakParagraphOnce(items, measure, {
