@@ -53,6 +53,8 @@ export type PassOptions = {
 type ActiveNode = {
   readonly position: number
   readonly start: number
+  readonly leading: number
+  readonly flagged: boolean
   readonly line: number
   readonly fitness: number
   readonly demerits: number
@@ -207,9 +209,9 @@ const edgeAt = (search: Search, to: number): Edge => {
   }
 }
 
-const leadingWidth = (items: readonly Item[], from: ActiveNode) => {
-  const previousItem = from.position < 0 ? undefined : items[from.position]
-  return previousItem ? lineStartWidth(previousItem) : 0
+const leadingWidth = (items: readonly Item[], position: number) => {
+  const item = items[position]
+  return item ? lineStartWidth(item) : 0
 }
 
 const adjustmentRatio = (
@@ -232,7 +234,7 @@ const adjustmentRatio = (
 const naturalWidth = (search: Search, from: ActiveNode, edge: Edge) =>
   edge.width -
   (search.sums.width[from.start] as number) +
-  leadingWidth(search.items, from) +
+  from.leading +
   edge.trailing
 
 const stretchOf = (search: Search, from: ActiveNode, edge: Edge) =>
@@ -266,6 +268,7 @@ const stepTo = (
   const kind = breakKindAt(items, to)
   const edge = edgeAt(search, to)
   const startAfter = lineStart(items, to)
+  const leadingAfter = leadingWidth(items, to)
   const flaggedHere = isFlaggedBreak(items[to])
   const atParagraphEnd = isParagraphEnd(items, to)
   let minimum = Number.POSITIVE_INFINITY
@@ -284,6 +287,8 @@ const stepTo = (
         admitted[1] = {
           position: to,
           start: startAfter,
+          leading: leadingAfter,
+          flagged: flaggedHere,
           line: active.line + 1,
           fitness: 1,
           demerits,
@@ -330,7 +335,7 @@ const stepTo = (
     const fitness = fitnessClass(ratio)
     let demerits = active.demerits + lineDemerits(ratio, penaltyValue, policy)
 
-    if (active.position >= 0 && isFlaggedBreak(items[active.position])) {
+    if (active.flagged) {
       if (flaggedHere) demerits += policy.doubleHyphenDemerits
       else if (atParagraphEnd) demerits += policy.finalHyphenDemerits
     }
@@ -342,6 +347,8 @@ const stepTo = (
       admitted[fitness] = {
         position: to,
         start: startAfter,
+        leading: leadingAfter,
+        flagged: flaggedHere,
         line: active.line + 1,
         fitness,
         demerits,
@@ -366,6 +373,8 @@ const forcedNode = (
   return {
     position: to,
     start: lineStart(items, to),
+    leading: leadingWidth(items, to),
+    flagged: isFlaggedBreak(items[to]),
     line: rescue.node.line + 1,
     fitness: fitnessClass(ratio),
     demerits: rescue.node.demerits,
@@ -439,6 +448,8 @@ export const breakParagraphOnce = (
     {
       position: -1,
       start: lineStart(items, -1),
+      leading: 0,
+      flagged: false,
       line: 0,
       fitness: 1,
       demerits: 0,
