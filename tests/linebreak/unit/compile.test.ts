@@ -10,6 +10,27 @@ const naturalWidth = (texts: readonly string[], trailingEdge = 0) =>
     0,
   )
 
+test("an authored soft hyphen compiles to a printing discretionary", () => {
+  const items = compile([`beta${SHY}gamma`], 0, {
+    ...texDefaults,
+    hyphenPenalty: 77,
+    exHyphenPenalty: 88,
+  })
+  const taken = items.filter((item) => item.kind === "discretionary")
+
+  expect(taken).toHaveLength(1)
+  expect(taken[0]).toEqual({
+    kind: "discretionary",
+    preWidth: HYPHEN,
+    postWidth: 0,
+    noBreakWidth: 0,
+    penalty: 77,
+    hyphen: true,
+    source: { start: 4, end: 5 },
+    breakOffset: 5,
+  })
+})
+
 test("a break at an authored soft hyphen keeps the character on the line", () => {
   const text = `anti${SHY}disestablishmentarian is a long word`
   const items = compile([text])
