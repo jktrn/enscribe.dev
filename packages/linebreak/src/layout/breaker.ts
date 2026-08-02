@@ -11,6 +11,7 @@ import {
   passThroughWidth,
 } from "./items"
 import { INFINITE_BADNESS, type LayoutPolicy, resolvePolicy } from "./policy"
+import type { Hangs } from "./protrusion"
 
 export type BreakKind = "space" | "hyphen" | "forced" | "none" | "end"
 
@@ -25,6 +26,8 @@ export type Line = {
   readonly shrink: number
   readonly adjustmentRatio: number
   readonly breakKind: BreakKind
+  readonly hangStart: number
+  readonly hangEnd: number
 }
 
 export type LayoutPass = "pretolerance" | "tolerance" | "emergency" | "forced"
@@ -41,6 +44,7 @@ export type LayoutResult =
 export type LayoutOptions = {
   readonly policy?: Partial<LayoutPolicy>
   readonly emergencyStretch?: number | "auto"
+  readonly hangs?: Hangs
 }
 
 export type PassOptions = {
@@ -48,6 +52,7 @@ export type PassOptions = {
   readonly policy?: Partial<LayoutPolicy>
   readonly emergencyStretch?: number
   readonly force?: boolean
+  readonly hangs?: Hangs
 }
 
 type ActiveNode = {
@@ -162,6 +167,7 @@ type Search = {
   readonly emergencyStretch: number
   readonly policy: LayoutPolicy
   readonly rescuing: boolean
+  readonly hangs: Hangs | null
 }
 
 type Rescue = {
@@ -237,19 +243,24 @@ type Edge = {
 }
 
 const edgeAt = (search: Search, to: number): Edge => {
-  const { items, sums } = search
+  const { items, sums, hangs } = search
   const endItem = items[to]
   return {
     width: sums.width[to] as number,
     stretch: sums.stretch[to] as number,
     shrink: sums.shrink[to] as number,
-    trailing: endItem ? lineEndWidth(endItem) : 0,
+    trailing:
+      (endItem ? lineEndWidth(endItem) : 0) -
+      (hangs ? (hangs.end[to] as number) : 0),
   }
 }
 
-const leadingWidth = (items: readonly Item[], position: number) => {
-  const item = items[position]
-  return item ? lineStartWidth(item) : 0
+const leadingWidth = (search: Search, position: number) => {
+  const item = search.items[position]
+  return (
+    (item ? lineStartWidth(item) : 0) -
+    (search.hangs ? (search.hangs.start[position + 1] as number) : 0)
+  )
 }
 
 const adjustmentRatio = (
@@ -319,7 +330,7 @@ const stepTo = (
   const kind = breakKindAt(items, to)
   const edge = edgeAt(search, to)
   const startAfter = lineStart(items, to)
-  const leadingAfter = leadingWidth(items, to)
+  const leadingAfter = leadingWidth(search, to)
   const flaggedHere = isFlaggedBreak(items[to])
   const flaggedExtra = flaggedDemeritsAt(items, to, flaggedHere, policy)
   const emptyDemerits = forced ? lineDemerits(0, penaltyValue, policy) : 0
@@ -399,16 +410,13 @@ const stepTo = (
   step.minimum = minimum
 }
 
-const forcedNode = (
-  items: readonly Item[],
-  rescue: Rescue,
-  to: number,
-): ActiveNode => {
+const forcedNode = (search: Search, rescue: Rescue, to: number): ActiveNode => {
+  const { items } = search
   const ratio = Number.isFinite(rescue.ratio) ? rescue.ratio : -1
   return {
     position: to,
     start: lineStart(items, to),
-    leading: leadingWidth(items, to),
+    leading: leadingWidth(search, to),
     flagged: isFlaggedBreak(items[to]),
     line: rescue.node.line + 1,
     fitness: fitnessClass(ratio),
@@ -420,7 +428,7 @@ const forcedNode = (
 }
 
 const linesFrom = (search: Search, final: ActiveNode): Line[] => {
-  const { items } = search
+  const { items, hangs } = search
   const lines: Line[] = []
   for (
     let node: ActiveNode | null = final;
@@ -456,6 +464,9 @@ const linesFrom = (search: Search, final: ActiveNode): Line[] => {
       shrink,
       adjustmentRatio: node.ratio,
       breakKind: node.breakKind,
+      hangStart:
+        empty || !hangs ? 0 : (hangs.start[from.position + 1] as number),
+      hangEnd: empty || !hangs ? 0 : (hangs.end[node.position] as number),
     })
   }
   return lines.reverse()
@@ -477,13 +488,14 @@ export const breakParagraphOnce = (
     emergencyStretch: options.emergencyStretch ?? 0,
     policy,
     rescuing: options.force === true,
+    hangs: options.hangs ?? null,
   }
 
   let actives: ActiveNode[] = [
     {
       position: -1,
       start: lineStart(items, -1),
-      leading: 0,
+      leading: leadingWidth(search, -1),
       flagged: false,
       line: 0,
       fitness: 1,
@@ -504,7 +516,7 @@ export const breakParagraphOnce = (
       if (actives.length > 0) continue
       if (!options.force || !step.rescue)
         return { ok: false, reason: "infeasible" }
-      actives = [forcedNode(items, step.rescue, to)]
+      actives = [forcedNode(search, step.rescue, to)]
       continue
     }
 
@@ -549,7 +561,7 @@ export const breakParagraph = (
 ): LayoutResult => {
   if (items.length === 0) return { ok: false, reason: "empty" }
   const policy = resolvePolicy(options.policy)
-  const shared = { policy: options.policy }
+  const shared = { policy: options.policy, hangs: options.hangs }
 
   if (policy.pretolerance >= 0) {
     const strict = breakParagraphOnce(items, measure, {
