@@ -390,7 +390,7 @@ export const breakParagraphOnce = (
       continue
     }
 
-    const ceiling = step.minimum + policy.adjDemerits
+    const ceiling = step.minimum + Math.abs(policy.adjDemerits)
     for (let fitness = 0; fitness < 4; fitness += 1) {
       const candidate = step.admitted[fitness]
       if (candidate && candidate.demerits <= ceiling) actives.push(candidate)
