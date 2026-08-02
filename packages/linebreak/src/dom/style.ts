@@ -23,10 +23,22 @@ export const computedFont = (style: CSSStyleDeclaration) =>
     .filter(Boolean)
     .join(" ")} ${style.fontFamily}`
 
+const NEUTRAL_STRETCH: ReadonlySet<string> = new Set(["", "normal", "100%"])
+
+const WIDTH_AXIS = /\bwdth\b/u
+
+const authoredWidth = (style: CSSStyleDeclaration) => {
+  if (!NEUTRAL_STRETCH.has(style.fontStretch)) return "font-stretch"
+  if (WIDTH_AXIS.test(style.fontVariationSettings)) {
+    return "font-variation-settings"
+  }
+  return null
+}
+
 export const unmodellableProperty = (style: CSSStyleDeclaration) => {
   if (style.textTransform !== "" && style.textTransform !== "none") {
     return "text-transform"
   }
   if (cssPixels(style.wordSpacing) !== 0) return "word-spacing"
-  return null
+  return authoredWidth(style)
 }
