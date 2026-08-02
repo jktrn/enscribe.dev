@@ -27,6 +27,8 @@ export const resolvePolicy = (
 ): LayoutPolicy =>
   overrides ? Object.freeze({ ...webDefaults, ...overrides }) : webDefaults
 
+export const INFINITE_BADNESS = 10_000
+
 export const INFINITE_PENALTY = 10_000
 
 export const EJECT_PENALTY = -10_000

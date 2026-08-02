@@ -10,7 +10,7 @@ import {
   lineStartWidth,
   passThroughWidth,
 } from "./items"
-import { type LayoutPolicy, resolvePolicy } from "./policy"
+import { INFINITE_BADNESS, type LayoutPolicy, resolvePolicy } from "./policy"
 
 export type BreakKind = "space" | "hyphen" | "forced" | "none" | "end"
 
@@ -143,6 +143,8 @@ const breakKindAt = (items: readonly Item[], position: number): BreakKind => {
 const maximumRatio = (tolerance: number) =>
   tolerance < 0 ? -1 : (tolerance / 100) ** (1 / 3)
 
+const INFINITE_BADNESS_RATIO = maximumRatio(INFINITE_BADNESS)
+
 const bandDistance = (ratio: number, tolerance: number) => {
   if (ratio < -1) return -1 - ratio
   if (ratio > tolerance) return ratio - tolerance
@@ -193,7 +195,7 @@ const measureLine = (search: Search, from: ActiveNode, to: number) => {
   let ratio = 0
   if (slack > 0) {
     const stretchable = stretch + search.emergencyStretch
-    ratio = stretchable > 0 ? slack / stretchable : Number.POSITIVE_INFINITY
+    ratio = stretchable > 0 ? slack / stretchable : INFINITE_BADNESS_RATIO
   }
   if (slack < 0) ratio = shrink > 0 ? slack / shrink : Number.NEGATIVE_INFINITY
   return { natural, ratio, stretch, shrink }
