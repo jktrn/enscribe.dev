@@ -184,7 +184,6 @@ const betterRescue = (
 }
 
 type Step = {
-  readonly actives: ActiveNode[]
   readonly admitted: Array<ActiveNode | null>
   readonly minimum: number
   readonly rescue: Rescue | null
@@ -256,14 +255,14 @@ const measureLine = (search: Search, from: ActiveNode, edge: Edge) => {
 
 const stepTo = (
   search: Search,
-  actives: readonly ActiveNode[],
+  actives: ActiveNode[],
   to: number,
   penaltyValue: number,
   forced: boolean,
 ): Step => {
   const { items, toleranceRatio, policy } = search
   const admitted: Array<ActiveNode | null> = [null, null, null, null]
-  const survivors: ActiveNode[] = []
+  let kept = 0
   const kind = breakKindAt(items, to)
   const edge = edgeAt(search, to)
   const startAfter = lineStart(items, to)
@@ -272,10 +271,12 @@ const stepTo = (
   let minimum = Number.POSITIVE_INFINITY
   let rescue: Rescue | null = null
 
-  for (const active of actives) {
+  for (let index = 0; index < actives.length; index += 1) {
+    const active = actives[index] as ActiveNode
     if (active.start >= to) {
       if (!forced) {
-        survivors.push(active)
+        actives[kept] = active
+        kept += 1
         continue
       }
       const demerits = active.demerits + lineDemerits(0, penaltyValue, policy)
@@ -304,7 +305,10 @@ const stepTo = (
     )
 
     const tooLong = ratio < -1
-    if (!tooLong && !forced) survivors.push(active)
+    if (!tooLong && !forced) {
+      actives[kept] = active
+      kept += 1
+    }
 
     if (search.rescuing) {
       const overfull = tooLong ? 1 : 0
@@ -349,7 +353,8 @@ const stepTo = (
     }
   }
 
-  return { actives: survivors, admitted, minimum, rescue }
+  actives.length = kept
+  return { admitted, minimum, rescue }
 }
 
 const forcedNode = (
@@ -448,7 +453,6 @@ export const breakParagraphOnce = (
     if (penaltyValue === null) continue
     const forced = isForced(penaltyValue)
     const step = stepTo(search, actives, to, penaltyValue, forced)
-    actives = step.actives
 
     if (step.minimum === Number.POSITIVE_INFINITY) {
       if (actives.length > 0) continue
