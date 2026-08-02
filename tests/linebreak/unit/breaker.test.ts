@@ -644,6 +644,82 @@ describe("a negative adjDemerits is a cost, not a veto", () => {
   })
 })
 
+describe("badness saturates at inf_bad", () => {
+  const mustBreakShort = (): Item[] => [
+    box(100),
+    { kind: "penalty", width: 0, penalty: 0, flagged: false, source },
+    box(390),
+    ...finish(),
+  ]
+
+  const aboveInfBad = (): Item[] => [
+    box(10),
+    {
+      kind: "penalty",
+      width: 0,
+      penalty: INFINITE_PENALTY,
+      flagged: false,
+      source,
+    },
+    { kind: "glue", width: 2, stretch: 1, shrink: 2 / 3, source },
+    box(10),
+    { kind: "penalty", width: 0, penalty: 0, flagged: false, source },
+    box(390),
+    ...finish(),
+  ]
+
+  test("an underfull line with nothing to stretch scores inf_bad, not infinity", () => {
+    const result = breakParagraphOnce(mustBreakShort(), MEASURE, {
+      tolerance: INFINITE_BADNESS,
+    })
+    expect(result.ok).toBe(true)
+    if (!result.ok) return
+
+    const ratio = result.lines[0]?.adjustmentRatio ?? 0
+    expect(Number.isFinite(ratio)).toBe(true)
+    expect(ratio).toBeCloseTo(Math.cbrt(100), 12)
+    expect(100 * ratio ** 3).toBeCloseTo(INFINITE_BADNESS, 6)
+  })
+
+  test("that line lands in the very loose class, two classes from its neighbour", () => {
+    const charge = (adjDemerits: number) => {
+      const result = breakParagraphOnce(mustBreakShort(), MEASURE, {
+        tolerance: INFINITE_BADNESS,
+        policy: { adjDemerits },
+      })
+      return result.ok ? result.demerits : Number.NaN
+    }
+    expect(charge(10_000) - charge(0)).toBe(20_000)
+  })
+
+  test("a line priced above inf_bad is still admitted on an inf_bad rung", () => {
+    expect(
+      breakParagraphOnce(aboveInfBad(), MEASURE, {
+        tolerance: texDefaults.tolerance,
+      }).ok,
+    ).toBe(false)
+    expect(
+      breakParagraphOnce(aboveInfBad(), MEASURE, {
+        tolerance: INFINITE_BADNESS,
+      }).ok,
+    ).toBe(true)
+  })
+
+  test("the admitted line reports its true ratio, not the saturated one", () => {
+    const result = breakParagraphOnce(aboveInfBad(), MEASURE, {
+      tolerance: INFINITE_BADNESS,
+    })
+    expect(result.ok).toBe(true)
+    if (!result.ok) return
+
+    const line = result.lines[0]
+    expect(line?.adjustmentRatio).toBe(378)
+    expect(line?.adjustmentRatio).toBe(
+      (MEASURE - (line?.naturalWidth ?? 0)) / (line?.stretch ?? 1),
+    )
+  })
+})
+
 describe("shipped policy", () => {
   test("interword glue uses Computer Modern's elasticity", () => {
     expect(defaultGlue.stretch).toBeCloseTo(1 / 2)
