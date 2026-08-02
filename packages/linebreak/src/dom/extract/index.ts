@@ -37,5 +37,10 @@ export {
   hasVisibleText,
   LINE_SEPARATOR,
 } from "./runs"
-export type { ExtractedBlock, ExtractResult, InlineRun } from "./runs"
+export type {
+  ExtractedBlock,
+  ExtractResult,
+  InlineRun,
+  WrapperInfo,
+} from "./runs"
 export { outerWidth, runEdgeWidths } from "./wrappers"
