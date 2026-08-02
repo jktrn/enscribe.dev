@@ -5,4 +5,5 @@ export const engineDefaults = Object.freeze({
   retries: 3,
   retryReduction: 0.01,
   maximumCharacters: 3_000,
+  expansionBudget: 0.02,
 })

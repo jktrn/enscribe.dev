@@ -79,6 +79,7 @@ export type LinebreakerOptions = {
   minimumWidth?: number
   hyphenate?: boolean
   protrude?: boolean
+  expand?: boolean
   preserveImageAttributes?: readonly string[]
 
   policy?: Partial<LayoutPolicy>

@@ -17,7 +17,8 @@ import {
   invalidateMeasurements,
 } from "./text/measure"
 import { engineDefaults } from "./policy"
-import { calibrateStretch, type StretchScale } from "./text/stretch"
+import type { StretchScale } from "./text/stretch"
+import { invalidateStretchScales, stretchScaleFor } from "./dom/stretch"
 import {
   honoursHangingMargins,
   LINE_SELECTOR,
@@ -35,6 +36,7 @@ import {
   computedFont,
   createStyleReader,
   cssPixels,
+  type StyleReader,
   unmodellableProperty,
 } from "./dom/style"
 import {
@@ -152,6 +154,7 @@ class BrowserLinebreaker implements Linebreaker {
   private readonly preservedImageAttributes: readonly string[]
   private readonly hyphenate: boolean
   private readonly protrude: boolean
+  private readonly expand: boolean
   private readonly policy: ReturnType<typeof resolvePolicy>
   private readonly glue: { stretch: number; shrink: number }
   private readonly report: ((outcome: Outcome) => void) | undefined
@@ -185,6 +188,7 @@ class BrowserLinebreaker implements Linebreaker {
     this.preservedImageAttributes = options.preserveImageAttributes ?? []
     this.hyphenate = options.hyphenate ?? false
     this.protrude = options.protrude ?? true
+    this.expand = options.expand ?? false
     this.policy = resolvePolicy(options.policy)
     this.glue = { ...defaultGlue, ...options.glue }
     this.report = options.onOutcome
@@ -282,6 +286,7 @@ class BrowserLinebreaker implements Linebreaker {
     if (!elements) this.remembered.clear()
     this.metrics.clear()
     invalidateMeasurements()
+    invalidateStretchScales()
   }
 
   refresh() {
@@ -524,6 +529,28 @@ class BrowserLinebreaker implements Linebreaker {
     return this.hangable
   }
 
+  private expandsWith(
+    element: HTMLElement,
+    reader: StyleReader,
+    basis: MeasurementBasis,
+  ): ((run: InlineRun) => StretchScale | null) | null {
+    if (!this.expand) return null
+    const document = element.ownerDocument
+    const budget = engineDefaults.expansionBudget
+    if (!stretchScaleFor(document, basis.font, basis.letterSpacing, budget)) {
+      return null
+    }
+    return (run) => {
+      const style = reader(run.sourceElement)
+      return stretchScaleFor(
+        document,
+        computedFont(style),
+        cssPixels(style.letterSpacing),
+        budget,
+      )
+    }
+  }
+
   private layoutFor(draft: Draft, target: number): RenderedLayout {
     const { expansion, scale } = draft.measurement
     return {
@@ -651,6 +678,7 @@ class BrowserLinebreaker implements Linebreaker {
 
     const text = authoredText(element)
     const authored = captureAuthored(element)
+    const scaleFor = this.expandsWith(element, reader, basis)
     const compiled = compileBlock({
       block: extracted.block,
       metricsFor,
@@ -660,6 +688,7 @@ class BrowserLinebreaker implements Linebreaker {
       protrude: this.protrudes(element),
       policy: this.policy,
       glue: this.glue,
+      ...(scaleFor ? { scaleFor } : {}),
     })
     if (unmodellable) return { ok: false, reason: unmodellable }
     if (!compiled.ok) return { ok: false, reason: compiled.reason }
