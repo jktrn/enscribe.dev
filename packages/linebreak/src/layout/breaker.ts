@@ -140,6 +140,9 @@ const breakKindAt = (items: readonly Item[], position: number): BreakKind => {
   return "none"
 }
 
+const maximumRatio = (tolerance: number) =>
+  tolerance < 0 ? -1 : (tolerance / 100) ** (1 / 3)
+
 const bandDistance = (ratio: number, tolerance: number) => {
   if (ratio < -1) return -1 - ratio
   if (ratio > tolerance) return ratio - tolerance
@@ -355,7 +358,7 @@ export const breakParagraphOnce = (
     items,
     sums: prefixSums(items),
     target: measure,
-    toleranceRatio: (options.tolerance / 100) ** (1 / 3),
+    toleranceRatio: maximumRatio(options.tolerance),
     emergencyStretch: options.emergencyStretch ?? 0,
     policy,
   }
@@ -430,11 +433,13 @@ export const breakParagraph = (
   const policy = resolvePolicy(options.policy)
   const shared = { policy: options.policy }
 
-  const strict = breakParagraphOnce(items, measure, {
-    ...shared,
-    tolerance: policy.pretolerance,
-  })
-  if (strict.ok) return { ...strict, pass: "pretolerance" }
+  if (policy.pretolerance >= 0) {
+    const strict = breakParagraphOnce(items, measure, {
+      ...shared,
+      tolerance: policy.pretolerance,
+    })
+    if (strict.ok) return { ...strict, pass: "pretolerance" }
+  }
 
   const relaxed = breakParagraphOnce(items, measure, {
     ...shared,
