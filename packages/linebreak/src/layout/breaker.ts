@@ -159,6 +159,7 @@ type Search = {
   readonly toleranceRatio: number
   readonly emergencyStretch: number
   readonly policy: LayoutPolicy
+  readonly rescuing: boolean
 }
 
 type Rescue = {
@@ -305,17 +306,19 @@ const stepTo = (
     const tooLong = ratio < -1
     if (!tooLong && !forced) survivors.push(active)
 
-    const overfull = tooLong ? 1 : 0
-    const excess = tooLong
-      ? overflowOf(natural, search.target)
-      : Math.max(0, ratio - toleranceRatio)
-    if (rescue === null) {
-      rescue = { node: active, ratio, overfull, excess }
-    } else if (betterRescue(overfull, excess, active, rescue)) {
-      rescue.node = active
-      rescue.ratio = ratio
-      rescue.overfull = overfull
-      rescue.excess = excess
+    if (search.rescuing) {
+      const overfull = tooLong ? 1 : 0
+      const excess = tooLong
+        ? overflowOf(natural, search.target)
+        : Math.max(0, ratio - toleranceRatio)
+      if (rescue === null) {
+        rescue = { node: active, ratio, overfull, excess }
+      } else if (betterRescue(overfull, excess, active, rescue)) {
+        rescue.node = active
+        rescue.ratio = ratio
+        rescue.overfull = overfull
+        rescue.excess = excess
+      }
     }
 
     if (!admissible(ratio, toleranceRatio)) continue
@@ -424,6 +427,7 @@ export const breakParagraphOnce = (
     toleranceRatio: maximumRatio(options.tolerance),
     emergencyStretch: options.emergencyStretch ?? 0,
     policy,
+    rescuing: options.force === true,
   }
 
   let actives: ActiveNode[] = [
