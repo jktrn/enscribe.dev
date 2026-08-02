@@ -293,6 +293,17 @@ const measureLine = (search: Search, from: ActiveNode, edge: Edge) => {
   }
 }
 
+const flaggedDemeritsAt = (
+  items: readonly Item[],
+  to: number,
+  flaggedHere: boolean,
+  policy: LayoutPolicy,
+) => {
+  if (flaggedHere) return policy.doubleHyphenDemerits
+  if (isParagraphEnd(items, to)) return policy.finalHyphenDemerits
+  return 0
+}
+
 const stepTo = (
   search: Search,
   actives: ActiveNode[],
@@ -310,7 +321,8 @@ const stepTo = (
   const startAfter = lineStart(items, to)
   const leadingAfter = leadingWidth(items, to)
   const flaggedHere = isFlaggedBreak(items[to])
-  const atParagraphEnd = isParagraphEnd(items, to)
+  const flaggedExtra = flaggedDemeritsAt(items, to, flaggedHere, policy)
+  const emptyDemerits = forced ? lineDemerits(0, penaltyValue, policy) : 0
   let minimum = Number.POSITIVE_INFINITY
 
   for (let index = 0; index < actives.length; index += 1) {
@@ -321,7 +333,7 @@ const stepTo = (
         kept += 1
         continue
       }
-      const demerits = active.demerits + lineDemerits(0, penaltyValue, policy)
+      const demerits = active.demerits + emptyDemerits
       if (demerits < (admitted[1]?.demerits ?? Number.POSITIVE_INFINITY)) {
         admitted[1] = {
           position: to,
@@ -361,10 +373,7 @@ const stepTo = (
     const fitness = fitnessClass(ratio)
     let demerits = active.demerits + lineDemerits(ratio, penaltyValue, policy)
 
-    if (active.flagged) {
-      if (flaggedHere) demerits += policy.doubleHyphenDemerits
-      else if (atParagraphEnd) demerits += policy.finalHyphenDemerits
-    }
+    if (active.flagged) demerits += flaggedExtra
     if (Math.abs(fitness - active.fitness) > 1) {
       demerits += policy.adjDemerits
     }
