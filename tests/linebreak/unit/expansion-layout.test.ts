@@ -113,3 +113,44 @@ describe("a line the breaker left long", () => {
     expect(fit.shrink).toBe(SPACE_SHRINK)
   })
 })
+
+describe("an axis that only condenses, which is what real fonts give", () => {
+  const CONDENSE_ONLY = {
+    steps: [
+      { pct: 96, ratio: 0.9775 },
+      { pct: 98, ratio: 0.9944 },
+      { pct: 100, ratio: 1 },
+    ],
+  }
+
+  const oneSided = buildExpansion(ITEMS, CONDENSE_ONLY, NO_MARKS)
+
+  const SHRINK_POOL =
+    (oneSided.shrink[3] as number) - (oneSided.shrink[0] as number)
+
+  const fitOneSided = (target: number, natural: number) =>
+    fitLines(
+      [lineOf({ naturalWidth: natural, shrink: SPACE_SHRINK + SHRINK_POOL })],
+      target,
+      oneSided,
+      CONDENSE_ONLY,
+    )[0] as { pct: number; gain: number; shrink: number }
+
+  test("nothing is budgeted on the side the font cannot move", () => {
+    expect(oneSided.stretch[3]).toBe(0)
+  })
+
+  test("a short line is left alone rather than set at a rung it cannot honour", () => {
+    const fit = fitOneSided(230, 210)
+
+    expect(fit.pct).toBe(100)
+    expect(fit.gain).toBe(0)
+  })
+
+  test("a long line still spends the side the font does move", () => {
+    const fit = fitOneSided(200, 210)
+
+    expect(fit.pct).toBe(96)
+    expect(fit.gain).toBeCloseTo(-SHRINK_POOL, 9)
+  })
+})
