@@ -27,6 +27,8 @@ const NO_MARKS: ReadonlySet<number> = new Set()
  * squeezed below 314. The three boxes earn 300 * 2% = 6px more. */
 const TIGHT = 310
 
+const LOOSE = 336
+
 const solve = (items: readonly Item[], measure: number, expand: boolean) =>
   breakParagraphOnce(items, measure, {
     tolerance: texDefaults.tolerance,
@@ -44,6 +46,29 @@ describe("elasticity the glyphs bring to the optimizer", () => {
     expect(solved.ok).toBe(true)
     if (!solved.ok) return
     expect(solved.lines[0]?.end).toBe(5)
+  })
+
+  test("a line the glue could not stretch into fits once the glyphs can", () => {
+    const items = fourWords()
+
+    expect(solve(items, LOOSE, false).ok).toBe(false)
+
+    const solved = solve(items, LOOSE, true)
+
+    expect(solved.ok).toBe(true)
+    if (!solved.ok) return
+    expect(solved.lines[0]?.end).toBe(5)
+  })
+
+  test("the budget is pooled into the line's own stretch", () => {
+    const items = fourWords()
+    const solved = solve(items, LOOSE, true)
+
+    expect(solved.ok).toBe(true)
+    if (!solved.ok) return
+    const line = solved.lines[0]
+    expect(line?.stretch).toBeCloseTo(2 * SPACE_STRETCH + 3 * WORD * 0.02, 9)
+    expect(line?.adjustmentRatio).toBeCloseTo(1, 9)
   })
 
   test("the budget is pooled into the line's own shrink", () => {
