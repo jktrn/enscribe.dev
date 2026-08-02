@@ -207,9 +207,27 @@ directly. The four passes are `\pretolerance`, `\tolerance`,
 badness denominator rather than being added as real glue, matching
 `background[2] := background[2] + emergency_stretch`.
 
-Known divergences: hyphenation points are compiled once and are live in every
-pass, where TeX's first pass runs without them; and `\looseness` is not
-implemented.
+Known divergences: `\looseness` is not implemented, and hyphenation points are
+compiled once and stay live in every pass, where tex.web §863 suppresses them
+in the first one.
+
+That second divergence is deliberate and should stay. A first pass that cannot
+see hyphens can still succeed, and when it does the paragraph never reaches the
+pass that would have hyphenated it, so §863 locks in the worse layout whenever
+an unhyphenated break sequence happens to land inside `pretolerance`. Measured
+against a §863-faithful engine over a 1,007-paragraph prose corpus at 680px
+with hyphenation on: that engine settles 879 paragraphs in pass 1, this one
+981. Over the 984-paragraph prose subset of the same run, this engine scores
+10.9 badness per line against the other's 14.6. Skipping pass 1 on both sides
+closes the gap exactly — 10.9 against 10.9 — which is what identifies pass 1 as
+the whole of the difference. With hyphenation off there are no discretionaries
+to disagree about, and both engines settle the same 879 paragraphs in pass 1.
+
+The cost is that pass 1 here carries every discretionary, so a paragraph a §863
+engine rejects cheaply is more expensive to reject, which is where this engine
+loses its one break-time cell to that comparison. Restoring §863 would buy back
+that cell and give up the badness difference. The behaviour is pinned by
+`tests/linebreak/unit/pass-one-hyphenation.test.ts`.
 
 ## The rendered DOM
 
