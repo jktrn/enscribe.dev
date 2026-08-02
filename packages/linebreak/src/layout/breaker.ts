@@ -145,11 +145,8 @@ const maximumRatio = (tolerance: number) =>
 
 const INFINITE_BADNESS_RATIO = maximumRatio(INFINITE_BADNESS)
 
-const bandDistance = (ratio: number, tolerance: number) => {
-  if (ratio < -1) return -1 - ratio
-  if (ratio > tolerance) return ratio - tolerance
-  return 0
-}
+const overflowOf = (natural: number, target: number) =>
+  Number.isFinite(natural) ? natural - target : Number.POSITIVE_INFINITY
 
 type Search = {
   readonly items: readonly Item[]
@@ -158,6 +155,27 @@ type Search = {
   readonly toleranceRatio: number
   readonly emergencyStretch: number
   readonly policy: LayoutPolicy
+}
+
+type Rescue = {
+  readonly node: ActiveNode
+  readonly ratio: number
+  readonly overfull: number
+  readonly excess: number
+}
+
+const betterRescue = (
+  overfull: number,
+  excess: number,
+  active: ActiveNode,
+  current: Rescue,
+) => {
+  if (overfull !== current.overfull) return overfull < current.overfull
+  if (excess !== current.excess) return excess < current.excess
+  if (active.position !== current.node.position) {
+    return active.position > current.node.position
+  }
+  return active.demerits < current.node.demerits
 }
 
 type Step = {
@@ -215,8 +233,7 @@ const stepTo = (
   const flaggedHere = isFlaggedBreak(items[to])
   const atParagraphEnd = isParagraphEnd(items, to)
   let minimum = Number.POSITIVE_INFINITY
-  let rescue: { node: ActiveNode; ratio: number; distance: number } | null =
-    null
+  let rescue: Rescue | null = null
 
   for (const active of actives) {
     if (lineStart(items, active.position) >= to) {
@@ -240,18 +257,17 @@ const stepTo = (
       continue
     }
 
-    const { ratio } = measureLine(search, active, to)
+    const { natural, ratio } = measureLine(search, active, to)
 
     const tooLong = ratio < -1
     if (!tooLong && !forced) survivors.push(active)
 
-    const distance = bandDistance(ratio, toleranceRatio)
-    if (
-      !rescue ||
-      distance < rescue.distance ||
-      (distance === rescue.distance && active.demerits < rescue.node.demerits)
-    ) {
-      rescue = { node: active, ratio, distance }
+    const overfull = tooLong ? 1 : 0
+    const excess = tooLong
+      ? overflowOf(natural, search.target)
+      : Math.max(0, ratio - toleranceRatio)
+    if (!rescue || betterRescue(overfull, excess, active, rescue)) {
+      rescue = { node: active, ratio, overfull, excess }
     }
 
     if (ratio < -1 || ratio > toleranceRatio) continue
