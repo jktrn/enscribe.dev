@@ -234,7 +234,10 @@ export const formatDiscordDuration = (durationMs: number): string => {
   return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`
 }
 
-const formatDiscordAgo = (endedAtMs: number, nowMs: number): string => {
+export const formatDiscordAgo = (
+  endedAtMs: number,
+  nowMs = Date.now(),
+): string => {
   const minutes = Math.floor((nowMs - endedAtMs) / 60_000)
   if (minutes < 1) return "just now"
   if (minutes < 60) return `${minutes}m ago`
@@ -242,17 +245,6 @@ const formatDiscordAgo = (endedAtMs: number, nowMs: number): string => {
   const hours = Math.floor(minutes / 60)
   if (hours < 24) return `${hours}h ago`
   return `${Math.floor(hours / 24)}d ago`
-}
-
-export const formatDiscordCompleted = (
-  durationMs: number | null,
-  endedAtMs: number | null,
-  nowMs = Date.now(),
-): string | null => {
-  const parts: string[] = []
-  if (durationMs != null) parts.push(`for ${formatDiscordDuration(durationMs)}`)
-  if (endedAtMs != null) parts.push(formatDiscordAgo(endedAtMs, nowMs))
-  return parts.length > 0 ? parts.join(" · ") : null
 }
 
 export const discordAssetUrl = (

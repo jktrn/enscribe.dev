@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test"
 import {
   discordAssetUrl,
-  formatDiscordCompleted,
+  formatDiscordAgo,
   formatDiscordDuration,
   formatDiscordElapsed,
   nextDiscordPresenceState,
@@ -144,33 +144,22 @@ describe("formatDiscordElapsed", () => {
   })
 })
 
-describe("formatDiscordCompleted", () => {
+describe("formatDiscordAgo", () => {
   const HOUR = 3_600_000
   const now = 100 * 24 * HOUR
 
-  test("pairs the recorded duration with how long ago it ended", () => {
-    expect(formatDiscordCompleted(12_633, now - 50 * HOUR, now)).toBe(
-      "for 00:00:12 · 2d ago",
-    )
-  })
-
   test("scales the relative time from seconds to days", () => {
-    expect(formatDiscordCompleted(null, now - 30_000, now)).toBe("just now")
-    expect(formatDiscordCompleted(null, now - 5 * 60_000, now)).toBe("5m ago")
-    expect(formatDiscordCompleted(null, now - 3 * HOUR, now)).toBe("3h ago")
-    expect(formatDiscordCompleted(null, now - 48 * HOUR, now)).toBe("2d ago")
+    expect(formatDiscordAgo(now - 30_000, now)).toBe("just now")
+    expect(formatDiscordAgo(now - 60_000, now)).toBe("1m ago")
+    expect(formatDiscordAgo(now - 59 * 60_000, now)).toBe("59m ago")
+    expect(formatDiscordAgo(now - HOUR, now)).toBe("1h ago")
+    expect(formatDiscordAgo(now - 23 * HOUR, now)).toBe("23h ago")
+    expect(formatDiscordAgo(now - 24 * HOUR, now)).toBe("1d ago")
+    expect(formatDiscordAgo(now - 50 * HOUR, now)).toBe("2d ago")
   })
 
-  test("clamps end times the server reports in the future", () => {
-    expect(formatDiscordCompleted(null, now + HOUR, now)).toBe("just now")
-  })
-
-  test("omits the line when the server recorded neither field", () => {
-    expect(formatDiscordCompleted(null, null, now)).toBeNull()
-  })
-
-  test("stands alone on the duration when no end time was recorded", () => {
-    expect(formatDiscordCompleted(3_661_000, null, now)).toBe("for 01:01:01")
+  test("reads as just now when the server clock runs ahead", () => {
+    expect(formatDiscordAgo(now + HOUR, now)).toBe("just now")
   })
 })
 

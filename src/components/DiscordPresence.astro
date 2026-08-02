@@ -197,6 +197,8 @@ import "@/styles/marquee.css"
       flex-direction: column;
       gap: 0.125rem;
       flex: 1;
+      overflow: hidden;
+      min-block-size: 0;
       min-width: 0;
       margin-block-start: 0.1em;
     }
@@ -285,7 +287,8 @@ import "@/styles/marquee.css"
     type DiscordActivity,
     type DiscordPresenceState,
     discordAssetUrl,
-    formatDiscordCompleted,
+    formatDiscordAgo,
+    formatDiscordDuration,
     formatDiscordElapsed,
     nextDiscordPresenceState,
     parseDiscordStreamEvent,
@@ -481,14 +484,19 @@ import "@/styles/marquee.css"
       }
 
       const startMs = activity?.start_ms
+      const endedAtMs = state.ended_at_ms
       if (state.is_active && startMs != null) {
         this.appendTicker(meta, () => formatDiscordElapsed(startMs), 1_000)
       } else if (!state.is_active && activity) {
-        this.appendTicker(
-          meta,
-          () => formatDiscordCompleted(state.duration_ms, state.ended_at_ms),
-          30_000,
-        )
+        if (state.duration_ms != null) {
+          this.appendMetaLine(
+            meta,
+            `for ${formatDiscordDuration(state.duration_ms)}`,
+          )
+        }
+        if (endedAtMs != null) {
+          this.appendTicker(meta, () => formatDiscordAgo(endedAtMs), 30_000)
+        }
       }
 
       const art = activityArt(activity)
@@ -536,20 +544,18 @@ import "@/styles/marquee.css"
       this.querySelector("discord-activity")?.replaceChildren(spinner)
     }
 
-    appendTicker(
-      meta: HTMLElement,
-      text: () => string | null,
-      intervalMs: number,
-    ) {
-      const initial = text()
-      if (initial === null) return
-
+    appendMetaLine(meta: HTMLElement, text: string) {
       const line = document.createElement("discord-line")
       line.setAttribute("data-elapsed", "")
-      line.textContent = initial
+      line.textContent = text
       meta.appendChild(line)
+      return line
+    }
+
+    appendTicker(meta: HTMLElement, text: () => string, intervalMs: number) {
+      const line = this.appendMetaLine(meta, text())
       this.tickerId = window.setInterval(() => {
-        line.textContent = text() ?? line.textContent
+        line.textContent = text()
       }, intervalMs)
     }
 
