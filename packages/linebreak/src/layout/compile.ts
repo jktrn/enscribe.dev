@@ -56,6 +56,22 @@ const glueFor = (
   source: { start, end },
 })
 
+const softHyphenFor = (
+  hyphenWidth: number,
+  start: number,
+  end: number,
+  policy: LayoutPolicy,
+): Item => ({
+  kind: "discretionary",
+  preWidth: hyphenWidth,
+  postWidth: 0,
+  noBreakWidth: 0,
+  penalty: policy.hyphenPenalty,
+  hyphen: true,
+  source: { start, end },
+  breakOffset: start,
+})
+
 const emitWord = (items: Item[], word: Word, metrics: FontMetrics) => {
   const { text, offset, width: wholeWidth, breaks } = word
   if (breaks.length === 0) {
@@ -212,6 +228,13 @@ const compileText = (
       })
     }
     previousKind = segment.kind
+
+    if (segment.kind === "soft-hyphen") {
+      if (breakAllowedAt(breakRestrictions, start)) {
+        items.push(softHyphenFor(segment.lineEndWidth, start, end, policy))
+      }
+      continue
+    }
 
     if (segment.kind === "space") {
       if (breakAllowedAt(breakRestrictions, start)) {

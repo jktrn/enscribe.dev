@@ -17,12 +17,18 @@ type PretextView = {
 const asView = (prepared: PreparedTextWithSegments): PretextView =>
   prepared as unknown as PretextView
 
-export type SegmentKind = "text" | "space" | "break-opportunity" | "other"
+export type SegmentKind =
+  | "text"
+  | "space"
+  | "break-opportunity"
+  | "soft-hyphen"
+  | "other"
 
 const segmentKind = (kind: string): SegmentKind => {
   if (kind === "text") return "text"
   if (kind === "space" || kind === "preserved-space") return "space"
   if (kind === "zero-width-break") return "break-opportunity"
+  if (kind === "soft-hyphen") return "soft-hyphen"
   return "other"
 }
 
