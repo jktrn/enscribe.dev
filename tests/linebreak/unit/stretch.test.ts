@@ -40,6 +40,13 @@ const PLEX_HINTED = {
   94: 0.983425,
 }
 
+const PLEX_COARSE = {
+  99: 1,
+  98: 0.9944029850746269,
+  97: 0.9757462686567164,
+  96: 0.9757462686567164,
+}
+
 describe("a font with no width dimension", () => {
   test("a flat response calibrates to nothing", () => {
     expect(calibrateStretch(0.02, tableProbe({}))).toBe(null)
@@ -60,7 +67,11 @@ describe("a design axis", () => {
   })
 
   test("a smaller budget stops sooner", () => {
-    expect(pctsOf(calibrateStretch(0.009, affine))).toEqual([99, 100, 101])
+    expect(pctsOf(calibrateStretch(0.011, affine))).toEqual([99, 100, 101])
+  })
+
+  test("a budget no rung fits inside calibrates to nothing", () => {
+    expect(calibrateStretch(0.009, affine)).toBe(null)
   })
 
   test("an inert stretch side leaves the table one-sided", () => {
@@ -69,6 +80,13 @@ describe("a design axis", () => {
     expect(pctsOf(scale)).toEqual([96, 97, 98, 99, 100])
     expect(widestRatio(scale as never)).toBe(1)
     expect(narrowestRatio(scale as never)).toBeCloseTo(0.984305, 12)
+  })
+
+  test("a rung that lands past the budget is left off the table", () => {
+    const scale = calibrateStretch(0.02, tableProbe(PLEX_COARSE))
+
+    expect(pctsOf(scale)).toEqual([98, 100])
+    expect(narrowestRatio(scale as never)).toBeCloseTo(0.9944029850746269, 12)
   })
 
   test("rungs the font cannot honour are not emitted", () => {

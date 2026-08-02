@@ -15,6 +15,8 @@ const SIDE_LIMIT = 4
 
 const STEP_RESPONSE_LIMIT = 0.02
 
+const BUDGET_SLACK = 1e-12
+
 export const narrowestRatio = (scale: StretchScale) =>
   (scale.steps[0] as StretchStep).ratio
 
@@ -36,8 +38,10 @@ const sideSteps = (
     if (sign * (ratio - previous) < 0) return null
     if (Math.abs(ratio - previous) > STEP_RESPONSE_LIMIT) return null
     previous = ratio
+    const reach = sign * (ratio - 1)
+    if (reach > budget + BUDGET_SLACK) break
     if (ratio !== (steps.at(-1)?.ratio ?? 1)) steps.push({ pct, ratio })
-    if (sign * (ratio - 1) >= budget) break
+    if (reach >= budget) break
     if (steps.length === SIDE_LIMIT) break
   }
   return steps
