@@ -217,15 +217,19 @@ export class Collapser {
     }
   }
 
+  private anchorAll(space: PendingSpace, at: number) {
+    for (const from of space.anchors.values()) {
+      this.appendAnchor(from, at, "next")
+    }
+  }
+
   private flushSpace() {
     if (!this.pending) return
     const space = this.pending
     this.pending = undefined
 
     if (this.text.length === 0 || this.text.endsWith(LINE_SEPARATOR)) {
-      for (const from of space.anchors.values()) {
-        this.appendAnchor(from, this.text.length, "next")
-      }
+      this.anchorAll(space, this.text.length)
       return
     }
 
@@ -238,6 +242,10 @@ export class Collapser {
       space.hasWrappingContributor ? undefined : space.first.noWrapOwner,
       !space.hasWrappingContributor,
     )
+    this.closeAnchors(space, firstAnchor)
+  }
+
+  private closeAnchors(space: PendingSpace, firstAnchor: RawText | undefined) {
     const end = this.text.length
     if (firstAnchor) this.appendAnchor(firstAnchor, end, "previous")
     for (const from of space.anchors.values()) {
