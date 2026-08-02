@@ -17,6 +17,7 @@ import {
   type LayoutPolicy,
   webDefaults,
 } from "./policy"
+import { buildExpansion, type Expansion } from "./expansion"
 import {
   buildHangs,
   endHang,
@@ -24,6 +25,7 @@ import {
   hyphenHang,
   startHang,
 } from "./protrusion"
+import type { StretchScale } from "../text/stretch"
 
 export type CompileContext = {
   block: ExtractedBlock
@@ -34,36 +36,75 @@ export type CompileContext = {
 
   hyphenate?: boolean
   protrude?: boolean
+  scaleFor?: (run: InlineRun) => StretchScale | null
   policy?: LayoutPolicy
   glue?: GlueElasticity
 }
 
 export type CompileResult =
-  | { ok: true; items: Item[]; hangs: Hangs | null }
+  | {
+      ok: true
+      items: Item[]
+      hangs: Hangs | null
+      expansion: Expansion | null
+      scale: StretchScale | null
+    }
   | { ok: false; reason: ComposeReason }
 
 type Credits = {
   readonly startOf: Map<number, number>
   readonly endOf: Map<number, number>
-  readonly folded: Set<number>
 }
 
-const emptyCredits = (): Credits => ({
-  startOf: new Map(),
-  endOf: new Map(),
-  folded: new Set(),
-})
+const emptyCredits = (): Credits => ({ startOf: new Map(), endOf: new Map() })
 
 const setCredit = (into: Map<number, number>, index: number, value: number) => {
   if (value !== 0) into.set(index, value)
 }
 
-const hangsFrom = (items: readonly Item[], credits: Credits): Hangs => {
-  for (const index of credits.folded) {
+const hangsFrom = (
+  items: readonly Item[],
+  credits: Credits,
+  folded: ReadonlySet<number>,
+): Hangs => {
+  for (const index of folded) {
     credits.startOf.delete(index)
     credits.endOf.delete(index)
   }
   return buildHangs(items, credits.startOf, credits.endOf)
+}
+
+const NO_MARKS: ReadonlySet<number> = new Set()
+
+type Expandable = {
+  readonly uncredited: Set<number>
+  scale: StretchScale | null
+  mixed: boolean
+}
+
+const markUncredited = (
+  items: readonly Item[],
+  from: number,
+  into: Set<number>,
+) => {
+  for (let index = from; index < items.length; index += 1) {
+    if ((items[index] as Item).kind === "box") into.add(index)
+  }
+}
+
+const noteScale = (state: Expandable, scale: StretchScale) => {
+  if (state.scale === null) state.scale = scale
+  else if (state.scale !== scale) state.mixed = true
+}
+
+const expansionFrom = (
+  items: readonly Item[],
+  state: Expandable,
+  folded: ReadonlySet<number>,
+) => {
+  if (state.mixed || !state.scale) return null
+  for (const index of folded) state.uncredited.add(index)
+  return buildExpansion(items, state.scale, state.uncredited)
 }
 
 type WordBreak = { at: number; penalty: number; flagged: boolean }
@@ -195,10 +236,10 @@ const breaksInside = (
 
 class PendingEdge {
   private owed = 0
-  private readonly credits: Credits | null
+  private readonly folded: Set<number> | null
 
-  constructor(credits: Credits | null) {
-    this.credits = credits
+  constructor(folded: Set<number> | null) {
+    this.folded = folded
   }
 
   onto(items: Item[], width: number) {
@@ -206,7 +247,7 @@ class PendingEdge {
     const last = items.at(-1)
     if (last?.kind === "box") {
       items[items.length - 1] = { ...last, width: last.width + width }
-      this.credits?.folded.add(items.length - 1)
+      this.folded?.add(items.length - 1)
       return
     }
     this.owed += width
@@ -230,6 +271,7 @@ type TextRun = Extract<InlineRun, { kind: "text" }>
 export type Emit = {
   readonly items: Item[]
   readonly pending: PendingEdge
+  readonly folded: Set<number> | null
 }
 
 export type Settings = {
@@ -342,9 +384,9 @@ const emitTextSegment = (
   } else if (edge !== 0) {
     pending.defer(edge)
   }
-  if (edge !== 0 && scope.credits) {
-    scope.credits.folded.add(before)
-    scope.credits.folded.add(items.length - 1)
+  if (edge !== 0 && scope.emit.folded) {
+    scope.emit.folded.add(before)
+    scope.emit.folded.add(items.length - 1)
   }
 }
 
@@ -432,9 +474,13 @@ export const compileBlock = (context: CompileContext): CompileResult => {
       (context.hyphenate ?? false) && usesEnglishHyphenation(context.locale),
   }
   const credits = context.protrude === true ? emptyCredits() : null
-  const pending = new PendingEdge(credits)
+  const expandable: Expandable | null = context.scaleFor
+    ? { uncredited: new Set(), scale: null, mixed: false }
+    : null
+  const folded = credits || expandable ? new Set<number>() : null
+  const pending = new PendingEdge(folded)
   const items: Item[] = []
-  const emit: Emit = { items, pending }
+  const emit: Emit = { items, pending, folded }
 
   for (const [runIndex, run] of block.runs.entries()) {
     if (run.kind === "anchor") {
@@ -470,18 +516,34 @@ export const compileBlock = (context: CompileContext): CompileResult => {
         width: atomWidth(run) + edges.leading + edges.trailing + pending.take(),
         source: { start: run.start, end: run.end },
       })
+      expandable?.uncredited.add(items.length - 1)
       continue
     }
 
     const metrics = metricsFor(run)
     if (!metrics) return { ok: false, reason: "unmeasurable" }
 
+    const before = items.length
     const failure = compileText(context, run, metrics, emit, settings, credits)
     if (failure) return { ok: false, reason: failure }
+
+    if (expandable) {
+      const scale = context.scaleFor?.(run) ?? null
+      if (scale) noteScale(expandable, scale)
+      else markUncredited(items, before, expandable.uncredited)
+    }
   }
 
   if (items.length === 0) return { ok: false, reason: "empty" }
 
   items.push(...paragraphEnd(block.text.length))
-  return { ok: true, items, hangs: credits ? hangsFrom(items, credits) : null }
+  const marks = folded ?? NO_MARKS
+  const expansion = expandable ? expansionFrom(items, expandable, marks) : null
+  return {
+    ok: true,
+    items,
+    hangs: credits ? hangsFrom(items, credits, marks) : null,
+    expansion,
+    scale: expansion && expandable ? expandable.scale : null,
+  }
 }

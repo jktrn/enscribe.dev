@@ -1,6 +1,7 @@
 import { breakParagraph, type Line } from "./layout/breaker"
 import { compileBlock } from "./layout/compile"
 import type { Item } from "./layout/items"
+import { type Expansion, fitLines } from "./layout/expansion"
 import type { Hangs } from "./layout/protrusion"
 import { defaultGlue, resolvePolicy } from "./layout/policy"
 import {
@@ -16,10 +17,12 @@ import {
   invalidateMeasurements,
 } from "./text/measure"
 import { engineDefaults } from "./policy"
+import { calibrateStretch, type StretchScale } from "./text/stretch"
 import {
   honoursHangingMargins,
   LINE_SELECTOR,
   renderLines,
+  type RenderedLayout,
   TYPESET_ATTRIBUTE,
 } from "./dom/render"
 import {
@@ -59,6 +62,8 @@ type Measurement = {
   readonly block: ExtractedBlock
   readonly items: Item[]
   readonly hangs: Hangs | null
+  readonly expansion: Expansion | null
+  readonly scale: StretchScale | null
   readonly authored: AuthoredContent
   readonly under: MeasurementBasis
   readonly text: string
@@ -437,8 +442,7 @@ class BrowserLinebreaker implements Linebreaker {
       const written = renderLines(
         element,
         draft.measurement.block,
-        draft.lines,
-        target,
+        this.layoutFor(draft, target),
         this.preservedImageAttributes,
       )
       if (!written) throw new Error("line content could not be rebuilt")
@@ -518,6 +522,18 @@ class BrowserLinebreaker implements Linebreaker {
     if (!this.protrude) return false
     this.hangable ??= honoursHangingMargins(element.ownerDocument)
     return this.hangable
+  }
+
+  private layoutFor(draft: Draft, target: number): RenderedLayout {
+    const { expansion, scale } = draft.measurement
+    return {
+      lines: draft.lines,
+      target,
+      fits:
+        expansion && scale
+          ? fitLines(draft.lines, target, expansion, scale)
+          : null,
+    }
   }
 
   private layoutOptions(measurement: Measurement) {
@@ -651,6 +667,8 @@ class BrowserLinebreaker implements Linebreaker {
         block: extracted.block,
         items: compiled.items,
         hangs: compiled.hangs,
+        expansion: compiled.expansion,
+        scale: compiled.scale,
         authored,
         under: basis,
         text,

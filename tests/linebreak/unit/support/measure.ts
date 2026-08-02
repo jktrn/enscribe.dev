@@ -7,6 +7,17 @@ import {
   texDefaults,
 } from "@linebreak/layout/policy"
 import type { FontMetrics, MeasuredSegment } from "@linebreak/text/measure"
+import type { StretchScale } from "@linebreak/text/stretch"
+
+export const AFFINE: StretchScale = {
+  steps: [
+    { pct: 98, ratio: 0.98 },
+    { pct: 99, ratio: 0.99 },
+    { pct: 100, ratio: 1 },
+    { pct: 101, ratio: 1.01 },
+    { pct: 102, ratio: 1.02 },
+  ],
+}
 
 export const CHARACTER = 10
 export const HYPHEN = 5
@@ -114,6 +125,7 @@ export const compileShape = (
     policy?: LayoutPolicy
     protrude?: boolean
     hyphenate?: boolean
+    scaleFor?: (run: InlineRun) => StretchScale | null
   } = {},
 ) => {
   const compiled = compileBlock({
@@ -125,6 +137,7 @@ export const compileShape = (
     glue: defaultGlue,
     ...(options.protrude ? { protrude: true } : {}),
     ...(options.hyphenate ? { hyphenate: true } : {}),
+    ...(options.scaleFor ? { scaleFor: options.scaleFor } : {}),
   })
   if (!compiled.ok) throw new Error(`compileBlock declined: ${compiled.reason}`)
   return compiled

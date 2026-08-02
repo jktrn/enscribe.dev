@@ -1,4 +1,5 @@
 import type { Line } from "../layout/breaker"
+import type { LineFit } from "../layout/expansion"
 import { type ExtractedBlock, type InlineRun, LINE_SEPARATOR } from "./extract"
 
 export const LINE_SELECTOR = "[data-linebreak-line]"
@@ -165,13 +166,19 @@ export const preserveImageAttributes = (
   }
 }
 
+export type RenderedLayout = {
+  readonly lines: readonly Line[]
+  readonly target: number
+  readonly fits: readonly LineFit[] | null
+}
+
 export const renderLines = (
   element: HTMLElement,
   block: ExtractedBlock,
-  lines: readonly Line[],
-  targetWidth: number,
+  layout: RenderedLayout,
   preservedImageAttributes: readonly string[],
 ) => {
+  const { lines, target: targetWidth, fits } = layout
   const document = element.ownerDocument
   const output = document.createDocumentFragment()
   const lineElements: HTMLElement[] = []
@@ -197,7 +204,12 @@ export const renderLines = (
       target.style.marginInlineEnd = `${-line.hangEnd}px`
     }
 
-    const overflow = Math.min(line.naturalWidth - targetWidth, line.shrink)
+    const fit = fits?.[index]
+    if (fit && fit.pct !== 100) target.style.fontStretch = `${fit.pct}%`
+
+    const natural = line.naturalWidth + (fit?.gain ?? 0)
+    const shrink = fit ? fit.shrink : line.shrink
+    const overflow = Math.min(natural - targetWidth, shrink)
     if (overflow > 0 && line.spaceCount > 0) {
       target.style.wordSpacing = `${-(overflow / line.spaceCount)}px`
     }
