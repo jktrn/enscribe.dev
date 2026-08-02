@@ -302,11 +302,19 @@ line break succeeds here and fails under block-per-line.
 
 A protruding line carries a negative `margin-inline-start` or
 `margin-inline-end` equal to its hang, which is what makes the glyph sit
-outside the measure in the browser as well as in the model. That does reduce
-the paragraph's `max-content`, by the sum of the hangs — under 1px per line on
-prose. A typeset paragraph always has at least two lines, so `max-content`
-stays far above the available width and a shrink-to-fit container resolves to
-the same used width either way.
+outside the measure in the browser as well as in the model, and what lets
+`text-align: justify` stretch the line to the measure the optimizer solved for
+rather than to the box.
+
+Those margins are part of every line span's intrinsic contribution, so they do
+reduce the paragraph's `max-content`, by the sum of the hangs. That is
+invisible whenever the available width decides the measure, which is the
+ordinary case: a paragraph whose `max-content` is below the space available is
+one line long, and one-line paragraphs are skipped. It is visible when authored
+`<br>`s hold a paragraph to several lines that are each narrower than the space
+available — then `max-content` really does govern, the box moves by the hangs
+after the write, and the element is restored and reported as `unstable-width`.
+`protrude: false` typesets it.
 
 When a break cuts through an inline wrapper, each copy gets
 `data-linebreak-fragment`, and the outermost copies also get
@@ -376,10 +384,12 @@ resolves — measurement is then wrong with no error. Bake those features into
 the served font files.
 
 An element whose width depends on its own content — a shrink-to-fit flex item,
-a float, `width: fit-content` — is handled: inline segments preserve the
-paragraph's `max-content`, so typesetting does not change the measure. If a
-layout still moves after a write, the element is restored and reported as
-`unstable-width`.
+a float, `width: fit-content` — usually resolves to the space available, and
+inline segments preserve the paragraph's `max-content`, so typesetting does not
+change the measure. Where `max-content` genuinely governs, protrusion's
+negative margins do change it; the element is then restored and reported as
+`unstable-width`. If a layout moves after a write for any other reason, the
+same thing happens.
 
 ## Development
 
