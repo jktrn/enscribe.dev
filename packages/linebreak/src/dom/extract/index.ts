@@ -41,6 +41,7 @@ export type {
   ExtractedBlock,
   ExtractResult,
   InlineRun,
+  SourceRange,
   WrapperInfo,
 } from "./runs"
 export { outerWidth, runEdgeWidths } from "./wrappers"
