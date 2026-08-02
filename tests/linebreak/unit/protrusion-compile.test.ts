@@ -2,7 +2,13 @@ import { describe, expect, test } from "bun:test"
 import type { ExtractedBlock, InlineRun } from "@linebreak/dom/extract"
 import { compileBlock } from "@linebreak/layout/compile"
 import { defaultGlue, texDefaults } from "@linebreak/layout/policy"
-import { CHARACTER, compileShape, HYPHEN, metrics, SHY } from "./support/measure"
+import {
+  CHARACTER,
+  compileShape,
+  HYPHEN,
+  metrics,
+  SHY,
+} from "./support/measure"
 
 const STOP = 0.7 * CHARACTER
 const OPEN_QUOTE = 0.3 * CHARACTER
@@ -65,7 +71,10 @@ describe("credits from the text", () => {
 describe("suppression", () => {
   test("a folded wrapper edge cancels the segment's credits", () => {
     const bare = hangsOf(["“hello world”"])
-    const edged = hangsOf(["“hello world”"], { leadingEdge: 6, trailingEdge: 12 })
+    const edged = hangsOf(["“hello world”"], {
+      leadingEdge: 6,
+      trailingEdge: 12,
+    })
 
     expect(bare.start[0]).toBeGreaterThan(0)
     expect(lastEnd(bare)).toBeGreaterThan(0)
@@ -85,7 +94,9 @@ describe("suppression", () => {
     const bare = hangsOf(["“hello disestablishment”"], { hyphenates: true })
     const edged = hangsOf(["“hello disestablishment”"], shape)
 
-    expect(bare.items.filter((item) => item.kind === "box").length).toBeGreaterThan(2)
+    expect(
+      bare.items.filter((item) => item.kind === "box").length,
+    ).toBeGreaterThan(2)
     expect(lastEnd(bare)).toBeCloseTo(CLOSE_QUOTE, 9)
     expect(lastEnd(edged)).toBe(0)
   })

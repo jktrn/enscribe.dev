@@ -78,6 +78,7 @@ export type LineReport = {
 
   wrappedBlocks: number
   hyphenLines: number
+  hangingLines: number
   liveText: string
 }
 
@@ -90,6 +91,7 @@ export const measureLines = (page: Page) =>
     let worstGapPx = 0
     let overflowingBlocks = 0
     let wrappedBlocks = 0
+    let hangingLines = 0
 
     for (const block of blocks) {
       const lines = [
@@ -106,7 +108,15 @@ export const measureLines = (page: Page) =>
       if (contentHeight > (lines.length + 0.5) * lineHeight) {
         wrappedBlocks += 1
       }
-      if (block.scrollWidth > block.clientWidth + 1) overflowingBlocks += 1
+      let hang = 0
+      for (const line of lines) {
+        const own = (line as HTMLElement).style
+        if (own.marginInlineStart || own.marginInlineEnd) hangingLines += 1
+        hang = Math.max(hang, -Number.parseFloat(own.marginInlineEnd || "0"))
+      }
+      if (block.scrollWidth > block.clientWidth + 1 + hang) {
+        overflowingBlocks += 1
+      }
 
       for (const line of lines.slice(0, -1)) {
         const range = document.createRange()
@@ -134,6 +144,7 @@ export const measureLines = (page: Page) =>
       worstGapPx: Math.round(worstGapPx * 10) / 10,
       overflowingBlocks,
       wrappedBlocks,
+      hangingLines,
       hyphenLines: document.querySelectorAll('[data-linebreak-line="hyphen"]')
         .length,
       liveText:

@@ -149,6 +149,7 @@ twice, or applying one from another instance.
 | `locale` | nearest `lang`, then `<html lang>`, then `en-US` | Segmentation locale. |
 | `minimumWidth` | `240` | Leave narrower elements alone. |
 | `hyphenate` | `false` | Dictionary hyphenation. English only. |
+| `protrude` | `true` | Character protrusion: punctuation hangs past the measure. |
 | `preserveImageAttributes` | `[]` | Copied between original and rebuilt images. |
 | `policy` | TeX's | Tolerances, demerits, penalties. See below. |
 | `glue` | `{ stretch: 1/2, shrink: 1/3 }` | Interword elasticity, as a fraction of the space. |
@@ -229,6 +230,36 @@ loses its one break-time cell to that comparison. Restoring §863 would buy back
 that cell and give up the badness difference. The behaviour is pinned by
 `tests/linebreak/unit/pass-one-hyphenation.test.ts`.
 
+### Character protrusion
+
+Punctuation at a line edge leaves the margin looking ragged: a line ending in a
+comma reads as short, and one opening with a quote reads as indented.
+Protrusion hangs the offending glyph slightly outside the measure so the
+optical edge is flush. The amounts are microtype's, in thousandths of the
+glyph's own advance, extracted from `microtype.dtx` by
+`tools/gen-protrusion.mjs`. Only punctuation and symbols are in the table:
+ablating it by character class showed letters and digits earn nothing and cost
+something.
+
+It is an optimizer feature, not a rendering one. The credit comes off a
+candidate line's width inside the dynamic program, so the breaker chooses
+different breaks. Hanging the glyphs after the breaks are chosen is worse than
+not hanging them at all, because the hang shortens an already-loose line and it
+stretches further.
+
+Over a 984-paragraph prose corpus with hyphenation on, badness per body line
+goes 312.7 to 297.0 at 320px, 28.7 to 25.9 at 480px, and 10.9 to 8.9 at 680px.
+
+Nothing hangs out of a `<code>` run, out of an atom, or out of a box that
+absorbed an inline wrapper's padding or border, because in those cases the
+glyph is not the outermost painted thing on the line.
+
+`protrude: false` turns it off, and the layout is then identical to a build
+without the feature.
+
+The table is derived from [microtype](https://ctan.org/pkg/microtype)
+(R Schlicht), LPPL 1.3c.
+
 ## The rendered DOM
 
 ```html
@@ -263,6 +294,14 @@ And the text stays one run. Block lines segment the rendered text, so
 find-in-page, scroll-to-text fragments, translation and `textContent` all break
 at every line boundary. Verified in Chromium: searching a phrase that spans a
 line break succeeds here and fails under block-per-line.
+
+A protruding line carries a negative `margin-inline-start` or
+`margin-inline-end` equal to its hang, which is what makes the glyph sit
+outside the measure in the browser as well as in the model. That does reduce
+the paragraph's `max-content`, by the sum of the hangs — under 1px per line on
+prose. A typeset paragraph always has at least two lines, so `max-content`
+stays far above the available width and a shrink-to-fit container resolves to
+the same used width either way.
 
 When a break cuts through an inline wrapper, each copy gets
 `data-linebreak-fragment`, and the outermost copies also get
@@ -312,6 +351,14 @@ nested block layout, enabled `<input>`s, nonzero `word-spacing`, a
 
 The element must be in the document with fonts loaded before it is measured;
 `createTypesetter` handles the waiting.
+
+An ancestor with `overflow: hidden` or `clip` cuts a protruding glyph off
+mid-stroke. Nothing inside the library can see that ancestor; set
+`protrude: false` for such a subtree.
+
+A materialized hyphen is modelled as U+002D while the stylesheet draws
+`var(--linebreak-hyphen, "\2010")`. Overriding that custom property with a
+glyph of a different width makes both the measured width and the hang wrong.
 
 Rendering clones inline elements, so event listeners and arbitrary object state
 on them are not preserved. `preserveImageAttributes` covers attributes that

@@ -173,7 +173,7 @@ class BrowserLinebreaker implements Linebreaker {
     this.defaultLocale = options.locale || undefined
     this.preservedImageAttributes = options.preserveImageAttributes ?? []
     this.hyphenate = options.hyphenate ?? false
-    this.protrude = options.protrude ?? false
+    this.protrude = options.protrude ?? true
     this.policy = resolvePolicy(options.policy)
     this.glue = { ...defaultGlue, ...options.glue }
     this.report = options.onOutcome
