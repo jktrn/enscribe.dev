@@ -189,30 +189,36 @@ type Step = {
   readonly rescue: { node: ActiveNode; ratio: number } | null
 }
 
-const measureLine = (search: Search, from: ActiveNode, to: number) => {
+type Edge = {
+  readonly width: number
+  readonly stretch: number
+  readonly shrink: number
+  readonly trailing: number
+}
+
+const edgeAt = (search: Search, to: number): Edge => {
   const { items, sums } = search
-  const start = from.start
-  const previousItem = from.position < 0 ? undefined : items[from.position]
-  const leading = previousItem ? lineStartWidth(previousItem) : 0
   const endItem = items[to]
-  const natural =
-    (sums.width[to] as number) -
-    (sums.width[start] as number) +
-    leading +
-    (endItem ? lineEndWidth(endItem) : 0)
-
-  const stretch = (sums.stretch[to] as number) - (sums.stretch[start] as number)
-  const shrink = (sums.shrink[to] as number) - (sums.shrink[start] as number)
-
-  if (!Number.isFinite(natural)) {
-    return {
-      natural: Number.NaN,
-      ratio: Number.NEGATIVE_INFINITY,
-      stretch,
-      shrink,
-    }
+  return {
+    width: sums.width[to] as number,
+    stretch: sums.stretch[to] as number,
+    shrink: sums.shrink[to] as number,
+    trailing: endItem ? lineEndWidth(endItem) : 0,
   }
+}
 
+const leadingWidth = (items: readonly Item[], from: ActiveNode) => {
+  const previousItem = from.position < 0 ? undefined : items[from.position]
+  return previousItem ? lineStartWidth(previousItem) : 0
+}
+
+const adjustmentRatio = (
+  search: Search,
+  natural: number,
+  stretch: number,
+  shrink: number,
+) => {
+  if (!Number.isFinite(natural)) return Number.NEGATIVE_INFINITY
   const slack = search.target - natural
   let ratio = 0
   if (slack > 0) {
@@ -220,7 +226,31 @@ const measureLine = (search: Search, from: ActiveNode, to: number) => {
     ratio = stretchable > 0 ? slack / stretchable : INFINITE_BADNESS_RATIO
   }
   if (slack < 0) ratio = shrink > 0 ? slack / shrink : Number.NEGATIVE_INFINITY
-  return { natural, ratio, stretch, shrink }
+  return ratio
+}
+
+const naturalWidth = (search: Search, from: ActiveNode, edge: Edge) =>
+  edge.width -
+  (search.sums.width[from.start] as number) +
+  leadingWidth(search.items, from) +
+  edge.trailing
+
+const stretchOf = (search: Search, from: ActiveNode, edge: Edge) =>
+  edge.stretch - (search.sums.stretch[from.start] as number)
+
+const shrinkOf = (search: Search, from: ActiveNode, edge: Edge) =>
+  edge.shrink - (search.sums.shrink[from.start] as number)
+
+const measureLine = (search: Search, from: ActiveNode, edge: Edge) => {
+  const natural = naturalWidth(search, from, edge)
+  const stretch = stretchOf(search, from, edge)
+  const shrink = shrinkOf(search, from, edge)
+  return {
+    natural: Number.isFinite(natural) ? natural : Number.NaN,
+    ratio: adjustmentRatio(search, natural, stretch, shrink),
+    stretch,
+    shrink,
+  }
 }
 
 const stepTo = (
@@ -234,6 +264,7 @@ const stepTo = (
   const admitted: Array<ActiveNode | null> = [null, null, null, null]
   const survivors: ActiveNode[] = []
   const kind = breakKindAt(items, to)
+  const edge = edgeAt(search, to)
   const startAfter = lineStart(items, to)
   const flaggedHere = isFlaggedBreak(items[to])
   const atParagraphEnd = isParagraphEnd(items, to)
@@ -263,7 +294,13 @@ const stepTo = (
       continue
     }
 
-    const { natural, ratio } = measureLine(search, active, to)
+    const natural = naturalWidth(search, active, edge)
+    const ratio = adjustmentRatio(
+      search,
+      natural,
+      stretchOf(search, active, edge),
+      shrinkOf(search, active, edge),
+    )
 
     const tooLong = ratio < -1
     if (!tooLong && !forced) survivors.push(active)
@@ -343,7 +380,7 @@ const linesFrom = (search: Search, final: ActiveNode): Line[] => {
     const empty = start >= node.position
     const { natural, stretch, shrink } = empty
       ? { natural: 0, stretch: 0, shrink: 0 }
-      : measureLine(search, from, node.position)
+      : measureLine(search, from, edgeAt(search, node.position))
     const breakItem = items[node.position]
 
     const sourceEnd =
