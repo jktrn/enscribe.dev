@@ -10,6 +10,7 @@ import {
 } from "@linebreak/layout/items"
 import {
   defaultGlue,
+  INFINITE_BADNESS,
   INFINITE_PENALTY,
   texDefaults,
 } from "@linebreak/layout/policy"
@@ -540,6 +541,105 @@ describe("the fallback ladder", () => {
     for (const line of result.lines) {
       if (line.naturalWidth <= MEASURE) continue
       expect(line.spaceCount).toBeGreaterThan(0)
+    }
+  })
+})
+
+describe("a negative tolerance skips a pass, it does not open one", () => {
+  const SHRINK_TARGET = 202
+
+  const atShrinkLimit = (): Item[] => {
+    const tight = (): Item => ({
+      kind: "glue",
+      width: 10,
+      stretch: 5,
+      shrink: 8,
+      source: { start: 0, end: 1 },
+    })
+    return [
+      box(100),
+      tight(),
+      box(100),
+      tight(),
+      box(100),
+      tight(),
+      box(100),
+      ...finish(),
+    ]
+  }
+
+  test("the ladder starts at the tolerance rung when pretolerance is negative", () => {
+    const skipped = breakParagraph(atShrinkLimit(), SHRINK_TARGET, {
+      policy: { pretolerance: -1 },
+    })
+    const rung = breakParagraphOnce(atShrinkLimit(), SHRINK_TARGET, {
+      tolerance: texDefaults.tolerance,
+    })
+    expect(skipped.ok && rung.ok).toBe(true)
+    if (!skipped.ok || !rung.ok) return
+
+    expect(skipped.pass).not.toBe("pretolerance")
+    expect(skipped.pass).toBe("tolerance")
+    expect(skipped.lines).toEqual(rung.lines)
+  })
+
+  test("the same paragraph is solved on pass one when pretolerance is positive", () => {
+    const result = breakParagraph(atShrinkLimit(), SHRINK_TARGET)
+    expect(result.ok).toBe(true)
+    if (!result.ok) return
+    expect(result.pass).toBe("pretolerance")
+  })
+
+  test("a negative tolerance admits nothing an ordinary paragraph offers", () => {
+    expect(
+      breakParagraphOnce(evenWords(40), MEASURE, { tolerance: -1 }).ok,
+    ).toBe(false)
+  })
+
+  test("the band of a negative tolerance closes at -1, not at NaN", () => {
+    const result = breakParagraphOnce(atShrinkLimit(), SHRINK_TARGET, {
+      tolerance: -1,
+    })
+    expect(result.ok).toBe(true)
+    if (!result.ok) return
+    expect(result.lines.map((line) => line.adjustmentRatio)).toEqual([-1, -1])
+  })
+
+  test("forcing a negative tolerance still reports finite geometry", () => {
+    const result = breakParagraphOnce(evenWords(40), MEASURE, {
+      tolerance: -1,
+      force: true,
+    })
+    expect(result.ok).toBe(true)
+    if (!result.ok) return
+    for (const line of result.lines) {
+      expect(Number.isFinite(line.adjustmentRatio)).toBe(true)
+      expect(Number.isFinite(line.naturalWidth)).toBe(true)
+    }
+  })
+})
+
+describe("a negative adjDemerits is a cost, not a veto", () => {
+  test("the strict pass still solves a paragraph it solves at any other sign", () => {
+    for (const adjDemerits of [-10_000, 0, 10_000]) {
+      const result = breakParagraphOnce(evenWords(40), MEASURE, {
+        tolerance: texDefaults.pretolerance,
+        policy: { adjDemerits },
+      })
+      expect(result.ok).toBe(true)
+    }
+  })
+
+  test("the ladder still settles on pass one, not on the forced rung", () => {
+    const result = breakParagraph(evenWords(40), MEASURE, {
+      policy: { adjDemerits: -10_000 },
+    })
+    expect(result.ok).toBe(true)
+    if (!result.ok) return
+    expect(result.pass).toBe("pretolerance")
+    for (const line of result.lines.slice(0, -1)) {
+      expect(line.adjustmentRatio).toBeGreaterThanOrEqual(-1)
+      expect(line.adjustmentRatio).toBeLessThanOrEqual(1)
     }
   })
 })
