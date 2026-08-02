@@ -187,8 +187,21 @@ const betterRescue = (
 
 type Step = {
   readonly admitted: Array<ActiveNode | null>
-  readonly minimum: number
-  readonly rescue: Rescue | null
+  minimum: number
+  rescue: Rescue | null
+}
+
+const emptyStep = (): Step => ({
+  admitted: [null, null, null, null],
+  minimum: Number.POSITIVE_INFINITY,
+  rescue: null,
+})
+
+const clearAdmitted = (step: Step) => {
+  step.admitted[0] = null
+  step.admitted[1] = null
+  step.admitted[2] = null
+  step.admitted[3] = null
 }
 
 type Edge = {
@@ -258,12 +271,14 @@ const measureLine = (search: Search, from: ActiveNode, edge: Edge) => {
 const stepTo = (
   search: Search,
   actives: ActiveNode[],
+  step: Step,
   to: number,
   penaltyValue: number,
-  forced: boolean,
-): Step => {
+) => {
   const { items, toleranceRatio, policy } = search
-  const admitted: Array<ActiveNode | null> = [null, null, null, null]
+  const forced = isForced(penaltyValue)
+  clearAdmitted(step)
+  const admitted = step.admitted
   let kept = 0
   const kind = breakKindAt(items, to)
   const edge = edgeAt(search, to)
@@ -361,7 +376,8 @@ const stepTo = (
   }
 
   actives.length = kept
-  return { admitted, minimum, rescue }
+  step.minimum = minimum
+  step.rescue = rescue
 }
 
 const forcedNode = (
@@ -459,11 +475,11 @@ export const breakParagraphOnce = (
     },
   ]
 
+  const step = emptyStep()
   for (let to = 0; to < items.length; to += 1) {
     const penaltyValue = breakPenalty(items, to)
     if (penaltyValue === null) continue
-    const forced = isForced(penaltyValue)
-    const step = stepTo(search, actives, to, penaltyValue, forced)
+    stepTo(search, actives, step, to, penaltyValue)
 
     if (step.minimum === Number.POSITIVE_INFINITY) {
       if (actives.length > 0) continue
