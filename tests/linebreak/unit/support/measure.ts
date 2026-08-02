@@ -60,16 +60,21 @@ export const metrics: FontMetrics = {
   }),
 }
 
-const element = () => ({}) as HTMLElement
+const element = (localName = "em") => ({ localName }) as HTMLElement
 
-export const blockOf = (
-  texts: readonly string[],
-  trailingEdge: number,
-): ExtractedBlock => {
-  const wrapper = element()
+export type BlockShape = {
+  readonly texts: readonly string[]
+  readonly trailingEdge?: number
+  readonly leadingEdge?: number
+  readonly localName?: string
+  readonly hyphenates?: boolean
+}
+
+export const blockOf = (shape: BlockShape): ExtractedBlock => {
+  const wrapper = element(shape.localName)
   const runs: InlineRun[] = []
   let offset = 0
-  for (const [index, text] of texts.entries()) {
+  for (const [index, text] of shape.texts.entries()) {
     runs.push({
       kind: "text",
       text,
@@ -77,14 +82,14 @@ export const blockOf = (
       end: offset + text.length,
       wrappers: index === 0 ? [wrapper] : [],
       sourceElement: element(),
-      hyphenates: false,
+      hyphenates: shape.hyphenates ?? false,
     })
     offset += text.length
   }
 
   const first = runs[0] as InlineRun
   return {
-    text: texts.join(""),
+    text: shape.texts.join(""),
     runs,
     breakRestrictions: [],
     wrappers: new Map([
@@ -95,27 +100,38 @@ export const blockOf = (
           end: first.end,
           firstRun: 0,
           lastRun: 0,
-          leading: { nodes: [], width: 0 },
-          trailing: { nodes: [], width: trailingEdge },
+          leading: { nodes: [], width: shape.leadingEdge ?? 0 },
+          trailing: { nodes: [], width: shape.trailingEdge ?? 0 },
         },
       ],
     ]),
   }
 }
 
+export const compileShape = (
+  shape: BlockShape,
+  options: {
+    policy?: LayoutPolicy
+    protrude?: boolean
+    hyphenate?: boolean
+  } = {},
+) => {
+  const compiled = compileBlock({
+    block: blockOf(shape),
+    metricsFor: () => metrics,
+    atomWidth: () => 0,
+    locale: "en-US",
+    policy: options.policy ?? texDefaults,
+    glue: defaultGlue,
+    ...(options.protrude ? { protrude: true } : {}),
+    ...(options.hyphenate ? { hyphenate: true } : {}),
+  })
+  if (!compiled.ok) throw new Error(`compileBlock declined: ${compiled.reason}`)
+  return compiled
+}
+
 export const compile = (
   texts: readonly string[],
   trailingEdge = 0,
   policy: LayoutPolicy = texDefaults,
-): Item[] => {
-  const compiled = compileBlock({
-    block: blockOf(texts, trailingEdge),
-    metricsFor: () => metrics,
-    atomWidth: () => 0,
-    locale: "en-US",
-    policy,
-    glue: defaultGlue,
-  })
-  if (!compiled.ok) throw new Error(`compileBlock declined: ${compiled.reason}`)
-  return compiled.items
-}
+): Item[] => compileShape({ texts, trailingEdge }, { policy }).items

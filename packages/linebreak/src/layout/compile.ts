@@ -17,6 +17,13 @@ import {
   type LayoutPolicy,
   webDefaults,
 } from "./policy"
+import {
+  buildHangs,
+  endHang,
+  type Hangs,
+  hyphenHang,
+  startHang,
+} from "./protrusion"
 
 export type CompileContext = {
   block: ExtractedBlock
@@ -26,13 +33,38 @@ export type CompileContext = {
   locale: string
 
   hyphenate?: boolean
+  protrude?: boolean
   policy?: LayoutPolicy
   glue?: GlueElasticity
 }
 
 export type CompileResult =
-  | { ok: true; items: Item[] }
+  | { ok: true; items: Item[]; hangs: Hangs | null }
   | { ok: false; reason: ComposeReason }
+
+type Credits = {
+  readonly startOf: Map<number, number>
+  readonly endOf: Map<number, number>
+  readonly folded: Set<number>
+}
+
+const emptyCredits = (): Credits => ({
+  startOf: new Map(),
+  endOf: new Map(),
+  folded: new Set(),
+})
+
+const setCredit = (into: Map<number, number>, index: number, value: number) => {
+  if (value !== 0) into.set(index, value)
+}
+
+const hangsFrom = (items: readonly Item[], credits: Credits): Hangs => {
+  for (const index of credits.folded) {
+    credits.startOf.delete(index)
+    credits.endOf.delete(index)
+  }
+  return buildHangs(items, credits.startOf, credits.endOf)
+}
 
 type WordBreak = { at: number; penalty: number; flagged: boolean }
 
@@ -163,12 +195,18 @@ const breaksInside = (
 
 class PendingEdge {
   private owed = 0
+  private readonly credits: Credits | null
+
+  constructor(credits: Credits | null) {
+    this.credits = credits
+  }
 
   onto(items: Item[], width: number) {
     if (width === 0) return
     const last = items.at(-1)
     if (last?.kind === "box") {
       items[items.length - 1] = { ...last, width: last.width + width }
+      this.credits?.folded.add(items.length - 1)
       return
     }
     this.owed += width
@@ -209,6 +247,7 @@ type TextScope = {
   readonly edges: ReturnType<typeof runEdgeWidths>
   readonly inCode: boolean
   readonly hyphenates: boolean
+  readonly credits: Credits | null
   previousKind: SegmentKind | null
   leadingApplied: boolean
 }
@@ -303,6 +342,30 @@ const emitTextSegment = (
   } else if (edge !== 0) {
     pending.defer(edge)
   }
+  if (edge !== 0 && scope.credits) {
+    scope.credits.folded.add(before)
+    scope.credits.folded.add(items.length - 1)
+  }
+}
+
+const creditSegment = (scope: TextScope, from: number) => {
+  const { credits, metrics } = scope
+  if (!credits || scope.inCode) return
+  const { items } = scope.emit
+  const { text } = scope.context.block
+  const advance = (character: string) => metrics.measureRun(character)
+
+  for (let index = from; index < items.length; index += 1) {
+    const item = items[index] as Item
+    if (item.kind === "discretionary") {
+      setCredit(credits.endOf, index, hyphenHang(item.preWidth))
+      continue
+    }
+    if (item.kind !== "box" || !item.source) continue
+    const slice = text.slice(item.source.start, item.source.end)
+    setCredit(credits.startOf, index, startHang(slice, advance))
+    setCredit(credits.endOf, index, endHang(slice, advance))
+  }
 }
 
 const emitSegment = (scope: TextScope, segment: MeasuredSegment) => {
@@ -312,16 +375,17 @@ const emitSegment = (scope: TextScope, segment: MeasuredSegment) => {
   pushBoundaryPenalty(scope, segment, start)
   scope.previousKind = segment.kind
   const trailing = end === scope.run.end ? scope.edges.trailing : 0
+  const before = scope.emit.items.length
 
   if (segment.kind === "soft-hyphen") {
     emitSoftHyphen(scope, segment, start, end, trailing)
-    return
-  }
-  if (segment.kind === "space") {
+  } else if (segment.kind === "space") {
     emitSpace(scope, segment, start, end, trailing)
-    return
+  } else {
+    emitTextSegment(scope, segment, start, trailing)
   }
-  emitTextSegment(scope, segment, start, trailing)
+
+  creditSegment(scope, before)
 }
 
 const compileText = (
@@ -330,6 +394,7 @@ const compileText = (
   metrics: FontMetrics,
   emit: Emit,
   settings: Settings,
+  credits: Credits | null,
 ): ComposeReason | null => {
   const measured = metrics.measureParagraph(run.text)
   if (!measured) return "segmentation-mismatch"
@@ -343,6 +408,7 @@ const compileText = (
     edges: runEdgeWidths(context.block, run),
     inCode: codeWrapper(run) !== undefined,
     hyphenates: settings.hyphenates && run.hyphenates,
+    credits,
     previousKind: null,
     leadingApplied: false,
   }
@@ -365,7 +431,8 @@ export const compileBlock = (context: CompileContext): CompileResult => {
     hyphenates:
       (context.hyphenate ?? false) && usesEnglishHyphenation(context.locale),
   }
-  const pending = new PendingEdge()
+  const credits = context.protrude === true ? emptyCredits() : null
+  const pending = new PendingEdge(credits)
   const items: Item[] = []
   const emit: Emit = { items, pending }
 
@@ -409,12 +476,12 @@ export const compileBlock = (context: CompileContext): CompileResult => {
     const metrics = metricsFor(run)
     if (!metrics) return { ok: false, reason: "unmeasurable" }
 
-    const failure = compileText(context, run, metrics, emit, settings)
+    const failure = compileText(context, run, metrics, emit, settings, credits)
     if (failure) return { ok: false, reason: failure }
   }
 
   if (items.length === 0) return { ok: false, reason: "empty" }
 
   items.push(...paragraphEnd(block.text.length))
-  return { ok: true, items }
+  return { ok: true, items, hangs: credits ? hangsFrom(items, credits) : null }
 }
