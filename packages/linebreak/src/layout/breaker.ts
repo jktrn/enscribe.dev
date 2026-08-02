@@ -197,11 +197,36 @@ const emptyStep = (): Step => ({
   rescue: null,
 })
 
-const clearAdmitted = (step: Step) => {
+const clearStep = (step: Step) => {
   step.admitted[0] = null
   step.admitted[1] = null
   step.admitted[2] = null
   step.admitted[3] = null
+  step.rescue = null
+}
+
+const rankRescue = (
+  search: Search,
+  step: Step,
+  active: ActiveNode,
+  natural: number,
+  ratio: number,
+) => {
+  const tooLong = ratio < -1
+  const overfull = tooLong ? 1 : 0
+  const excess = tooLong
+    ? overflowOf(natural, search.target)
+    : Math.max(0, ratio - search.toleranceRatio)
+  const rescue = step.rescue
+  if (rescue === null) {
+    step.rescue = { node: active, ratio, overfull, excess }
+    return
+  }
+  if (!betterRescue(overfull, excess, active, rescue)) return
+  rescue.node = active
+  rescue.ratio = ratio
+  rescue.overfull = overfull
+  rescue.excess = excess
 }
 
 type Edge = {
@@ -277,7 +302,7 @@ const stepTo = (
 ) => {
   const { items, toleranceRatio, policy } = search
   const forced = isForced(penaltyValue)
-  clearAdmitted(step)
+  clearStep(step)
   const admitted = step.admitted
   let kept = 0
   const kind = breakKindAt(items, to)
@@ -287,7 +312,6 @@ const stepTo = (
   const flaggedHere = isFlaggedBreak(items[to])
   const atParagraphEnd = isParagraphEnd(items, to)
   let minimum = Number.POSITIVE_INFINITY
-  let rescue: Rescue | null = null
 
   for (let index = 0; index < actives.length; index += 1) {
     const active = actives[index] as ActiveNode
@@ -330,20 +354,7 @@ const stepTo = (
       kept += 1
     }
 
-    if (search.rescuing) {
-      const overfull = tooLong ? 1 : 0
-      const excess = tooLong
-        ? overflowOf(natural, search.target)
-        : Math.max(0, ratio - toleranceRatio)
-      if (rescue === null) {
-        rescue = { node: active, ratio, overfull, excess }
-      } else if (betterRescue(overfull, excess, active, rescue)) {
-        rescue.node = active
-        rescue.ratio = ratio
-        rescue.overfull = overfull
-        rescue.excess = excess
-      }
-    }
+    if (search.rescuing) rankRescue(search, step, active, natural, ratio)
 
     if (!admissible(ratio, toleranceRatio)) continue
 
@@ -377,7 +388,6 @@ const stepTo = (
 
   actives.length = kept
   step.minimum = minimum
-  step.rescue = rescue
 }
 
 const forcedNode = (
