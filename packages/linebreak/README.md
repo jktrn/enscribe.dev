@@ -273,9 +273,11 @@ so the spaces do not have to take all of it. This is microtype's `hz`. Like
 protrusion it is an optimizer feature: each box earns a budget, the budgets are
 prefix-summed and folded into the line's elasticity inside the dynamic program,
 so `r = (W - L) / (Y + Yglyphs)` and the breaker picks different breaks.
-Deciding the percentage after the breaks are chosen only makes already-good
-lines better; on the same corpus at 320px that is 169.5 badness per body line
-against 48.9 for spending it in the optimizer.
+Deciding the percentage only after the breaks are chosen is worth less where
+the measure is hard: on the same corpus that is 164.7 badness per body line
+against 48.9 at 320px and 10.1 against 9.6 at 480px. At 680px, where every
+arrangement is already good, it is the other way round: 2.7 against 4.9.
+Neither arm has an overfull line at any width.
 
 Each line is then re-solved and set at one `font-stretch` percentage, quantized
 to a rung the font actually honours.
@@ -290,7 +292,11 @@ rungs that font answered distinctly. A font that does not move is declined, and
 declined means the expansion path is never entered at all — not entered and
 found empty. Two admission rules separate an axis from a face swap, which CSS
 font matching will hand you instead: the advance must move monotonically with
-the percentage, and no single point may move it more than 2%.
+the percentage, and no single point may move it more than 2%. The budget is a
+ceiling, not a target: a rung that lands past it is left off the table, so a
+staircase response cannot hand the optimizer more width than was asked for, and
+a font whose first distinct rung on either side already overshoots contributes
+nothing on that side.
 
 A paragraph mixing two width axes does not expand, because one `font-stretch`
 declaration goes on the line and it inherits. A run whose font has no axis is
@@ -362,6 +368,13 @@ one line long, and one-line paragraphs are skipped. It is visible when authored
 available — then `max-content` really does govern, the box moves by the hangs
 after the write, and the element is restored and reported as `unstable-width`.
 `protrude: false` typesets it.
+
+An expanded line carries its `font-stretch` percentage, and is measured once
+after the write. A percentage is not a width ratio, and one probe string's
+ratio does not transfer to every line where advances snap to whole pixels, so
+whatever a line ends up reaching past the measure by is charged to that line's
+own spaces as negative `word-spacing`. Lines the optimizer left at 100% are
+never measured, so a font with no width axis costs no layout read at all.
 
 When a break cuts through an inline wrapper, each copy gets
 `data-linebreak-fragment`, and the outermost copies also get
