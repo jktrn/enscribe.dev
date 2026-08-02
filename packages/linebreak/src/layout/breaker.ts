@@ -52,6 +52,7 @@ export type PassOptions = {
 
 type ActiveNode = {
   readonly position: number
+  readonly start: number
   readonly line: number
   readonly fitness: number
   readonly demerits: number
@@ -190,7 +191,7 @@ type Step = {
 
 const measureLine = (search: Search, from: ActiveNode, to: number) => {
   const { items, sums } = search
-  const start = lineStart(items, from.position)
+  const start = from.start
   const previousItem = from.position < 0 ? undefined : items[from.position]
   const leading = previousItem ? lineStartWidth(previousItem) : 0
   const endItem = items[to]
@@ -233,13 +234,14 @@ const stepTo = (
   const admitted: Array<ActiveNode | null> = [null, null, null, null]
   const survivors: ActiveNode[] = []
   const kind = breakKindAt(items, to)
+  const startAfter = lineStart(items, to)
   const flaggedHere = isFlaggedBreak(items[to])
   const atParagraphEnd = isParagraphEnd(items, to)
   let minimum = Number.POSITIVE_INFINITY
   let rescue: Rescue | null = null
 
   for (const active of actives) {
-    if (lineStart(items, active.position) >= to) {
+    if (active.start >= to) {
       if (!forced) {
         survivors.push(active)
         continue
@@ -248,6 +250,7 @@ const stepTo = (
       if (demerits < (admitted[1]?.demerits ?? Number.POSITIVE_INFINITY)) {
         admitted[1] = {
           position: to,
+          start: startAfter,
           line: active.line + 1,
           fitness: 1,
           demerits,
@@ -289,6 +292,7 @@ const stepTo = (
     if (demerits < (admitted[fitness]?.demerits ?? Number.POSITIVE_INFINITY)) {
       admitted[fitness] = {
         position: to,
+        start: startAfter,
         line: active.line + 1,
         fitness,
         demerits,
@@ -316,6 +320,7 @@ const forcedNode = (
   const ratio = Number.isFinite(rescue.ratio) ? rescue.ratio : -1
   return {
     position: to,
+    start: lineStart(items, to),
     line: rescue.node.line + 1,
     fitness: fitnessClass(ratio),
     demerits: rescue.node.demerits,
@@ -334,7 +339,7 @@ const linesFrom = (search: Search, final: ActiveNode): Line[] => {
     node = node.previous
   ) {
     const from = node.previous
-    const start = Math.min(lineStart(items, from.position), node.position)
+    const start = Math.min(from.start, node.position)
     const empty = start >= node.position
     const { natural, stretch, shrink } = empty
       ? { natural: 0, stretch: 0, shrink: 0 }
@@ -387,6 +392,7 @@ export const breakParagraphOnce = (
   let actives: ActiveNode[] = [
     {
       position: -1,
+      start: lineStart(items, -1),
       line: 0,
       fitness: 1,
       demerits: 0,
