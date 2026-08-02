@@ -150,6 +150,7 @@ twice, or applying one from another instance.
 | `minimumWidth` | `240` | Leave narrower elements alone. |
 | `hyphenate` | `false` | Dictionary hyphenation. English only. |
 | `protrude` | `true` | Character protrusion: punctuation hangs past the measure. |
+| `expand` | `false` | Font expansion: glyphs take a share of the line's slack, if the font has a width axis. |
 | `preserveImageAttributes` | `[]` | Copied between original and rebuilt images. |
 | `policy` | TeX's | Tolerances, demerits, penalties. See below. |
 | `glue` | `{ stretch: 1/2, shrink: 1/3 }` | Interword elasticity, as a fraction of the space. |
@@ -265,6 +266,52 @@ hang per line, so protrusion turns itself off there instead.
 The table is derived from [microtype](https://ctan.org/pkg/microtype)
 (R Schlicht), LPPL 1.3c.
 
+### Font expansion
+
+`expand: true` lets the glyphs take a share of what a line is short or long by,
+so the spaces do not have to take all of it. This is microtype's `hz`. Like
+protrusion it is an optimizer feature: each box earns a budget, the budgets are
+prefix-summed and folded into the line's elasticity inside the dynamic program,
+so `r = (W - L) / (Y + Yglyphs)` and the breaker picks different breaks.
+Deciding the percentage after the breaks are chosen only makes already-good
+lines better; on the same corpus at 320px that is 169.5 badness per body line
+against 48.9 for spending it in the optimizer.
+
+Each line is then re-solved and set at one `font-stretch` percentage, quantized
+to a rung the font actually honours.
+
+It is off by default and gated on measurement, because a `wdth` percentage is
+not a width ratio. pdfTeX's `hz` applies an affine horizontal scale; CSS
+font-stretch interpolates between designed masters, and what a percentage point
+buys depends on the font, and on the size, and on whether advances snap. So the
+first paragraph in a given font calibrates: an off-screen span in that exact
+font is measured at each rung, and the table that comes back holds only the
+rungs that font answered distinctly. A font that does not move is declined, and
+declined means the expansion path is never entered at all — not entered and
+found empty. Two admission rules separate an axis from a face swap, which CSS
+font matching will hand you instead: the advance must move monotonically with
+the percentage, and no single point may move it more than 2%.
+
+A paragraph mixing two width axes does not expand, because one `font-stretch`
+declaration goes on the line and it inherits. A run whose font has no axis is
+fine to mix in: it contributes nothing and moves not at all. Nothing is budgeted
+for an atom, for a materialized hyphen, or for a box that absorbed a wrapper's
+padding, for the same reason nothing hangs out of them.
+
+An authored `font-stretch` or a `wdth` in `font-variation-settings` declines the
+paragraph outright. The computed `font` shorthand does not carry either one, so
+the measurement would be taken at a width the render does not use, and the
+per-line declaration would clobber the author's anyway.
+
+What this is worth depends entirely on the font. Against an idealized affine
+axis — ±2% of width, quantized to half a point, which is what justif's own
+expansion model assumes — badness per body line over the 984-paragraph prose
+corpus goes 297.0 to 48.9 at 320px, 25.9 to 9.6 at 480px, and 8.9 to 4.9 at
+680px, with no overfull lines at any width. Real fonts deliver less: IBM Plex
+Sans at 16px in Chromium moves about 0.56% of advance over two percentage
+points, and its `wdth` axis tops out at the default width, so it can condense
+and cannot widen.
+
 ## The rendered DOM
 
 ```html
@@ -360,7 +407,8 @@ containing no generated lines is left alone.
 Left-to-right, horizontal writing mode, and normal whitespace collapsing only.
 Elements are declined for right-to-left direction, vertical writing modes,
 nested block layout, enabled `<input>`s, nonzero `word-spacing`, a
-`text-transform` other than `none`, and more than 3,000 collapsed characters.
+`text-transform` other than `none`, an authored `font-stretch` or `wdth`, and
+more than 3,000 collapsed characters.
 
 The element must be in the document with fonts loaded before it is measured;
 `createTypesetter` handles the waiting.
