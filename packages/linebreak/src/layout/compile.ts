@@ -228,8 +228,10 @@ const compileText = (
       })
     }
     previousKind = segment.kind
+    const trailing = end === run.end ? edges.trailing : 0
 
     if (segment.kind === "soft-hyphen") {
+      pending.onto(items, trailing)
       if (breakAllowedAt(breakRestrictions, start)) {
         items.push(softHyphenFor(segment.lineEndWidth, start, end, policy))
       }
@@ -237,22 +239,17 @@ const compileText = (
     }
 
     if (segment.kind === "space") {
-      if (breakAllowedAt(breakRestrictions, start)) {
-        items.push(glueFor(segment.width, start, end, elasticity))
-      } else {
-        items.push({
-          kind: "box",
-          width: segment.width,
-          source: { start, end },
-        })
-      }
+      items.push(
+        breakAllowedAt(breakRestrictions, start)
+          ? glueFor(segment.width, start, end, elasticity)
+          : { kind: "box", width: segment.width, source: { start, end } },
+      )
+      pending.defer(trailing)
       continue
     }
 
     const edge =
-      pending.take() +
-      (leadingApplied ? 0 : edges.leading) +
-      (end === run.end ? edges.trailing : 0)
+      pending.take() + (leadingApplied ? 0 : edges.leading) + trailing
     leadingApplied = true
 
     const before = items.length
