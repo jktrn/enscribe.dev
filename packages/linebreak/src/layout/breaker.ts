@@ -145,6 +145,9 @@ const maximumRatio = (tolerance: number) =>
 
 const INFINITE_BADNESS_RATIO = maximumRatio(INFINITE_BADNESS)
 
+const admissible = (ratio: number, toleranceRatio: number) =>
+  ratio >= -1 && Math.min(ratio, INFINITE_BADNESS_RATIO) <= toleranceRatio
+
 const overflowOf = (natural: number, target: number) =>
   Number.isFinite(natural) ? natural - target : Number.POSITIVE_INFINITY
 
@@ -270,7 +273,7 @@ const stepTo = (
       rescue = { node: active, ratio, overfull, excess }
     }
 
-    if (ratio < -1 || ratio > toleranceRatio) continue
+    if (!admissible(ratio, toleranceRatio)) continue
 
     const fitness = fitnessClass(ratio)
     let demerits = active.demerits + lineDemerits(ratio, penaltyValue, policy)
