@@ -59,7 +59,9 @@ const GOLDEN: readonly Golden[] = [
     ],
   },
   {
-    text: "Typography is the craft of arranging type so that the reader never has to think about it.",
+    text:
+      "Typography is the craft of arranging type so that the reader never " +
+      "has to think about it.",
     layouts: [
       {
         measure: 200,
