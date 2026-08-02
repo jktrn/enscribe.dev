@@ -157,6 +157,120 @@ test("inline code and decorated links survive being split", async ({
   expect(fragments.suppressed).toBe(true)
 })
 
+const SHY = "­"
+
+const COMPOUND = `kraftfahrzeug${SHY}haftpflicht`
+
+const TAIL =
+  ", and the measure below has to decide whether to use it or to leave the compound whole."
+
+const AUTHORED = `An authored joint sits inside ${COMPOUND}${TAIL}`
+
+const GUARDED = `An authored joint sits inside <span style="text-wrap-mode: nowrap">${COMPOUND}</span>${TAIL}`
+
+const MEASURE = 340
+
+const typesetFixture = async (
+  page: import("@playwright/test").Page,
+  markup: string,
+) => {
+  await settleTypeset(page)
+  const authored = await page.evaluate(
+    ({ html, width }) => {
+      const root = document.querySelector("[data-linebreak-root]")
+      if (!root) throw new Error("the page carries no linebreak root")
+      const block = document.createElement("p")
+      block.dataset.shyFixture = ""
+      block.style.width = `${width}px`
+      block.innerHTML = html
+      root.append(block)
+      block.scrollIntoView()
+      for (const enabled of [false, true]) {
+        document.dispatchEvent(
+          new CustomEvent("text-justification-change", { detail: { enabled } }),
+        )
+      }
+      return block.innerHTML
+    },
+    { html: markup, width: MEASURE },
+  )
+  await page.waitForFunction(
+    () =>
+      document.querySelector("[data-shy-fixture][data-linebreak-typeset]") !==
+      null,
+    undefined,
+    { timeout: 20_000 },
+  )
+  return authored
+}
+
+const fixtureLines = (page: import("@playwright/test").Page) =>
+  page.evaluate(() => {
+    const block = document.querySelector("[data-shy-fixture]")
+    if (!block) return null
+    const lines = [
+      ...block.querySelectorAll<HTMLElement>(":scope > [data-linebreak-line]"),
+    ]
+    return {
+      kinds: lines.map((line) => line.dataset.linebreakLine ?? ""),
+      texts: lines.map((line) => line.textContent ?? ""),
+      text: (block.textContent ?? "").replace(/\s+/gu, " ").trim(),
+    }
+  })
+
+const raggedFixture = (page: import("@playwright/test").Page) =>
+  page.evaluate(() => {
+    document.dispatchEvent(
+      new CustomEvent("text-justification-change", {
+        detail: { enabled: false },
+      }),
+    )
+    return document.querySelector("[data-shy-fixture]")?.innerHTML ?? ""
+  })
+
+test("a paragraph breaks at the soft hyphen its author wrote", async ({
+  page,
+}) => {
+  await typesetFixture(page, AUTHORED)
+  const rendered = await fixtureLines(page)
+
+  expect(rendered).not.toBeNull()
+  if (!rendered) return
+  const broke = rendered.texts.findIndex((text) => text.endsWith(SHY))
+
+  expect(broke).toBeGreaterThanOrEqual(0)
+  expect(rendered.texts[broke]).toContain(`inside kraftfahrzeug${SHY}`)
+  expect(rendered.texts[broke + 1]).toMatch(/^haftpflicht,/u)
+  expect(rendered.kinds[broke]).toBe("hyphen")
+  expect(rendered.text).toBe(AUTHORED)
+})
+
+test("restoring gives back the soft hyphen a line broke at", async ({
+  page,
+}) => {
+  const authored = await typesetFixture(page, AUTHORED)
+  const broken = await fixtureLines(page)
+
+  expect(authored).toContain(SHY)
+  expect(broken?.texts.some((text) => text.endsWith(SHY))).toBe(true)
+  expect(await raggedFixture(page)).toBe(authored)
+})
+
+test("a soft hyphen a wrapper forbids breaking at stays inert", async ({
+  page,
+}) => {
+  await typesetFixture(page, GUARDED)
+  const rendered = await fixtureLines(page)
+
+  expect(rendered).not.toBeNull()
+  if (!rendered) return
+
+  expect(rendered.texts.length).toBeGreaterThan(1)
+  expect(rendered.texts.some((text) => text.endsWith(SHY))).toBe(false)
+  expect(rendered.texts.some((text) => text.includes(COMPOUND))).toBe(true)
+  expect(rendered.text).toBe(AUTHORED)
+})
+
 test("an edit to a typeset paragraph survives the next reflow", async ({
   page,
 }) => {
