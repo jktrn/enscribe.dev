@@ -69,7 +69,7 @@ const softHyphenFor = (
   penalty: policy.hyphenPenalty,
   hyphen: true,
   source: { start, end },
-  breakOffset: start,
+  breakOffset: end,
 })
 
 const emitWord = (items: Item[], word: Word, metrics: FontMetrics) => {
