@@ -1,6 +1,7 @@
 import { breakParagraph, type Line } from "./layout/breaker"
 import { compileBlock } from "./layout/compile"
 import type { Item } from "./layout/items"
+import type { Hangs } from "./layout/protrusion"
 import { defaultGlue, resolvePolicy } from "./layout/policy"
 import {
   type ExtractedBlock,
@@ -52,6 +53,7 @@ type MeasurementBasis = {
 type Measurement = {
   readonly block: ExtractedBlock
   readonly items: Item[]
+  readonly hangs: Hangs | null
   readonly authored: AuthoredContent
   readonly under: MeasurementBasis
   readonly text: string
@@ -104,7 +106,19 @@ const resolvedLineHeight = (style: CSSStyleDeclaration) => {
   return Number.isFinite(fontSize) ? fontSize * 1.2 : Number.NaN
 }
 
-const layoutMismatch = (element: HTMLElement, lineCount: number) => {
+const hangSlack = (lines: readonly Line[]) => {
+  let most = 0
+  for (const line of lines) {
+    if (line.hangEnd > most) most = line.hangEnd
+  }
+  return most
+}
+
+const layoutMismatch = (
+  element: HTMLElement,
+  lineCount: number,
+  slack: number,
+) => {
   const segments = element.querySelectorAll<HTMLElement>(LINE_SELECTOR)
   if (segments.length !== lineCount) return true
 
@@ -116,7 +130,7 @@ const layoutMismatch = (element: HTMLElement, lineCount: number) => {
   }
   if (rows.size !== lineCount) return true
 
-  return element.scrollWidth > element.clientWidth + 1
+  return element.scrollWidth > element.clientWidth + 1 + slack
 }
 
 class BrowserLinebreaker implements Linebreaker {
@@ -127,6 +141,7 @@ class BrowserLinebreaker implements Linebreaker {
   private readonly defaultLocale: string | undefined
   private readonly preservedImageAttributes: readonly string[]
   private readonly hyphenate: boolean
+  private readonly protrude: boolean
   private readonly policy: ReturnType<typeof resolvePolicy>
   private readonly glue: { stretch: number; shrink: number }
   private readonly report: ((outcome: Outcome) => void) | undefined
@@ -158,6 +173,7 @@ class BrowserLinebreaker implements Linebreaker {
     this.defaultLocale = options.locale || undefined
     this.preservedImageAttributes = options.preserveImageAttributes ?? []
     this.hyphenate = options.hyphenate ?? false
+    this.protrude = options.protrude ?? false
     this.policy = resolvePolicy(options.policy)
     this.glue = { ...defaultGlue, ...options.glue }
     this.report = options.onOutcome
@@ -363,7 +379,7 @@ class BrowserLinebreaker implements Linebreaker {
     const solved = breakParagraph(
       measurement.items,
       width - this.safetyMargin,
-      { policy: this.policy },
+      this.layoutOptions(measurement),
     )
     if (!solved.ok) {
       return this.settled(element, "declined", "no-feasible-breaking")
@@ -399,9 +415,11 @@ class BrowserLinebreaker implements Linebreaker {
     const target = draft.width - this.safetyMargin - draft.reduction
 
     if (draft.reduction > 0) {
-      const solved = breakParagraph(draft.measurement.items, target, {
-        policy: this.policy,
-      })
+      const solved = breakParagraph(
+        draft.measurement.items,
+        target,
+        this.layoutOptions(draft.measurement),
+      )
       if (!solved.ok) {
         this.revert(composition, "layout-mismatch", results)
         return false
@@ -440,7 +458,7 @@ class BrowserLinebreaker implements Linebreaker {
         if (!draft) continue
         const failure = this.verify(
           composition.element,
-          draft.lines.length,
+          draft.lines,
           draft.width + shift,
         )
         if (!failure) {
@@ -490,9 +508,15 @@ class BrowserLinebreaker implements Linebreaker {
       : ((deltas[middle - 1] as number) + (deltas[middle] as number)) / 2
   }
 
+  private layoutOptions(measurement: Measurement) {
+    return measurement.hangs
+      ? { policy: this.policy, hangs: measurement.hangs }
+      : { policy: this.policy }
+  }
+
   private verify(
     element: HTMLElement,
-    lineCount: number,
+    lines: readonly Line[],
     expectedWidth: number,
   ): FailureReason | null {
     const style = styleOf(element)
@@ -506,7 +530,9 @@ class BrowserLinebreaker implements Linebreaker {
     if (!Number.isFinite(resolvedLineHeight(style))) {
       return "line-height-unresolved"
     }
-    return layoutMismatch(element, lineCount) ? "layout-mismatch" : null
+    return layoutMismatch(element, lines.length, hangSlack(lines))
+      ? "layout-mismatch"
+      : null
   }
 
   private revert(
@@ -600,6 +626,7 @@ class BrowserLinebreaker implements Linebreaker {
       atomWidth: (run: InlineRun) => outerWidth(run.sourceElement, reader),
       locale: basis.locale,
       hyphenate: this.hyphenate,
+      protrude: this.protrude,
       policy: this.policy,
       glue: this.glue,
     })
@@ -611,6 +638,7 @@ class BrowserLinebreaker implements Linebreaker {
       measurement: {
         block: extracted.block,
         items: compiled.items,
+        hangs: compiled.hangs,
         authored,
         under: basis,
         text,

@@ -156,6 +156,13 @@ export const renderLines = (
     const target = document.createElement("span")
     target.dataset.linebreakLine = line.breakKind
 
+    if (line.hangStart > 0) {
+      target.style.marginInlineStart = `${-line.hangStart}px`
+    }
+    if (line.hangEnd > 0) {
+      target.style.marginInlineEnd = `${-line.hangEnd}px`
+    }
+
     const overflow = Math.min(line.naturalWidth - targetWidth, line.shrink)
     if (overflow > 0 && line.spaceCount > 0) {
       target.style.wordSpacing = `${-(overflow / line.spaceCount)}px`
