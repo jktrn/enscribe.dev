@@ -74,7 +74,10 @@ export type LineReport = {
   justifiedLines: number
   shortLines: number
   worstGapPx: number
+
   overflowingBlocks: number
+  unhungOverflowBlocks: number
+  worstUnhungOverflowPx: number
 
   wrappedBlocks: number
   hyphenLines: number
@@ -90,6 +93,8 @@ export const measureLines = (page: Page) =>
     let shortLines = 0
     let worstGapPx = 0
     let overflowingBlocks = 0
+    let unhungOverflowBlocks = 0
+    let worstUnhungOverflowPx = 0
     let wrappedBlocks = 0
     let hangingLines = 0
 
@@ -114,8 +119,11 @@ export const measureLines = (page: Page) =>
         if (own.marginInlineStart || own.marginInlineEnd) hangingLines += 1
         hang = Math.max(hang, -Number.parseFloat(own.marginInlineEnd || "0"))
       }
-      if (block.scrollWidth > block.clientWidth + 1 + hang) {
-        overflowingBlocks += 1
+      const overflow = block.scrollWidth - block.clientWidth
+      if (overflow > 1) overflowingBlocks += 1
+      if (overflow > 1 + hang) {
+        unhungOverflowBlocks += 1
+        worstUnhungOverflowPx = Math.max(worstUnhungOverflowPx, overflow - hang)
       }
 
       for (const line of lines.slice(0, -1)) {
@@ -143,6 +151,8 @@ export const measureLines = (page: Page) =>
       shortLines,
       worstGapPx: Math.round(worstGapPx * 10) / 10,
       overflowingBlocks,
+      unhungOverflowBlocks,
+      worstUnhungOverflowPx: Math.round(worstUnhungOverflowPx * 10) / 10,
       wrappedBlocks,
       hangingLines,
       hyphenLines: document.querySelectorAll('[data-linebreak-line="hyphen"]')

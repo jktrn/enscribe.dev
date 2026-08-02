@@ -18,7 +18,7 @@ test("no line overflows or wraps", async ({ page }) => {
   const report = await measureLines(page)
 
   expect(report.wrappedBlocks).toBe(0)
-  expect(report.overflowingBlocks).toBe(0)
+  expect(report.unhungOverflowBlocks).toBe(0)
 })
 
 test("a line that ends a run of text stays ragged", async ({ page }) => {
@@ -120,7 +120,7 @@ test("typesetting survives a resize", async ({ page }) => {
   const report = await measureLines(page)
   expect(report.typesetBlocks).toBeGreaterThan(50)
   expect(report.wrappedBlocks).toBe(0)
-  expect(report.overflowingBlocks).toBe(0)
+  expect(report.unhungOverflowBlocks).toBe(0)
   expect(report.shortLines).toBe(0)
 })
 

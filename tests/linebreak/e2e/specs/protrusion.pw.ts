@@ -77,7 +77,9 @@ test("a hanging glyph is not mistaken for overflow", async ({ page }) => {
   const report = await measureLines(page)
 
   expect(report.hangingLines).toBeGreaterThan(50)
-  expect(report.overflowingBlocks).toBe(0)
+  expect(report.overflowingBlocks).toBeGreaterThan(0)
+  expect(report.unhungOverflowBlocks).toBe(0)
+  expect(report.worstUnhungOverflowPx).toBe(0)
   expect(report.wrappedBlocks).toBe(0)
 })
 
