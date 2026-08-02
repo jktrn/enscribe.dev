@@ -9,7 +9,7 @@ import {
 } from "../dom/extract"
 import { codeBreakOffsets } from "../text/code-breaks"
 import { hyphenationOffsets, usesEnglishHyphenation } from "../text/hyphenate"
-import type { FontMetrics } from "../text/measure"
+import type { FontMetrics, MeasuredSegment, SegmentKind } from "../text/measure"
 import { type Item, lineBreak, paragraphEnd } from "./items"
 import {
   defaultGlue,
@@ -187,93 +187,168 @@ class PendingEdge {
 
 const EXISTING_HYPHEN = /[-‐‒–—]/u
 
+type TextRun = Extract<InlineRun, { kind: "text" }>
+
+export type Emit = {
+  readonly items: Item[]
+  readonly pending: PendingEdge
+}
+
+export type Settings = {
+  readonly policy: LayoutPolicy
+  readonly elasticity: GlueElasticity
+  readonly hyphenates: boolean
+}
+
+type TextScope = {
+  readonly context: CompileContext
+  readonly run: TextRun
+  readonly metrics: FontMetrics
+  readonly emit: Emit
+  readonly settings: Settings
+  readonly edges: ReturnType<typeof runEdgeWidths>
+  readonly inCode: boolean
+  readonly hyphenates: boolean
+  previousKind: SegmentKind | null
+  leadingApplied: boolean
+}
+
+const pushBoundaryPenalty = (
+  scope: TextScope,
+  segment: MeasuredSegment,
+  start: number,
+) => {
+  const atBoundary =
+    (scope.previousKind === "text" && segment.kind === "text") ||
+    segment.kind === "break-opportunity" ||
+    scope.previousKind === "break-opportunity"
+  if (!atBoundary) return
+  if (!breakAllowedAt(scope.context.block.breakRestrictions, start)) return
+
+  const afterHyphen = EXISTING_HYPHEN.test(
+    scope.context.block.text[start - 1] ?? "",
+  )
+  scope.emit.items.push({
+    kind: "penalty",
+    width: 0,
+    penalty: afterHyphen ? scope.settings.policy.exHyphenPenalty : 0,
+    flagged: afterHyphen,
+    source: { start, end: start },
+  })
+}
+
+const emitSoftHyphen = (
+  scope: TextScope,
+  segment: MeasuredSegment,
+  start: number,
+  end: number,
+  trailing: number,
+) => {
+  const { items, pending } = scope.emit
+  pending.onto(items, trailing)
+  if (breakAllowedAt(scope.context.block.breakRestrictions, start)) {
+    items.push(
+      softHyphenFor(segment.lineEndWidth, start, end, scope.settings.policy),
+    )
+  }
+}
+
+const emitSpace = (
+  scope: TextScope,
+  segment: MeasuredSegment,
+  start: number,
+  end: number,
+  trailing: number,
+) => {
+  const { items, pending } = scope.emit
+  items.push(
+    breakAllowedAt(scope.context.block.breakRestrictions, start)
+      ? glueFor(segment.width, start, end, scope.settings.elasticity)
+      : { kind: "box", width: segment.width, source: { start, end } },
+  )
+  pending.defer(trailing)
+}
+
+const emitTextSegment = (
+  scope: TextScope,
+  segment: MeasuredSegment,
+  start: number,
+  trailing: number,
+) => {
+  const { items, pending } = scope.emit
+  const { policy } = scope.settings
+  const edge =
+    pending.take() + (scope.leadingApplied ? 0 : scope.edges.leading) + trailing
+  scope.leadingApplied = true
+
+  const before = items.length
+  emitWord(
+    items,
+    {
+      text: segment.text,
+      offset: start,
+      width: segment.width,
+      breaks: breaksInside(scope.context, segment.text, start, {
+        inCode: scope.inCode,
+        hyphenates: scope.hyphenates,
+        policy,
+      }),
+    },
+    scope.metrics,
+  )
+
+  const first = items[before]
+  if (edge !== 0 && first?.kind === "box") {
+    items[before] = { ...first, width: first.width + edge }
+  } else if (edge !== 0) {
+    pending.defer(edge)
+  }
+}
+
+const emitSegment = (scope: TextScope, segment: MeasuredSegment) => {
+  const start = scope.run.start + segment.start
+  const end = scope.run.start + segment.end
+
+  pushBoundaryPenalty(scope, segment, start)
+  scope.previousKind = segment.kind
+  const trailing = end === scope.run.end ? scope.edges.trailing : 0
+
+  if (segment.kind === "soft-hyphen") {
+    emitSoftHyphen(scope, segment, start, end, trailing)
+    return
+  }
+  if (segment.kind === "space") {
+    emitSpace(scope, segment, start, end, trailing)
+    return
+  }
+  emitTextSegment(scope, segment, start, trailing)
+}
+
 const compileText = (
   context: CompileContext,
-  run: Extract<InlineRun, { kind: "text" }>,
+  run: TextRun,
   metrics: FontMetrics,
-  pending: PendingEdge,
-  items: Item[],
-  hyphenatesHere: boolean,
-  policy: LayoutPolicy,
-  elasticity: GlueElasticity,
+  emit: Emit,
+  settings: Settings,
 ): ComposeReason | null => {
   const measured = metrics.measureParagraph(run.text)
   if (!measured) return "segmentation-mismatch"
 
-  const { breakRestrictions } = context.block
-  const edges = runEdgeWidths(context.block, run)
-  const inCode = codeWrapper(run) !== undefined
-  const hyphenates = hyphenatesHere && run.hyphenates
-  let leadingApplied = false
-  let previousKind: string | null = null
+  const scope: TextScope = {
+    context,
+    run,
+    metrics,
+    emit,
+    settings,
+    edges: runEdgeWidths(context.block, run),
+    inCode: codeWrapper(run) !== undefined,
+    hyphenates: settings.hyphenates && run.hyphenates,
+    previousKind: null,
+    leadingApplied: false,
+  }
 
   for (const segment of measured.segments) {
-    const start = run.start + segment.start
-    const end = run.start + segment.end
-
-    const atBoundary =
-      (previousKind === "text" && segment.kind === "text") ||
-      segment.kind === "break-opportunity" ||
-      previousKind === "break-opportunity"
-    if (atBoundary && breakAllowedAt(breakRestrictions, start)) {
-      const afterHyphen = EXISTING_HYPHEN.test(
-        context.block.text[start - 1] ?? "",
-      )
-      items.push({
-        kind: "penalty",
-        width: 0,
-        penalty: afterHyphen ? policy.exHyphenPenalty : 0,
-        flagged: afterHyphen,
-        source: { start, end: start },
-      })
-    }
-    previousKind = segment.kind
-    const trailing = end === run.end ? edges.trailing : 0
-
-    if (segment.kind === "soft-hyphen") {
-      pending.onto(items, trailing)
-      if (breakAllowedAt(breakRestrictions, start)) {
-        items.push(softHyphenFor(segment.lineEndWidth, start, end, policy))
-      }
-      continue
-    }
-
-    if (segment.kind === "space") {
-      items.push(
-        breakAllowedAt(breakRestrictions, start)
-          ? glueFor(segment.width, start, end, elasticity)
-          : { kind: "box", width: segment.width, source: { start, end } },
-      )
-      pending.defer(trailing)
-      continue
-    }
-
-    const edge =
-      pending.take() + (leadingApplied ? 0 : edges.leading) + trailing
-    leadingApplied = true
-
-    const before = items.length
-    emitWord(
-      items,
-      {
-        text: segment.text,
-        offset: start,
-        width: segment.width,
-        breaks: breaksInside(context, segment.text, start, {
-          inCode,
-          hyphenates,
-          policy,
-        }),
-      },
-      metrics,
-    )
-
-    const first = items[before]
-    if (edge !== 0 && first?.kind === "box") {
-      items[before] = { ...first, width: first.width + edge }
-    } else if (edge !== 0) {
-      pending.defer(edge)
-    }
+    emitSegment(scope, segment)
   }
 
   return null
@@ -284,10 +359,15 @@ export const compileBlock = (context: CompileContext): CompileResult => {
   const separates = breaksSomething(block.runs)
   const policy = context.policy ?? webDefaults
   const elasticity = context.glue ?? defaultGlue
-  const hyphenates =
-    (context.hyphenate ?? false) && usesEnglishHyphenation(context.locale)
+  const settings: Settings = {
+    policy,
+    elasticity,
+    hyphenates:
+      (context.hyphenate ?? false) && usesEnglishHyphenation(context.locale),
+  }
   const pending = new PendingEdge()
   const items: Item[] = []
+  const emit: Emit = { items, pending }
 
   for (const [runIndex, run] of block.runs.entries()) {
     if (run.kind === "anchor") {
@@ -329,16 +409,7 @@ export const compileBlock = (context: CompileContext): CompileResult => {
     const metrics = metricsFor(run)
     if (!metrics) return { ok: false, reason: "unmeasurable" }
 
-    const failure = compileText(
-      context,
-      run,
-      metrics,
-      pending,
-      items,
-      hyphenates,
-      policy,
-      elasticity,
-    )
+    const failure = compileText(context, run, metrics, emit, settings)
     if (failure) return { ok: false, reason: failure }
   }
 
