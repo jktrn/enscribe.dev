@@ -48,6 +48,7 @@ export type LayoutOptions = {
   readonly hangs?: Hangs
   readonly flex?: Flex
   readonly indent?: number
+  readonly lastLineMinWidth?: number
 }
 
 export type PassOptions = {
@@ -58,6 +59,8 @@ export type PassOptions = {
   readonly hangs?: Hangs
   readonly flex?: Flex
   readonly indent?: number
+  readonly lastLineMinWidth?: number
+  readonly strictEnding?: boolean
 }
 
 type ActiveNode = {
@@ -147,12 +150,22 @@ const fitnessClass = (ratio: number) => {
 
 const badness = (ratio: number) => 100 * Math.abs(ratio) ** 3
 
+const SHORT_ENDING_BADNESS = 200
+
+const endingBadness = (threshold: number, natural: number) => {
+  const shortfall = threshold - natural
+  if (!(shortfall > 0)) return 0
+  const short = shortfall / threshold
+  return SHORT_ENDING_BADNESS * short * short * short
+}
+
 const lineDemerits = (
   ratio: number,
   penaltyValue: number,
   policy: LayoutPolicy,
+  ending: number,
 ) => {
-  const base = policy.linePenalty + badness(ratio)
+  const base = policy.linePenalty + badness(ratio) + ending
   const squared = Math.abs(base) >= 10_000 ? 100_000_000 : base ** 2
   if (penaltyValue > 0) return squared + penaltyValue ** 2
   if (isForced(penaltyValue)) return squared
@@ -200,6 +213,13 @@ const INFINITE_BADNESS_RATIO = maximumRatio(INFINITE_BADNESS)
 const admissible = (ratio: number, toleranceRatio: number) =>
   ratio >= -1 && Math.min(ratio, INFINITE_BADNESS_RATIO) <= toleranceRatio
 
+const acceptable = (
+  ratio: number,
+  toleranceRatio: number,
+  natural: number,
+  floor: number,
+) => !(floor > natural) && admissible(ratio, toleranceRatio)
+
 const overflowOf = (natural: number, target: number) =>
   Number.isFinite(natural) ? natural - target : Number.POSITIVE_INFINITY
 
@@ -213,7 +233,18 @@ type Search = {
   readonly rescuing: boolean
   readonly hangs: Hangs | null
   readonly indent: number
+  readonly ending: number
+  readonly endingStrict: boolean
 }
+
+const endingWidth = (measure: number, fraction: number | undefined) =>
+  fraction === undefined ? 0 : fraction * measure
+
+const endingThreshold = (search: Search, to: number) =>
+  search.ending > 0 && isParagraphEnd(search.items, to) ? search.ending : 0
+
+const endingFloor = (search: Search, ending: number) =>
+  search.endingStrict ? ending : Number.NEGATIVE_INFINITY
 
 type Rescue = {
   node: ActiveNode
@@ -378,7 +409,11 @@ const stepTo = (
   const leadingAfter = leadingWidth(search, to)
   const flaggedHere = isFlaggedBreak(items[to])
   const flaggedExtra = flaggedDemeritsAt(items, to, flaggedHere, policy)
-  const emptyDemerits = forced ? lineDemerits(0, penaltyValue, policy) : 0
+  const ending = endingThreshold(search, to)
+  const floor = endingFloor(search, ending)
+  const emptyDemerits = forced
+    ? lineDemerits(0, penaltyValue, policy, endingBadness(ending, 0))
+    : 0
   let minimum = Number.POSITIVE_INFINITY
 
   for (let index = 0; index < actives.length; index += 1) {
@@ -424,10 +459,12 @@ const stepTo = (
 
     if (search.rescuing) rankRescue(search, step, active, natural, ratio)
 
-    if (!admissible(ratio, toleranceRatio)) continue
+    if (!acceptable(ratio, toleranceRatio, natural, floor)) continue
 
     const fitness = fitnessClass(ratio)
-    let demerits = active.demerits + lineDemerits(ratio, penaltyValue, policy)
+    let demerits =
+      active.demerits +
+      lineDemerits(ratio, penaltyValue, policy, endingBadness(ending, natural))
 
     if (active.flagged) demerits += flaggedExtra
     if (Math.abs(fitness - active.fitness) > 1) {
@@ -540,6 +577,8 @@ const searchFor = (
   rescuing: options.force === true,
   hangs: options.hangs ?? null,
   indent: options.indent ?? 0,
+  ending: endingWidth(measure, options.lastLineMinWidth),
+  endingStrict: options.strictEnding === true,
 })
 
 const initialNode = (search: Search): ActiveNode => ({
@@ -653,20 +692,14 @@ const emergencyStretchFor = (
   return requested
 }
 
-export const breakParagraph = (
+type SharedOptions = Omit<PassOptions, "tolerance">
+
+const toleranceRungs = (
   items: readonly Item[],
   measure: number,
-  options: LayoutOptions = {},
-): LayoutResult => {
-  if (items.length === 0) return { ok: false, reason: "empty" }
-  const policy = resolvePolicy(options.policy)
-  const shared = {
-    policy: options.policy,
-    hangs: options.hangs,
-    flex: options.flex,
-    indent: options.indent,
-  }
-
+  shared: SharedOptions,
+  policy: LayoutPolicy,
+): LayoutResult | null => {
   if (policy.pretolerance >= 0) {
     const strict = breakParagraphOnce(items, measure, {
       ...shared,
@@ -674,12 +707,36 @@ export const breakParagraph = (
     })
     if (strict.ok) return { ...strict, pass: "pretolerance" }
   }
-
   const relaxed = breakParagraphOnce(items, measure, {
     ...shared,
     tolerance: policy.tolerance,
   })
-  if (relaxed.ok) return { ...relaxed, pass: "tolerance" }
+  return relaxed.ok ? relaxed : null
+}
+
+export const breakParagraph = (
+  items: readonly Item[],
+  measure: number,
+  options: LayoutOptions = {},
+): LayoutResult => {
+  if (items.length === 0) return { ok: false, reason: "empty" }
+  const policy = resolvePolicy(options.policy)
+  const shared: SharedOptions = {
+    policy: options.policy,
+    hangs: options.hangs,
+    flex: options.flex,
+    indent: options.indent,
+    lastLineMinWidth: options.lastLineMinWidth,
+  }
+
+  if (shared.lastLineMinWidth) {
+    const strictShared = { ...shared, strictEnding: true }
+    const rectangle = toleranceRungs(items, measure, strictShared, policy)
+    if (rectangle) return rectangle
+  }
+
+  const relaxed = toleranceRungs(items, measure, shared, policy)
+  if (relaxed) return relaxed
 
   const emergencyStretch = emergencyStretchFor(items, options.emergencyStretch)
 

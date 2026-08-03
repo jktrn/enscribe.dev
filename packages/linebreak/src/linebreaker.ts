@@ -176,6 +176,7 @@ class BrowserLinebreaker implements Linebreaker {
   private readonly protrude: boolean
   private readonly expand: boolean
   private readonly track: boolean
+  private readonly lastLineMinWidth: number
   private readonly policy: ReturnType<typeof resolvePolicy>
   private readonly glue: { stretch: number; shrink: number }
   private readonly report: ((outcome: Outcome) => void) | undefined
@@ -211,6 +212,8 @@ class BrowserLinebreaker implements Linebreaker {
     this.protrude = options.protrude ?? true
     this.expand = options.expand ?? false
     this.track = options.track ?? false
+    this.lastLineMinWidth =
+      options.lastLineMinWidth ?? engineDefaults.lastLineMinWidth
     this.policy = resolvePolicy(options.policy)
     this.glue = { ...defaultGlue, ...options.glue }
     this.report = options.onOutcome
@@ -678,6 +681,9 @@ class BrowserLinebreaker implements Linebreaker {
       ...(hangs ? { hangs } : {}),
       ...(flex ? { flex } : {}),
       ...(indent === 0 ? {} : { indent }),
+      ...(this.lastLineMinWidth > 0
+        ? { lastLineMinWidth: this.lastLineMinWidth }
+        : {}),
     }
   }
 

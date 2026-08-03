@@ -83,6 +83,7 @@ export type LinebreakerOptions = {
   protrude?: boolean
   expand?: boolean
   track?: boolean
+  lastLineMinWidth?: number
   preserveImageAttributes?: readonly string[]
 
   policy?: Partial<LayoutPolicy>

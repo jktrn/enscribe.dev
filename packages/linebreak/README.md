@@ -155,6 +155,7 @@ twice, or applying one from another instance.
 | `protrude` | `true` | Character protrusion: punctuation hangs past the measure. |
 | `expand` | `false` | Font expansion: glyphs take a share of the line's slack, if the font has a width axis. |
 | `track` | `false` | Letterfit tracking: the inter-character space takes a share of the line's slack. |
+| `lastLineMinWidth` | `0` | Least width a paragraph's final line may take, as a fraction of the measure. `0` is off. |
 | `preserveImageAttributes` | `[]` | Copied between original and rebuilt images. |
 | `policy` | TeX's | Tolerances, demerits, penalties. See below. |
 | `glue` | `{ stretch: 1/2, shrink: 1/3 }` | Interword elasticity, as a fraction of the space. |
@@ -433,6 +434,63 @@ Against the same 3% budget on both sides, badness per body line over the
 984-paragraph prose corpus goes 297.0 to 28.3 at 320px, 25.9 to 7.6 at 480px,
 and 8.9 to 3.2 at 680px, with no overfull lines at any width. With the
 idealized affine width axis on as well it reaches 14.3 / 5.2 / 1.7.
+
+### Last-line minimum width
+
+TeX's `\lastlinefit` problem: `\parfillskip` is infinitely stretchable, so a
+paragraph's final line costs nothing however short it is, and about a quarter
+of prose paragraphs end on a line under a third of the measure. `lastLineMinWidth`
+is a floor on that line, as a fraction of the measure. It ships off (`0`).
+
+Two mechanisms, in order. A **strict rung** runs the pretolerance and tolerance
+passes ahead of the classic ladder with final breaks below the floor rejected
+outright, so the optimizer solves for the best body it can build among the
+arrangements that satisfy the floor. When no arrangement does — the floor is
+unreachable at any tolerance the paragraph will accept — the classic ladder runs
+with a **continuous demerit** on the final break: `200 · u³` badness, where `u`
+is the shortfall as a fraction of the floor, folded into the same
+`(linePenalty + badness)²` every other line pays. The demerit alone is far
+weaker than the rung (the DP keeps one candidate per fitness class, so a cost
+levied only at the last breakpoint arrives after the alternatives were pruned),
+and the rung alone leaves the hopeless paragraphs where it found them. Together:
+
+984-paragraph prose corpus, multi-line paragraphs only, floor `0.33`. Left of
+each arrow is the option off. `justif` 0.7.0, on the same corpus, the same
+measure and the same policy, is in brackets.
+
+| | ending under ⅓ | ending under 1/10 | badness per body line |
+| --- | --- | --- | --- |
+| 320px | 26.4% → 7.0% [26.3 → 9.1] | 2.8% → 0.5% [2.5 → 0.1] | 48.85 → 50.62 [48.67 → 50.41] |
+| 480px | 26.8% → 4.1% [26.8 → 7.0] | 3.8% → 0.5% [4.0 → 0.0] | 9.61 → 11.79 [13.61 → 15.95] |
+| 680px | 31.4% → 6.6% [31.7 → 9.8] | 5.8% → 0.1% [5.9 → 0.0] | 4.93 → 7.93 [5.74 → 9.64] |
+
+That is with hyphenation, protrusion and expansion on. With tracking instead of
+expansion — the arm that matters for a font with no width axis — it goes 26.1 →
+3.3, 26.2 → 2.0 and 31.1 → 5.0 against justif's 6.3, 5.9 and 8.6, and with
+everything on, 24.7 → 1.1, 25.7 → 0.2 and 30.8 → 3.3 against 4.2, 4.2 and 7.5.
+
+Break time is unchanged: the strict rung that succeeds replaces the classic rung
+that would have run, and only the paragraphs it cannot satisfy pay two wasted
+passes. Measured over the prose corpus, on/off came out between 0.85 and 1.05
+across two runs — it straddles 1, which is this harness's noise.
+
+There is no rectangle search. justif needs one — a binary-searched descent
+through sixteenths of the requested threshold, plus a bounded-pressure fallback,
+plus an explicit comparison against the option-off solution — because its strict
+passes can reject every arrangement and it has to guarantee that turning the
+option on never *shortens* an ending. Here that guarantee is free: the fallback
+demerit is monotone in the shortfall and the optimizer minimizes body plus
+ending, so a solution with a shorter ending than the option-off solution's would
+have to beat it on body cost too, which it cannot, the option-off solution being
+the body optimum. Measured over 984 paragraphs × 3 widths × 3 microtypography
+configurations: zero paragraphs end shorter with the floor on.
+
+The floor applies to the paragraph's own last line and no other. A line ending
+at an authored `<br>` is ragged by design and is left alone.
+
+Recommended for the DOM tier: `0.33`, matching justif's DOM default and the
+usual typographic advice. It is off by default here so that the numbers above,
+and every benchmark that produced them, stay comparable.
 
 ## The rendered DOM
 

@@ -7,4 +7,5 @@ export const engineDefaults = Object.freeze({
   maximumCharacters: 3_000,
   expansionBudget: 0.02,
   trackingBudget: 0.03,
+  lastLineMinWidth: 0,
 })
