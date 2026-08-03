@@ -1,11 +1,9 @@
 import {
-  type AnchorRun,
   collapseWhitespace,
   hasVisibleText,
-  type InlineRun,
-  LINE_SEPARATOR,
   type SourceRange,
-} from "./runs"
+} from "../../text/source"
+import { type AnchorRun, type InlineRun, LINE_SEPARATOR } from "./runs"
 import type { Raw, RawAtom, RawBreak, RawText } from "./walk"
 
 type PendingSpace = {

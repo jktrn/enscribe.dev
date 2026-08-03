@@ -1,13 +1,10 @@
 import type { ComposeReason, Hyphenator } from "../types"
+import type { ExtractedBlock, InlineRun } from "../dom/extract"
 import {
   breakAllowedAt,
-  codeWrapper,
-  type ExtractedBlock,
   hasVisibleText,
-  type InlineRun,
   type SourceRange,
-  runEdgeWidths,
-} from "../dom/extract"
+} from "../text/source"
 import { codeBreakOffsets } from "../text/code-breaks"
 import type {
   FontMetrics,
@@ -33,6 +30,8 @@ import {
 } from "./protrusion"
 import type { StretchScale } from "../text/stretch"
 
+export type RunEdges = { leading: number; trailing: number }
+
 export type CompileContext = {
   block: ExtractedBlock
   metricsFor: (run: InlineRun) => FontMetrics | null
@@ -40,6 +39,9 @@ export type CompileContext = {
 
   atomWidth: (run: InlineRun) => number
   locale: string
+
+  isCode?: (run: InlineRun) => boolean
+  edgesFor?: (run: InlineRun) => RunEdges
 
   hyphenate?: Hyphenator
   protrude?: boolean
@@ -327,7 +329,7 @@ type TextScope = {
   readonly metrics: FontMetrics
   readonly emit: Emit
   readonly settings: Settings
-  readonly edges: ReturnType<typeof runEdgeWidths>
+  readonly edges: RunEdges
   readonly inCode: boolean
   readonly protrudes: boolean
   readonly hyphenates: boolean
@@ -481,6 +483,11 @@ type BlockScope = {
   readonly emit: Emit
 }
 
+const NO_EDGES: RunEdges = { leading: 0, trailing: 0 }
+
+const edgesOf = (context: CompileContext, run: InlineRun) =>
+  context.edgesFor?.(run) ?? NO_EDGES
+
 const MONO_TOLERANCE = 0.01
 
 const insetMonospace = (context: CompileContext, metrics: FontMetrics) =>
@@ -495,14 +502,14 @@ const compileText = (
   const measured = metrics.measureParagraph(run.text)
   if (!measured) return "segmentation-mismatch"
 
-  const inCode = codeWrapper(run) !== undefined
+  const inCode = block.context.isCode?.(run) ?? false
   const scope: TextScope = {
     context: block.context,
     run,
     metrics,
     emit: block.emit,
     settings: block.settings,
-    edges: runEdgeWidths(block.context.block, run),
+    edges: edgesOf(block.context, run),
     inCode,
     protrudes: !inCode && !insetMonospace(block.context, metrics),
     hyphenates: block.settings.hyphenates && run.hyphenates,
@@ -523,7 +530,7 @@ const compileAnchorRun = (
   run: Extract<InlineRun, { kind: "anchor" }>,
 ) => {
   const { items, pending } = scope.emit
-  const edges = runEdgeWidths(scope.context.block, run)
+  const edges = edgesOf(scope.context, run)
   const width = edges.leading + edges.trailing
   if (run.affinity === "previous") pending.onto(items, width)
   else pending.defer(width)
@@ -551,7 +558,7 @@ const compileAtomRun = (
   run: Extract<InlineRun, { kind: "atom" }>,
 ) => {
   const { items, pending } = scope.emit
-  const edges = runEdgeWidths(scope.context.block, run)
+  const edges = edgesOf(scope.context, run)
   items.push({
     kind: "box",
     width:

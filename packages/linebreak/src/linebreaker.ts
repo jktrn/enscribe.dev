@@ -7,10 +7,12 @@ import type { Flex } from "./layout/flex"
 import type { Hangs } from "./layout/protrusion"
 import { defaultGlue, resolvePolicy } from "./layout/policy"
 import {
+  codeWrapper,
   type ExtractedBlock,
   extractBlock,
   type InlineRun,
   outerWidth,
+  runEdgeWidths,
 } from "./dom/extract"
 import { configureLocale, invalidateMeasurements } from "./text/measure"
 import type { FontMetrics } from "./text/segments"
@@ -801,6 +803,8 @@ class BrowserLinebreaker implements Linebreaker {
       baseFont: basis.font,
       atomWidth: (run: InlineRun) => outerWidth(run.sourceElement, reader),
       locale: basis.locale,
+      isCode: (run: InlineRun) => codeWrapper(run) !== undefined,
+      edgesFor: (run: InlineRun) => runEdgeWidths(extracted.block, run),
       protrude: this.protrudes(element),
       ...(track ? { track } : {}),
       policy: this.policy,

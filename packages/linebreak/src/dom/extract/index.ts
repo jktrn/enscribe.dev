@@ -31,17 +31,11 @@ export const extractBlock = (
   }
 }
 
-export {
-  breakAllowedAt,
-  codeWrapper,
-  hasVisibleText,
-  LINE_SEPARATOR,
-} from "./runs"
+export { codeWrapper, LINE_SEPARATOR } from "./runs"
 export type {
   ExtractedBlock,
   ExtractResult,
   InlineRun,
-  SourceRange,
   WrapperInfo,
 } from "./runs"
 export { outerWidth, runEdgeWidths } from "./wrappers"

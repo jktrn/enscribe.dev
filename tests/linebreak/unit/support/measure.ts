@@ -1,4 +1,9 @@
-import type { ExtractedBlock, InlineRun } from "@linebreak/dom/extract"
+import {
+  codeWrapper,
+  type ExtractedBlock,
+  type InlineRun,
+  runEdgeWidths,
+} from "@linebreak/dom/extract"
 import { compileBlock } from "@linebreak/layout/compile"
 import type { Item } from "@linebreak/layout/items"
 import {
@@ -144,8 +149,11 @@ export const compileShape = (
     track?: number
   } = {},
 ) => {
+  const block = blockOf(shape)
   const compiled = compileBlock({
-    block: blockOf(shape),
+    block,
+    isCode: (run) => codeWrapper(run) !== undefined,
+    edgesFor: (run) => runEdgeWidths(block, run),
     metricsFor: () => metrics,
     baseFont: metrics.font,
     atomWidth: () => 0,
