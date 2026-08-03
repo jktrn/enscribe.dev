@@ -637,8 +637,9 @@ Left-to-right, horizontal writing mode, and normal whitespace collapsing only.
 Elements are declined for right-to-left direction, vertical writing modes,
 nested block layout, enabled `<input>`s, nonzero `word-spacing`, a
 `text-transform` other than `none`, an authored `font-stretch` or `wdth`, a
-`text-indent` carrying `hanging` or `each-line`, and more than 3,000 collapsed
-characters.
+`text-indent` carrying `hanging` or `each-line`, more than 3,000 collapsed
+characters, and a run whose document has no element that can host a
+measurement probe.
 
 The element must be in the document with fonts loaded before it is measured;
 `createTypesetter` handles the waiting.
@@ -655,11 +656,19 @@ Rendering clones inline elements, so event listeners and arbitrary object state
 on them are not preserved. `preserveImageAttributes` covers attributes that
 change after load.
 
-Canvas `measureText` cannot express `font-variant-caps`, `font-variant-numeric`
-or `font-feature-settings`, so glyph substitutions such as small caps and
-old-style figures change advance widths without changing the font canvas
-resolves — measurement is then wrong with no error. Bake those features into
-the served font files.
+Canvas `measureText` cannot express `font-variant-caps`,
+`font-variant-numeric`, `font-variant-position`, `font-variant-ligatures`,
+`font-variant-alternates`, `font-variant-east-asian` or
+`font-feature-settings`: glyph substitutions such as small caps and old-style
+figures change advance widths without changing the font canvas resolves. A run
+carrying any of them is measured through an off-screen probe span instead,
+which is the rendering engine measuring itself — worst error 0.008px against
+Chromium's own layout across 336 declaration/family/text combinations, against
+101px for canvas on the same rows. The probe costs one batched layout per
+paragraph, and runs without those declarations never reach it.
+
+An authored `font-stretch` or `wdth` is still declined: that width is the
+author's, not ours.
 
 An element whose width depends on its own content — a shrink-to-fit flex item,
 a float, `width: fit-content` — usually resolves to the space available, and
