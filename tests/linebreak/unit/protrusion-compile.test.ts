@@ -251,7 +251,7 @@ describe("a monospace cell is wider than the ink in it", () => {
     }
     const compiled = compileBlock({
       block,
-      metricsFor: (run) =>
+      metricsFor: (run: InlineRun) =>
         run.sourceElement === inset ? trailing : proportional(PROSE_FONT),
       baseFont,
       atomWidth: () => 0,

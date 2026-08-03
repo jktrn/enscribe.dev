@@ -1,3 +1,5 @@
+export type Hyphenator = (word: string, locale: string) => readonly number[]
+
 export type SourceRange = { start: number; end: number }
 
 export const hasVisibleText = (text: string) => /[^\t\n\f\r ]/u.test(text)

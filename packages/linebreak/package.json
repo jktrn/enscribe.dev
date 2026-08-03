@@ -67,7 +67,7 @@
   },
   "scripts": {
     "build": "tsdown",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.headless.json",
     "check": "bun run typecheck && bun run build",
     "playground": "bun run playground/build.ts && bun run playground/serve.ts",
     "playground:build": "bun run playground/build.ts",

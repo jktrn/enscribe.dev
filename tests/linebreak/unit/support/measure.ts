@@ -152,8 +152,8 @@ export const compileShape = (
   const block = blockOf(shape)
   const compiled = compileBlock({
     block,
-    isCode: (run) => codeWrapper(run) !== undefined,
-    edgesFor: (run) => runEdgeWidths(block, run),
+    isCode: (run: InlineRun) => codeWrapper(run) !== undefined,
+    edgesFor: (run: InlineRun) => runEdgeWidths(block, run),
     metricsFor: () => metrics,
     baseFont: metrics.font,
     atomWidth: () => 0,

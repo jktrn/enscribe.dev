@@ -1,36 +1,19 @@
 import type { GlueElasticity, LayoutPolicy } from "./layout/policy"
+import type { DeclineReason, FailureReason, SkipReason } from "./reasons"
+import type { Hyphenator } from "./text/source"
 
-export const SKIP_REASONS = [
-  "single-line",
-  "empty",
-  "too-narrow",
-  "already-typeset",
-] as const
-
-export type SkipReason = (typeof SKIP_REASONS)[number]
-
-export const DECLINE_REASONS = [
-  "unsupported-content",
-  "unsupported-direction",
-  "unsupported-writing-mode",
-  "too-long",
-  "unmeasurable",
-  "segmentation-mismatch",
-  "no-feasible-breaking",
-] as const
-
-export type DeclineReason = (typeof DECLINE_REASONS)[number]
-
-export type ComposeReason = SkipReason | DeclineReason
-
-export const FAILURE_REASONS = [
-  "layout-mismatch",
-  "unstable-width",
-  "line-height-unresolved",
-  "render-failed",
-] as const
-
-export type FailureReason = (typeof FAILURE_REASONS)[number]
+export {
+  DECLINE_REASONS,
+  FAILURE_REASONS,
+  SKIP_REASONS,
+} from "./reasons"
+export type {
+  ComposeReason,
+  DeclineReason,
+  FailureReason,
+  SkipReason,
+} from "./reasons"
+export type { Hyphenator } from "./text/source"
 
 export type Outcome =
   | {
@@ -73,8 +56,6 @@ export type Composition = {
   readonly width: number
   readonly reason?: SkipReason | DeclineReason | FailureReason
 }
-
-export type Hyphenator = (word: string, locale: string) => readonly number[]
 
 export type LinebreakerOptions = {
   locale?: string

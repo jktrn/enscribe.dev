@@ -1,8 +1,9 @@
-import type { ComposeReason, Hyphenator } from "../types"
-import type { ExtractedBlock, InlineRun } from "../dom/extract"
+import type { ComposeReason } from "../reasons"
+import type { CompiledBlock, CompiledRun } from "./block"
 import {
   breakAllowedAt,
   hasVisibleText,
+  type Hyphenator,
   type SourceRange,
 } from "../text/source"
 import { codeBreakOffsets } from "../text/code-breaks"
@@ -33,19 +34,19 @@ import type { StretchScale } from "../text/stretch"
 export type RunEdges = { leading: number; trailing: number }
 
 export type CompileContext = {
-  block: ExtractedBlock
-  metricsFor: (run: InlineRun) => FontMetrics | null
+  block: CompiledBlock
+  metricsFor(run: CompiledRun): FontMetrics | null
   baseFont: string
 
-  atomWidth: (run: InlineRun) => number
+  atomWidth(run: CompiledRun): number
   locale: string
 
-  isCode?: (run: InlineRun) => boolean
-  edgesFor?: (run: InlineRun) => RunEdges
+  isCode?(run: CompiledRun): boolean
+  edgesFor?(run: CompiledRun): RunEdges
 
   hyphenate?: Hyphenator
   protrude?: boolean
-  scaleFor?: (run: InlineRun) => StretchScale | null
+  scaleFor?(run: CompiledRun): StretchScale | null
   track?: number
   policy?: LayoutPolicy
   glue?: GlueElasticity
@@ -197,21 +198,21 @@ const emitWord = (items: Item[], word: Word, metrics: FontMetrics) => {
   })
 }
 
-const carriesContent = (run: InlineRun) =>
+const carriesContent = (run: CompiledRun) =>
   run.kind === "atom" || (run.kind === "text" && hasVisibleText(run.text))
 
 const forgetBreaksAfterContent = (
-  runs: readonly InlineRun[],
+  runs: readonly CompiledRun[],
   separates: boolean[],
 ) => {
   let contentAfter = false
   for (let index = runs.length - 1; index >= 0; index -= 1) {
     separates[index] &&= contentAfter
-    if (carriesContent(runs[index] as InlineRun)) contentAfter = true
+    if (carriesContent(runs[index] as CompiledRun)) contentAfter = true
   }
 }
 
-const breaksSomething = (runs: readonly InlineRun[]) => {
+const breaksSomething = (runs: readonly CompiledRun[]) => {
   const separates = runs.map(() => false)
   let contentBefore = false
   for (const [index, run] of runs.entries()) {
@@ -309,7 +310,7 @@ class PendingEdge {
 
 const EXISTING_HYPHEN = /[-‐‒–—]/u
 
-type TextRun = Extract<InlineRun, { kind: "text" }>
+type TextRun = Extract<CompiledRun, { kind: "text" }>
 
 export type Emit = {
   readonly items: Item[]
@@ -485,7 +486,7 @@ type BlockScope = {
 
 const NO_EDGES: RunEdges = { leading: 0, trailing: 0 }
 
-const edgesOf = (context: CompileContext, run: InlineRun) =>
+const edgesOf = (context: CompileContext, run: CompiledRun) =>
   context.edgesFor?.(run) ?? NO_EDGES
 
 const MONO_TOLERANCE = 0.01
@@ -527,7 +528,7 @@ const compileText = (
 
 const compileAnchorRun = (
   scope: BlockScope,
-  run: Extract<InlineRun, { kind: "anchor" }>,
+  run: Extract<CompiledRun, { kind: "anchor" }>,
 ) => {
   const { items, pending } = scope.emit
   const edges = edgesOf(scope.context, run)
@@ -538,7 +539,7 @@ const compileAnchorRun = (
 
 const compileBreakRun = (
   scope: BlockScope,
-  run: Extract<InlineRun, { kind: "break" }>,
+  run: Extract<CompiledRun, { kind: "break" }>,
 ) => {
   if (run.forced) {
     scope.emit.items.push(...lineBreak(run.start, run.end))
@@ -555,7 +556,7 @@ const compileBreakRun = (
 
 const compileAtomRun = (
   scope: BlockScope,
-  run: Extract<InlineRun, { kind: "atom" }>,
+  run: Extract<CompiledRun, { kind: "atom" }>,
 ) => {
   const { items, pending } = scope.emit
   const edges = edgesOf(scope.context, run)
@@ -594,7 +595,7 @@ const compileTextRun = (
 
 const compileRun = (
   scope: BlockScope,
-  run: InlineRun,
+  run: CompiledRun,
 ): ComposeReason | null => {
   if (run.kind === "anchor") {
     compileAnchorRun(scope, run)

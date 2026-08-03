@@ -1,4 +1,4 @@
-import type { ExtractedBlock, InlineRun } from "./dom/extract"
+import type { CompiledRun } from "./layout/block"
 import { compileBlock, type CompileResult } from "./layout/compile"
 import {
   defaultGlue,
@@ -8,7 +8,7 @@ import {
 } from "./layout/policy"
 import type { FontMetrics } from "./text/segments"
 import type { StretchScale } from "./text/stretch"
-import type { Hyphenator } from "./types"
+import type { Hyphenator } from "./text/source"
 
 export {
   type Advance,
@@ -30,7 +30,8 @@ export type { CompileResult } from "./layout/compile"
 export type { Flex } from "./layout/flex"
 export type { Hangs } from "./layout/protrusion"
 export type { GlueElasticity, LayoutPolicy } from "./layout/policy"
-export type { ComposeReason, Hyphenator } from "./types"
+export type { ComposeReason } from "./reasons"
+export type { Hyphenator } from "./text/source"
 
 export type CompileTextOptions = {
   readonly locale?: string
@@ -43,17 +44,13 @@ export type CompileTextOptions = {
   readonly track?: number
 }
 
-const NO_WRAPPERS: ExtractedBlock["wrappers"] = new Map()
-
-const singleRun = (text: string) =>
-  ({
-    kind: "text",
-    text,
-    start: 0,
-    end: text.length,
-    wrappers: [],
-    hyphenates: true,
-  }) as unknown as InlineRun
+const singleRun = (text: string): CompiledRun => ({
+  kind: "text",
+  text,
+  start: 0,
+  end: text.length,
+  hyphenates: true,
+})
 
 const resolveGlue = (overrides?: Partial<GlueElasticity>): GlueElasticity =>
   overrides ? { ...defaultGlue, ...overrides } : defaultGlue
@@ -65,12 +62,7 @@ export const compileText = (
 ): CompileResult => {
   const { expand, track } = options
   return compileBlock({
-    block: {
-      text,
-      runs: [singleRun(text)],
-      breakRestrictions: [],
-      wrappers: NO_WRAPPERS,
-    },
+    block: { text, runs: [singleRun(text)], breakRestrictions: [] },
     metricsFor: () => metrics,
     baseFont: metrics.font,
     atomWidth: () => 0,
