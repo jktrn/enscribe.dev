@@ -85,38 +85,44 @@ type Cached = {
 const sumsCache = new WeakMap<readonly Item[], Cached>()
 
 const plainSums = (items: readonly Item[]): Sums => {
-  const width = [0]
-  const stretch = [0]
-  const shrink = [0]
-  for (let index = 0; index < items.length; index += 1) {
+  const count = items.length
+  const width = new Array<number>(count + 1)
+  const stretch = new Array<number>(count + 1)
+  const shrink = new Array<number>(count + 1)
+  width[0] = 0
+  stretch[0] = 0
+  shrink[0] = 0
+  for (let index = 0; index < count; index += 1) {
     const item = items[index] as Item
     const glue = item.kind === "glue"
-    width.push((width[index] as number) + passThroughWidth(item))
-    stretch.push((stretch[index] as number) + (glue ? item.stretch : 0))
-    shrink.push((shrink[index] as number) + (glue ? item.shrink : 0))
+    width[index + 1] = (width[index] as number) + passThroughWidth(item)
+    stretch[index + 1] = (stretch[index] as number) + (glue ? item.stretch : 0)
+    shrink[index + 1] = (shrink[index] as number) + (glue ? item.shrink : 0)
   }
   return { width, stretch, shrink }
 }
 
 const expandedSums = (items: readonly Item[], expansion: Expansion): Sums => {
   const { stretch: up, shrink: down } = expansion
-  const width = [0]
-  const stretch = [0]
-  const shrink = [0]
-  for (let index = 0; index < items.length; index += 1) {
+  const count = items.length
+  const width = new Array<number>(count + 1)
+  const stretch = new Array<number>(count + 1)
+  const shrink = new Array<number>(count + 1)
+  width[0] = 0
+  stretch[0] = 0
+  shrink[0] = 0
+  for (let index = 0; index < count; index += 1) {
     const item = items[index] as Item
     const glue = item.kind === "glue"
-    width.push((width[index] as number) + passThroughWidth(item))
-    stretch.push(
+    width[index + 1] = (width[index] as number) + passThroughWidth(item)
+    stretch[index + 1] =
       (stretch[index] as number) +
-        (glue ? item.stretch : 0) +
-        ((up[index + 1] as number) - (up[index] as number)),
-    )
-    shrink.push(
+      (glue ? item.stretch : 0) +
+      ((up[index + 1] as number) - (up[index] as number))
+    shrink[index + 1] =
       (shrink[index] as number) +
-        (glue ? item.shrink : 0) +
-        ((down[index + 1] as number) - (down[index] as number)),
-    )
+      (glue ? item.shrink : 0) +
+      ((down[index + 1] as number) - (down[index] as number))
   }
   return { width, stretch, shrink }
 }
