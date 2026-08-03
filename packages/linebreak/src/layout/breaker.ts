@@ -47,6 +47,7 @@ export type LayoutOptions = {
   readonly emergencyStretch?: number | "auto"
   readonly hangs?: Hangs
   readonly flex?: Flex
+  readonly indent?: number
 }
 
 export type PassOptions = {
@@ -56,6 +57,7 @@ export type PassOptions = {
   readonly force?: boolean
   readonly hangs?: Hangs
   readonly flex?: Flex
+  readonly indent?: number
 }
 
 type ActiveNode = {
@@ -210,6 +212,7 @@ type Search = {
   readonly policy: LayoutPolicy
   readonly rescuing: boolean
   readonly hangs: Hangs | null
+  readonly indent: number
 }
 
 type Rescue = {
@@ -536,12 +539,13 @@ const searchFor = (
   policy: resolvePolicy(options.policy),
   rescuing: options.force === true,
   hangs: options.hangs ?? null,
+  indent: options.indent ?? 0,
 })
 
 const initialNode = (search: Search): ActiveNode => ({
   position: -1,
   start: lineStart(search.items, -1),
-  leading: leadingWidth(search, -1),
+  leading: leadingWidth(search, -1) + search.indent,
   flagged: false,
   line: 0,
   fitness: 1,
@@ -660,6 +664,7 @@ export const breakParagraph = (
     policy: options.policy,
     hangs: options.hangs,
     flex: options.flex,
+    indent: options.indent,
   }
 
   if (policy.pretolerance >= 0) {

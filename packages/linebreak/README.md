@@ -280,6 +280,32 @@ loses its one break-time cell to that comparison. Restoring §863 would buy back
 that cell and give up the badness difference. The behaviour is pinned by
 `tests/linebreak/unit/pass-one-hyphenation.test.ts`.
 
+### First-line indent
+
+`text-indent` is read off the block and charged to the first line as TeX
+charges `\parindent`: an empty box at the head of the paragraph. The optimizer
+solves against one scalar measure, and the first line's natural width is its
+content plus the indent, so the line that has less room is the line that gets
+priced for less room. Percentages resolve against the content width, which is
+what a browser does with them. A negative indent is the same arithmetic with
+the sign flipped, so the classic first-line outdent gets its extra room
+instead.
+
+This is the whole of it — no per-line width vector, and none of the
+`easy_line` bookkeeping one would need. `text-indent: … hanging` and
+`text-indent: … each-line` move some line other than the first, which a
+first-line scalar cannot express; both are declined `unmeasurable`.
+
+Ignoring the property is not a neutral choice. Every typeset line is an inline
+`nowrap` span in one block box, so the browser still indents the first line
+box, and a first line the model sized for the full measure then pokes out of
+it. Measured in Chromium at a 520px measure before this landed: a 48px indent
+was caught by the overflow guard and cost three retries, each one narrowing
+*every* line's target, and 0.7px still escaped; a 10% indent (52px) exceeded
+the retry ladder's reach and reverted the paragraph outright; a −32px outdent
+overflowed nothing, was caught by nothing, and silently rendered its first line
+32px looser than the optimizer had priced it.
+
 ### Character protrusion
 
 Punctuation at a line edge leaves the margin looking ragged: a line ending in a
@@ -522,8 +548,9 @@ containing no generated lines is left alone.
 Left-to-right, horizontal writing mode, and normal whitespace collapsing only.
 Elements are declined for right-to-left direction, vertical writing modes,
 nested block layout, enabled `<input>`s, nonzero `word-spacing`, a
-`text-transform` other than `none`, an authored `font-stretch` or `wdth`, and
-more than 3,000 collapsed characters.
+`text-transform` other than `none`, an authored `font-stretch` or `wdth`, a
+`text-indent` carrying `hanging` or `each-line`, and more than 3,000 collapsed
+characters.
 
 The element must be in the document with fonts loaded before it is measured;
 `createTypesetter` handles the waiting.

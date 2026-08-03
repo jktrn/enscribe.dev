@@ -35,6 +35,22 @@ const authoredWidth = (style: CSSStyleDeclaration) => {
   return null
 }
 
+const INDENT_KEYWORD = /\b(?:hanging|each-line)\b/u
+
+export const indentsSomeOtherLine = (style: CSSStyleDeclaration) =>
+  INDENT_KEYWORD.test(style.textIndent)
+
+export const firstLineIndent = (
+  style: CSSStyleDeclaration,
+  contentWidth: number,
+) => {
+  const value = style.textIndent
+  if (value.endsWith("%")) {
+    return (Number.parseFloat(value) / 100 || 0) * contentWidth
+  }
+  return cssPixels(value)
+}
+
 export const unmodellableProperty = (style: CSSStyleDeclaration) => {
   if (style.textTransform !== "" && style.textTransform !== "none") {
     return "text-transform"

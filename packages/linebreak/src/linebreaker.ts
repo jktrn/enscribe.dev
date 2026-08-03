@@ -40,6 +40,8 @@ import {
   computedFont,
   createStyleReader,
   cssPixels,
+  firstLineIndent,
+  indentsSomeOtherLine,
   type StyleReader,
   uniformLetterSpacing,
   unmodellableProperty,
@@ -82,6 +84,7 @@ type Measurement = {
 type Draft = {
   readonly measurement: Measurement
   readonly width: number
+  readonly indent: number
   lines: readonly Line[]
   reduction: number
   round: number
@@ -378,6 +381,7 @@ class BrowserLinebreaker implements Linebreaker {
     if (writingMode && !writingMode.startsWith("horizontal")) {
       return "unsupported-writing-mode" as const
     }
+    if (indentsSomeOtherLine(style)) return "unmeasurable" as const
     return null
   }
 
@@ -408,11 +412,12 @@ class BrowserLinebreaker implements Linebreaker {
     element: HTMLElement,
     measurement: Measurement,
     width: number,
+    indent: number,
   ): Composition {
     const solved = breakParagraph(
       measurement.items,
       width - this.safetyMargin,
-      this.layoutOptions(measurement),
+      this.layoutOptions(measurement, indent),
     )
     if (!solved.ok) {
       return this.settled(element, "declined", "no-feasible-breaking")
@@ -431,6 +436,7 @@ class BrowserLinebreaker implements Linebreaker {
     this.drafts.set(composition, {
       measurement,
       width,
+      indent,
       lines: solved.lines,
       reduction: 0,
       round: 0,
@@ -474,7 +480,12 @@ class BrowserLinebreaker implements Linebreaker {
       this.measurements.set(element, measurement)
     }
 
-    return this.draftFor(element, measurement, width)
+    return this.draftFor(
+      element,
+      measurement,
+      width,
+      firstLineIndent(style, width),
+    )
   }
 
   private write(
@@ -490,7 +501,7 @@ class BrowserLinebreaker implements Linebreaker {
       const solved = breakParagraph(
         draft.measurement.items,
         target,
-        this.layoutOptions(draft.measurement),
+        this.layoutOptions(draft.measurement, draft.indent),
       )
       if (!solved.ok) {
         this.revert(composition, "layout-mismatch", results)
@@ -660,12 +671,13 @@ class BrowserLinebreaker implements Linebreaker {
     }
   }
 
-  private layoutOptions(measurement: Measurement) {
+  private layoutOptions(measurement: Measurement, indent: number) {
     const { hangs, flex } = measurement
     return {
       policy: this.policy,
       ...(hangs ? { hangs } : {}),
       ...(flex ? { flex } : {}),
+      ...(indent === 0 ? {} : { indent }),
     }
   }
 
