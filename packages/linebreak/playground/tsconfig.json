@@ -1,0 +1,13 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "types": ["bun"],
+    "paths": {
+      "@enscribe/linebreak": ["../src/index.ts"],
+      "@enscribe/linebreak/hyphenation": ["../src/hyphenation.ts"],
+      "justif": ["./vendor/justif/src/index.ts"],
+      "justif/hyphenate/en-us": ["./vendor/justif/src/hyphenation/en-us.ts"]
+    }
+  },
+  "include": ["src/**/*.ts", "build.ts", "serve.ts"]
+}

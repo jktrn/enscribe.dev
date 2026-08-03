@@ -64,7 +64,10 @@
   "scripts": {
     "build": "tsdown",
     "typecheck": "tsc --noEmit",
-    "check": "bun run typecheck && bun run build"
+    "check": "bun run typecheck && bun run build",
+    "playground": "bun run playground/build.ts && bun run playground/serve.ts",
+    "playground:build": "bun run playground/build.ts",
+    "playground:typecheck": "tsc --noEmit -p playground/tsconfig.json"
   },
   "dependencies": {
     "@chenglou/pretext": "0.0.8",
