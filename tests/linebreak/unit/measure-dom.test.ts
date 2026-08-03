@@ -16,7 +16,9 @@ class StubOffscreenCanvas {
 ;(globalThis as unknown as { OffscreenCanvas: unknown }).OffscreenCanvas =
   StubOffscreenCanvas
 
-const { domWidths, metricsForStyle } = await import("@linebreak/dom/measure-dom")
+const { domWidths, metricsForStyle } = await import(
+  "@linebreak/dom/measure-dom"
+)
 
 const ADVANCE = 7
 

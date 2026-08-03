@@ -2,7 +2,13 @@ import { describe, expect, test } from "bun:test"
 import type { ExtractedBlock, InlineRun } from "@linebreak/dom/extract"
 import { compileBlock } from "@linebreak/layout/compile"
 import { defaultGlue, texDefaults } from "@linebreak/layout/policy"
-import { AFFINE, CHARACTER, compileShape, metrics, SHY } from "./support/measure"
+import {
+  AFFINE,
+  CHARACTER,
+  compileShape,
+  metrics,
+  SHY,
+} from "./support/measure"
 
 const BUDGET = 0.03
 
@@ -84,7 +90,7 @@ describe("what earns a letterfit budget", () => {
     const compiled = compileBlock({
       block,
       metricsFor: () => metrics,
-    baseFont: metrics.font,
+      baseFont: metrics.font,
       atomWidth: () => 40,
       locale: "en-US",
       policy: texDefaults,
@@ -109,7 +115,10 @@ describe("what the DP is handed when both axes are on", () => {
   })
 
   test("the width axis alone reaches the DP as itself", () => {
-    const compiled = compileShape({ texts: ["ab cd"] }, { scaleFor: () => AFFINE })
+    const compiled = compileShape(
+      { texts: ["ab cd"] },
+      { scaleFor: () => AFFINE },
+    )
 
     expect(compiled.flex).toBe(compiled.expansion)
   })

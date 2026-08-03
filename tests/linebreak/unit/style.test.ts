@@ -131,7 +131,9 @@ describe("the letterspacing one line declaration can carry", () => {
   const readerOf = (values: readonly string[]) => {
     const elements = values.map((_, index) => ({ index }) as unknown as Element)
     const read = (element: Element) =>
-      styleOf({ letterSpacing: values[(element as unknown as { index: number }).index] })
+      styleOf({
+        letterSpacing: values[(element as unknown as { index: number }).index],
+      })
     return { elements, read }
   }
 

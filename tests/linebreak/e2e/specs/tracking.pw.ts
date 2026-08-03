@@ -71,7 +71,12 @@ const grew = async (
     spacing: 0,
     features: "",
   })
-  const spaced = await advance(page, { family, text, spacing: SPACING, features })
+  const spaced = await advance(page, {
+    family,
+    text,
+    spacing: SPACING,
+    features,
+  })
   return spaced - natural
 }
 

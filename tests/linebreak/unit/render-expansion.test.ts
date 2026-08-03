@@ -4,7 +4,9 @@ import { lineOf, render, settle } from "./support/render"
 
 describe("the percentage the renderer writes", () => {
   test("a line the optimizer widened is set at that percentage", () => {
-    const span = render(lineOf(), 310, [{ pct: 101, gain: 3, stretch: 20, shrink: 7 }])
+    const span = render(lineOf(), 310, [
+      { pct: 101, gain: 3, stretch: 20, shrink: 7 },
+    ])
 
     expect(span.style.fontStretch).toBe("101%")
   })
@@ -18,7 +20,9 @@ describe("the percentage the renderer writes", () => {
   })
 
   test("a line left at 100 carries no declaration at all", () => {
-    const span = render(lineOf(), 310, [{ pct: 100, gain: 0, stretch: 20, shrink: 7 }])
+    const span = render(lineOf(), 310, [
+      { pct: 100, gain: 0, stretch: 20, shrink: 7 },
+    ])
 
     expect(span.style.fontStretch).toBeUndefined()
   })
