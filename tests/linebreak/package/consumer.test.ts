@@ -111,6 +111,7 @@ test("the packed package works for Node, TypeScript, and browser consumers", asy
       "./layout",
       "./auto",
       "./attributes",
+      "./hyphenation",
       "./styles.css",
       "./package.json",
     ]) {
@@ -170,11 +171,12 @@ if (ATTRIBUTES.atom !== "data-linebreak-atom") throw new Error("attribute contra
       join(consumer, "consumer.ts"),
       `import { createLinebreaker, type Composition, type Outcome } from "@enscribe/linebreak"
 import { createTypesetter } from "@enscribe/linebreak/auto"
+import { englishHyphenator } from "@enscribe/linebreak/hyphenation"
 import "@enscribe/linebreak/styles.css"
 
 declare const paragraph: HTMLElement
 
-const linebreaker = createLinebreaker({ locale: "en-US", hyphenate: true })
+const linebreaker = createLinebreaker({ locale: "en-US", hyphenate: englishHyphenator })
 const compositions: readonly Composition[] = linebreaker.compose([paragraph])
 const outcomes: readonly Outcome[] = linebreaker.apply(compositions)
 for (const outcome of outcomes) {

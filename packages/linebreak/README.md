@@ -22,7 +22,9 @@ npm install @enscribe/linebreak
 | `@enscribe/linebreak/layout` | The optimizer alone | no | none |
 
 Import direction is strictly downward, so taking the optimizer does not drag
-in the DOM code.
+in the DOM code. The English pattern table is a fourth entry,
+`@enscribe/linebreak/hyphenation`, and no other entry reaches it: a consumer
+who does not hyphenate never parses it.
 
 ## Zero config
 
@@ -93,8 +95,9 @@ For a consumer who already owns a scheduler:
 
 ```ts
 import { createLinebreaker, proseBlocks } from "@enscribe/linebreak"
+import { englishHyphenator } from "@enscribe/linebreak/hyphenation"
 
-const linebreaker = createLinebreaker({ hyphenate: true })
+const linebreaker = createLinebreaker({ hyphenate: englishHyphenator })
 const outcomes = linebreaker.typeset(proseBlocks(article))
 ```
 
@@ -148,7 +151,7 @@ twice, or applying one from another instance.
 | --- | --- | --- |
 | `locale` | nearest `lang`, then `<html lang>`, then `en-US` | Segmentation locale. |
 | `minimumWidth` | `240` | Leave narrower elements alone. |
-| `hyphenate` | `false` | Dictionary hyphenation. English only. |
+| `hyphenate` | — | A hyphenator. `englishHyphenator` is the one that ships; see below. |
 | `protrude` | `true` | Character protrusion: punctuation hangs past the measure. |
 | `expand` | `false` | Font expansion: glyphs take a share of the line's slack, if the font has a width axis. |
 | `preserveImageAttributes` | `[]` | Copied between original and rebuilt images. |
@@ -159,10 +162,32 @@ twice, or applying one from another instance.
 | `maximumCharacters` | `3000` | Refuse paragraphs longer than this many collapsed characters. |
 | `onOutcome` | — | Streams every outcome. |
 
+### Hyphenation
+
+`hyphenate` takes the hyphenator rather than a flag, because the pattern table
+is the single most expensive thing this package can load and a flag would make
+every consumer pay for it at import:
+
+```ts
+import { englishHyphenator } from "@enscribe/linebreak/hyphenation"
+
+createTypesetter({ hyphenate: englishHyphenator })
+```
+
+`hyphen`'s `en-us` table is about 100 KB of patterns, and parsing it costs
+around 8 ms in a cold process against 10 ms for the whole DOM engine. Behind
+the option, that is 8 ms nobody spends by accident.
+
+A hyphenator is `(word, locale) => readonly number[]`, returning the code-unit
+offsets inside `word` where a break may go. `englishHyphenator` returns nothing
+for words shorter than five characters and nothing at all when `locale` is not
+English, so a `lang="fr"` paragraph is left alone rather than hyphenated with
+English patterns.
+
 ### Soft hyphens
 
 An authored `&shy;` is a break opportunity, and it is honoured whether or not
-`hyphenate` is on — that option only adds dictionary points on top. U+00AD
+a hyphenator is supplied — `hyphenate` only adds dictionary points on top. U+00AD
 compiles to a discretionary whose pre-break text is a hyphen, charged
 `hyphenPenalty` rather than `exHyphenPenalty` because it prints something when
 taken (tex.web §869), and flagged, so it pays the double- and final-hyphen

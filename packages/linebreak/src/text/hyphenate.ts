@@ -1,5 +1,6 @@
 import englishHyphenation from "hyphen/en-us"
 import { hyphenationLimits } from "../layout/policy"
+import type { Hyphenator } from "../types"
 
 const { hyphenateSync } = englishHyphenation
 
@@ -20,8 +21,9 @@ export const usesEnglishHyphenation = (locale: string) => {
   return english
 }
 
-export const hyphenationOffsets = (word: string): number[] => {
+export const englishHyphenator: Hyphenator = (word, locale) => {
   if (word.length < hyphenationLimits.minimumWordLength) return []
+  if (!usesEnglishHyphenation(locale)) return []
 
   const marked = hyphenateSync(word, {
     minWordLength: hyphenationLimits.minimumWordLength,

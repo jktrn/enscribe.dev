@@ -1,12 +1,12 @@
 import { describe, expect, test } from "bun:test"
 import {
-  hyphenationOffsets,
+  englishHyphenator,
   usesEnglishHyphenation,
 } from "@linebreak/text/hyphenate"
 
 describe("hyphenation offsets", () => {
   test("finds interior break points in a long word", () => {
-    const offsets = hyphenationOffsets("beautiful")
+    const offsets = englishHyphenator("beautiful", "en-US")
 
     expect(offsets.length).toBeGreaterThan(0)
     for (const offset of offsets) {
@@ -16,13 +16,13 @@ describe("hyphenation offsets", () => {
   })
 
   test("declines words shorter than the policy minimum", () => {
-    expect(hyphenationOffsets("cat")).toEqual([])
-    expect(hyphenationOffsets("idea")).toEqual([])
+    expect(englishHyphenator("cat", "en-US")).toEqual([])
+    expect(englishHyphenator("idea", "en-US")).toEqual([])
   })
 
   test("returns offsets into the original word, not the marked string", () => {
     const word = "typesetting"
-    const offsets = hyphenationOffsets(word)
+    const offsets = englishHyphenator(word, "en-US")
 
     for (const offset of offsets) {
       expect(word.slice(0, offset) + word.slice(offset)).toBe(word)
@@ -30,7 +30,7 @@ describe("hyphenation offsets", () => {
   })
 
   test("emits no soft hyphen into any consumer-visible value", () => {
-    const offsets = hyphenationOffsets("extraordinary")
+    const offsets = englishHyphenator("extraordinary", "en-US")
     expect(offsets.every((offset) => Number.isInteger(offset))).toBe(true)
   })
 })
@@ -45,5 +45,11 @@ describe("locale gating", () => {
 
   test("a malformed tag is rejected rather than throwing", () => {
     expect(usesEnglishHyphenation("not a locale")).toBe(false)
+  })
+
+  test("the hyphenator declines a word under a non-English locale", () => {
+    expect(englishHyphenator("beautiful", "en-US").length).toBeGreaterThan(0)
+    expect(englishHyphenator("beautiful", "fr")).toEqual([])
+    expect(englishHyphenator("beautiful", "not a locale")).toEqual([])
   })
 })

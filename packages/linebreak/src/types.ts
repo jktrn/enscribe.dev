@@ -74,10 +74,12 @@ export type Composition = {
   readonly reason?: SkipReason | DeclineReason | FailureReason
 }
 
+export type Hyphenator = (word: string, locale: string) => readonly number[]
+
 export type LinebreakerOptions = {
   locale?: string
   minimumWidth?: number
-  hyphenate?: boolean
+  hyphenate?: Hyphenator
   protrude?: boolean
   expand?: boolean
   preserveImageAttributes?: readonly string[]

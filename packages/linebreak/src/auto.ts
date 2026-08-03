@@ -433,6 +433,7 @@ export type {
   Composition,
   DeclineReason,
   FailureReason,
+  Hyphenator,
   Linebreaker,
   LinebreakerOptions,
   LinebreakerStats,

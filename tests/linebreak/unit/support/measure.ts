@@ -6,6 +6,7 @@ import {
   type LayoutPolicy,
   texDefaults,
 } from "@linebreak/layout/policy"
+import { englishHyphenator } from "@linebreak/text/hyphenate"
 import type { FontMetrics, MeasuredSegment } from "@linebreak/text/measure"
 import type { StretchScale } from "@linebreak/text/stretch"
 
@@ -136,7 +137,7 @@ export const compileShape = (
     policy: options.policy ?? texDefaults,
     glue: defaultGlue,
     ...(options.protrude ? { protrude: true } : {}),
-    ...(options.hyphenate ? { hyphenate: true } : {}),
+    ...(options.hyphenate ? { hyphenate: englishHyphenator } : {}),
     ...(options.scaleFor ? { scaleFor: options.scaleFor } : {}),
   })
   if (!compiled.ok) throw new Error(`compileBlock declined: ${compiled.reason}`)

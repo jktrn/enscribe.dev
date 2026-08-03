@@ -51,6 +51,10 @@
       "types": "./dist/attributes.d.ts",
       "default": "./dist/attributes.js"
     },
+    "./hyphenation": {
+      "types": "./dist/hyphenation.d.ts",
+      "default": "./dist/hyphenation.js"
+    },
     "./styles.css": {
       "types": "./dist/styles.css.d.ts",
       "default": "./dist/styles.css"

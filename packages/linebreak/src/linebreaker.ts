@@ -49,6 +49,7 @@ import {
   SKIP_REASONS,
   type DeclineReason,
   type FailureReason,
+  type Hyphenator,
   type Linebreaker,
   type LinebreakerOptions,
   type LinebreakerStats,
@@ -163,7 +164,7 @@ class BrowserLinebreaker implements Linebreaker {
   private readonly maximumCharacters: number
   private readonly defaultLocale: string | undefined
   private readonly preservedImageAttributes: readonly string[]
-  private readonly hyphenate: boolean
+  private readonly hyphenate: Hyphenator | undefined
   private readonly protrude: boolean
   private readonly expand: boolean
   private readonly policy: ReturnType<typeof resolvePolicy>
@@ -197,7 +198,7 @@ class BrowserLinebreaker implements Linebreaker {
     this.maximumCharacters = limits.maximumCharacters
     this.defaultLocale = options.locale || undefined
     this.preservedImageAttributes = options.preserveImageAttributes ?? []
-    this.hyphenate = options.hyphenate ?? false
+    this.hyphenate = options.hyphenate
     this.protrude = options.protrude ?? true
     this.expand = options.expand ?? false
     this.policy = resolvePolicy(options.policy)
@@ -754,10 +755,10 @@ class BrowserLinebreaker implements Linebreaker {
       metricsFor,
       atomWidth: (run: InlineRun) => outerWidth(run.sourceElement, reader),
       locale: basis.locale,
-      hyphenate: this.hyphenate,
       protrude: this.protrudes(element),
       policy: this.policy,
       glue: this.glue,
+      ...(this.hyphenate ? { hyphenate: this.hyphenate } : {}),
       ...(scaleFor ? { scaleFor } : {}),
     })
     if (unmodellable) return { ok: false, reason: unmodellable }

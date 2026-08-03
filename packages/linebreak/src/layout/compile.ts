@@ -1,4 +1,4 @@
-import type { ComposeReason } from "../types"
+import type { ComposeReason, Hyphenator } from "../types"
 import {
   breakAllowedAt,
   codeWrapper,
@@ -9,7 +9,6 @@ import {
   runEdgeWidths,
 } from "../dom/extract"
 import { codeBreakOffsets } from "../text/code-breaks"
-import { hyphenationOffsets, usesEnglishHyphenation } from "../text/hyphenate"
 import type { FontMetrics, MeasuredSegment, SegmentKind } from "../text/measure"
 import { type Item, lineBreak, paragraphEnd } from "./items"
 import {
@@ -35,7 +34,7 @@ export type CompileContext = {
   atomWidth: (run: InlineRun) => number
   locale: string
 
-  hyphenate?: boolean
+  hyphenate?: Hyphenator
   protrude?: boolean
   scaleFor?: (run: InlineRun) => StretchScale | null
   policy?: LayoutPolicy
@@ -229,13 +228,15 @@ const allowedCodeBreaks = (
 }
 
 const allowedHyphenBreaks = (
-  restrictions: readonly SourceRange[],
+  context: CompileContext,
+  hyphenate: Hyphenator,
   text: string,
   start: number,
   penalty: number,
 ): WordBreak[] => {
+  const restrictions = context.block.breakRestrictions
   const breaks: WordBreak[] = []
-  for (const at of hyphenationOffsets(text)) {
+  for (const at of hyphenate(text, context.locale)) {
     if (breakAllowedAt(restrictions, start + at)) {
       breaks.push({ at, penalty, flagged: true })
     }
@@ -254,9 +255,10 @@ const breaksInside = (
   if (options.inCode) {
     return allowedCodeBreaks(breakRestrictions, text, start).sort(byOffset)
   }
-  if (options.hyphenates) {
+  const { hyphenate } = context
+  if (options.hyphenates && hyphenate) {
     const penalty = options.policy.hyphenPenalty
-    return allowedHyphenBreaks(breakRestrictions, text, start, penalty).sort(
+    return allowedHyphenBreaks(context, hyphenate, text, start, penalty).sort(
       byOffset,
     )
   }
@@ -584,8 +586,7 @@ const compileRun = (
 const blockSettings = (context: CompileContext): Settings => ({
   policy: context.policy ?? webDefaults,
   elasticity: context.glue ?? defaultGlue,
-  hyphenates:
-    (context.hyphenate ?? false) && usesEnglishHyphenation(context.locale),
+  hyphenates: typeof context.hyphenate === "function",
 })
 
 const blockScope = (context: CompileContext): BlockScope => {
