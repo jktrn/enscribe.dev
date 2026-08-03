@@ -331,6 +331,16 @@ Nothing hangs out of a `<code>` run, out of an atom, or out of a box that
 absorbed an inline wrapper's padding or border, because in those cases the
 glyph is not the outermost painted thing on the line.
 
+Nothing hangs out of a monospace run set inside another font's prose either.
+The codes are advance-relative, and a monospace advance is a fixed cell much
+wider than the ink standing in it: a mono `.` hangs its ink 3.12px past the
+margin against the body font's 1.80px, and a mono `(` is displaced into the
+margin while its ink never reaches it. The run is identified by its own
+advances — `i` and `M` the same width — rather than by its tag, so `<kbd>`, a
+themed `<span>` and a family named without the `monospace` keyword are all
+caught. A paragraph set in a monospace font owns its own margin and still
+protrudes.
+
 `protrude: false` turns it off, and the layout is then identical to a build
 without the feature. So does the engine: the whole feature rests on a negative
 `margin-inline-end` shortening a line box's advance, so the first paragraph

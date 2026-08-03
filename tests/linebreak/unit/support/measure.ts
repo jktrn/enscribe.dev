@@ -133,6 +133,7 @@ export const compileShape = (
   const compiled = compileBlock({
     block: blockOf(shape),
     metricsFor: () => metrics,
+    baseFont: metrics.font,
     atomWidth: () => 0,
     locale: "en-US",
     policy: options.policy ?? texDefaults,

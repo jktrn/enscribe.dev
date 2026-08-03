@@ -38,7 +38,7 @@ type Recorder = {
 const fakeDocument = (host: "body" | "root" | "none" = "body") => {
   const seen: Recorder = { probes: [], hosts: [], attached: 0, clock: 0 }
 
-  const element = (): Probe & Record<string, unknown> => {
+  const element = () => {
     const record: Probe = {
       style: {},
       attribute: {},
@@ -47,7 +47,6 @@ const fakeDocument = (host: "body" | "root" | "none" = "body") => {
       readAt: -1,
     }
     return {
-      ...record,
       style: record.style,
       setAttribute: (name: string, value: string) => {
         record.attribute[name] = value

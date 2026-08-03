@@ -117,6 +117,7 @@ describe("width that is not glyph width", () => {
     const compiled = compileBlock({
       block,
       metricsFor: () => metrics,
+    baseFont: metrics.font,
       atomWidth: () => 40,
       locale: "en-US",
       policy: texDefaults,

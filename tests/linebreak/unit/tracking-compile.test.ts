@@ -84,6 +84,7 @@ describe("what earns a letterfit budget", () => {
     const compiled = compileBlock({
       block,
       metricsFor: () => metrics,
+    baseFont: metrics.font,
       atomWidth: () => 40,
       locale: "en-US",
       policy: texDefaults,

@@ -801,6 +801,7 @@ class BrowserLinebreaker implements Linebreaker {
     const compiled = compileBlock({
       block: extracted.block,
       metricsFor,
+      baseFont: basis.font,
       atomWidth: (run: InlineRun) => outerWidth(run.sourceElement, reader),
       locale: basis.locale,
       protrude: this.protrudes(element),

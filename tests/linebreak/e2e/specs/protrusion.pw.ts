@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test"
-import { measureLines, settleTypeset } from "../support/page"
+import { measureLines, settleTypeset, sweepViewport } from "../support/page"
 import { PROTRUSION } from "../support/protrusion"
 
 test.use({ viewport: { width: 1440, height: 900 } })
@@ -135,4 +135,89 @@ test("protrusion does not cost a retry or a failure", async ({ page }) => {
 
   expect(outcomes.typeset).toBeGreaterThan(50)
   expect(outcomes.empty).toBe(0)
+})
+
+const MONO_FIXTURE = () => {
+  const SENTENCE =
+    "The daemon reads its configuration once, caches it, and never looks " +
+    "again; any edit to the file, however small, needs a restart. " +
+    "“Never” is the operative word, and the path is fixed. "
+  const TEXT = SENTENCE.repeat(4)
+  const MONO = 'ui-monospace, "DejaVu Sans Mono", monospace'
+
+  const parent =
+    document.querySelector("prose-content") ??
+    document.querySelector("main p")?.parentElement
+  if (!parent) throw new Error("no prose container to add a paragraph to")
+
+  const add = (id: string, font: string, inset: boolean) => {
+    const block = document.createElement("p")
+    block.id = id
+    block.style.textAlign = "justify"
+    if (font && !inset) block.style.fontFamily = font
+    if (inset) {
+      const run = document.createElement("span")
+      run.style.fontFamily = font
+      run.textContent = TEXT
+      block.append(run)
+    } else {
+      block.textContent = TEXT
+    }
+    parent.append(block)
+  }
+
+  add("lb-prose-control", "", false)
+  add("lb-mono-block", MONO, false)
+  add("lb-mono-inset", MONO, true)
+
+  for (const enabled of [false, true]) {
+    document.dispatchEvent(
+      new CustomEvent("text-justification-change", { detail: { enabled } }),
+    )
+  }
+}
+
+test("a monospace run inside prose does not hang into the margin", async ({
+  page,
+}) => {
+  await settleTypeset(page)
+  await page.evaluate(MONO_FIXTURE)
+  await sweepViewport(page)
+  await page.waitForFunction(() =>
+    document
+      .getElementById("lb-mono-inset")
+      ?.hasAttribute("data-linebreak-typeset"),
+  )
+
+  const report = await page.evaluate(() =>
+    ["lb-prose-control", "lb-mono-block", "lb-mono-inset"].map((id) => {
+      const block = document.getElementById(id) as HTMLElement
+      const lines = [
+        ...block.querySelectorAll<HTMLElement>(
+          ":scope > [data-linebreak-line]",
+        ),
+      ]
+      return {
+        id,
+        typeset: block.hasAttribute("data-linebreak-typeset"),
+        lines: lines.length,
+        hung: lines.filter(
+          (line) => line.style.marginInlineStart || line.style.marginInlineEnd,
+        ).length,
+      }
+    }),
+  )
+
+  const [control, monoBlock, monoInset] = report
+  expect(control?.typeset).toBe(true)
+  expect(control?.lines).toBeGreaterThan(2)
+  expect(control?.hung).toBeGreaterThan(0)
+
+  expect(monoBlock?.typeset).toBe(true)
+  expect(monoBlock?.lines).toBeGreaterThan(2)
+  expect(monoBlock?.hung).toBeGreaterThan(0)
+
+  expect(monoInset?.typeset).toBe(true)
+  expect(monoInset?.lines).toBeGreaterThan(2)
+  expect(monoInset?.hung).toBe(0)
 })

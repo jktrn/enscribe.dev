@@ -32,6 +32,7 @@ import type { StretchScale } from "../text/stretch"
 export type CompileContext = {
   block: ExtractedBlock
   metricsFor: (run: InlineRun) => FontMetrics | null
+  baseFont: string
 
   atomWidth: (run: InlineRun) => number
   locale: string
@@ -324,6 +325,7 @@ type TextScope = {
   readonly settings: Settings
   readonly edges: ReturnType<typeof runEdgeWidths>
   readonly inCode: boolean
+  readonly protrudes: boolean
   readonly hyphenates: boolean
   readonly credits: Credits | null
   previousKind: SegmentKind | null
@@ -428,7 +430,7 @@ const emitTextSegment = (
 
 const creditSegment = (scope: TextScope, from: number) => {
   const { credits, metrics } = scope
-  if (!credits || scope.inCode) return
+  if (!credits || !scope.protrudes) return
   const { items } = scope.emit
   const { text } = scope.context.block
   const advance = (character: string) => metrics.measureRun(character)
@@ -475,6 +477,12 @@ type BlockScope = {
   readonly emit: Emit
 }
 
+const MONO_TOLERANCE = 0.01
+
+const insetMonospace = (context: CompileContext, metrics: FontMetrics) =>
+  metrics.font !== context.baseFont &&
+  Math.abs(metrics.measureRun("i") - metrics.measureRun("M")) < MONO_TOLERANCE
+
 const compileText = (
   block: BlockScope,
   run: TextRun,
@@ -483,6 +491,7 @@ const compileText = (
   const measured = metrics.measureParagraph(run.text)
   if (!measured) return "segmentation-mismatch"
 
+  const inCode = codeWrapper(run) !== undefined
   const scope: TextScope = {
     context: block.context,
     run,
@@ -490,7 +499,8 @@ const compileText = (
     emit: block.emit,
     settings: block.settings,
     edges: runEdgeWidths(block.context.block, run),
-    inCode: codeWrapper(run) !== undefined,
+    inCode,
+    protrudes: !inCode && !insetMonospace(block.context, metrics),
     hyphenates: block.settings.hyphenates && run.hyphenates,
     credits: block.credits,
     previousKind: null,

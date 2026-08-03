@@ -149,6 +149,7 @@ describe("suppression", () => {
     const compiled = compileBlock({
       block,
       metricsFor: () => metrics,
+      baseFont: metrics.font,
       atomWidth: () => 40,
       locale: "en-US",
       policy: texDefaults,
@@ -181,5 +182,103 @@ describe("edge characters are code points", () => {
   test("a combining mark is the edge character, not the stop under it", () => {
     expect(lastEnd(hangsOf(["word ."]))).toBeCloseTo(STOP, 9)
     expect(lastEnd(hangsOf(["word .́"]))).toBe(0)
+  })
+})
+
+describe("a monospace cell is wider than the ink in it", () => {
+  const MONO = 12
+  const PROSE_FONT = "16px serif"
+
+  const uniform = (font: string, advance: number) => ({
+    ...metrics,
+    font,
+    measureRun: (text: string) => text.length * advance,
+    measureParagraph: (text: string) => ({
+      segments: [
+        {
+          text,
+          start: 0,
+          end: text.length,
+          kind: "text" as const,
+          width: text.length * advance,
+          lineEndWidth: 0,
+        },
+      ],
+      hyphenWidth: HYPHEN,
+    }),
+  })
+
+  const proportional = (font: string) => ({
+    ...uniform(font, CHARACTER),
+    measureRun: (text: string) =>
+      [...text].reduce(
+        (total, character) => total + (character === "i" ? 4 : CHARACTER),
+        0,
+      ),
+  })
+
+  const twoRuns = (
+    trailing: ReturnType<typeof uniform>,
+    baseFont = PROSE_FONT,
+  ) => {
+    const prose = { localName: "p" } as HTMLElement
+    const inset = { localName: "kbd" } as HTMLElement
+    const runs: InlineRun[] = [
+      {
+        kind: "text",
+        text: "read ",
+        start: 0,
+        end: 5,
+        wrappers: [],
+        sourceElement: prose,
+        hyphenates: false,
+      },
+      {
+        kind: "text",
+        text: "cfg.",
+        start: 5,
+        end: 9,
+        wrappers: [],
+        sourceElement: inset,
+        hyphenates: false,
+      },
+    ]
+    const block: ExtractedBlock = {
+      text: "read cfg.",
+      runs,
+      breakRestrictions: [],
+      wrappers: new Map(),
+    }
+    const compiled = compileBlock({
+      block,
+      metricsFor: (run) =>
+        run.sourceElement === inset ? trailing : proportional(PROSE_FONT),
+      baseFont,
+      atomWidth: () => 0,
+      locale: "en-US",
+      policy: texDefaults,
+      glue: defaultGlue,
+      protrude: true,
+    })
+    if (!compiled.ok || !compiled.hangs) throw new Error("compileBlock failed")
+    return compiled.hangs.end[compiled.items.length - 1]
+  }
+
+  test("a bare monospace run inside prose earns no hang", () => {
+    expect(twoRuns(uniform("16px mono", MONO))).toBe(0)
+  })
+
+  test("a paragraph set in that same font keeps its hang", () => {
+    expect(twoRuns(uniform("16px mono", MONO), "16px mono")).toBeCloseTo(
+      0.7 * MONO,
+      9,
+    )
+  })
+
+  test("another proportional font is not a monospace run", () => {
+    expect(twoRuns(proportional("italic 16px serif"))).toBeCloseTo(
+      0.7 * CHARACTER,
+      9,
+    )
   })
 })
