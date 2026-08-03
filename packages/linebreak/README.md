@@ -90,6 +90,51 @@ while keeping measurements — the right response to a layout mode change.
 `rescan` re-runs discovery after content changes. `typeset` forces work through
 immediately, ignoring laziness. `dispose` tears everything down and restores.
 
+### Loading and first paint
+
+Where the script tag goes decides how long a reader looks at the browser's own
+justification, and it decides very little else. One long article of this site's
+prose against a frozen build, Chromium, 6x CPU throttle, fast 3G, twenty cold
+loads per variant, medians, timed from navigation start:
+
+| Script tag | First contentful paint | First typeset | Unjustified window |
+| --- | --- | --- | --- |
+| End of `<body>`, as shipped | 3528 ms | 6782 ms | 3254 ms |
+| End of `<body>`, `fetchpriority="low"` | 3208 ms | 8665 ms | 5457 ms |
+| In `<head>`, plain | 3624 ms | 6193 ms | 2569 ms |
+| In `<head>`, `blocking="render"` | 5378 ms | 5791 ms | 413 ms |
+| No typesetter at all | 3204 ms | — | — |
+
+`blocking="render"` buys the shortest unjustified window and pays 1850 ms of
+first paint for it. It only does anything in `<head>`. The attribute holds up
+rendering until the script has run, and a `type="module"` tag discovered at the
+end of `<body>` has nothing left to hold up, so the same markup pasted into a
+body-level component is a silent no-op that measures like the first row rather
+than the fourth.
+Layout shift is 0.000 in every variant measured, with the typesetter absent,
+eager and deferred: the greedy paint and the justified one occupy the same box,
+so the cost of a long unjustified window is that the text changes shape under
+the reader, not that anything moves.
+
+No placement makes the first justified paragraph arrive before the fonts do.
+`start()` awaits `document.fonts.ready`, which resolved at 4520 ms in the cell
+above, and that is a deliberate trade: canvas measurement in the fallback face
+returns advances the real face will not honour, so a paragraph set early is set
+to a break sequence the swap invalidates, and every line in it moves. justif
+trades the other way — its own documentation says text in a font that is still
+loading is justified in the fallback and re-justifies when the font arrives.
+This library leaves the browser's greedy justification alone until it can
+measure the face the reader will actually read, and then writes once.
+
+What the entry costs before any of that is bytes, not evaluation. Bundled and
+minified for a browser with dependencies inlined, the typesetter, the reporter
+and the hyphenator together are 145,062 B, or 51,623 B gzipped. The typesetter
+without the hyphenator is 95,104 B, or 32,292 B gzipped: the en-US pattern table
+is 49,780 B of the total and 19,271 B of the gzipped total, a third of what the
+page downloads. A reader who wants first paint back should drop the hyphenator
+or lower the tag's fetch priority. Deferring the engine's evaluation instead
+buys nothing, which is [measured below](#a-lazy-auto-entry).
+
 ## The engine
 
 For a consumer who already owns a scheduler:
@@ -935,8 +980,8 @@ same thing happens.
 
 ## Measured and declined
 
-Four features were prototyped against this library's shipping breaker, measured,
-and not built. The numbers are recorded so the work is not repeated.
+Five features were prototyped against this library as it ships, measured, and
+not built. The numbers are recorded so the work is not repeated.
 
 ### Hanging-punctuation modes
 
@@ -1013,6 +1058,40 @@ and on 17.98% of the opportunities in code-bearing paragraphs, 103 against 573.
 That moves 18.6% of the site's prose paragraphs and 69.6% of its code
 paragraphs. The 4.6 ms it would return sits behind `document.fonts.ready`, where
 nothing is waiting on it. Declined, not deferred.
+
+### A lazy `auto` entry
+
+`auto` imports the engine statically, and the engine is what pulls pretext in.
+Moving that import inside `start()`, behind the `document.fonts.ready` await it
+already performs, would take the engine half of the entry's cold import — about
+7.5 ms in a fresh process — out of module evaluation. The premise is that those
+7.5 ms sit in front of first paint. They do not.
+
+Measured on the rig behind
+[Loading and first paint](#loading-and-first-paint): the tag is
+`type="module"` at the end of `<body>`, and evaluation of the module finishes
+110.6 ms after first contentful paint on an unthrottled CPU and 2841 ms after it
+at 6x. It is never in front of paint. `document.fonts.ready` resolved before
+module evaluation ended in twenty runs of twenty at 1x, at 4x and at 6x, by a
+margin that grows from 35.5 ms to 1840.9 ms — the import is the later of the two
+gates, so putting it behind the earlier one changes nothing.
+
+The change was prototyped rather than argued about. Deferring exactly the
+evaluation it would defer, while leaving the fetch where it is, moves first
+paint by 0 ms and time-to-first-typeset by 33 ms at 6x on fast 3G, both inside
+run-to-run noise. Deferring the bytes as well is the only version that moves
+anything, and it moves them the wrong way for a reader: 320 ms of first paint
+bought for 2386 ms of extra delay before the first justified paragraph, and
+nothing outside noise at 1x or 4x. The `fetchpriority="low"` row of that table
+buys the same first paint for 503 ms less typeset delay, with no code.
+
+The price for that nothing is a permanently nullable engine on the object every
+verb reaches through, a synchronous public `typeset()` taught to throw before
+`start()` resolves, a new way for `start()` to reject that a fire-and-forget
+caller swallows, `settled` semantics to redecide, and a second chunk whose
+bundler treatment is outside this package's hands. On this site it would defer
+64% of the bytes it names anyway, because the hyphenator is passed as a
+construction option and loads eagerly whatever the engine does.
 
 ## Development
 
