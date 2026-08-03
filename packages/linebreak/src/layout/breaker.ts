@@ -305,10 +305,15 @@ const emptyStep = (): Step => ({
 })
 
 const clearStep = (step: Step) => {
-  step.from[0] = null
-  step.from[1] = null
-  step.from[2] = null
-  step.from[3] = null
+  const { from, demerits } = step
+  from[0] = null
+  from[1] = null
+  from[2] = null
+  from[3] = null
+  demerits[0] = Number.POSITIVE_INFINITY
+  demerits[1] = Number.POSITIVE_INFINITY
+  demerits[2] = Number.POSITIVE_INFINITY
+  demerits[3] = Number.POSITIVE_INFINITY
   step.rescue = null
 }
 
@@ -343,16 +348,21 @@ type Edge = {
   readonly trailing: number
 }
 
+const trailingWidth = (search: Search, to: number) => {
+  const endItem = search.items[to]
+  return (
+    (endItem ? lineEndWidth(endItem) : 0) -
+    (search.hangs ? (search.hangs.end[to] as number) : 0)
+  )
+}
+
 const edgeAt = (search: Search, to: number): Edge => {
-  const { items, sums, hangs } = search
-  const endItem = items[to]
+  const { sums } = search
   return {
     width: sums.width[to] as number,
     stretch: sums.stretch[to] as number,
     shrink: sums.shrink[to] as number,
-    trailing:
-      (endItem ? lineEndWidth(endItem) : 0) -
-      (hangs ? (hangs.end[to] as number) : 0),
+    trailing: trailingWidth(search, to),
   }
 }
 
@@ -416,6 +426,27 @@ const flaggedDemeritsAt = (
   return 0
 }
 
+const emptyLineDemerits = (
+  forced: boolean,
+  penaltyValue: number,
+  policy: LayoutPolicy,
+  ending: number,
+) =>
+  forced ? lineDemerits(0, penaltyValue, policy, endingBadness(ending, 0)) : 0
+
+const admitEmptyLine = (
+  step: Step,
+  from: ActiveNode,
+  demerits: number,
+  minimum: number,
+) => {
+  if (demerits >= (step.demerits[1] as number)) return minimum
+  step.from[1] = from
+  step.demerits[1] = demerits
+  step.ratio[1] = 0
+  return demerits < minimum ? demerits : minimum
+}
+
 const stepTo = (
   search: Search,
   actives: ActiveNode[],
@@ -423,23 +454,28 @@ const stepTo = (
   to: number,
   penaltyValue: number,
 ) => {
-  const { items, toleranceRatio, policy } = search
+  const { items, toleranceRatio, policy, target } = search
+  const sumWidth = search.sums.width
+  const sumStretch = search.sums.stretch
+  const sumShrink = search.sums.shrink
+  const emergency = search.emergencyStretch
   const forced = isForced(penaltyValue)
   clearStep(step)
   const slotFrom = step.from
   const slotDemerits = step.demerits
   const slotRatio = step.ratio
   let kept = 0
-  const edge = edgeAt(search, to)
+  const edgeWidth = sumWidth[to] as number
+  const edgeStretch = sumStretch[to] as number
+  const edgeShrink = sumShrink[to] as number
+  const edgeTrailing = trailingWidth(search, to)
   const startAfter = search.sums.starts[to + 1] as number
   const leadingAfter = leadingWidth(search, to)
   const flaggedHere = isFlaggedBreak(items[to])
   const flaggedExtra = flaggedDemeritsAt(items, to, flaggedHere, policy)
   const ending = endingThreshold(search, to)
   const floor = endingFloor(search, ending)
-  const emptyDemerits = forced
-    ? lineDemerits(0, penaltyValue, policy, endingBadness(ending, 0))
-    : 0
+  const emptyDemerits = emptyLineDemerits(forced, penaltyValue, policy, ending)
   let minimum = Number.POSITIVE_INFINITY
 
   for (let index = 0; index < actives.length; index += 1) {
@@ -451,22 +487,29 @@ const stepTo = (
         continue
       }
       const demerits = active.demerits + emptyDemerits
-      if (slotFrom[1] === null || demerits < (slotDemerits[1] as number)) {
-        slotFrom[1] = active
-        slotDemerits[1] = demerits
-        slotRatio[1] = 0
-        if (demerits < minimum) minimum = demerits
-      }
+      minimum = admitEmptyLine(step, active, demerits, minimum)
       continue
     }
 
-    const natural = naturalWidth(search, active, edge)
-    const ratio = adjustmentRatio(
-      search,
-      natural,
-      stretchOf(search, active, edge),
-      shrinkOf(search, active, edge),
-    )
+    const from = active.start
+    const natural =
+      edgeWidth - (sumWidth[from] as number) + active.leading + edgeTrailing
+    const stretch = edgeStretch - (sumStretch[from] as number)
+    const shrink = edgeShrink - (sumShrink[from] as number)
+    let ratio: number
+    if (!Number.isFinite(natural)) {
+      ratio = Number.NEGATIVE_INFINITY
+    } else {
+      const slack = target - natural
+      ratio = 0
+      if (slack > 0) {
+        const stretchable = stretch + emergency
+        ratio = stretchable > 0 ? slack / stretchable : INFINITE_BADNESS_RATIO
+      }
+      if (slack < 0) {
+        ratio = shrink > 0 ? slack / shrink : Number.NEGATIVE_INFINITY
+      }
+    }
 
     const tooLong = ratio < -1
     if (!tooLong && !forced) {
@@ -488,8 +531,7 @@ const stepTo = (
       demerits += policy.adjDemerits
     }
 
-    const slot = slotFrom[fitness]
-    if (slot === null || demerits < (slotDemerits[fitness] as number)) {
+    if (demerits < (slotDemerits[fitness] as number)) {
       slotFrom[fitness] = active
       slotDemerits[fitness] = demerits
       slotRatio[fitness] = ratio
