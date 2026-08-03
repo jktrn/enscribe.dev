@@ -82,6 +82,7 @@ export type LinebreakerOptions = {
   hyphenate?: Hyphenator
   protrude?: boolean
   expand?: boolean
+  track?: boolean
   preserveImageAttributes?: readonly string[]
 
   policy?: Partial<LayoutPolicy>

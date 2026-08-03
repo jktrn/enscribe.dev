@@ -2,6 +2,7 @@ import { breakParagraph, type Line } from "./layout/breaker"
 import { compileBlock } from "./layout/compile"
 import type { Item } from "./layout/items"
 import { fitLines } from "./layout/expansion"
+import { trackLines } from "./layout/tracking"
 import type { Flex } from "./layout/flex"
 import type { Hangs } from "./layout/protrusion"
 import { defaultGlue, resolvePolicy } from "./layout/policy"
@@ -69,6 +70,8 @@ type Measurement = {
   readonly items: Item[]
   readonly hangs: Hangs | null
   readonly expansion: Flex | null
+  readonly tracking: Flex | null
+  readonly flex: Flex | null
   readonly scale: StretchScale | null
   readonly authored: AuthoredContent
   readonly under: MeasurementBasis
@@ -168,6 +171,7 @@ class BrowserLinebreaker implements Linebreaker {
   private readonly hyphenate: Hyphenator | undefined
   private readonly protrude: boolean
   private readonly expand: boolean
+  private readonly track: boolean
   private readonly policy: ReturnType<typeof resolvePolicy>
   private readonly glue: { stretch: number; shrink: number }
   private readonly report: ((outcome: Outcome) => void) | undefined
@@ -202,6 +206,7 @@ class BrowserLinebreaker implements Linebreaker {
     this.hyphenate = options.hyphenate
     this.protrude = options.protrude ?? true
     this.expand = options.expand ?? false
+    this.track = options.track ?? false
     this.policy = resolvePolicy(options.policy)
     this.glue = { ...defaultGlue, ...options.glue }
     this.report = options.onOutcome
@@ -624,23 +629,30 @@ class BrowserLinebreaker implements Linebreaker {
   }
 
   private layoutFor(draft: Draft, target: number): RenderedLayout {
-    const { expansion, scale } = draft.measurement
+    const { expansion, scale, tracking, under } = draft.measurement
+    const fits =
+      expansion && scale
+        ? fitLines(draft.lines, target, expansion, scale)
+        : null
     return {
       lines: draft.lines,
       target,
-      fits:
-        expansion && scale
-          ? fitLines(draft.lines, target, expansion, scale)
-          : null,
+      fits,
+      letterfit: tracking
+        ? {
+            lines: trackLines(draft.lines, target, tracking, fits),
+            retainLigatures: under.letterSpacing === 0,
+          }
+        : null,
     }
   }
 
   private layoutOptions(measurement: Measurement) {
-    const { hangs, expansion } = measurement
+    const { hangs, flex } = measurement
     return {
       policy: this.policy,
       ...(hangs ? { hangs } : {}),
-      ...(expansion ? { flex: expansion } : {}),
+      ...(flex ? { flex } : {}),
     }
   }
 
@@ -757,6 +769,7 @@ class BrowserLinebreaker implements Linebreaker {
       atomWidth: (run: InlineRun) => outerWidth(run.sourceElement, reader),
       locale: basis.locale,
       protrude: this.protrudes(element),
+      ...(this.track ? { track: engineDefaults.trackingBudget } : {}),
       policy: this.policy,
       glue: this.glue,
       ...(this.hyphenate ? { hyphenate: this.hyphenate } : {}),
@@ -772,6 +785,8 @@ class BrowserLinebreaker implements Linebreaker {
         items: compiled.items,
         hangs: compiled.hangs,
         expansion: compiled.expansion,
+        tracking: compiled.tracking,
+        flex: compiled.flex,
         scale: compiled.scale,
         authored,
         under: basis,

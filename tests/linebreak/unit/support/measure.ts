@@ -127,6 +127,7 @@ export const compileShape = (
     protrude?: boolean
     hyphenate?: boolean
     scaleFor?: (run: InlineRun) => StretchScale | null
+    track?: number
   } = {},
 ) => {
   const compiled = compileBlock({
@@ -139,6 +140,7 @@ export const compileShape = (
     ...(options.protrude ? { protrude: true } : {}),
     ...(options.hyphenate ? { hyphenate: englishHyphenator } : {}),
     ...(options.scaleFor ? { scaleFor: options.scaleFor } : {}),
+    ...(options.track ? { track: options.track } : {}),
   })
   if (!compiled.ok) throw new Error(`compileBlock declined: ${compiled.reason}`)
   return compiled

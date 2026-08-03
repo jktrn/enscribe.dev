@@ -18,7 +18,8 @@ import {
   webDefaults,
 } from "./policy"
 import { buildExpansion } from "./expansion"
-import type { Flex } from "./flex"
+import { type Flex, pooledFlex } from "./flex"
+import { buildTracking } from "./tracking"
 import {
   buildHangs,
   endHang,
@@ -38,6 +39,7 @@ export type CompileContext = {
   hyphenate?: Hyphenator
   protrude?: boolean
   scaleFor?: (run: InlineRun) => StretchScale | null
+  track?: number
   policy?: LayoutPolicy
   glue?: GlueElasticity
 }
@@ -48,6 +50,8 @@ export type CompileResult =
       items: Item[]
       hangs: Hangs | null
       expansion: Flex | null
+      tracking: Flex | null
+      flex: Flex | null
       scale: StretchScale | null
     }
   | { ok: false; reason: ComposeReason }
@@ -467,6 +471,7 @@ type BlockScope = {
   readonly settings: Settings
   readonly credits: Credits | null
   readonly expandable: Expandable | null
+  readonly unglyphed: Set<number> | null
   readonly emit: Emit
 }
 
@@ -543,6 +548,7 @@ const compileAtomRun = (
     source: { start: run.start, end: run.end },
   })
   scope.expandable?.uncredited.add(items.length - 1)
+  scope.unglyphed?.add(items.length - 1)
 }
 
 const compileTextRun = (
@@ -595,15 +601,29 @@ const blockScope = (context: CompileContext): BlockScope => {
   const expandable: Expandable | null = context.scaleFor
     ? { uncredited: new Set(), scale: null, mixed: false }
     : null
-  const folded = credits || expandable ? new Set<number>() : null
+  const unglyphed = context.track ? new Set<number>() : null
+  const folded = credits || expandable || unglyphed ? new Set<number>() : null
   return {
     context,
     settings: blockSettings(context),
     credits,
     expandable,
+    unglyphed,
     emit: { items: [], pending: new PendingEdge(folded), folded },
   }
 }
+
+const trackingFrom = (scope: BlockScope, folded: ReadonlySet<number>) => {
+  const { context, unglyphed } = scope
+  if (!unglyphed || !context.track) return null
+  for (const index of folded) unglyphed.add(index)
+  return buildTracking(scope.emit.items, context.track, unglyphed)
+}
+
+const pooled = (expansion: Flex | null, tracking: Flex | null) =>
+  expansion && tracking
+    ? pooledFlex(expansion, tracking)
+    : (expansion ?? tracking)
 
 const compiled = (scope: BlockScope): CompileResult => {
   const { credits, expandable, emit } = scope
@@ -611,11 +631,14 @@ const compiled = (scope: BlockScope): CompileResult => {
   const expansion = expandable
     ? expansionFrom(emit.items, expandable, marks)
     : null
+  const tracking = trackingFrom(scope, marks)
   return {
     ok: true,
     items: emit.items,
     hangs: credits ? hangsFrom(emit.items, credits, marks) : null,
     expansion,
+    tracking,
+    flex: pooled(expansion, tracking),
     scale: expansion && expandable ? expandable.scale : null,
   }
 }

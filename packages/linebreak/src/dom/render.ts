@@ -1,5 +1,6 @@
 import type { Line } from "../layout/breaker"
 import type { LineFit } from "../layout/expansion"
+import type { LineTrack } from "../layout/tracking"
 import {
   type ExtractedBlock,
   type InlineRun,
@@ -295,10 +296,28 @@ export const preserveImageAttributes = (
   }
 }
 
+export type Letterfit = {
+  readonly lines: readonly LineTrack[]
+  readonly retainLigatures: boolean
+}
+
 export type RenderedLayout = {
   readonly lines: readonly Line[]
   readonly target: number
   readonly fits: readonly LineFit[] | null
+  readonly letterfit: Letterfit | null
+}
+
+const LIGATURES = '"liga" 1, "clig" 1'
+
+const renderedUnits = (block: ExtractedBlock, line: Line) => {
+  const { sliceStart, sliceEnd } = trimmedSlice(block, line)
+  let units = line.breakKind === "hyphen" ? 1 : 0
+  for (let offset = sliceStart; offset < sliceEnd; offset += 1) {
+    const code = block.text.charCodeAt(offset)
+    if (code < 0xdc00 || code > 0xdfff) units += 1
+  }
+  return units
 }
 
 const applyHangs = (element: HTMLElement, line: Line) => {
@@ -310,19 +329,51 @@ const applyHangs = (element: HTMLElement, line: Line) => {
   }
 }
 
-const applyFit = (
-  element: HTMLElement,
-  line: Line,
-  fit: LineFit | undefined,
-  targetWidth: number,
-) => {
-  if (fit && fit.pct !== 100) element.style.fontStretch = `${fit.pct}%`
+type LinePlan = {
+  readonly fit: LineFit | undefined
+  readonly track: LineTrack | undefined
+  readonly units: number
+  readonly retainLigatures: boolean
+  readonly target: number
+}
 
-  const natural = line.naturalWidth + (fit?.gain ?? 0)
-  const shrink = fit ? fit.shrink : line.shrink
-  const overflow = Math.min(natural - targetWidth, shrink)
+const applyLetterfit = (element: HTMLElement, plan: LinePlan) => {
+  const gain = plan.track?.gain ?? 0
+  if (gain === 0 || plan.units === 0) return
+  element.style.letterSpacing = `${gain / plan.units}px`
+  if (plan.retainLigatures) element.style.fontFeatureSettings = LIGATURES
+}
+
+const applyRescue = (element: HTMLElement, line: Line, plan: LinePlan) => {
+  const { fit, track } = plan
+  const natural = line.naturalWidth + (fit?.gain ?? 0) + (track?.gain ?? 0)
+  const shrink = track?.shrink ?? fit?.shrink ?? line.shrink
+  const overflow = Math.min(natural - plan.target, shrink)
   if (overflow > 0 && line.spaceCount > 0) {
     element.style.wordSpacing = `${-(overflow / line.spaceCount)}px`
+  }
+}
+
+const applyFit = (element: HTMLElement, line: Line, plan: LinePlan) => {
+  const { fit } = plan
+  if (fit && fit.pct !== 100) element.style.fontStretch = `${fit.pct}%`
+  applyLetterfit(element, plan)
+  applyRescue(element, line, plan)
+}
+
+const planFor = (
+  block: ExtractedBlock,
+  layout: RenderedLayout,
+  index: number,
+): LinePlan => {
+  const { letterfit } = layout
+  const line = layout.lines[index] as Line
+  return {
+    fit: layout.fits?.[index],
+    track: letterfit?.lines[index],
+    units: letterfit ? renderedUnits(block, line) : 0,
+    retainLigatures: letterfit?.retainLigatures === true,
+    target: layout.target,
   }
 }
 
@@ -332,7 +383,7 @@ export const renderLines = (
   layout: RenderedLayout,
   preservedImageAttributes: readonly string[],
 ) => {
-  const { lines, target: targetWidth, fits } = layout
+  const { lines } = layout
   const document = element.ownerDocument
   const output = document.createDocumentFragment()
   const lineElements: HTMLElement[] = []
@@ -351,7 +402,7 @@ export const renderLines = (
     const target = document.createElement("span")
     target.dataset.linebreakLine = line.breakKind
     applyHangs(target, line)
-    applyFit(target, line, fits?.[index], targetWidth)
+    applyFit(target, line, planFor(block, layout, index))
 
     const rendered = appendLine(target, block, line, nextRun)
     if (!rendered) return null
@@ -379,15 +430,12 @@ type Tightening = {
 
 const OVERSET_EPSILON = 0.05
 
-const expandedLine = (
-  lines: readonly Line[],
-  fits: readonly LineFit[],
-  index: number,
-) => {
-  const line = lines[index]
-  const pct = fits[index]?.pct
-  if (!line || pct === undefined || pct === 100) return null
-  return line.spaceCount === 0 ? null : line
+const adjustedLine = (layout: RenderedLayout, index: number) => {
+  const line = layout.lines[index]
+  if (!line || line.spaceCount === 0) return null
+  const pct = layout.fits?.[index]?.pct ?? 100
+  const gain = layout.letterfit?.lines[index]?.gain ?? 0
+  return pct !== 100 || gain !== 0 ? line : null
 }
 
 const tighteningFor = (
@@ -404,15 +452,15 @@ const tighteningFor = (
 }
 
 const oversetOf = (written: WrittenLines): Tightening[] => {
-  const { lines, target, fits } = written.layout
+  const { layout } = written
   const tightenings: Tightening[] = []
-  if (!fits) return tightenings
+  if (!layout.fits && !layout.letterfit) return tightenings
 
   for (const [index, element] of written.elements.entries()) {
-    const line = expandedLine(lines, fits, index)
+    const line = adjustedLine(layout, index)
     if (!line) continue
 
-    const tightening = tighteningFor(element, line, target)
+    const tightening = tighteningFor(element, line, layout.target)
     if (tightening) tightenings.push(tightening)
   }
   return tightenings
