@@ -13,16 +13,17 @@ line.
 npm install @enscribe/linebreak
 ```
 
-## Three ways in
+## Four ways in
 
 | Import | You get | DOM | Dependencies |
 | --- | --- | --- | --- |
 | `@enscribe/linebreak/auto` | Progressive enhancement with a lifetime | yes | — |
 | `@enscribe/linebreak` | The DOM engine; bring your own scheduler | yes | `@chenglou/pretext` |
+| `@enscribe/linebreak/text` | The compiler, fed by your own widths | no | none |
 | `@enscribe/linebreak/layout` | The optimizer alone | no | none |
 
 Import direction is strictly downward, so taking the optimizer does not drag
-in the DOM code. The English pattern table is a fourth entry,
+in the DOM code. The English pattern table is a fifth entry,
 `@enscribe/linebreak/hyphenation`, and no other entry reaches it: a consumer
 who does not hyphenate never parses it.
 
@@ -534,25 +535,20 @@ and every benchmark that produced them, stay comparable.
 
 ## The headless compiler
 
-**This entry does not exist yet.** What follows is the frozen contract for
-`@enscribe/linebreak/text`, written before the code so the shape cannot drift
-into something that has to be published twice. Until it ships,
-`@enscribe/linebreak/layout` is the only entry that runs without a DOM and
-"Three ways in" stays a table of three.
-
 `@enscribe/linebreak/layout` takes items and returns breaks. Something has to
 make the items: split the string into segments, measure them, decide where a
 word may break, and turn protrusion, expansion and letterfit into per-item
 budgets. In the browser that is `compileBlock`, fed by the DOM extractor. The
-compiler itself never reads a node — it takes widths from a callback and
-offsets from a plain string, and the only DOM API anywhere in its reach is one
-`localName === "code"` test. Its runtime import graph is 13 files and zero
-packages, and the benchmark harness has been driving it from a synthesized
+compiler itself never reads a node: widths arrive through a callback, offsets
+index a plain string, and the two questions a `<code>` wrapper used to answer —
+is this run code, and how wide are its inline edges — are callbacks the DOM
+tier fills in. The benchmark harness has been driving it from a synthesized
 block with no document for as long as gates 6, 7 and 8 have existed.
 
-So the compiler is already headless and there is no supported way to reach it.
-This entry is that door, for callers that have advance widths and no document:
-server-side rendering, canvas, PDF, and the harness itself.
+`@enscribe/linebreak/text` is the door to it, for callers that have advance
+widths and no document: server-side rendering, canvas, PDF, and the harness
+itself. Its runtime import graph is 13 files and zero packages, and a test
+asserts that no file under `dom/` and no bare package can enter it.
 
 ### The surface
 
@@ -655,7 +651,7 @@ investigation could build:
 | `Intl.Segmenter` word granularity, merged, with dash rules | 211 (0.20%) | 29 | 103 (10.2%) | 89–99 |
 | the scanner | 15 (0.01%) | 28 | 18 (1.8%) | 59 |
 
-Better on both axes and no ICU version in the surface, for about sixty lines
+Better on both axes and no ICU version in the surface, for about seventy lines
 this package owns forever. All of that evidence is Latin prose. There is none
 about Thai, Khmer or Lao, which need dictionary word breaking that neither a
 scanner nor a browser's default segmenter provides, which is what the `segment`

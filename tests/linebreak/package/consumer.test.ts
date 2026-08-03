@@ -91,6 +91,7 @@ const expectExportsInOrder = (manifest: PackedPackageManifest) => {
   for (const required of [
     ".",
     "./layout",
+    "./text",
     "./auto",
     "./attributes",
     "./hyphenation",
@@ -184,11 +185,55 @@ if (ATTRIBUTES.atom !== "data-linebreak-atom") throw new Error("attribute contra
     run("node", [join(consumer, "runtime.mjs")], { cwd: consumer })
 
     await writeFile(
+      join(consumer, "headless.mjs"),
+      `import { breakParagraph } from "@enscribe/linebreak/layout"
+import { compileText, createMetrics } from "@enscribe/linebreak/text"
+
+if (typeof document !== "undefined") throw new Error("this process has a document")
+if (typeof window !== "undefined") throw new Error("this process has a window")
+
+const text = "Knuth and Plass break a paragraph by considering it whole."
+const metrics = createMetrics({ measure: (piece) => piece.length * 7.5 })
+const compiled = compileText(text, metrics, { protrude: true, track: 0.03 })
+if (!compiled.ok) throw new Error("compileText declined: " + compiled.reason)
+if (!compiled.hangs || !compiled.tracking) throw new Error("expected hangs and tracking")
+
+const result = breakParagraph(compiled.items, 200, { hangs: compiled.hangs, flex: compiled.flex })
+if (!result.ok) throw new Error("expected a solution")
+if (result.lines.length < 2) throw new Error("expected more than one line")
+
+let rebuilt = ""
+for (const [index, line] of result.lines.entries()) {
+  if (index > 0 && result.lines[index - 1].breakKind === "space") rebuilt += " "
+  rebuilt += text.slice(line.sourceStart, line.sourceEnd)
+}
+if (rebuilt !== text) throw new Error("lines do not reconstruct the paragraph: " + rebuilt)
+`,
+    )
+    run("node", [join(consumer, "headless.mjs")], { cwd: consumer })
+    run("bun", [join(consumer, "headless.mjs")], { cwd: consumer })
+
+    await writeFile(
       join(consumer, "consumer.ts"),
       `import { createLinebreaker, type Composition, type Outcome } from "@enscribe/linebreak"
 import { createTypesetter } from "@enscribe/linebreak/auto"
 import { englishHyphenator } from "@enscribe/linebreak/hyphenation"
+import {
+  compileText,
+  createMetrics,
+  segmentText,
+  type Advance,
+  type CompileResult,
+  type FontMetrics,
+  type TextSegment,
+} from "@enscribe/linebreak/text"
 import "@enscribe/linebreak/styles.css"
+
+const advance: Advance = (piece) => piece.length * 7.5
+const segments: TextSegment[] = segmentText("headless prose")
+const headless: FontMetrics = createMetrics({ measure: advance, segment: () => segments })
+const compiled: CompileResult = compileText("headless prose", headless, { track: 0.03 })
+if (compiled.ok) console.log(compiled.items.length, compiled.tracking)
 
 declare const paragraph: HTMLElement
 

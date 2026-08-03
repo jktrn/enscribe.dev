@@ -43,6 +43,10 @@
       "types": "./dist/layout.d.ts",
       "default": "./dist/layout.js"
     },
+    "./text": {
+      "types": "./dist/text.d.ts",
+      "default": "./dist/text.js"
+    },
     "./auto": {
       "types": "./dist/auto.d.ts",
       "default": "./dist/auto.js"

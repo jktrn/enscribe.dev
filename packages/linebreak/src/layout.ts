@@ -27,6 +27,11 @@ export {
   penalty,
 } from "./layout/items"
 
+export { fitLines, type LineFit } from "./layout/expansion"
+export type { Flex } from "./layout/flex"
+export type { Hangs } from "./layout/protrusion"
+export { type LineTrack, trackLines } from "./layout/tracking"
+
 export {
   defaultGlue,
   EJECT_PENALTY,

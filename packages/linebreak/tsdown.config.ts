@@ -4,6 +4,7 @@ export default defineConfig({
   entry: [
     "src/index.ts",
     "src/layout.ts",
+    "src/text.ts",
     "src/auto.ts",
     "src/attributes.ts",
     "src/hyphenation.ts",
