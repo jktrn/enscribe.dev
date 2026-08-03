@@ -1,7 +1,10 @@
 import { describe, expect, test } from "bun:test"
 import {
+  probeStyle,
   uniformLetterSpacing,
   unmodellableProperty,
+  usesVariant,
+  variantKey,
 } from "@linebreak/dom/style"
 
 const styleOf = (overrides: Partial<Record<string, string>> = {}) =>
@@ -39,36 +42,54 @@ describe("properties the width model cannot follow", () => {
 })
 
 describe("glyph substitutions canvas cannot express", () => {
-  test("a small-capped run is declined", () => {
-    expect(
-      unmodellableProperty(styleOf({ fontVariantCaps: "all-small-caps" })),
-    ).toBe("font-variant")
+  const SUBSTITUTING: readonly Record<string, string>[] = [
+    { fontVariantCaps: "all-small-caps" },
+    { fontVariantCaps: "small-caps" },
+    { fontVariantNumeric: "oldstyle-nums ordinal" },
+    { fontVariantPosition: "super" },
+    { fontVariantLigatures: "none" },
+    { fontVariantAlternates: "styleset(alt-a)" },
+    { fontVariantEastAsian: "jis78" },
+    { fontFeatureSettings: '"smcp"' },
+  ]
+
+  for (const overrides of SUBSTITUTING) {
+    const [property, value] = Object.entries(overrides)[0] as [string, string]
+
+    test(`${property}: ${value} is measured, not declined`, () => {
+      expect(usesVariant(styleOf(overrides))).toBe(true)
+      expect(unmodellableProperty(styleOf(overrides))).toBe(null)
+    })
+
+    test(`${property}: ${value} keys its own metrics`, () => {
+      expect(variantKey(styleOf(overrides))).toBe(`${property}:${value};`)
+    })
+  }
+
+  test("a plain run carries no variant and no key", () => {
+    expect(usesVariant(styleOf())).toBe(false)
+    expect(variantKey(styleOf())).toBe("")
   })
 
-  test("an oldstyle-figures run is declined", () => {
-    expect(
-      unmodellableProperty(
-        styleOf({ fontVariantNumeric: "oldstyle-nums ordinal" }),
-      ),
-    ).toBe("font-variant")
+  test("an authored width keys the metrics without reaching the DOM", () => {
+    const style = styleOf({ fontVariationSettings: '"wght" 600' })
+
+    expect(usesVariant(style)).toBe(false)
+    expect(variantKey(style)).toBe('fontVariationSettings:"wght" 600;')
   })
 
-  test("a raw feature setting is declined", () => {
-    expect(
-      unmodellableProperty(styleOf({ fontFeatureSettings: '"smcp"' })),
-    ).toBe("font-variant")
-  })
-
-  test("a superscripted run is declined", () => {
-    expect(
-      unmodellableProperty(styleOf({ fontVariantPosition: "super" })),
-    ).toBe("font-variant")
-  })
-
-  test("a ligature suppression is declined", () => {
-    expect(
-      unmodellableProperty(styleOf({ fontVariantLigatures: "none" })),
-    ).toBe("font-variant")
+  test("the probe is told every property, neutral ones included", () => {
+    expect(probeStyle(styleOf({ fontVariantCaps: "petite-caps" }))).toEqual([
+      ["fontStretch", "100%"],
+      ["fontVariationSettings", "normal"],
+      ["fontVariantAlternates", "normal"],
+      ["fontVariantCaps", "petite-caps"],
+      ["fontVariantEastAsian", "normal"],
+      ["fontVariantLigatures", "normal"],
+      ["fontVariantNumeric", "normal"],
+      ["fontVariantPosition", "normal"],
+      ["fontFeatureSettings", "normal"],
+    ])
   })
 })
 

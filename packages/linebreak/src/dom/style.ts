@@ -92,7 +92,6 @@ export const unmodellableProperty = (style: CSSStyleDeclaration) => {
     return "text-transform"
   }
   if (cssPixels(style.wordSpacing) !== 0) return "word-spacing"
-  if (usesVariant(style)) return "font-variant"
   return authoredWidth(style)
 }
 

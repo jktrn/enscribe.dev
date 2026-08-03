@@ -14,13 +14,13 @@ import {
 } from "./dom/extract"
 import {
   configureLocale,
-  createFontMetrics,
   type FontMetrics,
   invalidateMeasurements,
 } from "./text/measure"
 import { engineDefaults } from "./policy"
 import type { StretchScale } from "./text/stretch"
 import { invalidateStretchScales, stretchScaleFor } from "./dom/stretch"
+import { metricsForStyle } from "./dom/measure-dom"
 import {
   honoursHangingMargins,
   LINE_SELECTOR,
@@ -45,6 +45,7 @@ import {
   type StyleReader,
   uniformLetterSpacing,
   unmodellableProperty,
+  variantKey,
 } from "./dom/style"
 import {
   COMPOSITION_BRAND,
@@ -751,12 +752,18 @@ class BrowserLinebreaker implements Linebreaker {
     this.live.delete(element)
   }
 
-  private metricsFor(font: string, letterSpacing: number, locale: string) {
-    const key = `${locale}|${letterSpacing}|${font}`
+  private metricsFor(
+    style: CSSStyleDeclaration,
+    locale: string,
+    document: Document,
+  ) {
+    const font = computedFont(style)
+    const letterSpacing = cssPixels(style.letterSpacing)
+    const key = `${locale}|${letterSpacing}|${variantKey(style)}|${font}`
     const cached = this.metrics.get(key)
     if (cached) return cached
-    const metrics = createFontMetrics(font, letterSpacing)
-    this.metrics.set(key, metrics)
+    const metrics = metricsForStyle(document, style, font, letterSpacing)
+    if (metrics) this.metrics.set(key, metrics)
     return metrics
   }
 
@@ -780,15 +787,11 @@ class BrowserLinebreaker implements Linebreaker {
 
     const metricsFor = (run: InlineRun): FontMetrics | null => {
       const runStyle = reader(run.sourceElement)
-      if (unmodellableProperty(runStyle)) {
-        unmodellable ??= "unmeasurable"
-        return null
-      }
-      return this.metricsFor(
-        computedFont(runStyle),
-        cssPixels(runStyle.letterSpacing),
-        basis.locale,
-      )
+      const metrics = unmodellableProperty(runStyle)
+        ? null
+        : this.metricsFor(runStyle, basis.locale, element.ownerDocument)
+      if (!metrics) unmodellable ??= "unmeasurable"
+      return metrics
     }
 
     const text = authoredText(element)
