@@ -21,45 +21,69 @@ test("no line overflows or wraps", async ({ page }) => {
   expect(report.unhungOverflowBlocks).toBe(0)
 })
 
+type RaggedReport = {
+  flush: number
+  raggedFlush: number
+  stretched: number
+  raggedStretched: number
+}
+
+const raggedReport = (): RaggedReport => {
+  const rightOf = (block: Element) => {
+    const style = getComputedStyle(block)
+    return (
+      block.getBoundingClientRect().right -
+      Number.parseFloat(style.paddingInlineEnd || "0") -
+      Number.parseFloat(style.borderInlineEndWidth || "0")
+    )
+  }
+
+  const reachesEnd = (line: HTMLElement, right: number) => {
+    const rects = [...line.getClientRects()]
+    if (rects.length === 0) return null
+    return right - Math.max(...rects.map((rect) => rect.right)) <= 2
+  }
+
+  const tallyLine = (
+    line: HTMLElement,
+    isLast: boolean,
+    right: number,
+    into: RaggedReport,
+  ) => {
+    const reaches = reachesEnd(line, right)
+    if (reaches === null) return
+    const ragged = reaches ? 0 : 1
+    if (isLast || line.dataset.linebreakLine === "forced") {
+      into.flush += 1
+      into.raggedFlush += ragged
+      return
+    }
+    into.stretched += 1
+    into.raggedStretched += ragged
+  }
+
+  const report: RaggedReport = {
+    flush: 0,
+    raggedFlush: 0,
+    stretched: 0,
+    raggedStretched: 0,
+  }
+  for (const block of document.querySelectorAll("[data-linebreak-typeset]")) {
+    const lines = [
+      ...block.querySelectorAll<HTMLElement>(":scope > [data-linebreak-line]"),
+    ]
+    const right = rightOf(block)
+    for (const [index, line] of lines.entries()) {
+      tallyLine(line, index === lines.length - 1, right, report)
+    }
+  }
+  return report
+}
+
 test("a line that ends a run of text stays ragged", async ({ page }) => {
   await settleTypeset(page)
 
-  const ragged = await page.evaluate(() => {
-    let flush = 0
-    let raggedFlush = 0
-    let stretched = 0
-    let raggedStretched = 0
-
-    for (const block of document.querySelectorAll("[data-linebreak-typeset]")) {
-      const lines = [
-        ...block.querySelectorAll<HTMLElement>(
-          ":scope > [data-linebreak-line]",
-        ),
-      ]
-      const style = getComputedStyle(block)
-      const right =
-        block.getBoundingClientRect().right -
-        Number.parseFloat(style.paddingInlineEnd || "0") -
-        Number.parseFloat(style.borderInlineEndWidth || "0")
-
-      for (const [index, line] of lines.entries()) {
-        const rects = [...line.getClientRects()]
-        if (rects.length === 0) continue
-        const reaches =
-          right - Math.max(...rects.map((rect) => rect.right)) <= 2
-        const isFlush =
-          index === lines.length - 1 || line.dataset.linebreakLine === "forced"
-        if (isFlush) {
-          flush += 1
-          if (!reaches) raggedFlush += 1
-        } else {
-          stretched += 1
-          if (!reaches) raggedStretched += 1
-        }
-      }
-    }
-    return { flush, raggedFlush, stretched, raggedStretched }
-  })
+  const ragged = await page.evaluate(raggedReport)
 
   expect(ragged.stretched).toBeGreaterThan(50)
   expect(ragged.raggedStretched).toBe(0)

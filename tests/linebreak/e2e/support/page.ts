@@ -85,82 +85,136 @@ export type LineReport = {
   liveText: string
 }
 
-export const measureLines = (page: Page) =>
-  page.evaluate<LineReport>(() => {
-    const blocks = [...document.querySelectorAll("[data-linebreak-typeset]")]
-    let totalLines = 0
-    let justifiedLines = 0
-    let shortLines = 0
-    let worstGapPx = 0
-    let overflowingBlocks = 0
-    let unhungOverflowBlocks = 0
-    let worstUnhungOverflowPx = 0
-    let wrappedBlocks = 0
-    let hangingLines = 0
+const lineReport = (): LineReport => {
+  type Tally = {
+    lines: number
+    justified: number
+    short: number
+    worstGap: number
+    overflowing: number
+    unhungOverflow: number
+    worstUnhung: number
+    wrapped: number
+    hanging: number
+  }
 
-    for (const block of blocks) {
-      const lines = [
-        ...block.querySelectorAll(":scope > [data-linebreak-line]"),
-      ]
-      totalLines += lines.length
-      const style = getComputedStyle(block)
-      const lineHeight = Number.parseFloat(style.lineHeight)
+  const linesOf = (block: Element) => [
+    ...block.querySelectorAll<HTMLElement>(":scope > [data-linebreak-line]"),
+  ]
 
-      const contentHeight =
-        block.clientHeight -
-        Number.parseFloat(style.paddingTop) -
-        Number.parseFloat(style.paddingBottom)
-      if (contentHeight > (lines.length + 0.5) * lineHeight) {
-        wrappedBlocks += 1
-      }
-      let hang = 0
-      for (const line of lines) {
-        const own = (line as HTMLElement).style
-        if (own.marginInlineStart || own.marginInlineEnd) hangingLines += 1
-        hang = Math.max(hang, -Number.parseFloat(own.marginInlineEnd || "0"))
-      }
-      const overflow = block.scrollWidth - block.clientWidth
-      if (overflow > 1) overflowingBlocks += 1
-      if (overflow > 1 + hang) {
-        unhungOverflowBlocks += 1
-        worstUnhungOverflowPx = Math.max(worstUnhungOverflowPx, overflow - hang)
-      }
+  const wrapsNatively = (block: Element, lines: number) => {
+    const style = getComputedStyle(block)
+    const content =
+      block.clientHeight -
+      Number.parseFloat(style.paddingTop) -
+      Number.parseFloat(style.paddingBottom)
+    return content > (lines + 0.5) * Number.parseFloat(style.lineHeight)
+  }
 
-      for (const line of lines.slice(0, -1)) {
-        const range = document.createRange()
-        range.selectNodeContents(line)
-        const gap =
-          line.getBoundingClientRect().width -
-          range.getBoundingClientRect().width
+  const hangsOf = (lines: readonly HTMLElement[]) => {
+    let widest = 0
+    let hanging = 0
+    for (const line of lines) {
+      const own = line.style
+      if (own.marginInlineStart || own.marginInlineEnd) hanging += 1
+      widest = Math.max(widest, -Number.parseFloat(own.marginInlineEnd || "0"))
+    }
+    return { widest, hanging }
+  }
 
-        const allowed = line.matches('[data-linebreak-line="hyphen"]')
-          ? 12
-          : 1.5
-        if (gap <= allowed) justifiedLines += 1
-        else {
-          shortLines += 1
-          worstGapPx = Math.max(worstGapPx, gap)
-        }
+  const overflowOf = (block: Element, hang: number) => {
+    const overflow = block.scrollWidth - block.clientWidth
+    if (overflow <= 1) return { overflowing: 0, unhung: 0, worst: 0 }
+    if (overflow <= 1 + hang) return { overflowing: 1, unhung: 0, worst: 0 }
+    return { overflowing: 1, unhung: 1, worst: overflow - hang }
+  }
+
+  const shortfallOf = (line: Element) => {
+    const range = document.createRange()
+    range.selectNodeContents(line)
+    const gap =
+      line.getBoundingClientRect().width - range.getBoundingClientRect().width
+    const allowed = line.matches('[data-linebreak-line="hyphen"]') ? 12 : 1.5
+    return gap <= allowed ? null : gap
+  }
+
+  const gapsOf = (lines: readonly HTMLElement[]) => {
+    let justified = 0
+    let short = 0
+    let worstGap = 0
+    for (const line of lines.slice(0, -1)) {
+      const gap = shortfallOf(line)
+      if (gap === null) justified += 1
+      else {
+        short += 1
+        worstGap = Math.max(worstGap, gap)
       }
     }
+    return { justified, short, worstGap }
+  }
 
+  const tallyOf = (block: Element): Tally => {
+    const lines = linesOf(block)
+    const hangs = hangsOf(lines)
+    const overflow = overflowOf(block, hangs.widest)
+    const gaps = gapsOf(lines)
     return {
-      typesetBlocks: blocks.length,
-      totalLines,
-      justifiedLines,
-      shortLines,
-      worstGapPx: Math.round(worstGapPx * 10) / 10,
-      overflowingBlocks,
-      unhungOverflowBlocks,
-      worstUnhungOverflowPx: Math.round(worstUnhungOverflowPx * 10) / 10,
-      wrappedBlocks,
-      hangingLines,
-      hyphenLines: document.querySelectorAll('[data-linebreak-line="hyphen"]')
-        .length,
-      liveText:
-        document
-          .querySelector("main")
-          ?.innerText.replace(/\s+/gu, " ")
-          .trim() ?? "",
+      lines: lines.length,
+      justified: gaps.justified,
+      short: gaps.short,
+      worstGap: gaps.worstGap,
+      overflowing: overflow.overflowing,
+      unhungOverflow: overflow.unhung,
+      worstUnhung: overflow.worst,
+      wrapped: wrapsNatively(block, lines.length) ? 1 : 0,
+      hanging: hangs.hanging,
     }
-  })
+  }
+
+  const blocks = [...document.querySelectorAll("[data-linebreak-typeset]")]
+  const total: Tally = {
+    lines: 0,
+    justified: 0,
+    short: 0,
+    worstGap: 0,
+    overflowing: 0,
+    unhungOverflow: 0,
+    worstUnhung: 0,
+    wrapped: 0,
+    hanging: 0,
+  }
+
+  for (const block of blocks) {
+    const tally = tallyOf(block)
+    total.lines += tally.lines
+    total.justified += tally.justified
+    total.short += tally.short
+    total.worstGap = Math.max(total.worstGap, tally.worstGap)
+    total.overflowing += tally.overflowing
+    total.unhungOverflow += tally.unhungOverflow
+    total.worstUnhung = Math.max(total.worstUnhung, tally.worstUnhung)
+    total.wrapped += tally.wrapped
+    total.hanging += tally.hanging
+  }
+
+  return {
+    typesetBlocks: blocks.length,
+    totalLines: total.lines,
+    justifiedLines: total.justified,
+    shortLines: total.short,
+    worstGapPx: Math.round(total.worstGap * 10) / 10,
+    overflowingBlocks: total.overflowing,
+    unhungOverflowBlocks: total.unhungOverflow,
+    worstUnhungOverflowPx: Math.round(total.worstUnhung * 10) / 10,
+    wrappedBlocks: total.wrapped,
+    hangingLines: total.hanging,
+    hyphenLines: document.querySelectorAll('[data-linebreak-line="hyphen"]')
+      .length,
+    liveText:
+      document.querySelector("main")?.innerText.replace(/\s+/gu, " ").trim() ??
+      "",
+  }
+}
+
+export const measureLines = (page: Page) =>
+  page.evaluate<LineReport>(lineReport)

@@ -45,6 +45,32 @@ const paragraph = (widths: number[]): Item[] => {
 const evenWords = (count: number) =>
   paragraph(Array.from({ length: count }, () => WORD))
 
+const wordsWithPenaltyAt = (count: number, at: number): Item[] => {
+  const items: Item[] = []
+  for (let index = 0; index < count; index += 1) {
+    if (index > 0) items.push(glue())
+    items.push(box(WORD))
+    if (index !== at) continue
+    items.push({
+      kind: "penalty",
+      width: 0,
+      penalty: 0,
+      flagged: false,
+      source,
+    })
+    items.push(box(WORD))
+  }
+  return items
+}
+
+const glueBetween = (items: readonly Item[], from: number, to: number) => {
+  let count = 0
+  for (let index = from; index < to; index += 1) {
+    if (items[index]?.kind === "glue") count += 1
+  }
+  return count
+}
+
 const strictPass = (items: readonly Item[], measure = MEASURE, force = false) =>
   breakParagraphOnce(items, measure, {
     tolerance: texDefaults.pretolerance,
@@ -411,22 +437,7 @@ describe("authored breaks", () => {
 
 describe("what a break did to the text", () => {
   test("a break at a penalty consumed no space and drew no hyphen", () => {
-    const items: Item[] = []
-    for (let index = 0; index < 24; index += 1) {
-      if (index > 0) items.push(glue())
-      items.push(box(WORD))
-      if (index === 11) {
-        items.push({
-          kind: "penalty",
-          width: 0,
-          penalty: 0,
-          flagged: false,
-          source,
-        })
-        items.push(box(WORD))
-      }
-    }
-    const result = strictPass([...items, ...finish()])
+    const result = strictPass([...wordsWithPenaltyAt(24, 11), ...finish()])
     expect(result.ok).toBe(true)
     if (!result.ok) return
     const atPenalty = result.lines.find((line) => line.end === 23)
@@ -734,10 +745,7 @@ describe("shipped policy", () => {
     const last = result.lines.at(-1)
     if (!last) return
 
-    let glueItems = 0
-    for (let index = last.start; index < last.end; index += 1) {
-      if (items[index]?.kind === "glue") glueItems += 1
-    }
+    const glueItems = glueBetween(items, last.start, last.end)
     expect(glueItems).toBeGreaterThan(0)
     expect(last.spaceCount).toBe(glueItems - 1)
   })

@@ -24,38 +24,52 @@ export const CHARACTER = 10
 export const HYPHEN = 5
 export const SHY = "­"
 
+const textSegment = (text: string, end: number): MeasuredSegment => ({
+  text,
+  start: end - text.length,
+  end,
+  kind: "text",
+  width: text.length * CHARACTER,
+  lineEndWidth: 0,
+})
+
+const BREAK_SEGMENT: Record<string, (at: number) => MeasuredSegment> = {
+  " ": (at) => ({
+    text: " ",
+    start: at,
+    end: at + 1,
+    kind: "space",
+    width: CHARACTER,
+    lineEndWidth: 0,
+  }),
+  [SHY]: (at) => ({
+    text: SHY,
+    start: at,
+    end: at + 1,
+    kind: "soft-hyphen",
+    width: 0,
+    lineEndWidth: HYPHEN,
+  }),
+}
+
 const segmentsOf = (text: string): MeasuredSegment[] => {
   const segments: MeasuredSegment[] = []
   let pending = ""
 
   const flush = (at: number) => {
-    if (pending.length === 0) return
-    segments.push({
-      text: pending,
-      start: at - pending.length,
-      end: at,
-      kind: "text",
-      width: pending.length * CHARACTER,
-      lineEndWidth: 0,
-    })
+    if (pending.length > 0) segments.push(textSegment(pending, at))
     pending = ""
   }
 
   for (let index = 0; index < text.length; index += 1) {
     const character = text[index] as string
-    if (character !== " " && character !== SHY) {
+    const breakSegment = BREAK_SEGMENT[character]
+    if (!breakSegment) {
       pending += character
       continue
     }
     flush(index)
-    segments.push({
-      text: character,
-      start: index,
-      end: index + 1,
-      kind: character === " " ? "space" : "soft-hyphen",
-      width: character === " " ? CHARACTER : 0,
-      lineEndWidth: character === " " ? 0 : HYPHEN,
-    })
+    segments.push(breakSegment(index))
   }
   flush(text.length)
   return segments

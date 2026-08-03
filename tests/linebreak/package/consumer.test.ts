@@ -42,50 +42,86 @@ const run = (
     ...options,
   })
 
+const packTarball = (into: string) => {
+  const [packed] = JSON.parse(
+    run("npm", [
+      "pack",
+      "--ignore-scripts",
+      "--json",
+      "--pack-destination",
+      into,
+      "--cache",
+      join(into, "npm-cache"),
+    ]),
+  ) as Array<{ filename?: string }>
+  if (!packed?.filename) {
+    throw new Error("npm pack did not report a tarball filename")
+  }
+  return join(into, packed.filename)
+}
+
+const expectOnlyPublishedFiles = (entries: readonly string[]) => {
+  for (const required of [
+    "package/LICENSE",
+    "package/README.md",
+    "package/package.json",
+  ]) {
+    expect(entries).toContain(required)
+  }
+  for (const entry of entries) {
+    expect(entry).toMatch(
+      /^package\/(dist\/|LICENSE$|README\.md$|package\.json$)/,
+    )
+  }
+}
+
+const expectEveryExportPacked = (
+  entries: readonly string[],
+  exports: Record<string, { default?: string } | string>,
+) => {
+  for (const target of Object.values(exports)) {
+    const file = typeof target === "string" ? target : target.default
+    if (!file || file.endsWith("package.json")) continue
+    expect(entries).toContain(`package/${file.replace(/^\.\//, "")}`)
+  }
+}
+
+const expectExportsInOrder = (manifest: PackedPackageManifest) => {
+  const subpaths = Object.keys(manifest.exports)
+  for (const required of [
+    ".",
+    "./layout",
+    "./auto",
+    "./attributes",
+    "./hyphenation",
+    "./styles.css",
+    "./package.json",
+  ]) {
+    expect(subpaths).toContain(required)
+  }
+  for (const [subpath, target] of Object.entries(manifest.exports)) {
+    if (typeof target === "string") continue
+    expect(Object.keys(target)[0], `${subpath} lists types first`).toBe("types")
+    expect(Object.keys(target).at(-1), `${subpath} lists default last`).toBe(
+      "default",
+    )
+  }
+}
+
 test("the packed package works for Node, TypeScript, and browser consumers", async () => {
   run("bun", ["run", "build"])
 
   const temporaryDirectory = await mkdtemp(join(tmpdir(), "linebreak-package-"))
 
   try {
-    const [packed] = JSON.parse(
-      run("npm", [
-        "pack",
-        "--ignore-scripts",
-        "--json",
-        "--pack-destination",
-        temporaryDirectory,
-        "--cache",
-        join(temporaryDirectory, "npm-cache"),
-      ]),
-    ) as Array<{ filename?: string }>
-    if (!packed?.filename) {
-      throw new Error("npm pack did not report a tarball filename")
-    }
-
-    const tarball = join(temporaryDirectory, packed.filename)
+    const tarball = packTarball(temporaryDirectory)
     const entries = run("tar", ["-tf", tarball]).trim().split("\n").sort()
-    for (const required of [
-      "package/LICENSE",
-      "package/README.md",
-      "package/package.json",
-    ]) {
-      expect(entries).toContain(required)
-    }
-    for (const entry of entries) {
-      expect(entry).toMatch(
-        /^package\/(dist\/|LICENSE$|README\.md$|package\.json$)/,
-      )
-    }
+    expectOnlyPublishedFiles(entries)
 
     const packedManifest = JSON.parse(
       run("tar", ["-xOf", tarball, "package/package.json"]),
     ) as { exports: Record<string, { default?: string } | string> }
-    for (const target of Object.values(packedManifest.exports)) {
-      const file = typeof target === "string" ? target : target.default
-      if (!file || file.endsWith("package.json")) continue
-      expect(entries).toContain(`package/${file.replace(/^\.\//, "")}`)
-    }
+    expectEveryExportPacked(entries, packedManifest.exports)
 
     const unpacked = join(temporaryDirectory, "unpacked")
     await mkdir(unpacked)
@@ -105,27 +141,7 @@ test("the packed package works for Node, TypeScript, and browser consumers", asy
     expect(manifest.private).toBeUndefined()
     expect(manifest.publishConfig?.access).toBe("public")
     expect(manifest.keywords?.length).toBeGreaterThan(0)
-    const subpaths = Object.keys(manifest.exports)
-    for (const required of [
-      ".",
-      "./layout",
-      "./auto",
-      "./attributes",
-      "./hyphenation",
-      "./styles.css",
-      "./package.json",
-    ]) {
-      expect(subpaths).toContain(required)
-    }
-    for (const [subpath, target] of Object.entries(manifest.exports)) {
-      if (typeof target === "string") continue
-      expect(Object.keys(target)[0], `${subpath} lists types first`).toBe(
-        "types",
-      )
-      expect(Object.keys(target).at(-1), `${subpath} lists default last`).toBe(
-        "default",
-      )
-    }
+    expectExportsInOrder(manifest)
 
     const installedModules = join(unpacked, "node_modules")
     await mkdir(join(installedModules, "@chenglou"), { recursive: true })

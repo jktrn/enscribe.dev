@@ -23,6 +23,22 @@ const fileFor = (from: string, specifier: string) => {
   throw new Error(`unresolved specifier ${specifier} from ${from}`)
 }
 
+const specifiersOf = (file: string) => {
+  const files: string[] = []
+  const packages: string[] = []
+  const text = readFileSync(file, "utf8")
+
+  SPECIFIER.lastIndex = 0
+  for (const match of text.matchAll(SPECIFIER)) {
+    const specifier = match[1] ?? match[2]
+    if (!specifier) continue
+    if (specifier.startsWith(".")) files.push(fileFor(file, specifier))
+    else packages.push(specifier)
+  }
+
+  return { files, packages }
+}
+
 const runtimeGraph = (entry: string) => {
   const seen = new Set<string>()
   const bare = new Set<string>()
@@ -34,14 +50,9 @@ const runtimeGraph = (entry: string) => {
     seen.add(file)
     if (file.endsWith(".css")) continue
 
-    const text = readFileSync(file, "utf8")
-    SPECIFIER.lastIndex = 0
-    for (const match of text.matchAll(SPECIFIER)) {
-      const specifier = match[1] ?? match[2]
-      if (!specifier) continue
-      if (specifier.startsWith(".")) queue.push(fileFor(file, specifier))
-      else bare.add(specifier)
-    }
+    const found = specifiersOf(file)
+    queue.push(...found.files)
+    for (const name of found.packages) bare.add(name)
   }
 
   return {
