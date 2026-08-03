@@ -35,8 +35,31 @@ const VARIANT_PROPERTIES = [
   "fontFeatureSettings",
 ] as const
 
+const PROBE_PROPERTIES = [
+  "fontStretch",
+  "fontVariationSettings",
+  ...VARIANT_PROPERTIES,
+] as const
+
+export type ProbeStyle = readonly (readonly [
+  (typeof PROBE_PROPERTIES)[number],
+  string,
+])[]
+
 export const usesVariant = (style: CSSStyleDeclaration) =>
   VARIANT_PROPERTIES.some((property) => !NEUTRAL_VALUE.has(style[property]))
+
+export const probeStyle = (style: CSSStyleDeclaration): ProbeStyle =>
+  PROBE_PROPERTIES.map((property) => [property, style[property]] as const)
+
+export const variantKey = (style: CSSStyleDeclaration) => {
+  let key = ""
+  for (const property of PROBE_PROPERTIES) {
+    const value = style[property]
+    if (!NEUTRAL_VALUE.has(value)) key += `${property}:${value};`
+  }
+  return key
+}
 
 const WIDTH_AXIS = /\bwdth\b/u
 

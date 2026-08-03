@@ -58,39 +58,45 @@ export const invalidateMeasurements = () => {
   clearCache()
 }
 
+export type WidthSource = {
+  advance(text: string): number
+  warm(texts: readonly string[]): void
+}
+
+type Assembly = {
+  readonly view: PretextView
+  readonly softHyphenWidth: number
+  widthAt(index: number, text: string): number
+}
+
 const aligned = (view: PretextView, count: number) =>
   view.widths.length === count && view.kinds.length === count
 
 const segmentAt = (
-  view: PretextView,
+  build: Assembly,
   index: number,
   start: number,
-  softHyphenWidth: number,
 ): MeasuredSegment => {
-  const text = view.segments[index] ?? ""
-  const kind = segmentKind(view.kinds[index] ?? "")
+  const text = build.view.segments[index] ?? ""
+  const kind = segmentKind(build.view.kinds[index] ?? "")
   return {
     text,
     start,
     end: start + text.length,
     kind,
-    width: view.widths[index] ?? 0,
-    lineEndWidth: kind === "soft-hyphen" ? softHyphenWidth : 0,
+    width: build.widthAt(index, text),
+    lineEndWidth: kind === "soft-hyphen" ? build.softHyphenWidth : 0,
   }
 }
 
-const measuredSegments = (
-  view: PretextView,
-  text: string,
-  softHyphenWidth: number,
-) => {
-  const count = view.segments.length
-  if (!aligned(view, count)) return null
+const measuredSegments = (build: Assembly, text: string) => {
+  const count = build.view.segments.length
+  if (!aligned(build.view, count)) return null
 
   const segments: MeasuredSegment[] = []
   let offset = 0
   for (let index = 0; index < count; index += 1) {
-    const segment = segmentAt(view, index, offset, softHyphenWidth)
+    const segment = segmentAt(build, index, offset)
     offset = segment.end
     segments.push(segment)
   }
@@ -101,6 +107,7 @@ const measuredSegments = (
 export const createFontMetrics = (
   font: string,
   letterSpacing: number,
+  source?: WidthSource,
 ): FontMetrics => {
   const runWidths = new Map<string, number>()
 
@@ -110,7 +117,7 @@ export const createFontMetrics = (
       whiteSpace: "pre-wrap",
     })
 
-  const measureRun = (text: string): number => {
+  const canvasRun = (text: string): number => {
     if (text.length === 0) return 0
     const cached = runWidths.get(text)
     if (cached !== undefined) return cached
@@ -124,6 +131,7 @@ export const createFontMetrics = (
     return width
   }
 
+  const measureRun = source ? source.advance : canvasRun
   const hyphenWidth = measureRun("-")
   const softHyphenWidth = hyphenWidth + 2 * letterSpacing
 
@@ -133,7 +141,18 @@ export const createFontMetrics = (
     hyphenWidth,
     measureRun,
     measureParagraph(text) {
-      const segments = measuredSegments(prepare(text), text, softHyphenWidth)
+      const view = prepare(text)
+      source?.warm(view.segments)
+      const segments = measuredSegments(
+        {
+          view,
+          softHyphenWidth,
+          widthAt: source
+            ? (_index, segment) => measureRun(segment)
+            : (index) => view.widths[index] ?? 0,
+        },
+        text,
+      )
       return segments ? { segments, hyphenWidth } : null
     },
   }
