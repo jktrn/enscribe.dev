@@ -154,6 +154,7 @@ twice, or applying one from another instance.
 | `hyphenate` | — | A hyphenator. `englishHyphenator` is the one that ships; see below. |
 | `protrude` | `true` | Character protrusion: punctuation hangs past the measure. |
 | `expand` | `false` | Font expansion: glyphs take a share of the line's slack, if the font has a width axis. |
+| `track` | `false` | Letterfit tracking: the inter-character space takes a share of the line's slack. |
 | `preserveImageAttributes` | `[]` | Copied between original and rebuilt images. |
 | `policy` | TeX's | Tolerances, demerits, penalties. See below. |
 | `glue` | `{ stretch: 1/2, shrink: 1/3 }` | Interword elasticity, as a fraction of the space. |
@@ -366,6 +367,47 @@ Sans at 16px in Chromium moves about 0.56% of advance over two percentage
 points, and its `wdth` axis tops out at the default width, so it can condense
 and cannot widen.
 
+### Letterfit tracking
+
+`track: true` lets the inter-character space take a share of what a line is
+short or long by, the way `expand` lets the glyphs take one. It is the third
+optimizer feature and it works the same way: each box budgets 3% of its own set
+width, the budgets are prefix-summed and folded into the line's elasticity
+inside the dynamic program, so `r = (W - L) / (Y + Ytrack)` and the breaker
+picks different breaks. 3% of a box's width spread over that box's characters
+is about 15/1000 em at saturation, inside Bringhurst's tolerance for
+letterspacing variation in justified text.
+
+Unlike expansion it is exact in the optimizer. The width axis is quantized —
+a line is set at one of the rungs the font honours, so the px it buys has to be
+re-solved after the breaks are chosen — while letterfit is continuous and flexes
+at the same ratio as the glue, which is why it can share the glue's pool
+outright. Beyond ratio 1 it saturates at its budget and the spaces carry on
+alone, so no line is letterspaced past what it was budgeted, not even on an
+emergency pass. A paragraph ending never opens: its slack is parfillskip's, and
+a letterspaced ragged line reads as a mistake. An ending too long for the
+measure still closes, because that excess is real.
+
+The two axes compose on one line. The quantized one spends first, and the
+letterfit takes its proportional share of what is left against the continuous
+pool alone, so the two never double-spend the same slack. Nothing is budgeted
+for an atom, for a materialized hyphen, or for a box that absorbed a wrapper's
+padding, for the same reason nothing hangs out of them — but unlike expansion,
+a run whose font has no width axis still letterfits, because every face can be
+letterspaced. That is the practical difference between the two: expansion needs
+a variable font and tracking does not.
+
+A paragraph whose runs do not share one `letter-spacing` does not letterfit, for
+the reason a paragraph mixing two width axes does not expand: one declaration
+goes on the line and it inherits, so it would have to overwrite a value some run
+was measured at. Where they do share one, the line's declaration is the author's
+value plus the letterfit, not the letterfit alone.
+
+Against the same 3% budget on both sides, badness per body line over the
+984-paragraph prose corpus goes 297.0 to 28.3 at 320px, 25.9 to 7.6 at 480px,
+and 8.9 to 3.2 at 680px, with no overfull lines at any width. With the
+idealized affine width axis on as well it reaches 14.3 / 5.2 / 1.7.
+
 ## The rendered DOM
 
 ```html
@@ -423,6 +465,18 @@ ratio does not transfer to every line where advances snap to whole pixels, so
 whatever a line ends up reaching past the measure by is charged to that line's
 own spaces as negative `word-spacing`. Lines the optimizer left at 100% are
 never measured, so a font with no width axis costs no layout read at all.
+
+A letterspaced line carries one `letter-spacing`: the whole letterfit the
+optimizer assigned it, divided by the units the line renders — its trimmed text
+by code point, plus the drawn hyphen, which inherits the declaration through the
+`::after`. The total is therefore exact, and the browser's own justification
+absorbs the fact that the spaces get the increment too. Letterspacing suppresses
+common ligatures, and the advances were measured with them on; that costs
+nothing measurable, so no ligature guard is written. Asking for `"liga"` back
+would be worse than the disease: a re-formed ligature glyph takes one spacing
+where its characters would have taken two or three, which is the one thing that
+does move the line off the model. Lines the letterfit left alone are never
+measured after the write.
 
 When a break cuts through an inline wrapper, each copy gets
 `data-linebreak-fragment`, and the outermost copies also get
