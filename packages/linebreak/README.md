@@ -674,9 +674,19 @@ bun run typecheck
 bun test               # from the repo root
 ```
 
-`@chenglou/pretext` is a pre-1.0 dependency reached through non-public types.
-Pin it. It is also the single most expensive thing on the DOM entry's import
-graph: 5.9 ms of `dist/index.js`'s 8.8 ms cold import in a fresh bun process,
-median of twelve. `dist/layout.js` reaches none of it and costs 2.6 ms.
+`@chenglou/pretext` is a pre-1.0 dependency. Pin it. It is also the single most
+expensive thing on the DOM entry's import graph: 5.9 ms of `dist/index.js`'s
+8.8 ms cold import in a fresh bun process, median of twelve. `dist/layout.js`
+reaches none of it and costs 2.6 ms.
+
+Three fields of a prepared paragraph are read — `segments`, `widths`, `kinds` —
+and the prepared value is assigned to a structural type naming exactly those
+three. There is no cast, deliberately: if a pretext release renames one of them,
+`bun run typecheck` fails. Do not repair such a failure with a cast, which would
+turn it back into a silent `segmentation-mismatch` decline at runtime. A soft
+hyphen's line-end width is the hyphen advance plus twice the letter-spacing,
+computed here rather than read from pretext's `lineEndFitAdvances`;
+`tests/linebreak/unit/pretext-contract.test.ts` holds that identity against the
+pinned version.
 
 MIT.

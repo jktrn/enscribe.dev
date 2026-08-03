@@ -1,21 +1,10 @@
-import {
-  clearCache,
-  prepareWithSegments,
-  setLocale,
-  type PreparedTextWithSegments,
-} from "@chenglou/pretext"
+import { clearCache, prepareWithSegments, setLocale } from "@chenglou/pretext"
 
 type PretextView = {
   readonly segments: readonly string[]
-
   readonly widths: readonly number[]
-
-  readonly lineEndFitAdvances: readonly number[]
   readonly kinds: readonly string[]
 }
-
-const asView = (prepared: PreparedTextWithSegments): PretextView =>
-  prepared as unknown as PretextView
 
 export type SegmentKind =
   | "text"
@@ -70,34 +59,38 @@ export const invalidateMeasurements = () => {
 }
 
 const aligned = (view: PretextView, count: number) =>
-  view.widths.length === count &&
-  view.kinds.length === count &&
-  view.lineEndFitAdvances.length === count
+  view.widths.length === count && view.kinds.length === count
 
 const segmentAt = (
   view: PretextView,
   index: number,
   start: number,
+  softHyphenWidth: number,
 ): MeasuredSegment => {
   const text = view.segments[index] ?? ""
+  const kind = segmentKind(view.kinds[index] ?? "")
   return {
     text,
     start,
     end: start + text.length,
-    kind: segmentKind(view.kinds[index] ?? ""),
+    kind,
     width: view.widths[index] ?? 0,
-    lineEndWidth: view.lineEndFitAdvances[index] ?? 0,
+    lineEndWidth: kind === "soft-hyphen" ? softHyphenWidth : 0,
   }
 }
 
-const measuredSegments = (view: PretextView, text: string) => {
+const measuredSegments = (
+  view: PretextView,
+  text: string,
+  softHyphenWidth: number,
+) => {
   const count = view.segments.length
   if (!aligned(view, count)) return null
 
   const segments: MeasuredSegment[] = []
   let offset = 0
   for (let index = 0; index < count; index += 1) {
-    const segment = segmentAt(view, index, offset)
+    const segment = segmentAt(view, index, offset, softHyphenWidth)
     offset = segment.end
     segments.push(segment)
   }
@@ -111,13 +104,11 @@ export const createFontMetrics = (
 ): FontMetrics => {
   const runWidths = new Map<string, number>()
 
-  const prepare = (text: string) =>
-    asView(
-      prepareWithSegments(text, font, {
-        letterSpacing,
-        whiteSpace: "pre-wrap",
-      }),
-    )
+  const prepare = (text: string): PretextView =>
+    prepareWithSegments(text, font, {
+      letterSpacing,
+      whiteSpace: "pre-wrap",
+    })
 
   const measureRun = (text: string): number => {
     if (text.length === 0) return 0
@@ -134,6 +125,7 @@ export const createFontMetrics = (
   }
 
   const hyphenWidth = measureRun("-")
+  const softHyphenWidth = hyphenWidth + 2 * letterSpacing
 
   return {
     font,
@@ -141,7 +133,7 @@ export const createFontMetrics = (
     hyphenWidth,
     measureRun,
     measureParagraph(text) {
-      const segments = measuredSegments(prepare(text), text)
+      const segments = measuredSegments(prepare(text), text, softHyphenWidth)
       return segments ? { segments, hyphenWidth } : null
     },
   }
