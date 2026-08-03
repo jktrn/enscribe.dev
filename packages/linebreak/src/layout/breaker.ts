@@ -73,7 +73,6 @@ type ActiveNode = {
   readonly demerits: number
   readonly previous: ActiveNode | null
   readonly ratio: number
-  readonly breakKind: BreakKind
 }
 
 type Sums = {
@@ -403,7 +402,6 @@ const stepTo = (
   clearStep(step)
   const admitted = step.admitted
   let kept = 0
-  const kind = breakKindAt(items, to)
   const edge = edgeAt(search, to)
   const startAfter = lineStart(items, to)
   const leadingAfter = leadingWidth(search, to)
@@ -436,7 +434,6 @@ const stepTo = (
           demerits,
           previous: active,
           ratio: 0,
-          breakKind: kind,
         }
         if (demerits < minimum) minimum = demerits
       }
@@ -482,7 +479,6 @@ const stepTo = (
         demerits,
         previous: active,
         ratio,
-        breakKind: kind,
       }
       if (demerits < minimum) minimum = demerits
     }
@@ -505,7 +501,6 @@ const forcedNode = (search: Search, rescue: Rescue, to: number): ActiveNode => {
     demerits: rescue.node.demerits,
     previous: rescue.node,
     ratio,
-    breakKind: breakKindAt(items, to),
   }
 }
 
@@ -545,7 +540,7 @@ const lineTo = (search: Search, from: ActiveNode, node: ActiveNode): Line => {
     stretch,
     shrink,
     adjustmentRatio: node.ratio,
-    breakKind: node.breakKind,
+    breakKind: breakKindAt(items, node.position),
     hangStart: hangs ? (hangs.start[from.position + 1] as number) : 0,
     hangEnd: hangs ? (hangs.end[node.position] as number) : 0,
   }
@@ -591,7 +586,6 @@ const initialNode = (search: Search): ActiveNode => ({
   demerits: 0,
   previous: null,
   ratio: 0,
-  breakKind: "none",
 })
 
 const admitCandidates = (
