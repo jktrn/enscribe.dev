@@ -435,6 +435,20 @@ Against the same 3% budget on both sides, badness per body line over the
 and 8.9 to 3.2 at 680px, with no overfull lines at any width. With the
 idealized affine width axis on as well it reaches 14.3 / 5.2 / 1.7.
 
+Three declarations end up on the same line span when all three features are on
+— `letter-spacing`, `font-stretch` and a negative `margin-inline-end` — and that
+composition is checked in headless Chromium against a font with a real response
+to `font-stretch`: the justified right edge lands within 0.01px of the measure,
+no line's ink passes the content box by more than its own hang, and restoring
+gives back byte-identical markup.
+
+Tracking costs break time, and the cost is not uniform. Measured over the
+1007-paragraph corpus against the same configuration without it, break time
+goes to 0.60x at 320px, 1.98x at 480px and 2.07x at 680px, 1.31x summed over
+the three. Added on top of expansion it is a flat 1.55–1.61x at every measure.
+The letterfit budget is a second prefix-sum pair on every candidate line inside
+the dynamic program.
+
 ### Last-line minimum width
 
 TeX's `\lastlinefit` problem: `\parfillskip` is infinitely stretchable, so a
@@ -661,6 +675,8 @@ bun test               # from the repo root
 ```
 
 `@chenglou/pretext` is a pre-1.0 dependency reached through non-public types.
-Pin it.
+Pin it. It is also the single most expensive thing on the DOM entry's import
+graph: 6.1 ms of `dist/index.js`'s 10.2 ms cold import in a fresh bun process,
+median of eleven. `dist/layout.js` reaches none of it and costs 2.8 ms.
 
 MIT.
