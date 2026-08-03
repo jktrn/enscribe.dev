@@ -469,10 +469,23 @@ expansion — the arm that matters for a font with no width axis — it goes 26.
 3.3, 26.2 → 2.0 and 31.1 → 5.0 against justif's 6.3, 5.9 and 8.6, and with
 everything on, 24.7 → 1.1, 25.7 → 0.2 and 30.8 → 3.3 against 4.2, 4.2 and 7.5.
 
-Break time is unchanged: the strict rung that succeeds replaces the classic rung
-that would have run, and only the paragraphs it cannot satisfy pay two wasted
-passes. Measured over the prose corpus, on/off came out between 0.85 and 1.05
-across two runs — it straddles 1, which is this harness's noise.
+Switching the floor ON costs nothing: the strict rung that succeeds replaces the
+classic rung that would have run, and only the paragraphs it cannot satisfy pay
+two wasted passes. Measured over the prose corpus, on/off came out between 0.85
+and 1.05 across two runs — it straddles 1, which is this harness's noise.
+
+HAVING the floor does cost, and it is charged whether or not anyone turns it on:
++4.9% break time over 24 configuration/measure cells, two runs each against
+eight baseline runs. The floor is one comparison per candidate breakpoint in the
+inner loop, and the inner loop is sensitive out of proportion to the arithmetic
+— a variant that keeps every other part of the change and drops only that
+comparison and the demerit measures +1.2%, and three different spellings of the
+comparison all land within 0.3% of each other. Two designs that would avoid the
+inner loop were measured and rejected: pricing the ending through a finite
+`\parfillskip` makes the floor fuzzy by the ending's own glue and leaks a
+changed `stretch` into font expansion, and a binary-searched descent through
+sixteenths of the threshold (justif's shape) costs +4.2% for the same reason the
+demerit does, since it still needs the per-candidate test.
 
 There is no rectangle search. justif needs one — a binary-searched descent
 through sixteenths of the requested threshold, plus a bounded-pressure fallback,
