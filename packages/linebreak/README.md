@@ -451,10 +451,13 @@ the dynamic program.
 
 ### Last-line minimum width
 
-TeX's `\lastlinefit` problem: `\parfillskip` is infinitely stretchable, so a
+TeX's `\parfillskip` problem: `\parfillskip` is infinitely stretchable, so a
 paragraph's final line costs nothing however short it is, and about a quarter
 of prose paragraphs end on a line under a third of the measure. `lastLineMinWidth`
 is a floor on that line, as a fraction of the measure. It ships off (`0`).
+
+This is not eTeX's `\lastlinefit`, which is a different feature and is declined
+below.
 
 Two mechanisms, in order. A **strict rung** runs the pretolerance and tolerance
 passes ahead of the classic ladder with final breaks below the floor rejected
@@ -665,6 +668,87 @@ change the measure. Where `max-content` genuinely governs, protrusion's
 negative margins do change it; the element is then restored and reported as
 `unstable-width`. If a layout moves after a write for any other reason, the
 same thing happens.
+
+## Measured and declined
+
+Four features were prototyped against this library's shipping breaker, measured,
+and not built. The numbers are recorded so the work is not repeated.
+
+### Hanging-punctuation modes
+
+justif layers a hang policy over the protrusion table — line ends only in its
+DOM default, plus first-line-and-line-ends and all-line-edges — and keeps a
+separate first-line table. Protrusion here is microtype's amounts, the same on
+every line and every edge.
+
+Prototyped by raising justif's Latin hang set to 1000 on the right edge and then
+on both edges, over 984 prose paragraphs at 320, 480 and 680px with hyphenation,
+protrusion and expansion on: badness per body line moves by at most 1.5% and in
+both directions, mean `|r|` by at most 0.6% and in both directions, and
+containment does not move — zero overfull prose lines in every mode at every
+width. About a tenth of body lines end in an eligible mark and gain about
+1.85px of hang each. Across the corpus that is 11 lines saved out of roughly
+12,500, or 0.09%. Break time does not move either; its sign flips across widths.
+
+The same rig priced the 19 letter and digit codes that `tools/gen-protrusion.mjs`
+drops from microtype's blocks. Restoring them raises badness per body line by
+1.1% and 0.8% at two widths and ties at the third, so they stay dropped.
+
+### `spacing.pull` and `spacing.boundaryShrink`
+
+justif's two extra interword-glue knobs: `pull` presses a secondary font's wider
+space toward the base font's width, and `boundaryShrink` scales the shrink of a
+space sitting at a font-family boundary, such as the gaps around inline code.
+This library prices a word space by the run's own font, TeX-style, and applies
+no boundary rule.
+
+Neither knob has a TeX antecedent. TeX's rigidity is a property of the run's own
+font and never of a boundary: `cmr10`'s space stretches by half and shrinks by a
+third, exactly the `defaultGlue` here, and `cmtt10`'s is rigid at 1.575x the
+`cmr10` width — TeX leaves that wide space alone rather than pulling it toward
+the body font.
+
+The damage they would repair was measured on this site's own faces, where a
+space is 3.000px in the body face and 8.000px in the code face at 0.9em, against
+a shrink cap of 1.000px. Over the chip-bearing paragraphs, 59 of 303 lines shrink
+at all, the worst rendered gap collapses to 2.797px against 4.000px natural, and
+only 2 of 303 lines come within 90% of the shrink cap. Chromium itself never
+renders a justified space below its natural width — 77 spaces over 8 measures.
+No published benchmark number depends on either knob: the harness sets
+`boundaryShrink: 1` and builds a single run.
+
+### `lastLineFit` (eTeX `\lastlinefit`)
+
+Distinct from `lastLineMinWidth` above. eTeX's `\lastlinefit` makes a
+paragraph's final line adopt *f* times the preceding line's set ratio, clamped
+at full justification, priced inside the dynamic program and applied when the
+line is set. It is a ratio rule, symmetric and blind to width;
+`lastLineMinWidth` is a width floor, asymmetric and charged only at break time.
+justif's own default for it is 0.
+
+Prototyped here: break time goes up 16.9% with the feature on, quality moves
+between −3.4% and +0.6% across six cells with mixed sign, and short endings do
+not move at all — 23.7 to 23.2%, 11.7 to 11.7%, 3.3 to 3.3%. Short endings are
+the floor's job, and the floor already does it: 26.1% to 3.3% on the same
+corpus. The active node here already carries the line's ratio, so eTeX's two
+extra node words are unnecessary; carrying them costs 9–10% of break time with
+the feature turned off, and because eTeX folds `\emergencystretch` into
+`active_glue`, the ratio already on the node is the faithful reading anyway.
+
+### Replacing `@chenglou/pretext` with `Intl.Segmenter`
+
+pretext is the largest thing this package ships and loads: 38,409 B minified and
+12.8 kB gzipped, 45% of the browser bundle, and 5.9 ms of the DOM entry's 8.8 ms
+cold import. Its segmenter is `Intl.Segmenter` plus about 570 lines of
+correction, so the substitution looks free.
+
+It is not. The best `Intl.Segmenter` prototype of the three that were built
+disagrees with pretext about where a line may end on 0.454% of this site's prose
+break opportunities — 91 breaks pretext refuses and 12 it allows, over 20,030 —
+and on 17.98% of the opportunities in code-bearing paragraphs, 103 against 573.
+That moves 18.6% of the site's prose paragraphs and 69.6% of its code
+paragraphs. The 4.6 ms it would return sits behind `document.fonts.ready`, where
+nothing is waiting on it. Declined, not deferred.
 
 ## Development
 
