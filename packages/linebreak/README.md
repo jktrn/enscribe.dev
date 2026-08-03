@@ -532,6 +532,255 @@ Recommended for the DOM tier: `0.33`, matching justif's DOM default and the
 usual typographic advice. It is off by default here so that the numbers above,
 and every benchmark that produced them, stay comparable.
 
+## The headless compiler
+
+**This entry does not exist yet.** What follows is the frozen contract for
+`@enscribe/linebreak/text`, written before the code so the shape cannot drift
+into something that has to be published twice. Until it ships,
+`@enscribe/linebreak/layout` is the only entry that runs without a DOM and
+"Three ways in" stays a table of three.
+
+`@enscribe/linebreak/layout` takes items and returns breaks. Something has to
+make the items: split the string into segments, measure them, decide where a
+word may break, and turn protrusion, expansion and letterfit into per-item
+budgets. In the browser that is `compileBlock`, fed by the DOM extractor. The
+compiler itself never reads a node — it takes widths from a callback and
+offsets from a plain string, and the only DOM API anywhere in its reach is one
+`localName === "code"` test. Its runtime import graph is 13 files and zero
+packages, and the benchmark harness has been driving it from a synthesized
+block with no document for as long as gates 6, 7 and 8 have existed.
+
+So the compiler is already headless and there is no supported way to reach it.
+This entry is that door, for callers that have advance widths and no document:
+server-side rendering, canvas, PDF, and the harness itself.
+
+### The surface
+
+```ts
+// @enscribe/linebreak/text — no DOM, no dependencies
+
+export type Advance = (text: string) => number
+
+export type SegmentKind =
+  | "text"
+  | "space"
+  | "break-opportunity"
+  | "soft-hyphen"
+  | "other"
+
+export type TextSegment = {
+  readonly text: string
+  readonly start: number
+  readonly end: number
+  readonly kind: SegmentKind
+}
+
+export const segmentText: (text: string) => TextSegment[]
+
+export const createMetrics: (options: {
+  measure: Advance
+  letterSpacing?: number
+  font?: string
+  segment?: (text: string) => readonly TextSegment[]
+}) => FontMetrics
+
+export type CompileTextOptions = {
+  readonly locale?: string
+  readonly hyphenate?: Hyphenator
+  readonly code?: boolean
+  readonly policy?: Partial<LayoutPolicy>
+  readonly glue?: Partial<GlueElasticity>
+  readonly protrude?: boolean
+  readonly expand?: StretchScale
+  readonly track?: number
+}
+
+export const compileText: (
+  text: string,
+  metrics: FontMetrics,
+  options?: CompileTextOptions,
+) => CompileResult
+```
+
+It also re-exports the types those signatures name — `FontMetrics`,
+`MeasuredSegment`, `MeasuredParagraph`, `CompileResult`, `Hangs`, `Flex`,
+`StretchScale`, `StretchStep`, `StretchProbe`, `Hyphenator`, `ComposeReason` —
+and `calibrateStretch`, which is the only way to obtain a `StretchScale`.
+
+`(text, metrics, options)` mirrors `breakParagraph(items, measure, options)`:
+three positional parameters, options last, no overloads. `CompileResult` is the
+same union the DOM tier already gets back, not a parallel shape.
+
+```ts
+import { breakParagraph } from "@enscribe/linebreak/layout"
+import { compileText, createMetrics } from "@enscribe/linebreak/text"
+
+const metrics = createMetrics({ measure: (text) => context.measureText(text).width })
+const compiled = compileText("Some prose to set.", metrics)
+if (compiled.ok) {
+  const result = breakParagraph(compiled.items, 480)
+}
+```
+
+### Measurement is synchronous, and has to be
+
+`Advance` returns a number, not a promise. `measureRun` is called from inside
+the compiler's inner loops — once per candidate break offset when a word is
+hyphenated, once per edge character when protrusion is on — and through
+`FontMetrics`, which the DOM tier implements too. Making it async would make
+`compileBlock` async, and everything under it, and the DOM tier cannot be
+async: it measures and writes inside one layout, and a suspension between the
+two is a suspension during which the page's styles can change under it.
+`breakParagraph` is synchronous for the same reason.
+
+A caller whose widths come from somewhere asynchronous resolves them first.
+`segmentText` is exported separately so this is possible: segment the string,
+await widths for the pieces, then compile against a closure over the table.
+That works when the compiler only ever asks about whole segments — no
+`hyphenate`, no `code`, no `protrude`. Any of those three make it ask about
+substrings and single characters it cannot predict, and then the caller needs a
+width source that answers synchronously for arbitrary text. Canvas and an
+opentype advance table both do.
+
+### Segmentation
+
+`createMetrics` ships a hand-rolled scanner: one pass, no dependency, no
+`Intl.Segmenter`. It was measured against `@chenglou/pretext` over a
+1010-paragraph corpus, scored on the 103,503 offsets where the compiler would
+permit a break, against the best `Intl.Segmenter` arrangement the earlier
+investigation could build:
+
+| segmenter | extra breaks | missing | paragraphs differing | ms / corpus pass |
+| --- | ---: | ---: | ---: | ---: |
+| `Intl.Segmenter` word granularity, merged, with dash rules | 211 (0.20%) | 29 | 103 (10.2%) | 89–99 |
+| the scanner | 15 (0.01%) | 28 | 18 (1.8%) | 59 |
+
+Better on both axes and no ICU version in the surface, for about sixty lines
+this package owns forever. All of that evidence is Latin prose. There is none
+about Thai, Khmer or Lao, which need dictionary word breaking that neither a
+scanner nor a browser's default segmenter provides, which is what the `segment`
+seam is for. Pass an `Intl.Segmenter`-backed function, or a real dictionary
+segmenter, and `createMetrics` measures whatever it returns.
+
+Widths never come from `segment`. It says where the pieces are; `measure` says
+how wide they are. A `segment` that does not tile the input exactly — offsets
+out of order, a gap, an overlap — makes `measureParagraph` return null and the
+compile declines `segmentation-mismatch` rather than silently mislaying text.
+
+The input is expected to be whitespace-collapsed already, the way the DOM
+extractor collapses before the compiler ever sees a string. `\n`, `\t`, `\f`
+and `\r` are classified as space, so a stray one degrades to a space rather
+than into the middle of a word, but it is not a forced break. Forced breaks
+need more than one run.
+
+This scanner is not the DOM path's segmenter and must not become it. The DOM
+path goes through pretext, which is what the rendered output on this site was
+measured against; unifying the two would change rendered pages to save a file.
+
+### Protrusion, expansion, tracking
+
+The three microtypography options in the browser each rest on a measurement the
+browser makes for itself. A headless caller has to supply the equivalent, and
+each one is different.
+
+`protrude` stays a boolean. Nothing about it needs calibration: the amounts are
+per-character permille of that character's own advance, and the advance comes
+from `measure`. What the DOM tier's boolean additionally carries is
+`honoursHangingMargins` — whether the rendering engine lets a negative inline
+margin shorten a line box, which is a rendering capability, not a measurement.
+Headless, that judgement is the caller's: pass `true` only if the renderer can
+draw a glyph outside the measure.
+
+`expand` takes a calibrated `StretchScale`, not a boolean. A scale is the
+ladder of `font-stretch` percentages the font actually responds to, paired with
+the width ratio each one produces, and it is a property of the font, not of the
+option. `calibrateStretch(budget, probe)` builds one from any probe that can
+report the width of a fixed string at a given percentage; the DOM tier's probe
+sets `font-stretch` on an off-screen span, and a canvas caller's sets `wdth`.
+A boolean would be worse than useless here: with no scale to hand the compiler
+would have to allocate and populate the uncredited-box set for a font that
+cannot expand at all, paying for a feature that then does nothing.
+
+`track` takes the budget directly, as a fraction of each box's width — `0.03`
+is the DOM tier's. There is nothing to calibrate; letterfit is a policy number.
+What the DOM tier decides before passing it is eligibility — that letter
+spacing is uniform across the runs — and with one run that is true by
+construction.
+
+`hyphenate` takes a `Hyphenator`, the same `(word, locale) => offsets`
+function the DOM tier takes. Omitting it is how hyphenation is turned off;
+there is no second boolean for it. `englishHyphenator` stays behind
+`@enscribe/linebreak/hyphenation`, so this entry keeps its zero-package graph
+whether or not a caller hyphenates.
+
+`code` reroutes break opportunities from the hyphenator to the code table —
+camelCase boundaries, path separators, operators, each with its own penalty —
+and suppresses protrusion, matching what a `<code>` wrapper does in the DOM
+tier. It is the one option in this list that the compiler cannot express today:
+it decides the same question by looking for a `code` element among a run's
+wrappers.
+
+### What comes back
+
+`CompileResult` is the existing union: `items` plus `hangs`, `expansion`,
+`tracking`, `flex` and `scale`, each null unless the matching option was
+passed. The item stream goes to `breakParagraph`, and the rest are budgets it
+and the caller consume:
+
+| field | what to do with it |
+| --- | --- |
+| `items` | `breakParagraph(items, measure, …)` |
+| `hangs` | pass as `LayoutOptions.hangs`, or protrusion changes nothing |
+| `flex` | pass as `LayoutOptions.flex`; it is `expansion` and `tracking` pooled |
+| `expansion`, `scale` | `fitLines(lines, target, expansion, scale)` to get each line's percentage |
+| `tracking` | `trackLines(lines, target, tracking, fits)` to get each line's letter spacing |
+
+`fitLines` and `trackLines` are layout-tier functions and are exported from
+`@enscribe/linebreak/layout` alongside `breakParagraph`, together with the
+`Hangs` and `Flex` types that `LayoutOptions` already names but does not
+currently export.
+
+Everything in the result is plain numbers, strings and `Float64Array`. That is
+not an accident of the current code and it is not allowed to become one: the
+type is asserted to be structurally identical to a hand-written DOM-free
+mirror, so a field typed `HTMLElement` cannot appear in it without a test
+going red.
+
+### What it declines
+
+`compileText` returns `{ ok: false, reason }` with the same `ComposeReason`
+union the DOM tier uses, but only three of its members are reachable without a
+DOM:
+
+| reason | when |
+| --- | --- |
+| `empty` | the text produced no items — an empty or all-collapsible string |
+| `segmentation-mismatch` | a custom `segment` did not tile the input |
+| `unmeasurable` | reserved; unreachable while one metrics object serves the whole string |
+
+The others belong to tiers that do not exist here. `too-long`,
+`unsupported-content`, `unsupported-direction` and `unsupported-writing-mode`
+are the DOM extractor declining an element; `single-line`, `too-narrow` and
+`already-typeset` are the engine deciding not to typeset one; `render-failed`
+and the rest are what happens after a write. The union is shared rather than
+narrowed on purpose: a narrower one would have to be widened later, and
+widening a returned union breaks every exhaustive switch over it.
+
+The 3,000-character limit is not applied. It exists because the DOM tier
+re-renders what it typesets; a caller that only wants items pays no such cost.
+
+### What is not in v1
+
+One run. One font, one size, one language, no inline elements, no images, no
+`<br>`, no nowrap groups, no `text-indent`. Those need `compileRuns`, which is
+deliberately not in this freeze: deciding how a nowrap group spans runs when
+there is no element tree to read it from is a design question, and answering it
+badly in order to ship a first version is how an API acquires a shape it cannot
+lose.
+
+CJK, right-to-left text and non-English hyphenation are out of scope for this
+entry as they are for the rest of the package.
+
 ## The rendered DOM
 
 ```html
