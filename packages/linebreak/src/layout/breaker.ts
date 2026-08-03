@@ -79,6 +79,7 @@ type Sums = {
   readonly width: readonly number[]
   readonly stretch: readonly number[]
   readonly shrink: readonly number[]
+  readonly starts: Int32Array
 }
 
 type Cached = {
@@ -87,6 +88,19 @@ type Cached = {
 }
 
 const sumsCache = new WeakMap<readonly Item[], Cached>()
+
+const lineStarts = (items: readonly Item[]) => {
+  const count = items.length
+  const starts = new Int32Array(count + 1)
+  let next = count
+  for (let index = count - 1; index >= 0; index -= 1) {
+    const kind = (items[index] as Item).kind
+    starts[index + 1] = kind === "discretionary" ? index + 1 : next
+    if (kind === "box" || kind === "discretionary") next = index
+  }
+  starts[0] = next
+  return starts
+}
 
 const plainSums = (items: readonly Item[]): Sums => {
   const count = items.length
@@ -103,7 +117,7 @@ const plainSums = (items: readonly Item[]): Sums => {
     stretch[index + 1] = (stretch[index] as number) + (glue ? item.stretch : 0)
     shrink[index + 1] = (shrink[index] as number) + (glue ? item.shrink : 0)
   }
-  return { width, stretch, shrink }
+  return { width, stretch, shrink, starts: lineStarts(items) }
 }
 
 const flexedSums = (items: readonly Item[], flex: Flex): Sums => {
@@ -128,7 +142,7 @@ const flexedSums = (items: readonly Item[], flex: Flex): Sums => {
       (glue ? item.shrink : 0) +
       ((down[index + 1] as number) - (down[index] as number))
   }
-  return { width, stretch, shrink }
+  return { width, stretch, shrink, starts: lineStarts(items) }
 }
 
 const prefixSums = (items: readonly Item[], flex: Flex | undefined): Sums => {
@@ -403,7 +417,7 @@ const stepTo = (
   const admitted = step.admitted
   let kept = 0
   const edge = edgeAt(search, to)
-  const startAfter = lineStart(items, to)
+  const startAfter = search.sums.starts[to + 1] as number
   const leadingAfter = leadingWidth(search, to)
   const flaggedHere = isFlaggedBreak(items[to])
   const flaggedExtra = flaggedDemeritsAt(items, to, flaggedHere, policy)
@@ -578,7 +592,7 @@ const searchFor = (
 
 const initialNode = (search: Search): ActiveNode => ({
   position: -1,
-  start: lineStart(search.items, -1),
+  start: search.sums.starts[0] as number,
   leading: leadingWidth(search, -1) + search.indent,
   flagged: false,
   line: 0,
