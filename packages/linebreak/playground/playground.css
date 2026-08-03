@@ -55,7 +55,7 @@
   --accent: #2a4d8f;
   --measure: 380px;
   --hang: 16px;
-  --column: calc(var(--measure) + 2 * var(--hang) + 2px);
+  --column: calc(var(--measure) + 2 * var(--hang));
   --size: 17px;
   --indent: 0em;
   --family: "MD Lorien", Georgia, serif;
@@ -294,6 +294,29 @@ button[aria-pressed="true"] {
   width: var(--column);
 }
 
+.stack::before,
+.stack::after {
+  content: "";
+  position: absolute;
+  inset-block: 0;
+  width: 1px;
+  background: color-mix(in srgb, var(--accent) 55%, transparent);
+  opacity: 0;
+}
+
+.stack::before {
+  inset-inline-start: var(--hang);
+}
+
+.stack::after {
+  inset-inline-end: var(--hang);
+}
+
+body.rulers .stack::before,
+body.rulers .stack::after {
+  opacity: 1;
+}
+
 .article {
   width: var(--column);
   padding: 0 var(--hang);
@@ -301,11 +324,6 @@ button[aria-pressed="true"] {
   font-size: var(--size);
   line-height: 1.5;
   text-align: justify;
-  border-inline: 1px solid transparent;
-}
-
-body.rulers .article {
-  border-inline-color: color-mix(in srgb, var(--accent) 55%, transparent);
 }
 
 .article p {
