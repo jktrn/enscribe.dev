@@ -23,8 +23,12 @@ const fourWords = (): Item[] => [
 
 const NO_MARKS: ReadonlySet<number> = new Set()
 
-/** Three words measure 320 with 6px of glue shrink, so they cannot be
- * squeezed below 314. The three boxes earn 300 * 2% = 6px more. */
+const THREE_WORDS = 3 * WORD + 2 * SPACE
+
+const GLUE_FLOOR = THREE_WORDS - 2 * SPACE_SHRINK
+
+const GLYPH_FLOOR = GLUE_FLOOR - 3 * WORD * 0.02
+
 const TIGHT = 310
 
 const LOOSE = 336
@@ -36,6 +40,11 @@ const solve = (items: readonly Item[], measure: number, expand: boolean) =>
   })
 
 describe("elasticity the glyphs bring to the optimizer", () => {
+  test("the tight measure is under the glue's floor and over the glyphs'", () => {
+    expect(TIGHT).toBeLessThan(GLUE_FLOOR)
+    expect(TIGHT).toBeGreaterThan(GLYPH_FLOOR)
+  })
+
   test("a line the glue could not shrink into fits once the glyphs can", () => {
     const items = fourWords()
 

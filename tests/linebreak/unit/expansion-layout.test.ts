@@ -18,10 +18,9 @@ const NO_MARKS: ReadonlySet<number> = new Set()
 
 const expansion = buildExpansion(ITEMS, AFFINE, NO_MARKS)
 
-/** 200px of glyphs at a +-2% endpoint: 4px of give in either direction.
- * The DP pools it into the line's own elasticity, so a Line arriving at the
- * renderer already carries glue plus glyphs in `stretch` and `shrink`. */
 const POOL = (expansion.stretch[3] as number) - (expansion.stretch[0] as number)
+
+const ENDPOINT = 0.02
 
 const lineOf = (overrides: Partial<Line> = {}): Line => ({
   start: 0,
@@ -47,6 +46,12 @@ const fitOne = (target: number, overrides: Partial<Line> = {}) =>
   }
 
 describe("a line the breaker left short", () => {
+  test("the pool the DP handed the line is the endpoint of its own glyphs", () => {
+    expect(POOL).toBeCloseTo(2 * WORD * ENDPOINT, 9)
+    expect(lineOf().stretch).toBeCloseTo(SPACE_STRETCH + POOL, 9)
+    expect(lineOf().shrink).toBeCloseTo(SPACE_SHRINK + POOL, 9)
+  })
+
   test("the glyphs take their pooled share, quantized down", () => {
     const fit = fitOne(215)
 

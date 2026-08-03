@@ -26,8 +26,12 @@ const fourWords = (): Item[] => [
 
 const NO_MARKS: ReadonlySet<number> = new Set()
 
-/** Three words measure 320 with 6px of glue shrink, so the glue alone stops
- * at 314. Their letterfit closes another 300 * 3% = 9px. */
+const THREE_WORDS = 3 * WORD + 2 * SPACE
+
+const GLUE_FLOOR = THREE_WORDS - 2 * SPACE_SHRINK
+
+const LETTERFIT_FLOOR = GLUE_FLOOR - 3 * WORD * BUDGET
+
 const TIGHT = 308
 
 const LOOSE = 340
@@ -39,6 +43,11 @@ const solve = (items: readonly Item[], measure: number, track: boolean) =>
   })
 
 describe("elasticity the inter-character space brings to the optimizer", () => {
+  test("the tight measure is under the glue's floor and over the letterfit's", () => {
+    expect(TIGHT).toBeLessThan(GLUE_FLOOR)
+    expect(TIGHT).toBeGreaterThan(LETTERFIT_FLOOR)
+  })
+
   test("a line the glue could not shrink into fits once the letters close", () => {
     const items = fourWords()
 

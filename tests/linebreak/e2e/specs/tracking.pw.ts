@@ -94,13 +94,7 @@ test.describe("letterfit tracking in a real browser", () => {
     }
   })
 
-  /**
-   * The advances were measured with ligatures on, and letterspacing suppresses
-   * them. It costs nothing: the suppressed text sets to the same total, so the
-   * growth is still the whole per-unit spacing. One unit of slack is allowed
-   * for a face that keeps a contextual cluster under spacing anyway.
-   */
-  test("suppressed ligatures cost the model at most one unit", async ({
+  test("letterspacing suppresses ligatures, costing at most one unit", async ({
     page,
   }) => {
     await settleTypeset(page)
@@ -113,10 +107,7 @@ test.describe("letterfit tracking in a real browser", () => {
     }
   })
 
-  /** Why the renderer does NOT write a ligature guard: asking for the common
-   * ligatures back re-forms them, and a ligature glyph takes one spacing where
-   * its characters would have taken two or three. */
-  test("asking the ligatures back is what would break the model", async ({
+  test("a ligature guard would re-form them and lose a spacing each", async ({
     page,
   }) => {
     await settleTypeset(page)

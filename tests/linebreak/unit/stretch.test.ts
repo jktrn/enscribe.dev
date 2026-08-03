@@ -17,10 +17,7 @@ const affine: StretchProbe = (pct) => (BASE * pct) / 100
 const pctsOf = (scale: { steps: readonly { pct: number }[] } | null) =>
   scale?.steps.map((step) => step.pct) ?? null
 
-/** IBM Plex Sans under `text-rendering: geometricPrecision`, headless
- * Chromium: a near-linear design axis at about 0.41% of advance per
- * percentage point, with the stretch side inert. */
-const PLEX_PRECISE = {
+const PLEX_GEOMETRIC_PRECISION = {
   99: 0.996448,
   98: 0.992371,
   97: 0.988353,
@@ -29,9 +26,7 @@ const PLEX_PRECISE = {
   94: 0.976119,
 }
 
-/** The same face at 16px under default hinted rendering: advances snap to
- * whole pixels, so the response is a staircase and most rungs are unusable. */
-const PLEX_HINTED = {
+const PLEX_HINTED_TO_WHOLE_PIXELS = {
   99: 1,
   98: 0.994475,
   97: 0.994475,
@@ -74,8 +69,8 @@ describe("a design axis", () => {
     expect(calibrateStretch(0.009, affine)).toBe(null)
   })
 
-  test("an inert stretch side leaves the table one-sided", () => {
-    const scale = calibrateStretch(0.02, tableProbe(PLEX_PRECISE))
+  test("a near-linear axis with an inert stretch side comes back one-sided", () => {
+    const scale = calibrateStretch(0.02, tableProbe(PLEX_GEOMETRIC_PRECISION))
 
     expect(pctsOf(scale)).toEqual([96, 97, 98, 99, 100])
     expect(widestRatio(scale as never)).toBe(1)
@@ -89,8 +84,11 @@ describe("a design axis", () => {
     expect(narrowestRatio(scale as never)).toBeCloseTo(0.9944029850746269, 12)
   })
 
-  test("rungs the font cannot honour are not emitted", () => {
-    const scale = calibrateStretch(0.02, tableProbe(PLEX_HINTED))
+  test("a staircase response emits only the rungs the font can honour", () => {
+    const scale = calibrateStretch(
+      0.02,
+      tableProbe(PLEX_HINTED_TO_WHOLE_PIXELS),
+    )
 
     expect(pctsOf(scale)).toEqual([94, 96, 98, 100])
   })

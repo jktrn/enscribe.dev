@@ -19,8 +19,6 @@ const NO_MARKS: ReadonlySet<number> = new Set()
 
 const tracking = buildTracking(ITEMS, BUDGET, NO_MARKS)
 
-/** 200px of glyphs at 3%: 6px of letterfit in either direction, which the DP
- * has already pooled into the line's own elasticity. */
 const POOL = (tracking.stretch[3] as number) - (tracking.stretch[0] as number)
 
 const lineOf = (overrides: Partial<Line> = {}): Line => ({
@@ -48,8 +46,10 @@ const trackOne = (
 type LineTrack = { gain: number; shrink: number }
 
 describe("what the letterfit is worth to a line", () => {
-  test("the budget is three per cent of the line's own glyphs", () => {
+  test("three per cent of the line's own glyphs, pooled into its elasticity", () => {
     expect(POOL).toBeCloseTo(2 * WORD * BUDGET, 9)
+    expect(lineOf().stretch).toBeCloseTo(SPACE_STRETCH + POOL, 9)
+    expect(lineOf().shrink).toBeCloseTo(SPACE_SHRINK + POOL, 9)
   })
 
   test("a short line opens by its share of the pooled ratio", () => {
