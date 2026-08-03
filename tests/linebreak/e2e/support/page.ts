@@ -23,7 +23,7 @@ export const waitForQuiet = async (page: Page, settleMs = 500) => {
     .waitForFunction(
       (quietMs) => {
         const lines = document.querySelectorAll(
-          "[data-linebreak-typeset] > [data-linebreak-break]",
+          "[data-linebreak-typeset] > [data-linebreak-line]",
         ).length
         const state = (
           window as { __lbQuiet?: { lines: number; since: number } }
@@ -93,7 +93,7 @@ export const measureLines = (page: Page) =>
 
     for (const block of blocks) {
       const lines = [
-        ...block.querySelectorAll(":scope > [data-linebreak-break]"),
+        ...block.querySelectorAll(":scope > [data-linebreak-line]"),
       ]
       totalLines += lines.length
       const style = getComputedStyle(block)
@@ -115,7 +115,7 @@ export const measureLines = (page: Page) =>
           line.getBoundingClientRect().width -
           range.getBoundingClientRect().width
 
-        const allowed = line.matches('[data-linebreak-break="hyphen"]')
+        const allowed = line.matches('[data-linebreak-line="hyphen"]')
           ? 12
           : 1.5
         if (gap <= allowed) justifiedLines += 1
@@ -134,7 +134,7 @@ export const measureLines = (page: Page) =>
       worstGapPx: Math.round(worstGapPx * 10) / 10,
       overflowingBlocks,
       wrappedBlocks,
-      hyphenLines: document.querySelectorAll('[data-linebreak-break="hyphen"]')
+      hyphenLines: document.querySelectorAll('[data-linebreak-line="hyphen"]')
         .length,
       liveText:
         document

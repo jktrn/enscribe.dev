@@ -10,15 +10,17 @@ const lowercaseOrDigitPattern = /[\p{Ll}\p{N}]/u
 const uppercasePattern = /\p{Lu}/u
 const lowercasePattern = /\p{Ll}/u
 
-const codeBreakPenalty = {
-  separator: 300,
-  closingDelimiter: 450,
-  operator: 550,
-  wordSeparator: 750,
-  identifierBoundary: 850,
-  letterNumberBoundary: 900,
-  emergency: 950,
-} as const
+export const codeBreakPenalties = Object.freeze({
+  separator: 3_000,
+  closingDelimiter: 4_500,
+  operator: 5_500,
+  wordSeparator: 7_500,
+  identifierBoundary: 8_500,
+  letterNumberBoundary: 9_000,
+  emergency: 9_500,
+})
+
+const codeBreakPenalty = codeBreakPenalties
 
 export const codeBreakOffsets = (text: string) => {
   const graphemes = [...graphemeSegmenter.segment(text)]

@@ -1,4 +1,5 @@
 import {
+  clearCache,
   prepareWithSegments,
   setLocale,
   type PreparedTextWithSegments,
@@ -56,6 +57,10 @@ export const configureLocale = (locale?: string) => {
   if (next === activeLocale) return
   setLocale(next)
   activeLocale = next
+}
+
+export const invalidateMeasurements = () => {
+  clearCache()
 }
 
 export const createFontMetrics = (

@@ -1,17 +1,18 @@
-import { policy } from "../policy"
 import {
   breakPenalty,
   drawsHyphen,
   isFlaggedBreak,
   isForced,
+  isParagraphEnd,
   isRenderedSpace,
   type Item,
   lineEndWidth,
   lineStartWidth,
   passThroughWidth,
 } from "./items"
+import { type LayoutPolicy, resolvePolicy } from "./policy"
 
-export type BreakKind = "space" | "hyphen" | "forced" | "none"
+export type BreakKind = "space" | "hyphen" | "forced" | "none" | "end"
 
 export type Line = {
   readonly start: number
@@ -20,20 +21,33 @@ export type Line = {
   readonly sourceEnd: number
   readonly naturalWidth: number
   readonly spaceCount: number
+  readonly stretch: number
   readonly shrink: number
   readonly adjustmentRatio: number
   readonly breakKind: BreakKind
 }
 
-export type BreakResult =
-  | { readonly ok: true; readonly lines: readonly Line[] }
-  | { readonly ok: false }
+export type LayoutPass = "pretolerance" | "tolerance" | "emergency" | "forced"
 
-export type BreakOptions = {
-  readonly tolerance?: number
-  readonly force?: boolean
+export type LayoutResult =
+  | {
+      readonly ok: true
+      readonly lines: readonly Line[]
+      readonly pass: LayoutPass
+      readonly demerits: number
+    }
+  | { readonly ok: false; readonly reason: "empty" | "infeasible" }
+
+export type LayoutOptions = {
+  readonly policy?: Partial<LayoutPolicy>
+  readonly emergencyStretch?: number | "auto"
+}
+
+export type PassOptions = {
+  readonly tolerance: number
+  readonly policy?: Partial<LayoutPolicy>
   readonly emergencyStretch?: number
-  readonly sums?: Sums
+  readonly force?: boolean
 }
 
 type ActiveNode = {
@@ -46,29 +60,18 @@ type ActiveNode = {
   readonly breakKind: BreakKind
 }
 
-export type Sums = {
+type Sums = {
   readonly width: readonly number[]
   readonly stretch: readonly number[]
   readonly shrink: readonly number[]
 }
 
-const fitnessClass = (ratio: number) => {
-  if (ratio < -0.5) return 0
-  if (ratio < 0.5) return 1
-  if (ratio < 1) return 2
-  return 3
-}
+const sumsCache = new WeakMap<readonly Item[], Sums>()
 
-const badness = (ratio: number) => 100 * Math.abs(ratio) ** 3
+const prefixSums = (items: readonly Item[]): Sums => {
+  const cached = sumsCache.get(items)
+  if (cached) return cached
 
-const lineDemerits = (ratio: number, penalty: number) => {
-  const base = policy.demerits.linePenalty + badness(ratio)
-  if (penalty >= 0) return (base + penalty) ** 2
-  if (isForced(penalty)) return base ** 2
-  return base ** 2 - penalty ** 2
-}
-
-export const prefixSums = (items: readonly Item[]): Sums => {
   const width = [0]
   const stretch = [0]
   const shrink = [0]
@@ -82,7 +85,31 @@ export const prefixSums = (items: readonly Item[]): Sums => {
       (shrink[index] as number) + (item.kind === "glue" ? item.shrink : 0),
     )
   }
-  return { width, stretch, shrink }
+  const sums = { width, stretch, shrink }
+  sumsCache.set(items, sums)
+  return sums
+}
+
+const fitnessClass = (ratio: number) => {
+  if (ratio < -0.5) return 0
+  if (ratio < 0.5) return 1
+  if (ratio < 1) return 2
+  return 3
+}
+
+const badness = (ratio: number) => 100 * Math.abs(ratio) ** 3
+
+const lineDemerits = (
+  ratio: number,
+  penaltyValue: number,
+  policy: LayoutPolicy,
+) => {
+  const base = policy.linePenalty + badness(ratio)
+  const squared = Math.abs(base) >= 10_000 ? 100_000_000 : base ** 2
+  if (penaltyValue > 0) return squared + penaltyValue ** 2
+  if (isForced(penaltyValue)) return squared
+  if (penaltyValue < 0) return squared - penaltyValue ** 2
+  return squared
 }
 
 const lineStart = (items: readonly Item[], position: number) => {
@@ -103,12 +130,11 @@ const breakKindAt = (items: readonly Item[], position: number): BreakKind => {
   const item = items[position]
   if (drawsHyphen(item)) return "hyphen"
   if (isRenderedSpace(item)) return "space"
-  if (item?.kind === "penalty" && isForced(item.penalty)) return "forced"
-  for (
-    let index = position + 1;
-    index < lineStart(items, position);
-    index += 1
-  ) {
+  if (item?.kind === "penalty" && isForced(item.penalty)) {
+    return isParagraphEnd(items, position) ? "end" : "forced"
+  }
+  const limit = lineStart(items, position)
+  for (let index = position + 1; index < limit; index += 1) {
     if (isRenderedSpace(items[index])) return "space"
   }
   return "none"
@@ -124,17 +150,15 @@ type Search = {
   readonly items: readonly Item[]
   readonly sums: Sums
   readonly target: number
-  readonly tolerance: number
-
+  readonly toleranceRatio: number
   readonly emergencyStretch: number
+  readonly policy: LayoutPolicy
 }
 
 type Step = {
   readonly actives: ActiveNode[]
-
   readonly admitted: Array<ActiveNode | null>
   readonly minimum: number
-
   readonly rescue: { node: ActiveNode; ratio: number } | null
 }
 
@@ -149,42 +173,74 @@ const measureLine = (search: Search, from: ActiveNode, to: number) => {
     (sums.width[start] as number) +
     leading +
     (endItem ? lineEndWidth(endItem) : 0)
-  const slack = search.target - natural
+
   const stretch = (sums.stretch[to] as number) - (sums.stretch[start] as number)
   const shrink = (sums.shrink[to] as number) - (sums.shrink[start] as number)
 
+  if (!Number.isFinite(natural)) {
+    return {
+      natural: Number.NaN,
+      ratio: Number.NEGATIVE_INFINITY,
+      stretch,
+      shrink,
+    }
+  }
+
+  const slack = search.target - natural
   let ratio = 0
   if (slack > 0) {
     const stretchable = stretch + search.emergencyStretch
     ratio = stretchable > 0 ? slack / stretchable : Number.POSITIVE_INFINITY
   }
   if (slack < 0) ratio = shrink > 0 ? slack / shrink : Number.NEGATIVE_INFINITY
-  return { natural, ratio, shrink }
+  return { natural, ratio, stretch, shrink }
 }
 
 const stepTo = (
   search: Search,
   actives: readonly ActiveNode[],
   to: number,
-  penalty: number,
+  penaltyValue: number,
   forced: boolean,
 ): Step => {
-  const { items, tolerance } = search
+  const { items, toleranceRatio, policy } = search
   const admitted: Array<ActiveNode | null> = [null, null, null, null]
   const survivors: ActiveNode[] = []
+  const kind = breakKindAt(items, to)
+  const flaggedHere = isFlaggedBreak(items[to])
+  const atParagraphEnd = isParagraphEnd(items, to)
   let minimum = Number.POSITIVE_INFINITY
   let rescue: { node: ActiveNode; ratio: number; distance: number } | null =
     null
 
   for (const active of actives) {
+    if (lineStart(items, active.position) >= to) {
+      if (!forced) {
+        survivors.push(active)
+        continue
+      }
+      const demerits = active.demerits + lineDemerits(0, penaltyValue, policy)
+      if (demerits < (admitted[1]?.demerits ?? Number.POSITIVE_INFINITY)) {
+        admitted[1] = {
+          position: to,
+          line: active.line + 1,
+          fitness: 1,
+          demerits,
+          previous: active,
+          ratio: 0,
+          breakKind: kind,
+        }
+        if (demerits < minimum) minimum = demerits
+      }
+      continue
+    }
+
     const { ratio } = measureLine(search, active, to)
 
     const tooLong = ratio < -1
     if (!tooLong && !forced) survivors.push(active)
 
-    if (lineStart(items, active.position) >= to) continue
-
-    const distance = bandDistance(ratio, tolerance)
+    const distance = bandDistance(ratio, toleranceRatio)
     if (
       !rescue ||
       distance < rescue.distance ||
@@ -193,19 +249,17 @@ const stepTo = (
       rescue = { node: active, ratio, distance }
     }
 
-    if (ratio < -1 || ratio > tolerance) continue
+    if (ratio < -1 || ratio > toleranceRatio) continue
 
     const fitness = fitnessClass(ratio)
-    let demerits = active.demerits + lineDemerits(ratio, penalty)
-    if (
-      active.position >= 0 &&
-      isFlaggedBreak(items[active.position]) &&
-      isFlaggedBreak(items[to])
-    ) {
-      demerits += policy.demerits.consecutiveFlagged
+    let demerits = active.demerits + lineDemerits(ratio, penaltyValue, policy)
+
+    if (active.position >= 0 && isFlaggedBreak(items[active.position])) {
+      if (flaggedHere) demerits += policy.doubleHyphenDemerits
+      else if (atParagraphEnd) demerits += policy.finalHyphenDemerits
     }
-    if (active.line > 0 && Math.abs(fitness - active.fitness) > 1) {
-      demerits += policy.demerits.fitnessJump
+    if (Math.abs(fitness - active.fitness) > 1) {
+      demerits += policy.adjDemerits
     }
 
     if (demerits < (admitted[fitness]?.demerits ?? Number.POSITIVE_INFINITY)) {
@@ -216,7 +270,7 @@ const stepTo = (
         demerits,
         previous: active,
         ratio,
-        breakKind: breakKindAt(items, to),
+        breakKind: kind,
       }
       if (demerits < minimum) minimum = demerits
     }
@@ -256,14 +310,17 @@ const linesFrom = (search: Search, final: ActiveNode): Line[] => {
     node = node.previous
   ) {
     const from = node.previous
-    const { natural, shrink } = measureLine(search, from, node.position)
-    const start = lineStart(items, from.position)
+    const start = Math.min(lineStart(items, from.position), node.position)
+    const empty = start >= node.position
+    const { natural, stretch, shrink } = empty
+      ? { natural: 0, stretch: 0, shrink: 0 }
+      : measureLine(search, from, node.position)
     const breakItem = items[node.position]
 
     const sourceEnd =
       breakItem?.kind === "discretionary"
         ? breakItem.breakOffset
-        : (breakItem?.source.start ?? items.at(-1)?.source.end ?? 0)
+        : (breakItem?.source?.start ?? items.at(-1)?.source?.end ?? 0)
 
     let spaceCount = 0
     for (let index = start; index < node.position; index += 1) {
@@ -273,10 +330,11 @@ const linesFrom = (search: Search, final: ActiveNode): Line[] => {
     lines.push({
       start,
       end: node.position,
-      sourceStart: items[start]?.source.start ?? sourceEnd,
+      sourceStart: items[start]?.source?.start ?? sourceEnd,
       sourceEnd,
       naturalWidth: natural,
       spaceCount,
+      stretch,
       shrink,
       adjustmentRatio: node.ratio,
       breakKind: node.breakKind,
@@ -285,18 +343,21 @@ const linesFrom = (search: Search, final: ActiveNode): Line[] => {
   return lines.reverse()
 }
 
-export const breakParagraph = (
+export const breakParagraphOnce = (
   items: readonly Item[],
-  target: number,
-  options: BreakOptions = {},
-): BreakResult => {
-  if (items.length === 0) return { ok: false }
+  measure: number,
+  options: PassOptions,
+): LayoutResult => {
+  if (items.length === 0) return { ok: false, reason: "empty" }
+
+  const policy = resolvePolicy(options.policy)
   const search: Search = {
     items,
-    sums: options.sums ?? prefixSums(items),
-    target,
-    tolerance: options.tolerance ?? policy.fit.tolerance,
+    sums: prefixSums(items),
+    target: measure,
+    toleranceRatio: (options.tolerance / 100) ** (1 / 3),
     emergencyStretch: options.emergencyStretch ?? 0,
+    policy,
   }
 
   let actives: ActiveNode[] = [
@@ -312,73 +373,93 @@ export const breakParagraph = (
   ]
 
   for (let to = 0; to < items.length; to += 1) {
-    const penalty = breakPenalty(items, to)
-    if (penalty === null) continue
-    const forced = isForced(penalty)
-    const step = stepTo(search, actives, to, penalty, forced)
+    const penaltyValue = breakPenalty(items, to)
+    if (penaltyValue === null) continue
+    const forced = isForced(penaltyValue)
+    const step = stepTo(search, actives, to, penaltyValue, forced)
     actives = step.actives
 
     if (step.minimum === Number.POSITIVE_INFINITY) {
       if (actives.length > 0) continue
-      if (!options.force || !step.rescue) return { ok: false }
+      if (!options.force || !step.rescue)
+        return { ok: false, reason: "infeasible" }
       actives = [forcedNode(items, step.rescue, to)]
       continue
     }
 
-    const ceiling = step.minimum + policy.demerits.fitnessJump
+    const ceiling = step.minimum + policy.adjDemerits
     for (let fitness = 0; fitness < 4; fitness += 1) {
       const candidate = step.admitted[fitness]
-      if (candidate && candidate.demerits <= ceiling) {
-        actives.push(candidate)
-      }
+      if (candidate && candidate.demerits <= ceiling) actives.push(candidate)
     }
-    if (forced) actives = actives.filter((node) => node.position === to)
   }
 
   const final = actives.reduce<ActiveNode | null>(
     (best, node) => (!best || node.demerits < best.demerits ? node : best),
     null,
   )
-  if (!final || final.line === 0) return { ok: false }
-  return { ok: true, lines: linesFrom(search, final) }
+  if (!final || final.line === 0) return { ok: false, reason: "infeasible" }
+  return {
+    ok: true,
+    lines: linesFrom(search, final),
+    pass: options.force ? "forced" : "tolerance",
+    demerits: final.demerits,
+  }
 }
 
-export const breakParagraphWithFallback = (
-  items: readonly Item[],
-  target: number,
-  sums: Sums = prefixSums(items),
-): BreakResult => {
-  const pass = (options: BreakOptions) =>
-    breakParagraph(items, target, { ...options, sums })
-
-  const strict = pass({ tolerance: policy.fit.tolerance })
-  if (strict.ok) return strict
-
-  const relaxed = pass({ tolerance: policy.fit.relaxedTolerance })
-  if (relaxed.ok) return relaxed
-
-  let glueWidth = 0
-  let glueCount = 0
+const meanGlueWidth = (items: readonly Item[]) => {
+  let total = 0
+  let count = 0
   for (const item of items) {
-    if (item.kind === "glue") {
-      glueWidth += item.width
-      glueCount += 1
+    if (item.kind === "glue" && item.width > 0) {
+      total += item.width
+      count += 1
     }
   }
+  return count > 0 ? total / count : 0
+}
+
+const EMERGENCY_STRETCH_SPACES = 14
+
+export const breakParagraph = (
+  items: readonly Item[],
+  measure: number,
+  options: LayoutOptions = {},
+): LayoutResult => {
+  if (items.length === 0) return { ok: false, reason: "empty" }
+  const policy = resolvePolicy(options.policy)
+  const shared = { policy: options.policy }
+
+  const strict = breakParagraphOnce(items, measure, {
+    ...shared,
+    tolerance: policy.pretolerance,
+  })
+  if (strict.ok) return { ...strict, pass: "pretolerance" }
+
+  const relaxed = breakParagraphOnce(items, measure, {
+    ...shared,
+    tolerance: policy.tolerance,
+  })
+  if (relaxed.ok) return { ...relaxed, pass: "tolerance" }
+
   const emergencyStretch =
-    glueCount > 0
-      ? (glueWidth / glueCount) * policy.fit.emergencyStretchSpaces
-      : 0
+    options.emergencyStretch === undefined ||
+    options.emergencyStretch === "auto"
+      ? meanGlueWidth(items) * EMERGENCY_STRETCH_SPACES
+      : options.emergencyStretch
+
   if (emergencyStretch > 0) {
-    const emergency = pass({
-      tolerance: policy.fit.relaxedTolerance,
+    const emergency = breakParagraphOnce(items, measure, {
+      ...shared,
+      tolerance: policy.tolerance,
       emergencyStretch,
     })
-    if (emergency.ok) return emergency
+    if (emergency.ok) return { ...emergency, pass: "emergency" }
   }
 
-  return pass({
-    tolerance: policy.fit.relaxedTolerance,
+  return breakParagraphOnce(items, measure, {
+    ...shared,
+    tolerance: policy.tolerance,
     emergencyStretch,
     force: true,
   })

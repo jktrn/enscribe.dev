@@ -1,51 +1,111 @@
-import type { Diagnostic, DiagnosticKind, DiagnosticSink } from "./diagnostics"
+import type { GlueElasticity, LayoutPolicy } from "./layout/policy"
+
+export const SKIP_REASONS = [
+  "single-line",
+  "empty",
+  "too-narrow",
+  "already-typeset",
+] as const
+
+export type SkipReason = (typeof SKIP_REASONS)[number]
+
+export const DECLINE_REASONS = [
+  "unsupported-content",
+  "unsupported-direction",
+  "unsupported-writing-mode",
+  "too-long",
+  "unmeasurable",
+  "segmentation-mismatch",
+  "no-feasible-breaking",
+] as const
+
+export type DeclineReason = (typeof DECLINE_REASONS)[number]
+
+export type ComposeReason = SkipReason | DeclineReason
+
+export const FAILURE_REASONS = [
+  "layout-mismatch",
+  "unstable-width",
+  "line-height-unresolved",
+  "render-failed",
+] as const
+
+export type FailureReason = (typeof FAILURE_REASONS)[number]
+
+export type Outcome =
+  | {
+      readonly element: HTMLElement
+      readonly status: "typeset"
+      readonly lines: number
+      readonly retries: number
+    }
+  | {
+      readonly element: HTMLElement
+      readonly status: "skipped"
+      readonly reason: SkipReason
+    }
+  | {
+      readonly element: HTMLElement
+      readonly status: "declined"
+      readonly reason: DeclineReason
+    }
+  | {
+      readonly element: HTMLElement
+      readonly status: "failed"
+      readonly reason: FailureReason
+      readonly cause?: unknown
+    }
+
+export const isExpected = (outcome: Outcome) =>
+  outcome.status === "typeset" || outcome.status === "skipped"
+
+declare const brand: unique symbol
+
+export const COMPOSITION_BRAND = Symbol("linebreak.composition") as symbol & {
+  readonly [brand]: never
+}
+
+export type Composition = {
+  readonly brand: typeof COMPOSITION_BRAND
+  readonly element: HTMLElement
+  readonly status: "ready" | "skipped" | "declined" | "failed"
+  readonly lines: number
+  readonly width: number
+  readonly reason?: SkipReason | DeclineReason | FailureReason
+}
 
 export type LinebreakerOptions = {
   locale?: string
   minimumWidth?: number
-  onDiagnostic?: DiagnosticSink
   hyphenate?: boolean
   preserveImageAttributes?: readonly string[]
+
+  policy?: Partial<LayoutPolicy>
+  glue?: Partial<GlueElasticity>
+  safetyMargin?: number
+  retries?: number
+  maximumCharacters?: number
+
+  onOutcome?: (outcome: Outcome) => void
 }
 
-export type LinebreakPlan = {
-  readonly element: HTMLElement
-}
-
-export type LinebreakResult =
-  | {
-      readonly element: HTMLElement
-      readonly state: "typeset"
-      readonly lineCount: number
-    }
-  | {
-      readonly element: HTMLElement
-      readonly state: "native"
-      readonly reason: DiagnosticKind
-    }
-
-export type LinebreakMetrics = {
-  cachedParagraphs: number
-  cachedTypographies: number
+export type LinebreakerStats = {
+  readonly typeset: number
+  readonly skipped: number
+  readonly declined: number
+  readonly failed: number
+  readonly retries: number
+  readonly liveElements: number
+  readonly cachedFonts: number
 }
 
 export interface Linebreaker {
-  plan(element: HTMLElement): LinebreakPlan
-
-  commit(plan: LinebreakPlan): LinebreakResult
-  commit(plans: Iterable<LinebreakPlan>): LinebreakResult[]
-
-  typeset(element: HTMLElement): LinebreakResult
-  typeset(elements: Iterable<HTMLElement>): LinebreakResult[]
-
-  restore(element: HTMLElement): void
-  restore(elements: Iterable<HTMLElement>): void
-
-  invalidate(element?: HTMLElement): void
-  invalidate(elements: Iterable<HTMLElement>): void
-  readMetrics(): LinebreakMetrics
-
-  destroy(): void
+  compose(elements: Iterable<HTMLElement>): readonly Composition[]
+  apply(compositions: Iterable<Composition>): readonly Outcome[]
+  typeset(elements: Iterable<HTMLElement>): readonly Outcome[]
+  restore(elements?: Iterable<HTMLElement>): void
+  reset(elements?: Iterable<HTMLElement>): void
+  refresh(): void
+  stats(): LinebreakerStats
+  dispose(): void
 }
-
-export type { Diagnostic, DiagnosticKind, DiagnosticSink }

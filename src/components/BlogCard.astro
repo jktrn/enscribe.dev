@@ -23,8 +23,8 @@ const raster = bannerRaster(post)
         <Image src={post.data.image} alt="" width={640} height={336} />
       </a>
     )}
-  <entry-info data-typeset-root>
-    <a href={`/blog/${post.id}`} data-typeset-skip>
+  <entry-info data-linebreak-root>
+    <a href={`/blog/${post.id}`} data-linebreak-skip>
       <Fragment set:html={entryInline(post, "title").html} />
     </a>
     <entry-meta>

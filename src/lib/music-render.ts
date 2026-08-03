@@ -3,6 +3,7 @@ import type { Concert, ConcertArtist } from "@/lib/music"
 import { concertDate } from "@/lib/music"
 import { renderInline } from "@/lib/markdown/inline-markdown"
 import { formatDateParts } from "@/lib/utils"
+import { ATTRIBUTES } from "@enscribe/linebreak/attributes"
 
 const escapeHtml = (value: string) =>
   value.replace(
@@ -63,8 +64,8 @@ const renderLink = async ({
     ? await renderPart(beforeText, 0, acronymBoundary)
     : ""
   const endingHtml = await renderPart(ending, before.length, acronymBoundary)
-  const favicon = `<span aria-hidden="true" data-favicon="" data-favicon-position="after" data-linebreak-decoration="" data-linebreak-decoration-position="after" data-favicon-icon="${escapeHtml(asset)}" style='--favicon-mask:url("${escapeHtml(assetUrl)}")'></span>`
-  const content = `${beforeHtml}${beforeSpacing}<span data-linebreak-atom="" data-favicon-glue="">${endingHtml}${favicon}</span>${trailing}`
+  const favicon = `<span aria-hidden="true" data-favicon="" data-favicon-position="after" ${ATTRIBUTES.decoration}="" ${ATTRIBUTES.decorationPosition}="after" data-favicon-icon="${escapeHtml(asset)}" style='--favicon-mask:url("${escapeHtml(assetUrl)}")'></span>`
+  const content = `${beforeHtml}${beforeSpacing}<span ${ATTRIBUTES.atom}="" data-favicon-glue="">${endingHtml}${favicon}</span>${trailing}`
 
   return `<a href="${escapeHtml(href)}" target="_blank" rel="nofollow noreferrer noopener">${content}</a>`
 }

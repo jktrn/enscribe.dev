@@ -21,13 +21,12 @@ const testModules = fileURLToPath(new URL("../node_modules", import.meta.url))
 
 interface PackedPackageManifest {
   dependencies?: Record<string, string>
-  exports?: {
-    "."?: { import?: string; types?: string }
-    "./styles.css"?: { default?: string; types?: string }
-  }
+  exports: Record<string, string | Record<string, string>>
   license?: string
   name?: string
   private?: boolean
+  publishConfig?: { access?: string }
+  keywords?: string[]
   version?: string
 }
 
@@ -66,17 +65,27 @@ test("the packed package works for Node, TypeScript, and browser consumers", asy
 
     const tarball = join(temporaryDirectory, packed.filename)
     const entries = run("tar", ["-tf", tarball]).trim().split("\n").sort()
-    expect(entries).toEqual(
-      [
-        "package/LICENSE",
-        "package/README.md",
-        "package/dist/index.d.ts",
-        "package/dist/index.js",
-        "package/dist/styles.css",
-        "package/dist/styles.css.d.ts",
-        "package/package.json",
-      ].sort(),
-    )
+    for (const required of [
+      "package/LICENSE",
+      "package/README.md",
+      "package/package.json",
+    ]) {
+      expect(entries).toContain(required)
+    }
+    for (const entry of entries) {
+      expect(entry).toMatch(
+        /^package\/(dist\/|LICENSE$|README\.md$|package\.json$)/,
+      )
+    }
+
+    const packedManifest = JSON.parse(
+      run("tar", ["-xOf", tarball, "package/package.json"]),
+    ) as { exports: Record<string, { default?: string } | string> }
+    for (const target of Object.values(packedManifest.exports)) {
+      const file = typeof target === "string" ? target : target.default
+      if (!file || file.endsWith("package.json")) continue
+      expect(entries).toContain(`package/${file.replace(/^\.\//, "")}`)
+    }
 
     const unpacked = join(temporaryDirectory, "unpacked")
     await mkdir(unpacked)
@@ -87,24 +96,35 @@ test("the packed package works for Node, TypeScript, and browser consumers", asy
     ) as PackedPackageManifest
     expect(manifest).toMatchObject({
       name: "@enscribe/linebreak",
-      version: "0.1.0",
       license: "MIT",
-      private: true,
       dependencies: {
         "@chenglou/pretext": "0.0.8",
         hyphen: "1.14.1",
       },
     })
-    expect(manifest.exports).toEqual({
-      ".": {
-        types: "./dist/index.d.ts",
-        import: "./dist/index.js",
-      },
-      "./styles.css": {
-        types: "./dist/styles.css.d.ts",
-        default: "./dist/styles.css",
-      },
-    })
+    expect(manifest.private).toBeUndefined()
+    expect(manifest.publishConfig?.access).toBe("public")
+    expect(manifest.keywords?.length).toBeGreaterThan(0)
+    const subpaths = Object.keys(manifest.exports)
+    for (const required of [
+      ".",
+      "./layout",
+      "./auto",
+      "./attributes",
+      "./styles.css",
+      "./package.json",
+    ]) {
+      expect(subpaths).toContain(required)
+    }
+    for (const [subpath, target] of Object.entries(manifest.exports)) {
+      if (typeof target === "string") continue
+      expect(Object.keys(target)[0], `${subpath} lists types first`).toBe(
+        "types",
+      )
+      expect(Object.keys(target).at(-1), `${subpath} lists default last`).toBe(
+        "default",
+      )
+    }
 
     const installedModules = join(unpacked, "node_modules")
     await mkdir(join(installedModules, "@chenglou"), { recursive: true })
@@ -130,22 +150,42 @@ test("the packed package works for Node, TypeScript, and browser consumers", asy
 
     await writeFile(
       join(consumer, "runtime.mjs"),
-      `import * as linebreak from "@enscribe/linebreak"
-if (typeof linebreak.createLinebreaker !== "function") throw new Error("missing createLinebreaker")
-if (typeof linebreak.cleanCopiedLinebreaks !== "function") throw new Error("missing cleanCopiedLinebreaks")
+      `import { box, breakParagraph, glue, paragraphEnd } from "@enscribe/linebreak/layout"
+import { ATTRIBUTES } from "@enscribe/linebreak/attributes"
+
+const items = [box(180), glue(8, 4, 2.67), box(180), glue(8, 4, 2.67), box(180), ...paragraphEnd()]
+const result = breakParagraph(items, 400)
+if (!result.ok) throw new Error("expected a solution")
+if (result.lines.length !== 2) throw new Error("expected two lines, got " + result.lines.length)
+if (result.lines.at(-1).breakKind !== "end") throw new Error("last line must report end")
+if (!["pretolerance", "tolerance", "emergency", "forced"].includes(result.pass)) {
+  throw new Error("unexpected pass: " + result.pass)
+}
+if (ATTRIBUTES.atom !== "data-linebreak-atom") throw new Error("attribute contract moved")
 `,
     )
     run("node", [join(consumer, "runtime.mjs")], { cwd: consumer })
 
     await writeFile(
       join(consumer, "consumer.ts"),
-      `import { createLinebreaker, type LinebreakPlan } from "@enscribe/linebreak"
+      `import { createLinebreaker, type Composition, type Outcome } from "@enscribe/linebreak"
+import { createTypesetter } from "@enscribe/linebreak/auto"
 import "@enscribe/linebreak/styles.css"
+
 declare const paragraph: HTMLElement
-const linebreaker = createLinebreaker({ locale: "en-US" })
-const plan: LinebreakPlan = linebreaker.plan(paragraph)
-linebreaker.commit(plan)
-linebreaker.destroy()
+
+const linebreaker = createLinebreaker({ locale: "en-US", hyphenate: true })
+const compositions: readonly Composition[] = linebreaker.compose([paragraph])
+const outcomes: readonly Outcome[] = linebreaker.apply(compositions)
+for (const outcome of outcomes) {
+  if (outcome.status === "typeset") console.log(outcome.lines)
+  else console.log(outcome.reason)
+}
+linebreaker.dispose()
+
+const typesetter = createTypesetter({ roots: "[data-linebreak-root]" })
+void typesetter.start().then(() => typesetter.settled)
+typesetter.dispose()
 `,
     )
     await writeFile(

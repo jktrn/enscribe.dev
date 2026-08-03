@@ -1,27 +1,61 @@
 {
   "name": "@enscribe/linebreak",
-  "version": "0.1.0",
-  "private": true,
-  "description": "Knuth–Plass line breaking for this site's prose",
+  "version": "0.2.0",
+  "description": "Knuth\u2013Plass line breaking for the web",
+  "keywords": [
+    "knuth-plass",
+    "line-breaking",
+    "justification",
+    "typography",
+    "hyphenation",
+    "text-layout",
+    "typesetting",
+    "tex"
+  ],
   "type": "module",
-  "packageManager": "bun@1.3.14",
   "license": "MIT",
   "author": "jktrn",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jktrn/enscribe.dev.git",
+    "directory": "packages/linebreak"
+  },
+  "homepage": "https://github.com/jktrn/enscribe.dev/tree/main/packages/linebreak#readme",
+  "bugs": {
+    "url": "https://github.com/jktrn/enscribe.dev/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "files": [
     "dist"
   ],
   "sideEffects": [
-    "./dist/styles.css"
+    "*.css"
   ],
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
+      "default": "./dist/index.js"
+    },
+    "./layout": {
+      "types": "./dist/layout.d.ts",
+      "default": "./dist/layout.js"
+    },
+    "./auto": {
+      "types": "./dist/auto.d.ts",
+      "default": "./dist/auto.js"
+    },
+    "./attributes": {
+      "types": "./dist/attributes.d.ts",
+      "default": "./dist/attributes.js"
     },
     "./styles.css": {
       "types": "./dist/styles.css.d.ts",
       "default": "./dist/styles.css"
-    }
+    },
+    "./package.json": "./package.json"
   },
   "scripts": {
     "build": "tsdown",
@@ -38,8 +72,5 @@
     "publint": "0.3.21",
     "tsdown": "0.22.12",
     "typescript": "6.0.2"
-  },
-  "engines": {
-    "node": ">=18"
   }
 }

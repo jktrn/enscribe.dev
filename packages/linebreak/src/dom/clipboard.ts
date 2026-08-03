@@ -1,5 +1,4 @@
-import type { BreakKind } from "../layout/breaker"
-import { LINE_SELECTOR } from "./render"
+import { LINE_SELECTOR, TYPESET_SELECTOR } from "./render"
 
 const generatesBlockBox = (element: Element, display: string) =>
   display !== "contents" &&
@@ -11,15 +10,6 @@ const clippedText = (node: Text, range: Range) => {
   const start = node === range.startContainer ? range.startOffset : 0
   const end = node === range.endContainer ? range.endOffset : node.data.length
   return node.data.slice(start, end)
-}
-
-const lineJoin = (line: HTMLElement, range: Range) => {
-  const next = line.nextSibling
-  if (!next || !range.intersectsNode(next)) return ""
-  const kind = line.dataset.linebreakBreak as BreakKind | undefined
-  if (kind === "space") return " "
-  if (kind === "forced") return "\n"
-  return ""
 }
 
 const plainText = (range: Range) => {
@@ -41,10 +31,6 @@ const plainText = (range: Range) => {
 
     walkChildren(node)
 
-    if (node.matches(LINE_SELECTOR)) {
-      text += lineJoin(node as HTMLElement, range)
-      return
-    }
     if (
       generatesBlockBox(node, display) &&
       text !== "" &&
@@ -66,26 +52,30 @@ const plainText = (range: Range) => {
   return text
 }
 
-export const cleanCopiedLinebreaks = (event: ClipboardEvent) => {
+export const handleCopy = (event: ClipboardEvent) => {
   const selection = getSelection()
   if (!selection || selection.rangeCount !== 1 || !event.clipboardData) return
 
   const range = selection.getRangeAt(0)
+  const container = range.commonAncestorContainer
+  const scope =
+    container.nodeType === Node.ELEMENT_NODE
+      ? (container as Element)
+      : container.parentElement
+  if (
+    !scope?.closest(TYPESET_SELECTOR) &&
+    !scope?.querySelector(LINE_SELECTOR)
+  ) {
+    return
+  }
+
   const holder = document.createElement("div")
   holder.appendChild(range.cloneContents())
-
-  const lines = holder.querySelectorAll<HTMLElement>(LINE_SELECTOR)
-  if (lines.length === 0) return
+  if (!holder.querySelector(LINE_SELECTOR)) return
 
   const text = plainText(range)
 
-  for (const line of lines) {
-    if (line.nextSibling) {
-      const kind = line.dataset.linebreakBreak as BreakKind | undefined
-      if (kind === "space") line.appendChild(document.createTextNode(" "))
-
-      if (kind === "forced") line.appendChild(document.createElement("br"))
-    }
+  for (const line of holder.querySelectorAll<HTMLElement>(LINE_SELECTOR)) {
     line.replaceWith(...line.childNodes)
   }
   for (const element of holder.querySelectorAll<HTMLElement>("*")) {

@@ -1,4 +1,4 @@
-import type { Diagnostic } from "../../diagnostics"
+import type { ComposeReason } from "../../types"
 
 export const OBJECT_REPLACEMENT = "￼"
 
@@ -70,7 +70,7 @@ export type ExtractedBlock = {
 
 export type ExtractResult =
   | { ok: true; block: ExtractedBlock }
-  | { ok: false; diagnostic: Diagnostic }
+  | { ok: false; reason: ComposeReason }
 
 export const codeWrapper = (run: InlineRun) =>
   run.wrappers.find((wrapper) => wrapper.localName === "code")

@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test"
 import { breakPenalty, type Item } from "@linebreak/layout/items"
-import { FORBIDDEN_PENALTY } from "@linebreak/policy"
+import { INFINITE_PENALTY } from "@linebreak/layout/policy"
 import { codeBreakOffsets } from "@linebreak/text/code-breaks"
 
 const discretionaryAt = (penalty: number): Item[] => [
@@ -49,7 +49,7 @@ describe("every offered break is one the optimizer can take", () => {
     ]
     for (const text of sampled) {
       for (const penalty of codeBreakOffsets(text).values()) {
-        expect(penalty).toBeLessThan(FORBIDDEN_PENALTY)
+        expect(penalty).toBeLessThan(INFINITE_PENALTY)
       }
     }
   })

@@ -22,7 +22,7 @@ describe("content layout safety", () => {
     const layout = await readFile("src/layouts/Layout.astro", "utf8")
 
     expect(layout).toMatch(
-      /page-grid:not\(\[data-toc\]\) page-content:not\(\[data-wide\]\)\s*\{\s*grid-column:\s*3\s*\/\s*13;\s*max-inline-size:\s*var\(--measure\);/,
+      /page-grid:not\(\[data-toc\]\) page-content:not\(\[data-wide\]\)\s*\{\s*grid-column:\s*3\s*\/\s*13;[\s\S]*?max-inline-size:\s*calc\(/,
     )
   })
 

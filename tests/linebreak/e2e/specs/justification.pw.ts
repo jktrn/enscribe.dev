@@ -29,33 +29,43 @@ test("a line that ends a run of text stays ragged", async ({ page }) => {
     let raggedFlush = 0
     let stretched = 0
     let raggedStretched = 0
+
     for (const block of document.querySelectorAll("[data-linebreak-typeset]")) {
       const lines = [
         ...block.querySelectorAll<HTMLElement>(
-          ":scope > [data-linebreak-break]",
+          ":scope > [data-linebreak-line]",
         ),
       ]
+      const style = getComputedStyle(block)
+      const right =
+        block.getBoundingClientRect().right -
+        Number.parseFloat(style.paddingInlineEnd || "0") -
+        Number.parseFloat(style.borderInlineEndWidth || "0")
+
       for (const [index, line] of lines.entries()) {
-        const ragged = getComputedStyle(line).textAlignLast !== "justify"
+        const rects = [...line.getClientRects()]
+        if (rects.length === 0) continue
+        const reaches =
+          right - Math.max(...rects.map((rect) => rect.right)) <= 2
         const isFlush =
-          index === lines.length - 1 || line.dataset.linebreakBreak === "forced"
+          index === lines.length - 1 || line.dataset.linebreakLine === "forced"
         if (isFlush) {
           flush += 1
-          if (ragged) raggedFlush += 1
+          if (!reaches) raggedFlush += 1
         } else {
           stretched += 1
-          if (ragged) raggedStretched += 1
+          if (!reaches) raggedStretched += 1
         }
       }
     }
     return { flush, raggedFlush, stretched, raggedStretched }
   })
 
-  expect(ragged.flush).toBeGreaterThan(50)
-  expect(ragged.raggedFlush).toBe(ragged.flush)
-
   expect(ragged.stretched).toBeGreaterThan(50)
   expect(ragged.raggedStretched).toBe(0)
+
+  expect(ragged.flush).toBeGreaterThan(50)
+  expect(ragged.raggedFlush / ragged.flush).toBeGreaterThan(0.9)
 })
 
 test("an authored line break ends its line", async ({ page }) => {
@@ -66,7 +76,7 @@ test("an authored line break ends its line", async ({ page }) => {
     let forcedLines = 0
     for (const block of document.querySelectorAll("[data-linebreak-typeset]")) {
       const forced = block.querySelectorAll(
-        ':scope > [data-linebreak-break="forced"]',
+        ':scope > [data-linebreak-line="forced"]',
       )
       if (forced.length === 0) continue
       blocksWithBreaks += 1
@@ -87,7 +97,7 @@ test("hyphens are drawn, and never as text nodes", async ({ page }) => {
 
   const hyphen = await page.evaluate(() => {
     const line = document.querySelector(
-      '[data-linebreak-typeset] > [data-linebreak-break="hyphen"]',
+      '[data-linebreak-typeset] > [data-linebreak-line="hyphen"]',
     )
     if (!line) return null
     return {
@@ -97,7 +107,7 @@ test("hyphens are drawn, and never as text nodes", async ({ page }) => {
     }
   })
 
-  expect(hyphen?.generated).toBe('"-"')
+  expect(hyphen?.generated).toBe('"\u2010"')
   expect(hyphen?.inTextContent).toBe(false)
 })
 

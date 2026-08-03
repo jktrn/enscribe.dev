@@ -33,8 +33,13 @@ const [nameHtml, descriptionHtml] = await Promise.all([
         )}
       </a>
     )}
-  <entry-info data-typeset-root>
-    <a href={link} target="_blank" rel="noopener noreferrer" data-typeset-skip>
+  <entry-info data-linebreak-root>
+    <a
+      href={link}
+      target="_blank"
+      rel="noopener noreferrer"
+      data-linebreak-skip
+    >
       <Fragment set:html={nameHtml} />
     </a>
     <entry-meta>

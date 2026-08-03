@@ -1,8 +1,9 @@
 import type { Line } from "../layout/breaker"
 import { type ExtractedBlock, type InlineRun, LINE_SEPARATOR } from "./extract"
 
-export const LINE_SELECTOR = "[data-linebreak-break]"
+export const LINE_SELECTOR = "[data-linebreak-line]"
 export const TYPESET_ATTRIBUTE = "data-linebreak-typeset"
+export const TYPESET_SELECTOR = "[data-linebreak-typeset]"
 
 const appendLine = (
   target: HTMLElement,
@@ -142,9 +143,18 @@ export const renderLines = (
   const lineElements: HTMLElement[] = []
   let nextRun = 0
 
-  for (const line of lines) {
+  const separate = (kind: Line["breakKind"]) => {
+    if (kind === "forced") return document.createElement("br")
+    if (kind === "space") return document.createTextNode(" ")
+    return document.createElement("wbr")
+  }
+
+  for (const [index, line] of lines.entries()) {
+    const previous = lines[index - 1]
+    if (previous) output.appendChild(separate(previous.breakKind))
+
     const target = document.createElement("span")
-    target.dataset.linebreakBreak = line.breakKind
+    target.dataset.linebreakLine = line.breakKind
 
     const overflow = Math.min(line.naturalWidth - targetWidth, line.shrink)
     if (overflow > 0 && line.spaceCount > 0) {
