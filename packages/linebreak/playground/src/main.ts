@@ -159,6 +159,15 @@ const syncExpansion = (response: number) => {
   return available && state.expand
 }
 
+const syncHang = () => {
+  const control = element<HTMLSelectElement>("hang")
+  control.disabled = !state.protrude
+  element("hang-reason").textContent = state.protrude
+    ? ""
+    : "— off while protrusion is off"
+  return state.protrude ? state.hang : "none"
+}
+
 const paragraphsOf = (engine: EngineId) => [
   ...roleOf(engine, "typeset").querySelectorAll("p"),
 ]
@@ -189,7 +198,11 @@ const render = async () => {
   if (round !== generation) return
 
   const response = widthAxisResponse(font.stack, state.size)
-  const effective: State = { ...state, expand: syncExpansion(response) }
+  const effective: State = {
+    ...state,
+    expand: syncExpansion(response),
+    hang: syncHang(),
+  }
   fillArticles()
 
   renderOutcomes(

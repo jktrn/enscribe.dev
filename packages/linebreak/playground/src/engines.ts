@@ -34,7 +34,7 @@ export const linebreakOptions = (state: State): LinebreakerOptions => ({
 export const justifOptions = (state: State): JustifyOptions => ({
   hyphenate: state.hyphenate ? hyphenateEnUS : undefined,
   protrusion: state.protrude,
-  hangingPunctuation: state.hang,
+  hangingPunctuation: state.protrude ? state.hang : "none",
   expansion: state.expand
     ? { max: EXPANSION_BUDGET, shrink: EXPANSION_BUDGET, step: 0.005 }
     : false,

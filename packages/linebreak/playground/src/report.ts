@@ -164,7 +164,11 @@ const asymmetryItems = (state: State, widthResponse: number) => [
   `<b>Hanging punctuation.</b> justif is set to “${HANG_LABELS[state.hang]}”.
    linebreak has one model — microtype-style partial protrusion at both line
    edges, from a fixed table — and applies it whenever protrusion is on,
-   whatever this control says. Nothing here changes linebreak's output.`,
+   whatever this control says. Nothing here changes linebreak's output.
+   justif treats hanging as independent of protrusion, so it would keep
+   hanging stops and quotes past the margin with protrusion off; this
+   playground forces the mode to “none” there instead, so that switch means
+   the same thing on both sides.`,
   `<b>Protrusion table.</b> justif rasterizes each font's glyphs and derives
    per-font optical values; linebreak ships microtype's fixed Latin
    punctuation table. Same feature, different source of truth.`,
