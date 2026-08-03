@@ -539,7 +539,7 @@ const stepTo = (
     }
   }
 
-  if (kept !== actives.length) actives.length = kept
+  actives.length = kept
   step.minimum = minimum
   step.position = to
   step.start = startAfter
