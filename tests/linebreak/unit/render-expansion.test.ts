@@ -1,5 +1,4 @@
 import { describe, expect, test } from "bun:test"
-import type { LineFit } from "@linebreak/layout/expansion"
 import { lineOf, render, settle } from "./support/render"
 
 describe("the percentage the renderer writes", () => {
