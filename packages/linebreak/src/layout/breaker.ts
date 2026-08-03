@@ -10,7 +10,7 @@ import {
   lineStartWidth,
   passThroughWidth,
 } from "./items"
-import type { Expansion } from "./expansion"
+import type { Flex } from "./flex"
 import { INFINITE_BADNESS, type LayoutPolicy, resolvePolicy } from "./policy"
 import type { Hangs } from "./protrusion"
 
@@ -46,7 +46,7 @@ export type LayoutOptions = {
   readonly policy?: Partial<LayoutPolicy>
   readonly emergencyStretch?: number | "auto"
   readonly hangs?: Hangs
-  readonly expansion?: Expansion
+  readonly flex?: Flex
 }
 
 export type PassOptions = {
@@ -55,7 +55,7 @@ export type PassOptions = {
   readonly emergencyStretch?: number
   readonly force?: boolean
   readonly hangs?: Hangs
-  readonly expansion?: Expansion
+  readonly flex?: Flex
 }
 
 type ActiveNode = {
@@ -78,7 +78,7 @@ type Sums = {
 }
 
 type Cached = {
-  readonly expansion: Expansion | undefined
+  readonly flex: Flex | undefined
   readonly sums: Sums
 }
 
@@ -102,8 +102,8 @@ const plainSums = (items: readonly Item[]): Sums => {
   return { width, stretch, shrink }
 }
 
-const expandedSums = (items: readonly Item[], expansion: Expansion): Sums => {
-  const { stretch: up, shrink: down } = expansion
+const flexedSums = (items: readonly Item[], flex: Flex): Sums => {
+  const { stretch: up, shrink: down } = flex
   const count = items.length
   const width = new Array<number>(count + 1)
   const stretch = new Array<number>(count + 1)
@@ -127,15 +127,12 @@ const expandedSums = (items: readonly Item[], expansion: Expansion): Sums => {
   return { width, stretch, shrink }
 }
 
-const prefixSums = (
-  items: readonly Item[],
-  expansion: Expansion | undefined,
-): Sums => {
+const prefixSums = (items: readonly Item[], flex: Flex | undefined): Sums => {
   const cached = sumsCache.get(items)
-  if (cached && cached.expansion === expansion) return cached.sums
+  if (cached && cached.flex === flex) return cached.sums
 
-  const sums = expansion ? expandedSums(items, expansion) : plainSums(items)
-  sumsCache.set(items, { expansion, sums })
+  const sums = flex ? flexedSums(items, flex) : plainSums(items)
+  sumsCache.set(items, { flex, sums })
   return sums
 }
 
@@ -532,7 +529,7 @@ const searchFor = (
   options: PassOptions,
 ): Search => ({
   items,
-  sums: prefixSums(items, options.expansion),
+  sums: prefixSums(items, options.flex),
   target: measure,
   toleranceRatio: maximumRatio(options.tolerance),
   emergencyStretch: options.emergencyStretch ?? 0,
@@ -662,7 +659,7 @@ export const breakParagraph = (
   const shared = {
     policy: options.policy,
     hangs: options.hangs,
-    expansion: options.expansion,
+    flex: options.flex,
   }
 
   if (policy.pretolerance >= 0) {

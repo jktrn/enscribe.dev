@@ -134,7 +134,7 @@ describe("an axis that only condenses, which is what real fonts give", () => {
       target,
       oneSided,
       CONDENSE_ONLY,
-    )[0] as { pct: number; gain: number; shrink: number }
+    )[0] as { pct: number; gain: number; stretch: number; shrink: number }
 
   test("nothing is budgeted on the side the font cannot move", () => {
     expect(oneSided.stretch[3]).toBe(0)

@@ -148,21 +148,21 @@ const settle = (
 
 describe("the percentage the renderer writes", () => {
   test("a line the optimizer widened is set at that percentage", () => {
-    const span = render(lineOf(), 310, [{ pct: 101, gain: 3, shrink: 7 }])
+    const span = render(lineOf(), 310, [{ pct: 101, gain: 3, stretch: 20, shrink: 7 }])
 
     expect(span.style.fontStretch).toBe("101%")
   })
 
   test("a line the optimizer narrowed is set at that percentage", () => {
     const span = render(lineOf({ naturalWidth: 320 }), 310, [
-      { pct: 98.5, gain: -4, shrink: 7 },
+      { pct: 98.5, gain: -4, stretch: 20, shrink: 7 },
     ])
 
     expect(span.style.fontStretch).toBe("98.5%")
   })
 
   test("a line left at 100 carries no declaration at all", () => {
-    const span = render(lineOf(), 310, [{ pct: 100, gain: 0, shrink: 7 }])
+    const span = render(lineOf(), 310, [{ pct: 100, gain: 0, stretch: 20, shrink: 7 }])
 
     expect(span.style.fontStretch).toBeUndefined()
   })
@@ -177,7 +177,7 @@ describe("the percentage the renderer writes", () => {
 describe("the word-spacing rescue under expansion", () => {
   test("the glyphs' gain counts toward the overflow it has to absorb", () => {
     const span = render(lineOf({ naturalWidth: 300, shrink: 12 }), 301, [
-      { pct: 102, gain: 7, shrink: 8 },
+      { pct: 102, gain: 7, stretch: 20, shrink: 8 },
     ])
 
     expect(span.style.wordSpacing).toBe(`${-(6 / 7)}px`)
@@ -185,7 +185,7 @@ describe("the word-spacing rescue under expansion", () => {
 
   test("the spaces are charged the glue's own shrink, not the pool's", () => {
     const withPool = render(lineOf({ naturalWidth: 340, shrink: 30 }), 300, [
-      { pct: 98, gain: -8, shrink: 9 },
+      { pct: 98, gain: -8, stretch: 20, shrink: 9 },
     ])
 
     expect(withPool.style.wordSpacing).toBe(`${-(9 / 7)}px`)
@@ -193,7 +193,7 @@ describe("the word-spacing rescue under expansion", () => {
 
   test("a line that still fits after expanding is not squeezed", () => {
     const span = render(lineOf({ naturalWidth: 300 }), 320, [
-      { pct: 101, gain: 3, shrink: 7 },
+      { pct: 101, gain: 3, stretch: 20, shrink: 7 },
     ])
 
     expect(span.style.wordSpacing).toBeUndefined()
@@ -205,7 +205,7 @@ describe("the width the font really delivered", () => {
     const { span, tightened } = settle(
       lineOf({ naturalWidth: 300 }),
       310,
-      [{ pct: 98, gain: -6, shrink: 7 }],
+      [{ pct: 98, gain: -6, stretch: 20, shrink: 7 }],
       312,
     )
 
@@ -217,7 +217,7 @@ describe("the width the font really delivered", () => {
     const { span } = settle(
       lineOf({ naturalWidth: 340, shrink: 30 }),
       300,
-      [{ pct: 98, gain: -8, shrink: 9 }],
+      [{ pct: 98, gain: -8, stretch: 20, shrink: 9 }],
       303,
     )
 
@@ -231,7 +231,7 @@ describe("the width the font really delivered", () => {
     const { span, tightened } = settle(
       lineOf({ naturalWidth: 300, hangEnd: 3 }),
       310,
-      [{ pct: 98, gain: -6, shrink: 7 }],
+      [{ pct: 98, gain: -6, stretch: 20, shrink: 7 }],
       313,
     )
 
@@ -243,7 +243,7 @@ describe("the width the font really delivered", () => {
     const { span, tightened } = settle(
       lineOf({ naturalWidth: 300 }),
       310,
-      [{ pct: 100, gain: 0, shrink: 7 }],
+      [{ pct: 100, gain: 0, stretch: 20, shrink: 7 }],
       312,
     )
 
@@ -255,7 +255,7 @@ describe("the width the font really delivered", () => {
     const { span, tightened } = settle(
       lineOf({ naturalWidth: 300, spaceCount: 0 }),
       310,
-      [{ pct: 98, gain: -6, shrink: 7 }],
+      [{ pct: 98, gain: -6, stretch: 20, shrink: 7 }],
       312,
     )
 

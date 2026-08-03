@@ -1,15 +1,12 @@
+import { budgetFlex, type Flex, flexBetween } from "./flex"
 import { narrowestRatio, type StretchScale, widestRatio } from "../text/stretch"
 import type { Line } from "./breaker"
 import type { Item } from "./items"
 
-export type Expansion = {
-  readonly stretch: Float64Array
-  readonly shrink: Float64Array
-}
-
 export type LineFit = {
   readonly pct: number
   readonly gain: number
+  readonly stretch: number
   readonly shrink: number
 }
 
@@ -17,22 +14,13 @@ export const buildExpansion = (
   items: readonly Item[],
   scale: StretchScale,
   uncredited: ReadonlySet<number>,
-): Expansion => {
-  const count = items.length
-  const up = widestRatio(scale) - 1
-  const down = 1 - narrowestRatio(scale)
-  const stretch = new Float64Array(count + 1)
-  const shrink = new Float64Array(count + 1)
-
-  for (let index = 0; index < count; index += 1) {
-    const item = items[index] as Item
-    const width = item.kind === "box" && !uncredited.has(index) ? item.width : 0
-    stretch[index + 1] = (stretch[index] as number) + width * up
-    shrink[index + 1] = (shrink[index] as number) + width * down
-  }
-
-  return { stretch, shrink }
-}
+): Flex =>
+  budgetFlex(
+    items,
+    widestRatio(scale) - 1,
+    1 - narrowestRatio(scale),
+    uncredited,
+  )
 
 type Choice = { readonly pct: number; readonly gain: number }
 
@@ -80,18 +68,11 @@ const narrow = (
 export const fitLines = (
   lines: readonly Line[],
   target: number,
-  expansion: Expansion,
+  expansion: Flex,
   scale: StretchScale,
 ): LineFit[] =>
   lines.map((line) => {
-    const pool = {
-      stretch:
-        (expansion.stretch[line.end] as number) -
-        (expansion.stretch[line.start] as number),
-      shrink:
-        (expansion.shrink[line.end] as number) -
-        (expansion.shrink[line.start] as number),
-    }
+    const pool = flexBetween(expansion, line.start, line.end)
     const slack = target - line.naturalWidth
     const choice =
       slack > 0
@@ -99,5 +80,9 @@ export const fitLines = (
         : slack < 0
           ? narrow(scale, pool.shrink, line.shrink, -slack)
           : NEUTRAL
-    return { ...choice, shrink: line.shrink - pool.shrink }
+    return {
+      ...choice,
+      stretch: line.stretch - pool.stretch,
+      shrink: line.shrink - pool.shrink,
+    }
   })

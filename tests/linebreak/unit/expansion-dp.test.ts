@@ -32,7 +32,7 @@ const LOOSE = 336
 const solve = (items: readonly Item[], measure: number, expand: boolean) =>
   breakParagraphOnce(items, measure, {
     tolerance: texDefaults.tolerance,
-    ...(expand ? { expansion: buildExpansion(items, AFFINE, NO_MARKS) } : {}),
+    ...(expand ? { flex: buildExpansion(items, AFFINE, NO_MARKS) } : {}),
   })
 
 describe("elasticity the glyphs bring to the optimizer", () => {
@@ -112,10 +112,10 @@ describe("prefix sums are memoized per item stream", () => {
     const options = { tolerance: texDefaults.tolerance }
 
     expect(
-      breakParagraphOnce(items, TIGHT, { ...options, expansion: wide }).ok,
+      breakParagraphOnce(items, TIGHT, { ...options, flex: wide }).ok,
     ).toBe(true)
     expect(
-      breakParagraphOnce(items, TIGHT, { ...options, expansion: narrow }).ok,
+      breakParagraphOnce(items, TIGHT, { ...options, flex: narrow }).ok,
     ).toBe(false)
   })
 })

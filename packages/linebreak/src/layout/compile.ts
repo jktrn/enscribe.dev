@@ -17,7 +17,8 @@ import {
   type LayoutPolicy,
   webDefaults,
 } from "./policy"
-import { buildExpansion, type Expansion } from "./expansion"
+import { buildExpansion } from "./expansion"
+import type { Flex } from "./flex"
 import {
   buildHangs,
   endHang,
@@ -46,7 +47,7 @@ export type CompileResult =
       ok: true
       items: Item[]
       hangs: Hangs | null
-      expansion: Expansion | null
+      expansion: Flex | null
       scale: StretchScale | null
     }
   | { ok: false; reason: ComposeReason }

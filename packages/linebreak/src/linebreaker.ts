@@ -1,7 +1,8 @@
 import { breakParagraph, type Line } from "./layout/breaker"
 import { compileBlock } from "./layout/compile"
 import type { Item } from "./layout/items"
-import { type Expansion, fitLines } from "./layout/expansion"
+import { fitLines } from "./layout/expansion"
+import type { Flex } from "./layout/flex"
 import type { Hangs } from "./layout/protrusion"
 import { defaultGlue, resolvePolicy } from "./layout/policy"
 import {
@@ -67,7 +68,7 @@ type Measurement = {
   readonly block: ExtractedBlock
   readonly items: Item[]
   readonly hangs: Hangs | null
-  readonly expansion: Expansion | null
+  readonly expansion: Flex | null
   readonly scale: StretchScale | null
   readonly authored: AuthoredContent
   readonly under: MeasurementBasis
@@ -639,7 +640,7 @@ class BrowserLinebreaker implements Linebreaker {
     return {
       policy: this.policy,
       ...(hangs ? { hangs } : {}),
-      ...(expansion ? { expansion } : {}),
+      ...(expansion ? { flex: expansion } : {}),
     }
   }
 
