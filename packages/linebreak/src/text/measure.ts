@@ -1,4 +1,5 @@
 import { clearCache, prepareWithSegments, setLocale } from "@chenglou/pretext"
+import type { FontMetrics, MeasuredSegment, SegmentKind } from "./segments"
 
 type PretextView = {
   readonly segments: readonly string[]
@@ -6,43 +7,12 @@ type PretextView = {
   readonly kinds: readonly string[]
 }
 
-export type SegmentKind =
-  | "text"
-  | "space"
-  | "break-opportunity"
-  | "soft-hyphen"
-  | "other"
-
 const segmentKind = (kind: string): SegmentKind => {
   if (kind === "text") return "text"
   if (kind === "space" || kind === "preserved-space") return "space"
   if (kind === "zero-width-break") return "break-opportunity"
   if (kind === "soft-hyphen") return "soft-hyphen"
   return "other"
-}
-
-export type MeasuredSegment = {
-  readonly text: string
-  readonly start: number
-  readonly end: number
-  readonly kind: SegmentKind
-  readonly width: number
-  readonly lineEndWidth: number
-}
-
-export type MeasuredParagraph = {
-  readonly segments: readonly MeasuredSegment[]
-
-  readonly hyphenWidth: number
-}
-
-export type FontMetrics = {
-  readonly font: string
-  readonly letterSpacing: number
-  readonly hyphenWidth: number
-  measureParagraph(text: string): MeasuredParagraph | null
-
-  measureRun(text: string): number
 }
 
 let activeLocale: string | undefined

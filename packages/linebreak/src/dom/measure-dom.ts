@@ -1,8 +1,5 @@
-import {
-  createFontMetrics,
-  type FontMetrics,
-  type WidthSource,
-} from "../text/measure"
+import { createFontMetrics, type WidthSource } from "../text/measure"
+import type { FontMetrics } from "../text/segments"
 import { type ProbeStyle, probeStyle, usesVariant } from "./style"
 
 const HOST_STYLE =

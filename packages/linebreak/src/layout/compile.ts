@@ -9,7 +9,11 @@ import {
   runEdgeWidths,
 } from "../dom/extract"
 import { codeBreakOffsets } from "../text/code-breaks"
-import type { FontMetrics, MeasuredSegment, SegmentKind } from "../text/measure"
+import type {
+  FontMetrics,
+  MeasuredSegment,
+  SegmentKind,
+} from "../text/segments"
 import { type Item, lineBreak, paragraphEnd } from "./items"
 import {
   defaultGlue,

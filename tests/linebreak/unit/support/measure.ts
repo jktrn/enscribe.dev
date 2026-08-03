@@ -7,7 +7,7 @@ import {
   texDefaults,
 } from "@linebreak/layout/policy"
 import { englishHyphenator } from "@linebreak/text/hyphenate"
-import type { FontMetrics, MeasuredSegment } from "@linebreak/text/measure"
+import type { FontMetrics, MeasuredSegment } from "@linebreak/text/segments"
 import type { StretchScale } from "@linebreak/text/stretch"
 
 export const AFFINE: StretchScale = {

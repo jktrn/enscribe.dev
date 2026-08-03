@@ -12,11 +12,8 @@ import {
   type InlineRun,
   outerWidth,
 } from "./dom/extract"
-import {
-  configureLocale,
-  type FontMetrics,
-  invalidateMeasurements,
-} from "./text/measure"
+import { configureLocale, invalidateMeasurements } from "./text/measure"
+import type { FontMetrics } from "./text/segments"
 import { engineDefaults } from "./policy"
 import type { StretchScale } from "./text/stretch"
 import { invalidateStretchScales, stretchScaleFor } from "./dom/stretch"
