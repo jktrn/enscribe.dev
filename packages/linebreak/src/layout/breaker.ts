@@ -281,22 +281,34 @@ const betterRescue = (
 }
 
 type Step = {
-  readonly admitted: Array<ActiveNode | null>
+  readonly from: Array<ActiveNode | null>
+  readonly demerits: Float64Array
+  readonly ratio: Float64Array
   minimum: number
   rescue: Rescue | null
+  position: number
+  start: number
+  leading: number
+  flagged: boolean
 }
 
 const emptyStep = (): Step => ({
-  admitted: [null, null, null, null],
+  from: [null, null, null, null],
+  demerits: new Float64Array(4),
+  ratio: new Float64Array(4),
   minimum: Number.POSITIVE_INFINITY,
   rescue: null,
+  position: -1,
+  start: 0,
+  leading: 0,
+  flagged: false,
 })
 
 const clearStep = (step: Step) => {
-  step.admitted[0] = null
-  step.admitted[1] = null
-  step.admitted[2] = null
-  step.admitted[3] = null
+  step.from[0] = null
+  step.from[1] = null
+  step.from[2] = null
+  step.from[3] = null
   step.rescue = null
 }
 
@@ -414,7 +426,9 @@ const stepTo = (
   const { items, toleranceRatio, policy } = search
   const forced = isForced(penaltyValue)
   clearStep(step)
-  const admitted = step.admitted
+  const slotFrom = step.from
+  const slotDemerits = step.demerits
+  const slotRatio = step.ratio
   let kept = 0
   const edge = edgeAt(search, to)
   const startAfter = search.sums.starts[to + 1] as number
@@ -437,18 +451,10 @@ const stepTo = (
         continue
       }
       const demerits = active.demerits + emptyDemerits
-      if (demerits < (admitted[1]?.demerits ?? Number.POSITIVE_INFINITY)) {
-        admitted[1] = {
-          position: to,
-          start: startAfter,
-          leading: leadingAfter,
-          flagged: flaggedHere,
-          line: active.line + 1,
-          fitness: 1,
-          demerits,
-          previous: active,
-          ratio: 0,
-        }
+      if (slotFrom[1] === null || demerits < (slotDemerits[1] as number)) {
+        slotFrom[1] = active
+        slotDemerits[1] = demerits
+        slotRatio[1] = 0
         if (demerits < minimum) minimum = demerits
       }
       continue
@@ -482,24 +488,21 @@ const stepTo = (
       demerits += policy.adjDemerits
     }
 
-    if (demerits < (admitted[fitness]?.demerits ?? Number.POSITIVE_INFINITY)) {
-      admitted[fitness] = {
-        position: to,
-        start: startAfter,
-        leading: leadingAfter,
-        flagged: flaggedHere,
-        line: active.line + 1,
-        fitness,
-        demerits,
-        previous: active,
-        ratio,
-      }
+    const slot = slotFrom[fitness]
+    if (slot === null || demerits < (slotDemerits[fitness] as number)) {
+      slotFrom[fitness] = active
+      slotDemerits[fitness] = demerits
+      slotRatio[fitness] = ratio
       if (demerits < minimum) minimum = demerits
     }
   }
 
-  actives.length = kept
+  if (kept !== actives.length) actives.length = kept
   step.minimum = minimum
+  step.position = to
+  step.start = startAfter
+  step.leading = leadingAfter
+  step.flagged = flaggedHere
 }
 
 const forcedNode = (search: Search, rescue: Rescue, to: number): ActiveNode => {
@@ -609,8 +612,20 @@ const admitCandidates = (
 ) => {
   const ceiling = step.minimum + Math.abs(adjDemerits)
   for (let fitness = 0; fitness < 4; fitness += 1) {
-    const candidate = step.admitted[fitness]
-    if (candidate && candidate.demerits <= ceiling) actives.push(candidate)
+    const previous = step.from[fitness]
+    const demerits = step.demerits[fitness] as number
+    if (!previous || demerits > ceiling) continue
+    actives.push({
+      position: step.position,
+      start: step.start,
+      leading: step.leading,
+      flagged: step.flagged,
+      line: previous.line + 1,
+      fitness,
+      demerits,
+      previous,
+      ratio: step.ratio[fitness] as number,
+    })
   }
 }
 
