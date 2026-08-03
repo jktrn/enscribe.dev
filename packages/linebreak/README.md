@@ -159,6 +159,22 @@ twice, or applying one from another instance.
 | `maximumCharacters` | `3000` | Refuse paragraphs longer than this many collapsed characters. |
 | `onOutcome` | — | Streams every outcome. |
 
+### Soft hyphens
+
+An authored `&shy;` is a break opportunity, and it is honoured whether or not
+`hyphenate` is on — that option only adds dictionary points on top. U+00AD
+compiles to a discretionary whose pre-break text is a hyphen, charged
+`hyphenPenalty` rather than `exHyphenPenalty` because it prints something when
+taken (tex.web §869), and flagged, so it pays the double- and final-hyphen
+demerits like a dictionary point does.
+
+The break sits after the character, so an unused soft hyphen stays inline at
+zero width and a used one stays at the end of the line it was authored in.
+That keeps the rendered text equal to the authored text, which is what restore,
+copy and `textContent` compare against. A soft hyphen inside a
+`text-wrap-mode: nowrap` range stays inert, like any other break opportunity
+there.
+
 ## The optimizer
 
 `@enscribe/linebreak/layout` has no DOM and no dependencies. Give it items with
@@ -208,6 +224,13 @@ directly. The four passes are `\pretolerance`, `\tolerance`,
 `\emergencystretch`, then artificial demerits. Emergency stretch goes into the
 badness denominator rather than being added as real glue, matching
 `background[2] := background[2] + emergency_stretch`.
+
+Signs mean what they mean in TeX. A negative `pretolerance` skips the first
+pass outright (tex.web §863) instead of opening it, and a negative `tolerance`
+admits nothing, since badness is never negative. Both are closed bands. The
+forcing pass still ranks its rescue candidates by how far each one misses the
+band, so a negative threshold does not make it pick an overfull line over a
+merely loose one.
 
 Known divergences: `\looseness` is not implemented, and hyphenation points are
 compiled once and stay live in every pass, where tex.web §863 suppresses them
