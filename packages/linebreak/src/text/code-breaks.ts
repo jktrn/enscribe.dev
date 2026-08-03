@@ -1,6 +1,11 @@
-const graphemeSegmenter = new Intl.Segmenter(undefined, {
-  granularity: "grapheme",
-})
+let graphemeSegmenter: Intl.Segmenter | undefined
+
+const segmentGraphemes = (text: string) => {
+  graphemeSegmenter ??= new Intl.Segmenter(undefined, {
+    granularity: "grapheme",
+  })
+  return [...graphemeSegmenter.segment(text)]
+}
 
 const separatorPattern = /[./\\,;:]/u
 const operatorPattern = /[-=+*%<>!&|?~^]/u
@@ -150,7 +155,7 @@ const addBoundaryBreaks = (
 }
 
 export const codeBreakOffsets = (text: string) => {
-  const graphemes = [...graphemeSegmenter.segment(text)]
+  const graphemes = segmentGraphemes(text)
   const penalties = new Map<number, number>()
   const add: AddBreak = (offset, penalty) => {
     if (offset <= 0 || offset >= text.length) return

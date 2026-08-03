@@ -177,7 +177,7 @@ createTypesetter({ hyphenate: englishHyphenator })
 ```
 
 `hyphen`'s `en-us` table is about 100 KB of patterns, and parsing it costs
-around 8 ms in a cold process against 10 ms for the whole DOM engine. Behind
+around 8 ms in a cold process against 9 ms for the whole DOM engine. Behind
 the option, that is 8 ms nobody spends by accident.
 
 A hyphenator is `(word, locale) => readonly number[]`, returning the code-unit
@@ -676,7 +676,7 @@ bun test               # from the repo root
 
 `@chenglou/pretext` is a pre-1.0 dependency reached through non-public types.
 Pin it. It is also the single most expensive thing on the DOM entry's import
-graph: 6.1 ms of `dist/index.js`'s 10.2 ms cold import in a fresh bun process,
-median of eleven. `dist/layout.js` reaches none of it and costs 2.8 ms.
+graph: 5.9 ms of `dist/index.js`'s 8.8 ms cold import in a fresh bun process,
+median of twelve. `dist/layout.js` reaches none of it and costs 2.6 ms.
 
 MIT.
