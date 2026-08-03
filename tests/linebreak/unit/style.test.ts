@@ -10,6 +10,13 @@ const styleOf = (overrides: Partial<Record<string, string>> = {}) =>
     wordSpacing: "0px",
     fontStretch: "100%",
     fontVariationSettings: "normal",
+    fontVariantAlternates: "normal",
+    fontVariantCaps: "normal",
+    fontVariantEastAsian: "normal",
+    fontVariantLigatures: "normal",
+    fontVariantNumeric: "normal",
+    fontVariantPosition: "normal",
+    fontFeatureSettings: "normal",
     ...overrides,
   }) as unknown as CSSStyleDeclaration
 
@@ -28,6 +35,40 @@ describe("properties the width model cannot follow", () => {
     expect(unmodellableProperty(styleOf({ wordSpacing: "2px" }))).toBe(
       "word-spacing",
     )
+  })
+})
+
+describe("glyph substitutions canvas cannot express", () => {
+  test("a small-capped run is declined", () => {
+    expect(
+      unmodellableProperty(styleOf({ fontVariantCaps: "all-small-caps" })),
+    ).toBe("font-variant")
+  })
+
+  test("an oldstyle-figures run is declined", () => {
+    expect(
+      unmodellableProperty(
+        styleOf({ fontVariantNumeric: "oldstyle-nums ordinal" }),
+      ),
+    ).toBe("font-variant")
+  })
+
+  test("a raw feature setting is declined", () => {
+    expect(
+      unmodellableProperty(styleOf({ fontFeatureSettings: '"smcp"' })),
+    ).toBe("font-variant")
+  })
+
+  test("a superscripted run is declined", () => {
+    expect(
+      unmodellableProperty(styleOf({ fontVariantPosition: "super" })),
+    ).toBe("font-variant")
+  })
+
+  test("a ligature suppression is declined", () => {
+    expect(
+      unmodellableProperty(styleOf({ fontVariantLigatures: "none" })),
+    ).toBe("font-variant")
   })
 })
 

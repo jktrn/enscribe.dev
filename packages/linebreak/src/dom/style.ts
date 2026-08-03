@@ -23,12 +23,25 @@ export const computedFont = (style: CSSStyleDeclaration) =>
     .filter(Boolean)
     .join(" ")} ${style.fontFamily}`
 
-const NEUTRAL_STRETCH: ReadonlySet<string> = new Set(["", "normal", "100%"])
+const NEUTRAL_VALUE: ReadonlySet<string> = new Set(["", "normal", "100%"])
+
+const VARIANT_PROPERTIES = [
+  "fontVariantAlternates",
+  "fontVariantCaps",
+  "fontVariantEastAsian",
+  "fontVariantLigatures",
+  "fontVariantNumeric",
+  "fontVariantPosition",
+  "fontFeatureSettings",
+] as const
+
+export const usesVariant = (style: CSSStyleDeclaration) =>
+  VARIANT_PROPERTIES.some((property) => !NEUTRAL_VALUE.has(style[property]))
 
 const WIDTH_AXIS = /\bwdth\b/u
 
 const authoredWidth = (style: CSSStyleDeclaration) => {
-  if (!NEUTRAL_STRETCH.has(style.fontStretch)) return "font-stretch"
+  if (!NEUTRAL_VALUE.has(style.fontStretch)) return "font-stretch"
   if (WIDTH_AXIS.test(style.fontVariationSettings)) {
     return "font-variation-settings"
   }
@@ -56,6 +69,7 @@ export const unmodellableProperty = (style: CSSStyleDeclaration) => {
     return "text-transform"
   }
   if (cssPixels(style.wordSpacing) !== 0) return "word-spacing"
+  if (usesVariant(style)) return "font-variant"
   return authoredWidth(style)
 }
 
