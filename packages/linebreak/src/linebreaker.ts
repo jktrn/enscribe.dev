@@ -41,6 +41,7 @@ import {
   createStyleReader,
   cssPixels,
   type StyleReader,
+  uniformLetterSpacing,
   unmodellableProperty,
 } from "./dom/style"
 import {
@@ -628,6 +629,18 @@ class BrowserLinebreaker implements Linebreaker {
     }
   }
 
+  private tracksWith(
+    block: ExtractedBlock,
+    reader: StyleReader,
+    basis: MeasurementBasis,
+  ) {
+    if (!this.track) return null
+    const elements = block.runs.map((run) => run.sourceElement)
+    if (!uniformLetterSpacing(elements, reader, basis.letterSpacing))
+      return null
+    return engineDefaults.trackingBudget
+  }
+
   private layoutFor(draft: Draft, target: number): RenderedLayout {
     const { expansion, scale, tracking, under } = draft.measurement
     const fits =
@@ -641,7 +654,7 @@ class BrowserLinebreaker implements Linebreaker {
       letterfit: tracking
         ? {
             lines: trackLines(draft.lines, target, tracking, fits),
-            retainLigatures: under.letterSpacing === 0,
+            inherited: under.letterSpacing,
           }
         : null,
     }
@@ -763,13 +776,14 @@ class BrowserLinebreaker implements Linebreaker {
     const text = authoredText(element)
     const authored = captureAuthored(element)
     const scaleFor = this.expandsWith(element, reader, basis)
+    const track = this.tracksWith(extracted.block, reader, basis)
     const compiled = compileBlock({
       block: extracted.block,
       metricsFor,
       atomWidth: (run: InlineRun) => outerWidth(run.sourceElement, reader),
       locale: basis.locale,
       protrude: this.protrudes(element),
-      ...(this.track ? { track: engineDefaults.trackingBudget } : {}),
+      ...(track ? { track } : {}),
       policy: this.policy,
       glue: this.glue,
       ...(this.hyphenate ? { hyphenate: this.hyphenate } : {}),

@@ -4,12 +4,9 @@ import { lineOf, render, renderText, settle, TEXT } from "./support/render"
 
 const UNITS = TEXT.length
 
-const letterfitOf = (
-  track: Partial<LineTrack> = {},
-  retainLigatures = true,
-) => ({
+const letterfitOf = (track: Partial<LineTrack> = {}, inherited = 0) => ({
   lines: [{ gain: 0, shrink: 3, ...track }],
-  retainLigatures,
+  inherited,
 })
 
 describe("the letter-spacing the renderer writes", () => {
@@ -66,22 +63,15 @@ describe("the letter-spacing the renderer writes", () => {
   })
 })
 
-describe("the ligatures the measurement assumed", () => {
-  test("a letterspaced line asks for the common ligatures back", () => {
+describe("what the line already inherited", () => {
+  test("the author's own letterspacing is carried, not clobbered", () => {
+    const span = render(lineOf(), 310, null, letterfitOf({ gain: 9 }, 0.4))
+
+    expect(span.style.letterSpacing).toBe(`${0.4 + 9 / UNITS}px`)
+  })
+
+  test("a letterspaced line never overrides the author's own features", () => {
     const span = render(lineOf(), 310, null, letterfitOf({ gain: 9 }))
-
-    expect(span.style.fontFeatureSettings).toBe('"liga" 1, "clig" 1')
-  })
-
-  test("a run the author already letterspaced was measured without them", () => {
-    const span = render(lineOf(), 310, null, letterfitOf({ gain: 9 }, false))
-
-    expect(span.style.letterSpacing).toBe(`${9 / UNITS}px`)
-    expect(span.style.fontFeatureSettings).toBeUndefined()
-  })
-
-  test("a line the letterfit never touched asks for nothing", () => {
-    const span = render(lineOf(), 310, null, letterfitOf({ gain: 0 }))
 
     expect(span.style.fontFeatureSettings).toBeUndefined()
   })

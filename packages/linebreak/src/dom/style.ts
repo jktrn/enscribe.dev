@@ -42,3 +42,14 @@ export const unmodellableProperty = (style: CSSStyleDeclaration) => {
   if (cssPixels(style.wordSpacing) !== 0) return "word-spacing"
   return authoredWidth(style)
 }
+
+export const uniformLetterSpacing = (
+  elements: Iterable<Element>,
+  read: StyleReader,
+  spacing: number,
+) => {
+  for (const element of elements) {
+    if (cssPixels(read(element).letterSpacing) !== spacing) return false
+  }
+  return true
+}

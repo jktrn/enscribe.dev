@@ -1,5 +1,8 @@
 import { describe, expect, test } from "bun:test"
-import { unmodellableProperty } from "@linebreak/dom/style"
+import {
+  uniformLetterSpacing,
+  unmodellableProperty,
+} from "@linebreak/dom/style"
 
 const styleOf = (overrides: Partial<Record<string, string>> = {}) =>
   ({
@@ -59,5 +62,36 @@ describe("an authored width is the author's, not ours", () => {
     expect(
       unmodellableProperty(styleOf({ fontVariationSettings: '"wght" 600' })),
     ).toBe(null)
+  })
+})
+
+describe("the letterspacing one line declaration can carry", () => {
+  const readerOf = (values: readonly string[]) => {
+    const elements = values.map((_, index) => ({ index }) as unknown as Element)
+    const read = (element: Element) =>
+      styleOf({ letterSpacing: values[(element as unknown as { index: number }).index] })
+    return { elements, read }
+  }
+
+  test("runs that all inherit the block's value are uniform", () => {
+    const { elements, read } = readerOf(["normal", "normal", "normal"])
+
+    expect(uniformLetterSpacing(elements, read, 0)).toBe(true)
+  })
+
+  test("runs that all carry the block's own value are uniform", () => {
+    const { elements, read } = readerOf(["0.4px", "0.4px"])
+
+    expect(uniformLetterSpacing(elements, read, 0.4)).toBe(true)
+  })
+
+  test("one run letterspaced differently is not", () => {
+    const { elements, read } = readerOf(["normal", "1.5px", "normal"])
+
+    expect(uniformLetterSpacing(elements, read, 0)).toBe(false)
+  })
+
+  test("no runs at all is vacuously uniform", () => {
+    expect(uniformLetterSpacing([], () => styleOf(), 0)).toBe(true)
   })
 })

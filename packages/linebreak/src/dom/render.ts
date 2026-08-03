@@ -298,7 +298,7 @@ export const preserveImageAttributes = (
 
 export type Letterfit = {
   readonly lines: readonly LineTrack[]
-  readonly retainLigatures: boolean
+  readonly inherited: number
 }
 
 export type RenderedLayout = {
@@ -307,8 +307,6 @@ export type RenderedLayout = {
   readonly fits: readonly LineFit[] | null
   readonly letterfit: Letterfit | null
 }
-
-const LIGATURES = '"liga" 1, "clig" 1'
 
 const renderedUnits = (block: ExtractedBlock, line: Line) => {
   const { sliceStart, sliceEnd } = trimmedSlice(block, line)
@@ -333,15 +331,14 @@ type LinePlan = {
   readonly fit: LineFit | undefined
   readonly track: LineTrack | undefined
   readonly units: number
-  readonly retainLigatures: boolean
+  readonly inherited: number
   readonly target: number
 }
 
 const applyLetterfit = (element: HTMLElement, plan: LinePlan) => {
   const gain = plan.track?.gain ?? 0
   if (gain === 0 || plan.units === 0) return
-  element.style.letterSpacing = `${gain / plan.units}px`
-  if (plan.retainLigatures) element.style.fontFeatureSettings = LIGATURES
+  element.style.letterSpacing = `${plan.inherited + gain / plan.units}px`
 }
 
 const applyRescue = (element: HTMLElement, line: Line, plan: LinePlan) => {
@@ -372,7 +369,7 @@ const planFor = (
     fit: layout.fits?.[index],
     track: letterfit?.lines[index],
     units: letterfit ? renderedUnits(block, line) : 0,
-    retainLigatures: letterfit?.retainLigatures === true,
+    inherited: letterfit?.inherited ?? 0,
     target: layout.target,
   }
 }
