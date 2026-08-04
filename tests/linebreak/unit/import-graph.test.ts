@@ -16,9 +16,7 @@ const fileFor = (from: string, specifier: string) => {
     try {
       readFileSync(candidate)
       return candidate
-    } catch {
-      continue
-    }
+    } catch {}
   }
   throw new Error(`unresolved specifier ${specifier} from ${from}`)
 }
