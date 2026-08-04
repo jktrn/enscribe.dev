@@ -1,13 +1,9 @@
 import { createFontMetrics, type WidthSource } from "../text/measure"
 import type { FontMetrics } from "../text/segments"
+import { offscreen } from "./probe"
 import { type ProbeStyle, probeStyle, usesVariant } from "./style"
 
-const HOST_STYLE =
-  "position:absolute;left:-100000px;top:0;visibility:hidden;" +
-  "pointer-events:none;white-space:pre;width:max-content;" +
-  "contain:layout style paint"
-
-const PROBE_STYLE = "display:block;width:max-content;white-space:pre"
+const PROBE_LINE = "display:block;width:max-content;white-space:pre"
 
 export const domWidths = (
   document: Document,
@@ -15,14 +11,13 @@ export const domWidths = (
   letterSpacing: number,
   style: ProbeStyle,
 ): WidthSource | null => {
-  const root = document.body ?? document.documentElement
-  if (!root) return null
+  if (!(document.body ?? document.documentElement)) return null
 
   const widths = new Map<string, number>()
 
   const probeFor = (text: string) => {
     const probe = document.createElement("span")
-    probe.style.cssText = PROBE_STYLE
+    probe.style.cssText = PROBE_LINE
     probe.style.font = font
     probe.style.letterSpacing = `${letterSpacing}px`
     for (const [property, value] of style) probe.style[property] = value
@@ -42,17 +37,16 @@ export const domWidths = (
     const pending = uncached(texts)
     if (pending.length === 0) return
 
-    const host = document.createElement("div")
-    host.setAttribute("aria-hidden", "true")
-    host.style.cssText = HOST_STYLE
-    const probes = pending.map(probeFor)
-    for (const probe of probes) host.append(probe)
-
-    root.append(host)
-    for (const [index, probe] of probes.entries()) {
-      widths.set(pending[index] as string, probe.getBoundingClientRect().width)
-    }
-    host.remove()
+    offscreen(document, (host) => {
+      const probes = pending.map(probeFor)
+      for (const probe of probes) host.append(probe)
+      for (const [index, probe] of probes.entries()) {
+        widths.set(
+          pending[index] as string,
+          probe.getBoundingClientRect().width,
+        )
+      }
+    })
   }
 
   return {

@@ -7,41 +7,40 @@ import {
   LINE_SEPARATOR,
   type WrapperInfo,
 } from "./extract"
+import { offscreen } from "./probe"
 
 export const LINE_SELECTOR = "[data-linebreak-line]"
 export const TYPESET_ATTRIBUTE = "data-linebreak-typeset"
 export const TYPESET_SELECTOR = "[data-linebreak-typeset]"
 
 const PROBE_HANG = 16
-const PROBE_STYLE =
-  "position:absolute;top:-9999px;left:0;width:1000px;visibility:hidden;" +
-  "white-space:nowrap;font:16px/1 monospace"
+const PROBE_LINE = "width:1000px;white-space:nowrap;font:16px/1 monospace"
 
 const honoured = new WeakMap<Document, boolean>()
+
+const hangShift = (host: HTMLDivElement) => {
+  const line = host.ownerDocument.createElement("div")
+  line.style.cssText = PROBE_LINE
+  const anchor = host.ownerDocument.createElement("span")
+  anchor.textContent = "."
+  const follower = host.ownerDocument.createElement("span")
+  follower.textContent = "."
+  line.append(anchor, follower)
+  host.append(line)
+
+  const before = follower.getBoundingClientRect().left
+  anchor.style.marginInlineEnd = `${-PROBE_HANG}px`
+  return before - follower.getBoundingClientRect().left
+}
 
 export const honoursHangingMargins = (document: Document) => {
   const cached = honoured.get(document)
   if (cached !== undefined) return cached
 
-  const host = document.body ?? document.documentElement
-  if (!host) return false
+  const shift = offscreen(document, hangShift)
+  if (shift === null) return false
 
-  const probe = document.createElement("div")
-  probe.setAttribute("aria-hidden", "true")
-  probe.style.cssText = PROBE_STYLE
-  const anchor = document.createElement("span")
-  anchor.textContent = "."
-  const follower = document.createElement("span")
-  follower.textContent = "."
-  probe.append(anchor, follower)
-  host.appendChild(probe)
-
-  const before = follower.getBoundingClientRect().left
-  anchor.style.marginInlineEnd = `${-PROBE_HANG}px`
-  const after = follower.getBoundingClientRect().left
-  probe.remove()
-
-  const supported = before - after >= PROBE_HANG - 0.5
+  const supported = shift >= PROBE_HANG - 0.5
   honoured.set(document, supported)
   return supported
 }

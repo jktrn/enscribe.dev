@@ -14,6 +14,7 @@ type Probe = {
 
 type Recorder = {
   readonly probes: Probe[]
+  readonly hosts: Probe[]
   readonly asked: number[]
   attached: number
   text: string
@@ -23,24 +24,35 @@ const fakeDocument = (
   widthAt: (pct: number) => number,
   host: "body" | "root" | "none" = "body",
 ) => {
-  const seen: Recorder = { probes: [], asked: [], attached: 0, text: "" }
+  const seen: Recorder = {
+    probes: [],
+    hosts: [],
+    asked: [],
+    attached: 0,
+    text: "",
+  }
+
+  const made = new Map<object, Probe>()
 
   const parent = {
-    appendChild: () => {
+    append: (child: object) => {
+      seen.hosts.push(made.get(child) as Probe)
       seen.attached += 1
     },
   }
 
   const createElement = () => {
     const probe: Probe = { style: {}, attribute: {} }
-    seen.probes.push(probe)
-    return {
+    const element = {
       style: probe.style,
       setAttribute: (name: string, value: string) => {
         probe.attribute[name] = value
       },
       set textContent(value: string) {
         seen.text = value
+      },
+      append: (child: object) => {
+        seen.probes.push(made.get(child) as Probe)
       },
       remove: () => {
         seen.attached -= 1
@@ -51,6 +63,8 @@ const fakeDocument = (
         return { width: widthAt(pct) }
       },
     }
+    made.set(element, probe)
+    return element
   }
 
   const document = {
@@ -95,8 +109,11 @@ describe("a font whose advance answers the width axis", () => {
     expect(probe.style.letterSpacing).toBe("0.25px")
     expect(probe.style.whiteSpace).toBeUndefined()
     expect(probe.style.cssText).toContain("white-space:pre")
-    expect(probe.attribute["aria-hidden"]).toBe("true")
     expect(seen.text.length).toBeGreaterThan(20)
+
+    const host = seen.hosts[0] as Probe
+    expect(host.attribute["aria-hidden"]).toBe("true")
+    expect(host.style.cssText).toContain("visibility:hidden")
   })
 
   test("the probe leaves the document as it found it", () => {
