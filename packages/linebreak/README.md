@@ -232,6 +232,27 @@ for words shorter than five characters and nothing at all when `locale` is not
 English, so a `lang="fr"` paragraph is left alone rather than hyphenated with
 English patterns.
 
+`englishHyphenator` remembers what it has already worked out, keyed on the word
+and the locale together. Prose repeats itself: over a 600,202-character corpus
+the compiler asks for 104,330 words and only 18,175 of them are distinct, so
+five calls in six are a repeat. The memo takes hyphenation from 61% of a build
+to 38% of a build 40% smaller, and a whole pass over that corpus from 137 ms to
+69 ms.
+
+The cache holds at most 16,384 distinct words. That is about 0.9 MB, and about
+three times what this site's entire prose asks for; the largest single document
+in the corpus wants 6,627. Reaching the bound empties the cache and starts
+again, which costs one recomputation per word and can never be worse than not
+caching at all. There is no eviction policy beyond that on purpose: keeping an
+LRU order would tax every hit to improve a case a page has to be several books
+long to reach.
+
+Because the results are shared, the array a hyphenator returns must be treated
+as read-only. The type says so; nothing enforces it at runtime.
+
+A hyphenator you supply is not memoized, because only a pure one can be. If
+yours is pure, wrap it yourself.
+
 ### Soft hyphens
 
 An authored `&shy;` is a break opportunity, and it is honoured whether or not
