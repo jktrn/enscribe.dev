@@ -10,7 +10,7 @@ test.use({ viewport: { width: 1440, height: 900 } })
 
 const BUDGET = 0.02
 
-const LADDER = [94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106]
+const PROBE_PERCENTS = [94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106]
 
 const advances = (page: import("@playwright/test").Page, family: string) =>
   page.evaluate(
@@ -32,7 +32,7 @@ const advances = (page: import("@playwright/test").Page, family: string) =>
       probe.remove()
       return widths
     },
-    { family, ladder: LADDER },
+    { family, ladder: PROBE_PERCENTS },
   )
 
 const bodyFamily = (page: import("@playwright/test").Page) =>
