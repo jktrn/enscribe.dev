@@ -1,7 +1,11 @@
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {
-    "types": ["bun"],
+    "types": ["bun", "svelte", "vite/client"],
+    "allowJs": true,
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    "isolatedModules": true,
     "paths": {
       "@enscribe/linebreak": ["../src/index.ts"],
       "@enscribe/linebreak/hyphenation": ["../src/hyphenation.ts"],
@@ -9,5 +13,12 @@
       "justif/hyphenate/en-us": ["./vendor/justif/src/hyphenation/en-us.ts"]
     }
   },
-  "include": ["src/**/*.ts", "build.ts", "serve.ts"]
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.d.ts",
+    "src/**/*.svelte",
+    "justif.ts",
+    "vite.config.ts",
+    "svelte.config.js"
+  ]
 }
