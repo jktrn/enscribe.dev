@@ -16,7 +16,7 @@ import {
 } from "./dom/extract"
 import { configureLocale, invalidateMeasurements } from "./text/measure"
 import type { FontMetrics } from "./text/segments"
-import { engineDefaults } from "./policy"
+import { engineDefaults, engineLimits } from "./policy"
 import type { StretchScale } from "./text/stretch"
 import { invalidateStretchScales, stretchScaleFor } from "./dom/stretch"
 import { metricsForStyle } from "./dom/measure-dom"
@@ -35,6 +35,14 @@ import {
   captureAuthored,
   restoreAuthored,
 } from "./dom/restore"
+import {
+  contentWidth,
+  hangSlack,
+  layoutMismatch,
+  resolvedLineHeight,
+  styleOf,
+  viewOf,
+} from "./dom/geometry"
 import {
   computedFont,
   createStyleReader,
@@ -111,59 +119,6 @@ const statusFor = (reason: string) => {
   if (DECLINED.has(reason)) return "declined" as const
   return "failed" as const
 }
-
-const viewOf = (element: HTMLElement) =>
-  element.ownerDocument.defaultView ?? globalThis
-
-const styleOf = (element: HTMLElement) =>
-  viewOf(element).getComputedStyle(element)
-
-const contentWidth = (element: HTMLElement, style: CSSStyleDeclaration) =>
-  element.clientWidth -
-  cssPixels(style.paddingInlineStart) -
-  cssPixels(style.paddingInlineEnd)
-
-const resolvedLineHeight = (style: CSSStyleDeclaration) => {
-  const value = Number.parseFloat(style.lineHeight)
-  if (Number.isFinite(value)) return value
-  const fontSize = Number.parseFloat(style.fontSize)
-  return Number.isFinite(fontSize) ? fontSize * 1.2 : Number.NaN
-}
-
-const hangSlack = (lines: readonly Line[]) => {
-  let most = 0
-  for (const line of lines) {
-    if (line.hangEnd > most) most = line.hangEnd
-  }
-  return most
-}
-
-const layoutMismatch = (
-  element: HTMLElement,
-  lineCount: number,
-  slack: number,
-) => {
-  const segments = element.querySelectorAll<HTMLElement>(LINE_SELECTOR)
-  if (segments.length !== lineCount) return true
-
-  const rows = new Set<number>()
-  for (const segment of segments) {
-    const rect = segment.getBoundingClientRect()
-    if (rect.width === 0 && rect.height === 0) continue
-    rows.add(Math.round(rect.top))
-  }
-  if (rows.size !== lineCount) return true
-
-  return element.scrollWidth > element.clientWidth + 1 + slack
-}
-
-const engineLimits = (options: LinebreakerOptions) => ({
-  minimumWidth: options.minimumWidth ?? engineDefaults.minimumWidth,
-  safetyMargin: options.safetyMargin ?? engineDefaults.safetyMargin,
-  maximumRetries: options.retries ?? engineDefaults.retries,
-  maximumCharacters:
-    options.maximumCharacters ?? engineDefaults.maximumCharacters,
-})
 
 class BrowserLinebreaker implements Linebreaker {
   private readonly minimumWidth: number
