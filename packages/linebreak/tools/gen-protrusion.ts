@@ -8,7 +8,10 @@ import { readFile, writeFile } from "node:fs/promises"
 const SOURCE =
   "https://mirrors.ctan.org/macros/latex/contrib/microtype/microtype.dtx"
 
-const NAMED = {
+type Codes = { l?: number; r?: number }
+type Table = Map<string, Codes>
+
+const NAMED: Record<string, string> = {
   "\\AE": "Æ",
   "\\OE": "Œ",
   "\\TH": "Þ",
@@ -85,7 +88,7 @@ const MIRRORED = [
   ['"', "”"],
 ]
 
-const selects = (guard, module) => {
+const selects = (guard: string, module: string) => {
   const cleaned = guard.replace(/^[*/]+/u, "")
   if (cleaned.length === 0) return true
   return cleaned.split("|").some((term) => {
@@ -95,32 +98,32 @@ const selects = (guard, module) => {
   })
 }
 
-const blocksOf = (dtx) => {
+const blocksOf = (dtx: string) => {
   const start = dtx.indexOf("%<*cfg-t>")
   const end = dtx.indexOf("%</cfg-t>")
   if (start < 0 || end < 0) throw new Error("cfg-t module not found")
   return dtx.slice(start, end).split("\\SetProtrusion").slice(1)
 }
 
-const wanted = (block, names) =>
+const wanted = (block: string, names: readonly string[]) =>
   names.some((name) =>
     new RegExp(`%<m-t>\\s*\\[\\s*name\\s*=\\s*${name}\\s*[,\\]]`, "u").test(
       block,
     ),
   )
 
-const parseValue = (text) => {
+const parseValue = (text: string): Codes => {
   const [left = "", right = ""] = text.split(",")
-  const codes = {}
+  const codes: Codes = {}
   if (left.trim() !== "") codes.l = Number.parseInt(left, 10)
   if (right.trim() !== "") codes.r = Number.parseInt(right, 10)
   return codes
 }
 
-const parseBlock = (block, into) => {
+const parseBlock = (block: string, into: Table) => {
   for (const raw of block.split("\n")) {
     const guarded = /^%<([^>]*)>(.*)$/u.exec(raw)
-    if (guarded && !selects(guarded[1], "m-t")) continue
+    if (guarded && !selects(guarded[1] as string, "m-t")) continue
     const body = (guarded ? guarded[2] : raw)
       .replace(/(?<!\\)%.*$/u, "")
       .replaceAll("{,}", "\\comma")
@@ -133,8 +136,8 @@ const parseBlock = (block, into) => {
   }
 }
 
-const format = (table) => {
-  const lines = []
+const format = (table: Table) => {
+  const lines: string[] = []
   for (const [character, codes] of table) {
     const parts = []
     if (codes.l !== undefined) parts.push(`l: ${codes.l}`)
@@ -162,19 +165,19 @@ export const protrusionCode = (
 
 const main = async () => {
   const path = process.argv[2]
-  if (!path) throw new Error("usage: gen-protrusion.mjs <out.ts> [dtx]")
+  if (!path) throw new Error("usage: gen-protrusion.ts <out.ts> [dtx]")
   const local = process.argv[3]
   const dtx = local
-    ? await (await import("node:fs/promises")).readFile(local, "utf8")
+    ? await readFile(local, "utf8")
     : await (await fetch(SOURCE)).text()
 
-  const collected = new Map()
+  const collected: Table = new Map()
   for (const block of blocksOf(dtx)) {
     if (!wanted(block, ["default", "T1-default"])) continue
     parseBlock(block, collected)
   }
 
-  const table = new Map()
+  const table: Table = new Map()
   for (const [character, codes] of collected) {
     if (KEEP.has(character)) table.set(character, codes)
   }
@@ -185,7 +188,9 @@ const main = async () => {
   }
 
   const sorted = new Map(
-    [...table].sort(([a], [b]) => a.codePointAt(0) - b.codePointAt(0)),
+    [...table].sort(
+      ([a], [b]) => (a.codePointAt(0) ?? 0) - (b.codePointAt(0) ?? 0),
+    ),
   )
   await writeFile(path, format(sorted))
   console.log(`${sorted.size} characters -> ${path}`)

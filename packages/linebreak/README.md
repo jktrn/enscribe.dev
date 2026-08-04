@@ -388,7 +388,7 @@ comma reads as short, and one opening with a quote reads as indented.
 Protrusion hangs the offending glyph slightly outside the measure so the
 optical edge is flush. The amounts are microtype's, in thousandths of the
 glyph's own advance, extracted from `microtype.dtx` by
-`tools/gen-protrusion.mjs`. Only punctuation and symbols are in the table:
+`tools/gen-protrusion.ts`. Only punctuation and symbols are in the table:
 ablating it by character class showed letters and digits earn nothing and cost
 something.
 
@@ -1139,7 +1139,7 @@ width. About a tenth of body lines end in an eligible mark and gain about
 1.85px of hang each. Across the corpus that is 11 lines saved out of roughly
 12,500, or 0.09%. Break time does not move either; its sign flips across widths.
 
-The same rig priced the 19 letter and digit codes that `tools/gen-protrusion.mjs`
+The same rig priced the 19 letter and digit codes that `tools/gen-protrusion.ts`
 drops from microtype's blocks. Restoring them raises badness per body line by
 1.1% and 0.8% at two widths and ties at the third, so they stay dropped.
 

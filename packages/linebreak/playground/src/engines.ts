@@ -67,6 +67,7 @@ export const runLinebreak = (
 ): ParagraphOutcome[] => {
   breaker?.dispose()
   breaker = createLinebreaker(linebreakOptions(state))
+  breaker.warm(document)
 
   const reported: ParagraphOutcome[] = []
   for (const outcome of breaker.typeset(paragraphs)) {
