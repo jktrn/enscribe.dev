@@ -609,7 +609,13 @@ compiler itself never reads a node: widths arrive through a callback, offsets
 index a plain string, and the two questions a `<code>` wrapper used to answer —
 is this run code, and how wide are its inline edges — are callbacks the DOM
 tier fills in. The benchmark harness has been driving it from a synthesized
-block with no document for as long as gates 6, 7 and 8 have existed.
+block with no document for as long as gates 6, 7 and 8 have existed, and since
+the harness moved its build column onto this entry a ninth gate certifies the
+entry itself: `compileText` and `compileRuns` must emit the same stream on a
+one-run list, `compileRuns` must emit the block compiler's stream on the
+multi-run fixture gates 3, 6, 7 and 8 already run, and every break this
+compiler offers that justif does not — and every break justif offers that it
+does not — must fall in one of four named classes at a pinned count.
 
 `@enscribe/linebreak/text` is the door to it, for callers that have advance
 widths and no document: server-side rendering, canvas, PDF, and the harness
@@ -662,12 +668,40 @@ export const compileText: (
   metrics: FontMetrics,
   options?: CompileTextOptions,
 ) => CompileResult
+
+export type CompileTextRun = {
+  readonly text: string
+  readonly metrics?: FontMetrics
+  readonly code?: boolean
+  readonly hyphenates?: boolean
+  readonly leading?: number
+  readonly trailing?: number
+}
+
+export type CompileAnchorRun = {
+  readonly attach: "previous" | "next"
+  readonly leading?: number
+  readonly trailing?: number
+}
+
+export type CompileRun = CompileTextRun | CompileAnchorRun
+
+export type CompileRunsOptions = CompileTextOptions & {
+  readonly nowrap?: readonly SourceRange[]
+}
+
+export const compileRuns: (
+  runs: readonly CompileRun[],
+  metrics: FontMetrics,
+  options?: CompileRunsOptions,
+) => CompileResult
 ```
 
 It also re-exports the types those signatures name — `FontMetrics`,
 `MeasuredSegment`, `MeasuredParagraph`, `CompileResult`, `Hangs`, `Flex`,
-`StretchScale`, `StretchStep`, `StretchProbe`, `Hyphenator`, `ComposeReason` —
-and `calibrateStretch`, which is the only way to obtain a `StretchScale`.
+`StretchScale`, `StretchStep`, `StretchProbe`, `Hyphenator`, `SourceRange`,
+`ComposeReason` — and `calibrateStretch`, which is the only way to obtain a
+`StretchScale`.
 
 `(text, metrics, options)` mirrors `breakParagraph(items, measure, options)`:
 three positional parameters, options last, no overloads. `CompileResult` is the
@@ -732,12 +766,92 @@ compile declines `segmentation-mismatch` rather than silently mislaying text.
 The input is expected to be whitespace-collapsed already, the way the DOM
 extractor collapses before the compiler ever sees a string. `\n`, `\t`, `\f`
 and `\r` are classified as space, so a stray one degrades to a space rather
-than into the middle of a word, but it is not a forced break. Forced breaks
-need more than one run.
+than into the middle of a word, but it is not a forced break. Neither entry
+point has a forced-break run.
 
 This scanner is not the DOM path's segmenter and must not become it. The DOM
 path goes through pretext, which is what the rendered output on this site was
 measured against; unifying the two would change rendered pages to save a file.
+
+### Runs
+
+`compileText` takes a string, which is one face, one language, no inline
+elements. A paragraph with a `<code>` span in it is not that, and a headless
+caller who had one previously had to fall back to the DOM path or set the span
+in the paragraph's own face and accept the wrong widths.
+
+`compileRuns` takes the same paragraph as a list of runs. The runs concatenate
+to the block's text — nothing is inserted between them, and every offset the
+compiler reports indexes that concatenation — and each run carries the four
+things the DOM extractor reads off an inline element:
+
+| field | what it is |
+| --- | --- |
+| `metrics` | the face this run is set on; the third argument is the default, and it names the base font |
+| `code` | this run's breaks come from the code table, and it does not protrude |
+| `hyphenates` | `false` suppresses hyphenation inside this run only |
+| `leading`, `trailing` | the inline element's own margin, border and padding in px, on each side |
+
+```ts
+compileRuns(
+  [
+    { text: "Call " },
+    { text: "renderLines", metrics: mono, code: true, leading: 4, trailing: 4 },
+    { text: " twice." },
+  ],
+  metrics,
+)
+```
+
+`leading` and `trailing` fold into the box at the matching end of the run,
+which is `box-decoration-break: slice`: the extras are layout width that
+travels with the element's first and last fragment, so a chip that wraps keeps
+its left padding on the first line and its right padding on the last. A run
+with no text of its own has no box to fold into, so it says which side it
+belongs to instead — `attach: "previous"` puts its extras on the box before it,
+`attach: "next"` holds them for the box after. That is the rule the DOM
+extractor already applies to a zero-length inline, under a name a caller with
+no element to point at can use.
+
+A run is text or it is an anchor. `<br>` and replaced content — an image, an
+inline-block, anything the compiler carries as an opaque width — are run kinds
+in the DOM tier and are not here. A caller with a forced break has two
+paragraphs; a caller with an inline image has no way to say so on this entry
+yet.
+
+### Nowrap groups span runs, so they are not a run's business
+
+`white-space: nowrap` on an inline element forbids breaks inside it, and that
+element can start in one run and end in another. There is no element tree
+headless, and the obvious shape — a `nowrap: true` flag on a run — cannot say
+the thing that needs saying: a group that spans a run boundary is not a
+property of either run.
+
+It is a property of the block, and that is how it is passed. `nowrap` is a list
+of half-open ranges over the concatenated text:
+
+```ts
+compileRuns([{ text: "ISO" }, { text: " 8601", metrics: mono }], metrics, {
+  nowrap: [{ start: 0, end: 8 }],
+})
+```
+
+This is not a shape chosen to dodge the tree. It is the shape the compiler has
+always taken: `breakRestrictions` on a block is a sorted list of ranges, and
+flattening `white-space: nowrap` subtrees into exactly that list is the whole
+of what the DOM tier does with them. A headless caller hands over the flattened
+answer directly and gives up nothing the DOM tier keeps.
+
+Ranges may arrive in any order and may overlap or nest; they are sorted and
+merged before use. Merging is what makes a nested range harmless — the search
+that answers "may a line end here" reads one range, so an inner range would
+otherwise shadow the outer one it sits in. Merging two ranges that merely touch
+changes nothing either way: a break at the start of a range is already refused.
+
+A space inside a range compiles to a box rather than glue, so it neither breaks
+nor stretches. justif keeps such a space justification-flexible and only
+forbids the break. This entry matches the DOM tier it shares a compiler with
+rather than justif.
 
 ### Protrusion, expansion, tracking
 
@@ -766,8 +880,9 @@ cannot expand at all, paying for a feature that then does nothing.
 `track` takes the budget directly, as a fraction of each box's width — `0.03`
 is the DOM tier's. There is nothing to calibrate; letterfit is a policy number.
 What the DOM tier decides before passing it is eligibility — that letter
-spacing is uniform across the runs — and with one run that is true by
-construction.
+spacing is uniform across the runs. `compileText` has one run, so that is true
+by construction; on `compileRuns` the judgement is the caller's, and the budget
+is still one number for the whole block.
 
 `hyphenate` takes a `Hyphenator`, the same `(word, locale) => offsets`
 function the DOM tier takes. Omitting it is how hyphenation is turned off;
@@ -778,9 +893,9 @@ whether or not a caller hyphenates.
 `code` reroutes break opportunities from the hyphenator to the code table —
 camelCase boundaries, path separators, operators, each with its own penalty —
 and suppresses protrusion, matching what a `<code>` wrapper does in the DOM
-tier. It is the one option in this list that the compiler cannot express today:
-it decides the same question by looking for a `code` element among a run's
-wrappers.
+tier. On the call it is the default for every run; on `compileRuns` a run may
+set its own, which is the question the compiler answers in the browser by
+looking for a `code` element among that run's wrappers.
 
 ### What comes back
 
@@ -818,7 +933,7 @@ DOM:
 | --- | --- |
 | `empty` | the text produced no items — an empty or all-collapsible string |
 | `segmentation-mismatch` | a custom `segment` did not tile the input |
-| `unmeasurable` | reserved; unreachable while one metrics object serves the whole string |
+| `unmeasurable` | reserved; unreachable while every run resolves to a metrics object |
 
 The others belong to tiers that do not exist here. `too-long`,
 `unsupported-content`, `unsupported-direction` and `unsupported-writing-mode`
@@ -831,14 +946,11 @@ widening a returned union breaks every exhaustive switch over it.
 The 3,000-character limit is not applied. It exists because the DOM tier
 re-renders what it typesets; a caller that only wants items pays no such cost.
 
-### What is not in v1
+### What is still not here
 
-One run. One font, one size, one language, no inline elements, no images, no
-`<br>`, no nowrap groups, no `text-indent`. Those need `compileRuns`, which is
-deliberately not in this freeze: deciding how a nowrap group spans runs when
-there is no element tree to read it from is a design question, and answering it
-badly in order to ship a first version is how an API acquires a shape it cannot
-lose.
+Replaced content and forced breaks, as above, and `text-indent`: the DOM tier
+applies it as a first-line inset the optimizer prices, and there is no option
+for it on this entry.
 
 CJK, right-to-left text and non-English hyphenation are out of scope for this
 entry as they are for the rest of the package.
