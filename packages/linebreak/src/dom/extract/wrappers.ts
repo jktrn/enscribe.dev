@@ -30,8 +30,10 @@ const inlineEdges = (style: CSSStyleDeclaration) => {
   }
 }
 
-export const buildWrapperInfo = (runs: InlineRun[], styleOf: StyleReader) => {
-  const spans = new Map<HTMLElement, { firstRun: number; lastRun: number }>()
+type Span = { firstRun: number; lastRun: number }
+
+const runSpans = (runs: InlineRun[]) => {
+  const spans = new Map<HTMLElement, Span>()
   for (let index = 0; index < runs.length; index += 1) {
     for (const wrapper of (runs[index] as InlineRun).wrappers) {
       const span = spans.get(wrapper)
@@ -39,31 +41,42 @@ export const buildWrapperInfo = (runs: InlineRun[], styleOf: StyleReader) => {
       else spans.set(wrapper, { firstRun: index, lastRun: index })
     }
   }
+  return spans
+}
 
-  const wrappers = new Map<HTMLElement, WrapperInfo>()
-  for (const [element, { firstRun, lastRun }] of spans) {
-    const edges = inlineEdges(styleOf(element))
-    const leading: HTMLElement[] = []
-    const trailing: HTMLElement[] = []
-    for (const decoration of element.querySelectorAll<HTMLElement>(
-      `:scope > ${DECORATION}`,
-    )) {
-      const width = outerWidth(decoration, styleOf)
-      if (decoration.dataset.linebreakDecorationPosition === "after") {
-        trailing.push(decoration)
-        edges.trailing += width
-      } else {
-        leading.push(decoration)
-        edges.leading += width
-      }
+const decorationEdges = (element: HTMLElement, styleOf: StyleReader) => {
+  const edges = inlineEdges(styleOf(element))
+  const leading: HTMLElement[] = []
+  const trailing: HTMLElement[] = []
+
+  for (const decoration of element.querySelectorAll<HTMLElement>(
+    `:scope > ${DECORATION}`,
+  )) {
+    const width = outerWidth(decoration, styleOf)
+    if (decoration.dataset.linebreakDecorationPosition === "after") {
+      trailing.push(decoration)
+      edges.trailing += width
+    } else {
+      leading.push(decoration)
+      edges.leading += width
     }
+  }
+
+  return {
+    leading: { nodes: leading, width: edges.leading },
+    trailing: { nodes: trailing, width: edges.trailing },
+  }
+}
+
+export const buildWrapperInfo = (runs: InlineRun[], styleOf: StyleReader) => {
+  const wrappers = new Map<HTMLElement, WrapperInfo>()
+  for (const [element, { firstRun, lastRun }] of runSpans(runs)) {
     wrappers.set(element, {
       start: (runs[firstRun] as InlineRun).start,
       end: (runs[lastRun] as InlineRun).end,
       firstRun,
       lastRun,
-      leading: { nodes: leading, width: edges.leading },
-      trailing: { nodes: trailing, width: edges.trailing },
+      ...decorationEdges(element, styleOf),
     })
   }
   return wrappers

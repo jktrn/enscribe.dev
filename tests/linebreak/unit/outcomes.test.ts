@@ -116,16 +116,12 @@ test("the optimizer is reachable without pulling in the DOM engine", () => {
   })
 })
 
-test("the three reason sets are disjoint, so replay can classify them", () => {
-  // `revert()` stores FailureReasons in the same map as skips and declines, and
-  // `composeOne` classifies a remembered reason by set membership. Overlap
-  // between the sets makes that classification ambiguous — which is how
-  // `render-failed` used to replay as `{ status: "declined" }`, a state the
-  // Outcome union says cannot exist.
+test("the three reason sets are disjoint, so render-failed cannot replay as declined", () => {
   const all = [...SKIP_REASONS, ...DECLINE_REASONS, ...FAILURE_REASONS]
   expect(new Set(all).size).toBe(all.length)
 
-  for (const reason of SKIP_REASONS) expect(isExpected(skipped(reason))).toBe(true)
+  for (const reason of SKIP_REASONS)
+    expect(isExpected(skipped(reason))).toBe(true)
   for (const reason of DECLINE_REASONS) {
     expect(isExpected(declined(reason))).toBe(false)
   }

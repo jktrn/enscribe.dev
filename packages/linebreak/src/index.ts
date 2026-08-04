@@ -16,6 +16,7 @@ export {
   type ComposeReason,
   type DeclineReason,
   type FailureReason,
+  type Hyphenator,
   isExpected,
   type Linebreaker,
   type LinebreakerOptions,

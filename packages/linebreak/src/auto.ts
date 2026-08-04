@@ -123,6 +123,13 @@ class BrowserTypesetter<Token> implements Typesetter {
       })
     }
 
+    const token = this.options.beforeWrite?.() as Token
+    try {
+      this.linebreaker.warm(document)
+    } finally {
+      this.options.afterWrite?.(token)
+    }
+
     this.paused.delete("stopped")
     this.rescan()
     this.observeResize()
@@ -160,21 +167,27 @@ class BrowserTypesetter<Token> implements Typesetter {
     }
   }
 
-  rescan() {
-    if (this.paused.has("stopped")) return
-    for (const block of this.discover()) {
-      if (this.known.has(block)) continue
-      this.known.add(block)
-      if (this.lazy) this.viewportObserver().observe(block)
-      else this.queued.add(block)
-      this.resizeObserver()?.observe(block)
-    }
+  private track(block: HTMLElement) {
+    if (this.known.has(block)) return
+    this.known.add(block)
+    if (this.lazy) this.viewportObserver().observe(block)
+    else this.queued.add(block)
+    this.resizeObserver()?.observe(block)
+  }
+
+  private forgetDetached() {
     for (const block of this.known) {
       if (block.isConnected) continue
       this.known.delete(block)
       this.queued.delete(block)
       this.visible.delete(block)
     }
+  }
+
+  rescan() {
+    if (this.paused.has("stopped")) return
+    for (const block of this.discover()) this.track(block)
+    this.forgetDetached()
     this.schedule()
   }
 
@@ -212,77 +225,94 @@ class BrowserTypesetter<Token> implements Typesetter {
     return this.options.lazy !== false
   }
 
-  private discover(): HTMLElement[] {
-    const { roots, blocks, skip, filter } = this.options
-    const targets: Element[] =
-      typeof roots === "string" || roots === undefined
-        ? [...document.querySelectorAll(roots ?? DEFAULT_ROOTS)]
-        : [...roots]
+  private rootsFor(): Element[] {
+    const { roots } = this.options
+    if (typeof roots !== "string" && roots !== undefined) return [...roots]
+
+    const targets: Element[] = [
+      ...document.querySelectorAll(roots ?? DEFAULT_ROOTS),
+    ]
     if (
       targets.length === 0 &&
       (roots === undefined || roots === DEFAULT_ROOTS)
     ) {
       targets.push(document.body)
     }
+    return targets
+  }
+
+  private discover(): HTMLElement[] {
+    const { blocks, skip, filter } = this.options
     const out: HTMLElement[] = []
-    for (const root of targets) {
+    for (const root of this.rootsFor()) {
       out.push(...(blocks ? blocks(root) : proseBlocks(root, { skip, filter })))
     }
     return out
   }
 
+  private onIntersect(entries: readonly IntersectionObserverEntry[]) {
+    if (this.paused.has("stopped")) return
+    for (const entry of entries) {
+      const block = entry.target as HTMLElement
+      if (entry.isIntersecting) {
+        this.visible.add(block)
+        this.queued.add(block)
+      } else {
+        this.visible.delete(block)
+      }
+    }
+    this.schedule()
+  }
+
+  private lazyMargin() {
+    const { lazy } = this.options
+    return (
+      (typeof lazy === "object" ? lazy.margin : undefined) ?? DEFAULT_MARGIN
+    )
+  }
+
   private viewportObserver() {
     this.viewport ??= new IntersectionObserver(
-      (entries) => {
-        if (this.paused.has("stopped")) return
-        for (const entry of entries) {
-          const block = entry.target as HTMLElement
-          if (entry.isIntersecting) {
-            this.visible.add(block)
-            this.queued.add(block)
-          } else {
-            this.visible.delete(block)
-          }
-        }
-        this.schedule()
-      },
-      {
-        rootMargin:
-          (typeof this.options.lazy === "object"
-            ? this.options.lazy.margin
-            : undefined) ?? DEFAULT_MARGIN,
-      },
+      (entries) => this.onIntersect(entries),
+      { rootMargin: this.lazyMargin() },
     )
     return this.viewport
   }
 
+  private widthsMoved(entries: readonly ResizeObserverEntry[]) {
+    let moved = false
+    for (const entry of entries) {
+      const width =
+        entry.contentBoxSize?.[0]?.inlineSize ?? entry.contentRect.width
+      const previous = this.widths.get(entry.target)
+      this.widths.set(entry.target, width)
+      if (previous === undefined) continue
+      if (Math.abs(previous - width) > engineDefaults.widthEpsilon) moved = true
+    }
+    return moved
+  }
+
+  private afterResize() {
+    this.settleTimer = undefined
+    this.paused.delete("resize")
+    this.linebreaker.refresh()
+    this.requeue()
+    this.schedule()
+  }
+
+  private onResize(entries: readonly ResizeObserverEntry[]) {
+    if (this.paused.has("stopped")) return
+    if (!this.widthsMoved(entries)) return
+
+    this.paused.add("resize")
+    this.restoreAll()
+    clearTimeout(this.settleTimer)
+    this.settleTimer = setTimeout(() => this.afterResize(), RESIZE_SETTLE_MS)
+  }
+
   private resizeObserver() {
     if (this.options.resize === false) return undefined
-    this.measure ??= new ResizeObserver((entries) => {
-      if (this.paused.has("stopped")) return
-      let moved = false
-      for (const entry of entries) {
-        const width =
-          entry.contentBoxSize?.[0]?.inlineSize ?? entry.contentRect.width
-        const previous = this.widths.get(entry.target)
-        this.widths.set(entry.target, width)
-        if (previous === undefined) continue
-        if (Math.abs(previous - width) > engineDefaults.widthEpsilon)
-          moved = true
-      }
-      if (!moved) return
-
-      this.paused.add("resize")
-      this.restoreAll()
-      clearTimeout(this.settleTimer)
-      this.settleTimer = setTimeout(() => {
-        this.settleTimer = undefined
-        this.paused.delete("resize")
-        this.linebreaker.refresh()
-        this.requeue()
-        this.schedule()
-      }, RESIZE_SETTLE_MS)
-    })
+    this.measure ??= new ResizeObserver((entries) => this.onResize(entries))
     return this.measure
   }
 
@@ -301,8 +331,7 @@ class BrowserTypesetter<Token> implements Typesetter {
     })
   }
 
-  private flush() {
-    if (this.paused.size > 0) return
+  private nextSlice() {
     const started = performance.now()
     const slice: HTMLElement[] = []
 
@@ -316,20 +345,28 @@ class BrowserTypesetter<Token> implements Typesetter {
       this.queued.delete(block)
       slice.push(block)
     }
+    return slice
+  }
 
-    if (slice.length > 0) {
-      this.sliceCount += 1
-      try {
-        this.write(slice)
-      } catch (cause) {
-        this.options.onOutcome?.({
-          element: slice[0] as HTMLElement,
-          status: "failed",
-          reason: "render-failed",
-          cause,
-        })
-      }
+  private writeSlice(slice: readonly HTMLElement[]) {
+    this.sliceCount += 1
+    try {
+      this.write(slice)
+    } catch (cause) {
+      this.options.onOutcome?.({
+        element: slice[0] as HTMLElement,
+        status: "failed",
+        reason: "render-failed",
+        cause,
+      })
     }
+  }
+
+  private flush() {
+    if (this.paused.size > 0) return
+
+    const slice = this.nextSlice()
+    if (slice.length > 0) this.writeSlice(slice)
 
     if (this.queued.size > 0) this.schedule()
     else this.markSettled()
@@ -403,6 +440,7 @@ export type {
   Composition,
   DeclineReason,
   FailureReason,
+  Hyphenator,
   Linebreaker,
   LinebreakerOptions,
   LinebreakerStats,

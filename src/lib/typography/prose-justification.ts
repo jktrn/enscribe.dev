@@ -1,5 +1,6 @@
 import { consoleReporter } from "@enscribe/linebreak"
 import { createTypesetter, type Typesetter } from "@enscribe/linebreak/auto"
+import { englishHyphenator } from "@enscribe/linebreak/hyphenation"
 import {
   onJustificationChange,
   onReaderModeChange,
@@ -26,7 +27,7 @@ class ProseJustificationElement extends HTMLElement {
     this.#typesetter = createTypesetter<ReadingAnchor | null>({
       skip: SKIP,
       minimumWidth: 240,
-      hyphenate: true,
+      hyphenate: englishHyphenator,
       preserveImageAttributes: ["data-loaded"],
       beforeWrite: captureReadingAnchor,
       afterWrite: restoreReadingAnchor,

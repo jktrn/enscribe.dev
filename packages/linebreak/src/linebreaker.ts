@@ -1,21 +1,34 @@
 import { breakParagraph, type Line } from "./layout/breaker"
 import { compileBlock } from "./layout/compile"
 import type { Item } from "./layout/items"
+import { fitLines } from "./layout/expansion"
+import { trackLines } from "./layout/tracking"
+import type { Flex } from "./layout/flex"
+import type { Hangs } from "./layout/protrusion"
 import { defaultGlue, resolvePolicy } from "./layout/policy"
 import {
+  codeWrapper,
   type ExtractedBlock,
   extractBlock,
   type InlineRun,
   outerWidth,
+  runEdgeWidths,
 } from "./dom/extract"
+import { configureLocale, invalidateMeasurements } from "./text/measure"
+import type { FontMetrics } from "./text/segments"
+import { engineDefaults, engineLimits } from "./policy"
+import type { StretchScale } from "./text/stretch"
+import { invalidateStretchScales, stretchScaleFor } from "./dom/stretch"
+import { metricsForStyle } from "./dom/measure-dom"
 import {
-  configureLocale,
-  createFontMetrics,
-  type FontMetrics,
-  invalidateMeasurements,
-} from "./text/measure"
-import { engineDefaults } from "./policy"
-import { LINE_SELECTOR, renderLines, TYPESET_ATTRIBUTE } from "./dom/render"
+  honoursHangingMargins,
+  LINE_SELECTOR,
+  renderLines,
+  type RenderedLayout,
+  tightenOverset,
+  TYPESET_ATTRIBUTE,
+  type WrittenLines,
+} from "./dom/render"
 import {
   type AuthoredContent,
   authoredText,
@@ -23,10 +36,23 @@ import {
   restoreAuthored,
 } from "./dom/restore"
 import {
+  contentWidth,
+  hangSlack,
+  layoutMismatch,
+  resolvedLineHeight,
+  styleOf,
+  viewOf,
+} from "./dom/geometry"
+import {
   computedFont,
   createStyleReader,
   cssPixels,
+  firstLineIndent,
+  indentsSomeOtherLine,
+  type StyleReader,
+  uniformLetterSpacing,
   unmodellableProperty,
+  variantKey,
 } from "./dom/style"
 import {
   COMPOSITION_BRAND,
@@ -36,6 +62,7 @@ import {
   SKIP_REASONS,
   type DeclineReason,
   type FailureReason,
+  type Hyphenator,
   type Linebreaker,
   type LinebreakerOptions,
   type LinebreakerStats,
@@ -52,6 +79,11 @@ type MeasurementBasis = {
 type Measurement = {
   readonly block: ExtractedBlock
   readonly items: Item[]
+  readonly hangs: Hangs | null
+  readonly expansion: Flex | null
+  readonly tracking: Flex | null
+  readonly flex: Flex | null
+  readonly scale: StretchScale | null
   readonly authored: AuthoredContent
   readonly under: MeasurementBasis
   readonly text: string
@@ -60,9 +92,11 @@ type Measurement = {
 type Draft = {
   readonly measurement: Measurement
   readonly width: number
+  readonly indent: number
   lines: readonly Line[]
   reduction: number
   round: number
+  written?: WrittenLines
 }
 
 const sameBasis = (a: MeasurementBasis, b: MeasurementBasis) =>
@@ -86,39 +120,6 @@ const statusFor = (reason: string) => {
   return "failed" as const
 }
 
-const viewOf = (element: HTMLElement) =>
-  element.ownerDocument.defaultView ?? globalThis
-
-const styleOf = (element: HTMLElement) =>
-  viewOf(element).getComputedStyle(element)
-
-const contentWidth = (element: HTMLElement, style: CSSStyleDeclaration) =>
-  element.clientWidth -
-  cssPixels(style.paddingInlineStart) -
-  cssPixels(style.paddingInlineEnd)
-
-const resolvedLineHeight = (style: CSSStyleDeclaration) => {
-  const value = Number.parseFloat(style.lineHeight)
-  if (Number.isFinite(value)) return value
-  const fontSize = Number.parseFloat(style.fontSize)
-  return Number.isFinite(fontSize) ? fontSize * 1.2 : Number.NaN
-}
-
-const layoutMismatch = (element: HTMLElement, lineCount: number) => {
-  const segments = element.querySelectorAll<HTMLElement>(LINE_SELECTOR)
-  if (segments.length !== lineCount) return true
-
-  const rows = new Set<number>()
-  for (const segment of segments) {
-    const rect = segment.getBoundingClientRect()
-    if (rect.width === 0 && rect.height === 0) continue
-    rows.add(Math.round(rect.top))
-  }
-  if (rows.size !== lineCount) return true
-
-  return element.scrollWidth > element.clientWidth + 1
-}
-
 class BrowserLinebreaker implements Linebreaker {
   private readonly minimumWidth: number
   private readonly safetyMargin: number
@@ -126,14 +127,21 @@ class BrowserLinebreaker implements Linebreaker {
   private readonly maximumCharacters: number
   private readonly defaultLocale: string | undefined
   private readonly preservedImageAttributes: readonly string[]
-  private readonly hyphenate: boolean
+  private readonly hyphenate: Hyphenator | undefined
+  private readonly protrude: boolean
+  private readonly expand: boolean
+  private readonly track: boolean
+  private readonly lastLineMinWidth: number
   private readonly policy: ReturnType<typeof resolvePolicy>
   private readonly glue: { stretch: number; shrink: number }
   private readonly report: ((outcome: Outcome) => void) | undefined
 
   private readonly measurements = new WeakMap<HTMLElement, Measurement>()
   private readonly live = new Set<HTMLElement>()
-  private readonly remembered = new Map<HTMLElement, ComposeReason | FailureReason>()
+  private readonly remembered = new Map<
+    HTMLElement,
+    ComposeReason | FailureReason
+  >()
   private readonly metrics = new Map<string, FontMetrics>()
   private readonly drafts = new WeakMap<Composition, Draft>()
   private readonly counters = {
@@ -145,19 +153,31 @@ class BrowserLinebreaker implements Linebreaker {
   }
   private disposed = false
   private writing = false
+  private hangable: boolean | null = null
 
   constructor(options: LinebreakerOptions = {}) {
-    this.minimumWidth = options.minimumWidth ?? engineDefaults.minimumWidth
-    this.safetyMargin = options.safetyMargin ?? engineDefaults.safetyMargin
-    this.maximumRetries = options.retries ?? engineDefaults.retries
-    this.maximumCharacters =
-      options.maximumCharacters ?? engineDefaults.maximumCharacters
+    const limits = engineLimits(options)
+    this.minimumWidth = limits.minimumWidth
+    this.safetyMargin = limits.safetyMargin
+    this.maximumRetries = limits.maximumRetries
+    this.maximumCharacters = limits.maximumCharacters
     this.defaultLocale = options.locale || undefined
     this.preservedImageAttributes = options.preserveImageAttributes ?? []
-    this.hyphenate = options.hyphenate ?? false
+    this.hyphenate = options.hyphenate
+    this.protrude = options.protrude ?? true
+    this.expand = options.expand ?? false
+    this.track = options.track ?? false
+    this.lastLineMinWidth =
+      options.lastLineMinWidth ?? engineDefaults.lastLineMinWidth
     this.policy = resolvePolicy(options.policy)
     this.glue = { ...defaultGlue, ...options.glue }
     this.report = options.onOutcome
+  }
+
+  warm(document: Document) {
+    this.assertUsable()
+    if (!this.protrude) return
+    this.hangable ??= honoursHangingMargins(document)
   }
 
   compose(elements: Iterable<HTMLElement>): readonly Composition[] {
@@ -182,25 +202,7 @@ class BrowserLinebreaker implements Linebreaker {
 
     const order = [...compositions]
     const results = new Map<Composition, Outcome>()
-    const ready: Composition[] = []
-
-    for (const composition of order) {
-      if (composition?.brand !== COMPOSITION_BRAND) {
-        throw new TypeError("linebreak: apply() received a foreign composition")
-      }
-      if (composition.status === "ready") {
-        if (!this.drafts.has(composition)) {
-          throw new TypeError("linebreak: this composition was already applied")
-        }
-        ready.push(composition)
-        continue
-      }
-      results.set(composition, {
-        element: composition.element,
-        status: composition.status,
-        reason: composition.reason,
-      } as Outcome)
-    }
+    const ready = this.readyOf(order, results)
 
     this.writing = true
     try {
@@ -213,10 +215,45 @@ class BrowserLinebreaker implements Linebreaker {
       for (const composition of ready) this.drafts.delete(composition)
     }
 
+    this.forgetDisconnected()
+    return this.reportAll(order, results)
+  }
+
+  private readyOf(
+    order: readonly Composition[],
+    results: Map<Composition, Outcome>,
+  ) {
+    const ready: Composition[] = []
+    for (const composition of order) {
+      if (composition?.brand !== COMPOSITION_BRAND) {
+        throw new TypeError("linebreak: apply() received a foreign composition")
+      }
+      if (composition.status !== "ready") {
+        results.set(composition, {
+          element: composition.element,
+          status: composition.status,
+          reason: composition.reason,
+        } as Outcome)
+        continue
+      }
+      if (!this.drafts.has(composition)) {
+        throw new TypeError("linebreak: this composition was already applied")
+      }
+      ready.push(composition)
+    }
+    return ready
+  }
+
+  private forgetDisconnected() {
     for (const element of this.live) {
       if (!element.isConnected) this.live.delete(element)
     }
+  }
 
+  private reportAll(
+    order: readonly Composition[],
+    results: Map<Composition, Outcome>,
+  ) {
     const outcomes = order.map(
       (composition): Outcome =>
         results.get(composition) ?? {
@@ -252,6 +289,7 @@ class BrowserLinebreaker implements Linebreaker {
     if (!elements) this.remembered.clear()
     this.metrics.clear()
     invalidateMeasurements()
+    invalidateStretchScales()
   }
 
   refresh() {
@@ -301,66 +339,49 @@ class BrowserLinebreaker implements Linebreaker {
     } as Composition
   }
 
-  private composeOne(element: HTMLElement): Composition {
-    const already = this.remembered.get(element)
-    if (already !== undefined) {
-      return this.settled(element, statusFor(already), already, 0, false)
-    }
-
-    const style = styleOf(element)
-    if (style.direction !== "ltr") {
-      return this.settled(element, "declined", "unsupported-direction")
-    }
+  private unsupportedIn(style: CSSStyleDeclaration) {
+    if (style.direction !== "ltr") return "unsupported-direction" as const
     const writingMode = style.writingMode
     if (writingMode && !writingMode.startsWith("horizontal")) {
-      return this.settled(element, "declined", "unsupported-writing-mode")
+      return "unsupported-writing-mode" as const
     }
+    if (indentsSomeOtherLine(style)) return "unmeasurable" as const
+    return null
+  }
 
-    const width = contentWidth(element, style)
-    if (width < this.minimumWidth) {
-      return this.settled(element, "skipped", "too-narrow", width, false)
-    }
-
-    const locale =
+  private localeFor(element: HTMLElement) {
+    return (
       element.closest<HTMLElement>("[lang]")?.getAttribute("lang") ||
       this.defaultLocale ||
       element.ownerDocument.documentElement.lang ||
       "en-US"
+    )
+  }
 
-    const basis: MeasurementBasis = {
-      locale,
-      font: computedFont(style),
-      letterSpacing: cssPixels(style.letterSpacing),
-    }
-    let measurement = this.measurements.get(element)
+  private reusableMeasurement(element: HTMLElement, basis: MeasurementBasis) {
+    const measurement = this.measurements.get(element)
+    if (!measurement) return undefined
     if (
-      measurement &&
-      (measurement.text !== authoredText(element) ||
-        !sameBasis(measurement.under, basis))
+      measurement.text === authoredText(element) &&
+      sameBasis(measurement.under, basis)
     ) {
-      this.restoreElement(element)
-      this.measurements.delete(element)
-      measurement = undefined
+      return measurement
     }
-    if (!measurement) {
-      const built = this.measure(element, style, basis)
-      if (!built.ok) {
-        return this.settled(
-          element,
-          statusFor(built.reason),
-          built.reason,
-          width,
-          !TRANSIENT.has(built.reason),
-        )
-      }
-      measurement = built.measurement
-      this.measurements.set(element, measurement)
-    }
+    this.restoreElement(element)
+    this.measurements.delete(element)
+    return undefined
+  }
 
+  private draftFor(
+    element: HTMLElement,
+    measurement: Measurement,
+    width: number,
+    indent: number,
+  ): Composition {
     const solved = breakParagraph(
       measurement.items,
       width - this.safetyMargin,
-      { policy: this.policy },
+      this.layoutOptions(measurement, indent),
     )
     if (!solved.ok) {
       return this.settled(element, "declined", "no-feasible-breaking")
@@ -379,11 +400,56 @@ class BrowserLinebreaker implements Linebreaker {
     this.drafts.set(composition, {
       measurement,
       width,
+      indent,
       lines: solved.lines,
       reduction: 0,
       round: 0,
     })
     return composition
+  }
+
+  private composeOne(element: HTMLElement): Composition {
+    const already = this.remembered.get(element)
+    if (already !== undefined) {
+      return this.settled(element, statusFor(already), already, 0, false)
+    }
+
+    const style = styleOf(element)
+    const unsupported = this.unsupportedIn(style)
+    if (unsupported) return this.settled(element, "declined", unsupported)
+
+    const width = contentWidth(element, style)
+    if (width < this.minimumWidth) {
+      return this.settled(element, "skipped", "too-narrow", width, false)
+    }
+
+    const basis: MeasurementBasis = {
+      locale: this.localeFor(element),
+      font: computedFont(style),
+      letterSpacing: cssPixels(style.letterSpacing),
+    }
+    let measurement = this.reusableMeasurement(element, basis)
+    if (!measurement) {
+      const built = this.measure(element, style, basis)
+      if (!built.ok) {
+        return this.settled(
+          element,
+          statusFor(built.reason),
+          built.reason,
+          width,
+          !TRANSIENT.has(built.reason),
+        )
+      }
+      measurement = built.measurement
+      this.measurements.set(element, measurement)
+    }
+
+    return this.draftFor(
+      element,
+      measurement,
+      width,
+      firstLineIndent(style, width),
+    )
   }
 
   private write(
@@ -396,9 +462,11 @@ class BrowserLinebreaker implements Linebreaker {
     const target = draft.width - this.safetyMargin - draft.reduction
 
     if (draft.reduction > 0) {
-      const solved = breakParagraph(draft.measurement.items, target, {
-        policy: this.policy,
-      })
+      const solved = breakParagraph(
+        draft.measurement.items,
+        target,
+        this.layoutOptions(draft.measurement, draft.indent),
+      )
       if (!solved.ok) {
         this.revert(composition, "layout-mismatch", results)
         return false
@@ -407,14 +475,15 @@ class BrowserLinebreaker implements Linebreaker {
     }
 
     try {
+      const layout = this.layoutFor(draft, target)
       const written = renderLines(
         element,
         draft.measurement.block,
-        draft.lines,
-        target,
+        layout,
         this.preservedImageAttributes,
       )
       if (!written) throw new Error("line content could not be rebuilt")
+      draft.written = { elements: written, layout }
       this.live.add(element)
       return true
     } catch (cause) {
@@ -430,41 +499,61 @@ class BrowserLinebreaker implements Linebreaker {
     let pending = written
     while (pending.length > 0) {
       const retry: Composition[] = []
+      tightenOverset(this.writtenLines(pending))
       const shift = this.commonShift(pending)
 
       for (const composition of pending) {
-        const draft = this.drafts.get(composition)
-        if (!draft) continue
-        const failure = this.verify(
-          composition.element,
-          draft.lines.length,
-          draft.width + shift,
-        )
-        if (!failure) {
-          this.counters.typeset += 1
-          results.set(composition, {
-            element: composition.element,
-            status: "typeset",
-            lines: draft.lines.length,
-            retries: draft.round,
-          })
-          continue
-        }
-        if (
-          failure === "layout-mismatch" &&
-          draft.round < this.maximumRetries
-        ) {
-          draft.round += 1
-          this.counters.retries += 1
-          draft.reduction =
-            draft.width * engineDefaults.retryReduction * 3 ** (draft.round - 1)
-          retry.push(composition)
-          continue
-        }
-        this.revert(composition, failure, results)
+        if (this.settleOne(composition, shift, results)) retry.push(composition)
       }
 
       pending = retry.filter((composition) => this.write(composition, results))
+    }
+  }
+
+  private scheduleRetry(draft: Draft) {
+    draft.round += 1
+    this.counters.retries += 1
+    draft.reduction =
+      draft.width * engineDefaults.retryReduction * 3 ** (draft.round - 1)
+  }
+
+  private settleOne(
+    composition: Composition,
+    shift: number,
+    results: Map<Composition, Outcome>,
+  ) {
+    const draft = this.drafts.get(composition)
+    if (!draft) return false
+
+    const failure = this.verify(
+      composition.element,
+      draft.lines,
+      draft.width + shift,
+    )
+    if (!failure) {
+      this.counters.typeset += 1
+      results.set(composition, {
+        element: composition.element,
+        status: "typeset",
+        lines: draft.lines.length,
+        retries: draft.round,
+      })
+      return false
+    }
+
+    if (failure === "layout-mismatch" && draft.round < this.maximumRetries) {
+      this.scheduleRetry(draft)
+      return true
+    }
+
+    this.revert(composition, failure, results)
+    return false
+  }
+
+  private *writtenLines(pending: readonly Composition[]) {
+    for (const composition of pending) {
+      const written = this.drafts.get(composition)?.written
+      if (written) yield written
     }
   }
 
@@ -487,9 +576,81 @@ class BrowserLinebreaker implements Linebreaker {
       : ((deltas[middle - 1] as number) + (deltas[middle] as number)) / 2
   }
 
+  private protrudes(element: HTMLElement) {
+    if (!this.protrude) return false
+    this.hangable ??= honoursHangingMargins(element.ownerDocument)
+    return this.hangable
+  }
+
+  private expandsWith(
+    element: HTMLElement,
+    reader: StyleReader,
+    basis: MeasurementBasis,
+  ): ((run: InlineRun) => StretchScale | null) | null {
+    if (!this.expand) return null
+    const document = element.ownerDocument
+    const budget = engineDefaults.expansionBudget
+    if (!stretchScaleFor(document, basis.font, basis.letterSpacing, budget)) {
+      return null
+    }
+    return (run) => {
+      const style = reader(run.sourceElement)
+      return stretchScaleFor(
+        document,
+        computedFont(style),
+        cssPixels(style.letterSpacing),
+        budget,
+      )
+    }
+  }
+
+  private tracksWith(
+    block: ExtractedBlock,
+    reader: StyleReader,
+    basis: MeasurementBasis,
+  ) {
+    if (!this.track) return null
+    const elements = block.runs.map((run) => run.sourceElement)
+    if (!uniformLetterSpacing(elements, reader, basis.letterSpacing))
+      return null
+    return engineDefaults.trackingBudget
+  }
+
+  private layoutFor(draft: Draft, target: number): RenderedLayout {
+    const { expansion, scale, tracking, under } = draft.measurement
+    const fits =
+      expansion && scale
+        ? fitLines(draft.lines, target, expansion, scale)
+        : null
+    return {
+      lines: draft.lines,
+      target,
+      fits,
+      letterfit: tracking
+        ? {
+            lines: trackLines(draft.lines, target, tracking, fits),
+            inherited: under.letterSpacing,
+          }
+        : null,
+    }
+  }
+
+  private layoutOptions(measurement: Measurement, indent: number) {
+    const { hangs, flex } = measurement
+    return {
+      policy: this.policy,
+      ...(hangs ? { hangs } : {}),
+      ...(flex ? { flex } : {}),
+      ...(indent === 0 ? {} : { indent }),
+      ...(this.lastLineMinWidth > 0
+        ? { lastLineMinWidth: this.lastLineMinWidth }
+        : {}),
+    }
+  }
+
   private verify(
     element: HTMLElement,
-    lineCount: number,
+    lines: readonly Line[],
     expectedWidth: number,
   ): FailureReason | null {
     const style = styleOf(element)
@@ -503,7 +664,9 @@ class BrowserLinebreaker implements Linebreaker {
     if (!Number.isFinite(resolvedLineHeight(style))) {
       return "line-height-unresolved"
     }
-    return layoutMismatch(element, lineCount) ? "layout-mismatch" : null
+    return layoutMismatch(element, lines.length, hangSlack(lines))
+      ? "layout-mismatch"
+      : null
   }
 
   private revert(
@@ -549,12 +712,18 @@ class BrowserLinebreaker implements Linebreaker {
     this.live.delete(element)
   }
 
-  private metricsFor(font: string, letterSpacing: number, locale: string) {
-    const key = `${locale}|${letterSpacing}|${font}`
+  private metricsFor(
+    style: CSSStyleDeclaration,
+    locale: string,
+    document: Document,
+  ) {
+    const font = computedFont(style)
+    const letterSpacing = cssPixels(style.letterSpacing)
+    const key = `${locale}|${letterSpacing}|${variantKey(style)}|${font}`
     const cached = this.metrics.get(key)
     if (cached) return cached
-    const metrics = createFontMetrics(font, letterSpacing)
-    this.metrics.set(key, metrics)
+    const metrics = metricsForStyle(document, style, font, letterSpacing)
+    if (metrics) this.metrics.set(key, metrics)
     return metrics
   }
 
@@ -578,27 +747,31 @@ class BrowserLinebreaker implements Linebreaker {
 
     const metricsFor = (run: InlineRun): FontMetrics | null => {
       const runStyle = reader(run.sourceElement)
-      if (unmodellableProperty(runStyle)) {
-        unmodellable ??= "unmeasurable"
-        return null
-      }
-      return this.metricsFor(
-        computedFont(runStyle),
-        cssPixels(runStyle.letterSpacing),
-        basis.locale,
-      )
+      const metrics = unmodellableProperty(runStyle)
+        ? null
+        : this.metricsFor(runStyle, basis.locale, element.ownerDocument)
+      if (!metrics) unmodellable ??= "unmeasurable"
+      return metrics
     }
 
     const text = authoredText(element)
     const authored = captureAuthored(element)
+    const scaleFor = this.expandsWith(element, reader, basis)
+    const track = this.tracksWith(extracted.block, reader, basis)
     const compiled = compileBlock({
       block: extracted.block,
       metricsFor,
+      baseFont: basis.font,
       atomWidth: (run: InlineRun) => outerWidth(run.sourceElement, reader),
       locale: basis.locale,
-      hyphenate: this.hyphenate,
+      isCode: (run: InlineRun) => codeWrapper(run) !== undefined,
+      edgesFor: (run: InlineRun) => runEdgeWidths(extracted.block, run),
+      protrude: this.protrudes(element),
+      ...(track ? { track } : {}),
       policy: this.policy,
       glue: this.glue,
+      ...(this.hyphenate ? { hyphenate: this.hyphenate } : {}),
+      ...(scaleFor ? { scaleFor } : {}),
     })
     if (unmodellable) return { ok: false, reason: unmodellable }
     if (!compiled.ok) return { ok: false, reason: compiled.reason }
@@ -608,6 +781,11 @@ class BrowserLinebreaker implements Linebreaker {
       measurement: {
         block: extracted.block,
         items: compiled.items,
+        hangs: compiled.hangs,
+        expansion: compiled.expansion,
+        tracking: compiled.tracking,
+        flex: compiled.flex,
+        scale: compiled.scale,
         authored,
         under: basis,
         text,

@@ -43,6 +43,10 @@
       "types": "./dist/layout.d.ts",
       "default": "./dist/layout.js"
     },
+    "./text": {
+      "types": "./dist/text.d.ts",
+      "default": "./dist/text.js"
+    },
     "./auto": {
       "types": "./dist/auto.d.ts",
       "default": "./dist/auto.js"
@@ -50,6 +54,10 @@
     "./attributes": {
       "types": "./dist/attributes.d.ts",
       "default": "./dist/attributes.js"
+    },
+    "./hyphenation": {
+      "types": "./dist/hyphenation.d.ts",
+      "default": "./dist/hyphenation.js"
     },
     "./styles.css": {
       "types": "./dist/styles.css.d.ts",
@@ -59,8 +67,12 @@
   },
   "scripts": {
     "build": "tsdown",
-    "typecheck": "tsc --noEmit",
-    "check": "bun run typecheck && bun run build"
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.headless.json",
+    "check": "bun run typecheck && bun run build",
+    "gen:protrusion": "bun run tools/gen-protrusion.ts src/text/protrusion.ts && bunx biome format --write src/text/protrusion.ts",
+    "playground": "bun run playground/build.ts && bun run playground/serve.ts",
+    "playground:build": "bun run playground/build.ts",
+    "playground:typecheck": "tsc --noEmit -p playground/tsconfig.json"
   },
   "dependencies": {
     "@chenglou/pretext": "0.0.8",

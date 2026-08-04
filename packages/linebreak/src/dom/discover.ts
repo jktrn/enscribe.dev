@@ -33,30 +33,50 @@ export type DiscoverOptions = {
   filter?: (element: HTMLElement) => boolean
 }
 
+type Discovery = {
+  readonly skip: string
+  readonly filter: ((element: HTMLElement) => boolean) | undefined
+  readonly blocks: HTMLElement[]
+}
+
+const blockChildrenOf = (element: Element) => {
+  const children: Element[] = []
+  for (const child of element.children) {
+    if (!isInlineLevel(child)) children.push(child)
+  }
+  return children
+}
+
+const carriesProse = (
+  element: Element,
+  discovery: Discovery,
+): element is HTMLElement => {
+  if (!(element instanceof HTMLElement)) return false
+  if (!(element.textContent ?? "").trim()) return false
+  return !discovery.filter || discovery.filter(element)
+}
+
+const visitBlock = (element: Element, discovery: Discovery) => {
+  if (element.matches(discovery.skip)) return
+
+  const blockChildren = blockChildrenOf(element)
+  if (blockChildren.length > 0) {
+    for (const child of blockChildren) visitBlock(child, discovery)
+    return
+  }
+  if (carriesProse(element, discovery)) discovery.blocks.push(element)
+}
+
 export const proseBlocks = (
   root: Element,
   options: DiscoverOptions = {},
 ): HTMLElement[] => {
-  const skip = options.skip ? `${DEFAULT_SKIP}, ${options.skip}` : DEFAULT_SKIP
-  const blocks: HTMLElement[] = []
-
-  const visit = (element: Element) => {
-    if (element.matches(skip)) return
-
-    const blockChildren: Element[] = []
-    for (const child of element.children) {
-      if (!isInlineLevel(child)) blockChildren.push(child)
-    }
-    if (blockChildren.length > 0) {
-      for (const child of blockChildren) visit(child)
-      return
-    }
-    if (!(element instanceof HTMLElement)) return
-    if (!(element.textContent ?? "").trim()) return
-    if (options.filter && !options.filter(element)) return
-    blocks.push(element)
+  const discovery: Discovery = {
+    skip: options.skip ? `${DEFAULT_SKIP}, ${options.skip}` : DEFAULT_SKIP,
+    filter: options.filter,
+    blocks: [],
   }
 
-  visit(root)
-  return blocks
+  visitBlock(root, discovery)
+  return discovery.blocks
 }

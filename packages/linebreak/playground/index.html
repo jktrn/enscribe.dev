@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en" data-theme="system">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>linebreak playground — three-way justification</title>
+    <link rel="stylesheet" href="./linebreak.css">
+    <link rel="stylesheet" href="./playground.css">
+  </head>
+  <body>
+    <header class="masthead">
+      <h1>Three-way justification</h1>
+      <p class="deck">
+        The same text, the same measure, the same feature flags, set three ways:
+        the browser's own <code>text-align: justify</code>,
+        <strong>@enscribe/linebreak</strong>, and <strong>justif</strong>. Every
+        number below is measured from the rendered DOM.
+      </p>
+    </header>
+
+    <div class="dock">
+      <div class="dock-row views">
+        <div class="segmented" role="group" aria-label="view">
+          <button type="button" data-view-button="side" aria-pressed="true">
+            side by side
+          </button>
+          <button type="button" data-view-button="single" aria-pressed="false">
+            single column
+          </button>
+        </div>
+        <label class="field single-only">
+          <span>engine</span>
+          <select id="single-engine">
+            <option value="linebreak">linebreak</option>
+            <option value="justif">justif</option>
+            <option value="browser">browser</option>
+          </select>
+        </label>
+        <p class="hint">
+          Click and hold anywhere to reveal the browser rendering underneath
+          both typeset columns.
+        </p>
+        <div class="segmented" role="group" aria-label="theme">
+          <button type="button" data-theme-button="system" aria-pressed="true">
+            system
+          </button>
+          <button type="button" data-theme-button="light" aria-pressed="false">
+            light
+          </button>
+          <button type="button" data-theme-button="dark" aria-pressed="false">
+            dark
+          </button>
+        </div>
+      </div>
+
+      <div class="dock-row panels">
+        <section class="panel">
+          <h2>Text</h2>
+          <label class="field">
+            <span>sample</span>
+            <select id="sample"></select>
+          </label>
+          <p class="note" id="sample-note"></p>
+          <label class="field">
+            <span>typeface</span>
+            <select id="font"></select>
+          </label>
+          <p class="note" id="font-note"></p>
+          <label class="field slider">
+            <span>measure <output id="measure-out"></output></span>
+            <input
+              id="measure"
+              type="range"
+              min="240"
+              max="900"
+              step="10"
+              value="380"
+            >
+          </label>
+          <label class="field slider">
+            <span>font size <output id="size-out"></output></span>
+            <input
+              id="size"
+              type="range"
+              min="13"
+              max="24"
+              step="0.5"
+              value="17"
+            >
+          </label>
+        </section>
+
+        <section class="panel">
+          <h2>Features</h2>
+          <label class="check">
+            <input id="hyphenate" type="checkbox" checked>
+            hyphenation
+          </label>
+          <label class="check">
+            <input id="protrude" type="checkbox" checked>
+            optical protrusion
+          </label>
+          <label class="check">
+            <input id="expand" type="checkbox" checked>
+            font expansion
+            <span class="reason" id="expand-reason"></span>
+          </label>
+          <label class="check">
+            <input id="track" type="checkbox">
+            tracking / letterfit
+          </label>
+          <label class="field slider">
+            <span
+              >min. last-line width <output id="lastline-out"></output></span
+            >
+            <input
+              id="lastline"
+              type="range"
+              min="0"
+              max="0.5"
+              step="0.01"
+              value="0.33"
+            >
+          </label>
+          <label class="field slider">
+            <span>text-indent <output id="indent-out"></output></span>
+            <input
+              id="indent"
+              type="range"
+              min="0"
+              max="4"
+              step="0.25"
+              value="0"
+            >
+          </label>
+          <label class="field">
+            <span
+              >hang punctuation <em class="warn">justif only</em
+              ><span class="reason" id="hang-reason"></span></span
+            >
+            <select id="hang">
+              <option value="none">none</option>
+              <option value="line-end-only" selected>line ends</option>
+              <option value="first-line-and-line-ends">
+                line ends + first line start
+              </option>
+              <option value="all-line-edges">all line edges</option>
+            </select>
+          </label>
+        </section>
+
+        <section class="panel">
+          <h2>Overlays</h2>
+          <label class="check">
+            <input id="rulers" type="checkbox">
+            margin rulers
+          </label>
+          <label class="check">
+            <input id="tint" type="checkbox">
+            uneven spaces
+          </label>
+          <label class="check">
+            <input id="boxes" type="checkbox">
+            line boxes + ratio
+          </label>
+          <p class="note">
+            Rulers sit at the measure edges: protruding glyphs cross them. Tint
+            is per space, scaled by distance from that font's natural space.
+            Ratios are the measured <em>r</em> of each line.
+          </p>
+          <button id="reset" type="button">reset controls</button>
+        </section>
+      </div>
+    </div>
+
+    <main class="columns" id="columns">
+      <section class="column" data-engine="browser">
+        <h2>Browser <span class="badge">text-align: justify</span></h2>
+        <div class="stack">
+          <div class="article" data-role="typeset"></div>
+          <div class="overlay" data-role="overlay"></div>
+        </div>
+        <div class="outcomes" data-role="outcomes"></div>
+      </section>
+      <section class="column" data-engine="linebreak">
+        <h2>linebreak <span class="badge">@enscribe/linebreak</span></h2>
+        <div class="stack">
+          <div class="article" data-role="typeset"></div>
+          <div
+            class="article native"
+            data-role="native"
+            aria-hidden="true"
+          ></div>
+          <div class="overlay" data-role="overlay"></div>
+        </div>
+        <div class="outcomes" data-role="outcomes"></div>
+      </section>
+      <section class="column" data-engine="justif">
+        <h2>justif <span class="badge">0.7.0</span></h2>
+        <div class="stack">
+          <div class="article" data-role="typeset"></div>
+          <div
+            class="article native"
+            data-role="native"
+            aria-hidden="true"
+          ></div>
+          <div class="overlay" data-role="overlay"></div>
+        </div>
+        <div class="outcomes" data-role="outcomes"></div>
+      </section>
+    </main>
+
+    <section class="report">
+      <h2>Metrics</h2>
+      <p class="note">
+        Lines, spaces and badness are measured from rendered glyph rectangles in
+        this browser. Hyphenated-break counts for the two typeset columns are
+        read from engine markup, and the browser's from words painted in two
+        rectangles. Badness is TeX's 100·|r|³, capped at 10,000, over body lines
+        only, from each line's own measured slack. A space beside an inline code
+        chip carries that chip's padding, in every column alike.
+      </p>
+      <table id="metrics">
+        <thead>
+          <tr>
+            <th></th>
+            <th>browser</th>
+            <th>linebreak</th>
+            <th>justif</th>
+          </tr>
+        </thead>
+      </table>
+    </section>
+
+    <section class="report">
+      <h2>Asymmetries</h2>
+      <p class="note">
+        Where the two engines are not doing the same thing, on purpose or by
+        omission.
+      </p>
+      <ul id="asymmetries"></ul>
+    </section>
+
+    <script type="module" src="./playground.js"></script>
+  </body>
+</html>

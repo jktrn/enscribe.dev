@@ -1,17 +1,11 @@
 import type { ComposeReason } from "../../types"
+import type { SourceRange } from "../../text/source"
 
 export const OBJECT_REPLACEMENT = "￼"
 
 export const LINE_SEPARATOR = "\n"
 
 export const DECORATION = "[data-linebreak-decoration][aria-hidden='true']"
-
-export const hasVisibleText = (text: string) => /[^\t\n\f\r ]/u.test(text)
-
-export const collapseWhitespace = (text: string) =>
-  text.replace(/[\t\n\f\r ]+/gu, " ")
-
-export type SourceRange = { start: number; end: number }
 
 type RunBase = {
   text: string
@@ -74,18 +68,3 @@ export type ExtractResult =
 
 export const codeWrapper = (run: InlineRun) =>
   run.wrappers.find((wrapper) => wrapper.localName === "code")
-
-export const breakAllowedAt = (
-  restrictions: readonly SourceRange[],
-  offset: number,
-) => {
-  let low = 0
-  let high = restrictions.length
-  while (low < high) {
-    const middle = (low + high) >>> 1
-    if ((restrictions[middle] as SourceRange).start <= offset) low = middle + 1
-    else high = middle
-  }
-  const range = restrictions[low - 1]
-  return !range || offset >= range.end
-}

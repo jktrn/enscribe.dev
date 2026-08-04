@@ -10,6 +10,7 @@ import {
 } from "@linebreak/layout/items"
 import {
   defaultGlue,
+  INFINITE_BADNESS,
   INFINITE_PENALTY,
   texDefaults,
 } from "@linebreak/layout/policy"
@@ -43,6 +44,32 @@ const paragraph = (widths: number[]): Item[] => {
 
 const evenWords = (count: number) =>
   paragraph(Array.from({ length: count }, () => WORD))
+
+const wordsWithPenaltyAt = (count: number, at: number): Item[] => {
+  const items: Item[] = []
+  for (let index = 0; index < count; index += 1) {
+    if (index > 0) items.push(glue())
+    items.push(box(WORD))
+    if (index !== at) continue
+    items.push({
+      kind: "penalty",
+      width: 0,
+      penalty: 0,
+      flagged: false,
+      source,
+    })
+    items.push(box(WORD))
+  }
+  return items
+}
+
+const glueBetween = (items: readonly Item[], from: number, to: number) => {
+  let count = 0
+  for (let index = from; index < to; index += 1) {
+    if (items[index]?.kind === "glue") count += 1
+  }
+  return count
+}
 
 const strictPass = (items: readonly Item[], measure = MEASURE, force = false) =>
   breakParagraphOnce(items, measure, {
@@ -410,22 +437,7 @@ describe("authored breaks", () => {
 
 describe("what a break did to the text", () => {
   test("a break at a penalty consumed no space and drew no hyphen", () => {
-    const items: Item[] = []
-    for (let index = 0; index < 24; index += 1) {
-      if (index > 0) items.push(glue())
-      items.push(box(WORD))
-      if (index === 11) {
-        items.push({
-          kind: "penalty",
-          width: 0,
-          penalty: 0,
-          flagged: false,
-          source,
-        })
-        items.push(box(WORD))
-      }
-    }
-    const result = strictPass([...items, ...finish()])
+    const result = strictPass([...wordsWithPenaltyAt(24, 11), ...finish()])
     expect(result.ok).toBe(true)
     if (!result.ok) return
     const atPenalty = result.lines.find((line) => line.end === 23)
@@ -544,6 +556,181 @@ describe("the fallback ladder", () => {
   })
 })
 
+describe("a negative tolerance skips a pass, it does not open one", () => {
+  const SHRINK_TARGET = 202
+
+  const atShrinkLimit = (): Item[] => {
+    const tight = (): Item => ({
+      kind: "glue",
+      width: 10,
+      stretch: 5,
+      shrink: 8,
+      source: { start: 0, end: 1 },
+    })
+    return [
+      box(100),
+      tight(),
+      box(100),
+      tight(),
+      box(100),
+      tight(),
+      box(100),
+      ...finish(),
+    ]
+  }
+
+  test("the ladder starts at the tolerance rung when pretolerance is negative", () => {
+    const skipped = breakParagraph(atShrinkLimit(), SHRINK_TARGET, {
+      policy: { pretolerance: -1 },
+    })
+    const rung = breakParagraphOnce(atShrinkLimit(), SHRINK_TARGET, {
+      tolerance: texDefaults.tolerance,
+    })
+    expect(skipped.ok && rung.ok).toBe(true)
+    if (!skipped.ok || !rung.ok) return
+
+    expect(skipped.pass).not.toBe("pretolerance")
+    expect(skipped.pass).toBe("tolerance")
+    expect(skipped.lines).toEqual(rung.lines)
+  })
+
+  test("the same paragraph is solved on pass one when pretolerance is positive", () => {
+    const result = breakParagraph(atShrinkLimit(), SHRINK_TARGET)
+    expect(result.ok).toBe(true)
+    if (!result.ok) return
+    expect(result.pass).toBe("pretolerance")
+  })
+
+  test("a negative tolerance admits nothing an ordinary paragraph offers", () => {
+    expect(
+      breakParagraphOnce(evenWords(40), MEASURE, { tolerance: -1 }).ok,
+    ).toBe(false)
+  })
+
+  test("the band of a negative tolerance closes at -1, not at NaN", () => {
+    const result = breakParagraphOnce(atShrinkLimit(), SHRINK_TARGET, {
+      tolerance: -1,
+    })
+    expect(result.ok).toBe(true)
+    if (!result.ok) return
+    expect(result.lines.map((line) => line.adjustmentRatio)).toEqual([-1, -1])
+  })
+
+  test("forcing a negative tolerance still reports finite geometry", () => {
+    const result = breakParagraphOnce(evenWords(40), MEASURE, {
+      tolerance: -1,
+      force: true,
+    })
+    expect(result.ok).toBe(true)
+    if (!result.ok) return
+    for (const line of result.lines) {
+      expect(Number.isFinite(line.adjustmentRatio)).toBe(true)
+      expect(Number.isFinite(line.naturalWidth)).toBe(true)
+    }
+  })
+})
+
+describe("a negative adjDemerits is a cost, not a veto", () => {
+  test("the strict pass still solves a paragraph it solves at any other sign", () => {
+    for (const adjDemerits of [-10_000, 0, 10_000]) {
+      const result = breakParagraphOnce(evenWords(40), MEASURE, {
+        tolerance: texDefaults.pretolerance,
+        policy: { adjDemerits },
+      })
+      expect(result.ok).toBe(true)
+    }
+  })
+
+  test("the ladder still settles on pass one, not on the forced rung", () => {
+    const result = breakParagraph(evenWords(40), MEASURE, {
+      policy: { adjDemerits: -10_000 },
+    })
+    expect(result.ok).toBe(true)
+    if (!result.ok) return
+    expect(result.pass).toBe("pretolerance")
+    for (const line of result.lines.slice(0, -1)) {
+      expect(line.adjustmentRatio).toBeGreaterThanOrEqual(-1)
+      expect(line.adjustmentRatio).toBeLessThanOrEqual(1)
+    }
+  })
+})
+
+describe("badness saturates at inf_bad", () => {
+  const mustBreakShort = (): Item[] => [
+    box(100),
+    { kind: "penalty", width: 0, penalty: 0, flagged: false, source },
+    box(390),
+    ...finish(),
+  ]
+
+  const aboveInfBad = (): Item[] => [
+    box(10),
+    {
+      kind: "penalty",
+      width: 0,
+      penalty: INFINITE_PENALTY,
+      flagged: false,
+      source,
+    },
+    { kind: "glue", width: 2, stretch: 1, shrink: 2 / 3, source },
+    box(10),
+    { kind: "penalty", width: 0, penalty: 0, flagged: false, source },
+    box(390),
+    ...finish(),
+  ]
+
+  test("an underfull line with nothing to stretch scores inf_bad, not infinity", () => {
+    const result = breakParagraphOnce(mustBreakShort(), MEASURE, {
+      tolerance: INFINITE_BADNESS,
+    })
+    expect(result.ok).toBe(true)
+    if (!result.ok) return
+
+    const ratio = result.lines[0]?.adjustmentRatio ?? 0
+    expect(Number.isFinite(ratio)).toBe(true)
+    expect(ratio).toBeCloseTo(Math.cbrt(100), 12)
+    expect(100 * ratio ** 3).toBeCloseTo(INFINITE_BADNESS, 6)
+  })
+
+  test("that line lands in the very loose class, two classes from its neighbour", () => {
+    const charge = (adjDemerits: number) => {
+      const result = breakParagraphOnce(mustBreakShort(), MEASURE, {
+        tolerance: INFINITE_BADNESS,
+        policy: { adjDemerits },
+      })
+      return result.ok ? result.demerits : Number.NaN
+    }
+    expect(charge(10_000) - charge(0)).toBe(20_000)
+  })
+
+  test("a line priced above inf_bad is still admitted on an inf_bad rung", () => {
+    expect(
+      breakParagraphOnce(aboveInfBad(), MEASURE, {
+        tolerance: texDefaults.tolerance,
+      }).ok,
+    ).toBe(false)
+    expect(
+      breakParagraphOnce(aboveInfBad(), MEASURE, {
+        tolerance: INFINITE_BADNESS,
+      }).ok,
+    ).toBe(true)
+  })
+
+  test("the admitted line reports its true ratio, not the saturated one", () => {
+    const result = breakParagraphOnce(aboveInfBad(), MEASURE, {
+      tolerance: INFINITE_BADNESS,
+    })
+    expect(result.ok).toBe(true)
+    if (!result.ok) return
+
+    const line = result.lines[0]
+    expect(line?.adjustmentRatio).toBe(378)
+    expect(line?.adjustmentRatio).toBe(
+      (MEASURE - (line?.naturalWidth ?? 0)) / (line?.stretch ?? 1),
+    )
+  })
+})
+
 describe("shipped policy", () => {
   test("interword glue uses Computer Modern's elasticity", () => {
     expect(defaultGlue.stretch).toBeCloseTo(1 / 2)
@@ -558,10 +745,7 @@ describe("shipped policy", () => {
     const last = result.lines.at(-1)
     if (!last) return
 
-    let glueItems = 0
-    for (let index = last.start; index < last.end; index += 1) {
-      if (items[index]?.kind === "glue") glueItems += 1
-    }
+    const glueItems = glueBetween(items, last.start, last.end)
     expect(glueItems).toBeGreaterThan(0)
     expect(last.spaceCount).toBe(glueItems - 1)
   })

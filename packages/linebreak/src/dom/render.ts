@@ -1,9 +1,244 @@
 import type { Line } from "../layout/breaker"
-import { type ExtractedBlock, type InlineRun, LINE_SEPARATOR } from "./extract"
+import type { LineFit } from "../layout/expansion"
+import type { LineTrack } from "../layout/tracking"
+import {
+  type ExtractedBlock,
+  type InlineRun,
+  LINE_SEPARATOR,
+  type WrapperInfo,
+} from "./extract"
+import { offscreen } from "./probe"
 
 export const LINE_SELECTOR = "[data-linebreak-line]"
 export const TYPESET_ATTRIBUTE = "data-linebreak-typeset"
 export const TYPESET_SELECTOR = "[data-linebreak-typeset]"
+
+const PROBE_HANG = 16
+const PROBE_LINE = "width:1000px;white-space:nowrap;font:16px/1 monospace"
+
+const honoured = new WeakMap<Document, boolean>()
+
+const hangShift = (host: HTMLDivElement) => {
+  const line = host.ownerDocument.createElement("div")
+  line.style.cssText = PROBE_LINE
+  const anchor = host.ownerDocument.createElement("span")
+  anchor.textContent = "."
+  const follower = host.ownerDocument.createElement("span")
+  follower.textContent = "."
+  line.append(anchor, follower)
+  host.append(line)
+
+  const before = follower.getBoundingClientRect().left
+  anchor.style.marginInlineEnd = `${-PROBE_HANG}px`
+  return before - follower.getBoundingClientRect().left
+}
+
+export const honoursHangingMargins = (document: Document) => {
+  const cached = honoured.get(document)
+  if (cached !== undefined) return cached
+
+  const shift = offscreen(document, hangShift)
+  if (shift === null) return false
+
+  const supported = shift >= PROBE_HANG - 0.5
+  honoured.set(document, supported)
+  return supported
+}
+
+type TrailingEdge = {
+  readonly nodes: readonly HTMLElement[]
+  readonly target: HTMLElement
+}
+
+type LineBuild = {
+  readonly target: HTMLElement
+  readonly block: ExtractedBlock
+  readonly line: Line
+  readonly sliceStart: number
+  readonly sliceEnd: number
+  readonly openClones: HTMLElement[]
+  readonly trailingEdges: TrailingEdge[]
+}
+
+type RunPlacement = {
+  readonly run: InlineRun
+  readonly index: number
+  readonly shared: number
+  readonly start: number
+  readonly end: number
+  readonly leads: boolean
+  readonly consumed: boolean
+  readonly empty: boolean
+}
+
+const trimmedSlice = (block: ExtractedBlock, line: Line) => {
+  const blank = (offset: number) =>
+    block.text[offset] === " " || block.text[offset] === LINE_SEPARATOR
+  let start = line.sourceStart
+  let end = line.sourceEnd
+  while (start < end && blank(start)) start += 1
+  while (end > start && blank(end - 1)) end -= 1
+  return { sliceStart: start, sliceEnd: end }
+}
+
+const beforeLine = (run: InlineRun, line: Line) => {
+  if (run.kind !== "anchor") return run.end <= line.sourceStart
+  if (run.affinity === "previous") return run.start <= line.sourceStart
+  return run.start < line.sourceStart
+}
+
+const afterLine = (run: InlineRun, line: Line) => {
+  if (run.kind !== "anchor") return run.start >= line.sourceEnd
+  if (run.affinity === "previous") return run.start > line.sourceEnd
+  return run.start >= line.sourceEnd
+}
+
+const runWindow = (block: ExtractedBlock, line: Line, fromRun: number) => {
+  let first = fromRun
+  while (
+    first < block.runs.length &&
+    beforeLine(block.runs[first] as InlineRun, line)
+  ) {
+    first += 1
+  }
+  let last = first
+  while (
+    last < block.runs.length &&
+    !afterLine(block.runs[last] as InlineRun, line)
+  ) {
+    last += 1
+  }
+  return { first, last }
+}
+
+const placementOf = (
+  build: LineBuild,
+  run: InlineRun,
+  index: number,
+  previousWrappers: readonly HTMLElement[],
+): RunPlacement => {
+  const start = Math.max(build.sliceStart, run.start)
+  const end = Math.min(build.sliceEnd, run.end)
+  const isAnchor = run.kind === "anchor"
+  let shared = 0
+  while (
+    shared < run.wrappers.length &&
+    run.wrappers[shared] === previousWrappers[shared]
+  ) {
+    shared += 1
+  }
+  return {
+    run,
+    index,
+    shared,
+    start,
+    end,
+    leads: isAnchor || start === run.start,
+    consumed: isAnchor || run.end <= build.line.sourceEnd,
+    empty: !isAnchor && start >= end,
+  }
+}
+
+const cloneWrapper = (
+  wrapper: HTMLElement,
+  startsWrapper: boolean,
+  endsWrapper: boolean,
+) => {
+  const clone = wrapper.cloneNode(false) as HTMLElement
+  if (!startsWrapper) clone.removeAttribute("id")
+  clone.dataset.linebreakFragment = ""
+  if (startsWrapper) clone.dataset.linebreakFragmentStart = ""
+  if (endsWrapper) clone.dataset.linebreakFragmentEnd = ""
+  return clone
+}
+
+const carriesLeading = (
+  info: WrapperInfo,
+  placement: RunPlacement,
+  startsWrapper: boolean,
+) => startsWrapper && placement.leads && info.firstRun === placement.index
+
+const attachWrapper = (
+  build: LineBuild,
+  placement: RunPlacement,
+  wrapper: HTMLElement,
+  branch: HTMLElement,
+) => {
+  const info = build.block.wrappers.get(wrapper)
+  if (!info) return null
+
+  const startsWrapper = build.line.sourceStart <= info.start
+  const endsWrapper = build.line.sourceEnd >= info.end
+  const clone = cloneWrapper(wrapper, startsWrapper, endsWrapper)
+
+  if (carriesLeading(info, placement, startsWrapper)) {
+    clone.append(...info.leading.nodes.map((node) => node.cloneNode(true)))
+  }
+  branch.appendChild(clone)
+  if (endsWrapper) {
+    build.trailingEdges.push({ nodes: info.trailing.nodes, target: clone })
+  }
+  return clone
+}
+
+const openWrappers = (build: LineBuild, placement: RunPlacement) => {
+  const { wrappers } = placement.run
+  let branch = build.openClones.at(-1) ?? build.target
+  for (let depth = placement.shared; depth < wrappers.length; depth += 1) {
+    const clone = attachWrapper(
+      build,
+      placement,
+      wrappers[depth] as HTMLElement,
+      branch,
+    )
+    if (!clone) return null
+    branch = clone
+    build.openClones.push(clone)
+  }
+  return branch
+}
+
+const appendContent = (
+  build: LineBuild,
+  branch: HTMLElement,
+  placement: RunPlacement,
+) => {
+  const { run } = placement
+  if (run.kind === "atom") {
+    branch.appendChild(run.sourceElement.cloneNode(true))
+    return
+  }
+  if (run.kind !== "text") return
+  branch.appendChild(
+    build.target.ownerDocument.createTextNode(
+      run.text.slice(placement.start - run.start, placement.end - run.start),
+    ),
+  )
+}
+
+const appendRuns = (build: LineBuild, from: number) => {
+  const { first, last } = runWindow(build.block, build.line, from)
+  let lastBranch: HTMLElement | null = null
+  let previousWrappers: readonly HTMLElement[] = []
+  let nextRun = first
+
+  for (let index = first; index < last; index += 1) {
+    const run = build.block.runs[index] as InlineRun
+    const placement = placementOf(build, run, index, previousWrappers)
+    if (placement.consumed) nextRun = index + 1
+    if (placement.empty) continue
+
+    build.openClones.length = placement.shared
+    const branch = openWrappers(build, placement)
+    if (!branch) return null
+
+    appendContent(build, branch, placement)
+    lastBranch = branch
+    previousWrappers = run.wrappers
+  }
+
+  return { lastBranch, nextRun }
+}
 
 const appendLine = (
   target: HTMLElement,
@@ -11,103 +246,36 @@ const appendLine = (
   line: Line,
   fromRun: number,
 ) => {
-  const blank = (offset: number) =>
-    block.text[offset] === " " || block.text[offset] === LINE_SEPARATOR
-  let start = line.sourceStart
-  let end = line.sourceEnd
-  while (start < end && blank(start)) start += 1
-  while (end > start && blank(end - 1)) end -= 1
-
-  let lastBranch: Node | null = null
-  let previousWrappers: HTMLElement[] = []
-  const openClones: HTMLElement[] = []
-  const trailingEdges: Array<{ nodes: HTMLElement[]; target: HTMLElement }> = []
-  let nextRun = fromRun
-
-  const beforeLine = (run: InlineRun) =>
-    run.kind === "anchor"
-      ? run.affinity === "previous"
-        ? run.start <= line.sourceStart
-        : run.start < line.sourceStart
-      : run.end <= line.sourceStart
-  const afterLine = (run: InlineRun) =>
-    run.kind === "anchor"
-      ? run.affinity === "previous"
-        ? run.start > line.sourceEnd
-        : run.start >= line.sourceEnd
-      : run.start >= line.sourceEnd
-
-  while (
-    nextRun < block.runs.length &&
-    beforeLine(block.runs[nextRun] as InlineRun)
-  ) {
-    nextRun += 1
+  const build: LineBuild = {
+    target,
+    block,
+    line,
+    ...trimmedSlice(block, line),
+    openClones: [],
+    trailingEdges: [],
   }
 
-  for (let index = nextRun; index < block.runs.length; index += 1) {
-    const run = block.runs[index] as InlineRun
-    if (afterLine(run)) break
-    const sliceStart = Math.max(start, run.start)
-    const sliceEnd = Math.min(end, run.end)
-    const isAnchor = run.kind === "anchor"
-    if (isAnchor || run.end <= line.sourceEnd) nextRun = index + 1
-    if (!isAnchor && sliceStart >= sliceEnd) continue
+  const appended = appendRuns(build, fromRun)
+  if (!appended) return null
 
-    let shared = 0
-    while (
-      shared < run.wrappers.length &&
-      run.wrappers[shared] === previousWrappers[shared]
-    ) {
-      shared += 1
-    }
-
-    openClones.length = shared
-    let branch: Node = openClones.at(-1) ?? target
-    for (let depth = shared; depth < run.wrappers.length; depth += 1) {
-      const wrapper = run.wrappers[depth] as HTMLElement
-      const info = block.wrappers.get(wrapper)
-      if (!info) return null
-      const startsWrapper = line.sourceStart <= info.start
-      const endsWrapper = line.sourceEnd >= info.end
-
-      const clone = wrapper.cloneNode(false) as HTMLElement
-
-      if (!startsWrapper) clone.removeAttribute("id")
-      clone.dataset.linebreakFragment = ""
-      if (startsWrapper) clone.dataset.linebreakFragmentStart = ""
-      if (endsWrapper) clone.dataset.linebreakFragmentEnd = ""
-      if (
-        startsWrapper &&
-        (isAnchor || sliceStart === run.start) &&
-        info.firstRun === index
-      ) {
-        clone.append(...info.leading.nodes.map((node) => node.cloneNode(true)))
-      }
-      branch.appendChild(clone)
-      if (endsWrapper)
-        trailingEdges.push({ nodes: info.trailing.nodes, target: clone })
-      branch = clone
-      openClones.push(clone)
-    }
-
-    if (run.kind === "atom") {
-      branch.appendChild(run.sourceElement.cloneNode(true))
-    } else if (run.kind === "text") {
-      branch.appendChild(
-        target.ownerDocument.createTextNode(
-          run.text.slice(sliceStart - run.start, sliceEnd - run.start),
-        ),
-      )
-    }
-    lastBranch = branch
-    previousWrappers = run.wrappers
-  }
-
-  for (const edge of trailingEdges) {
+  for (const edge of build.trailingEdges) {
     edge.target.append(...edge.nodes.map((node) => node.cloneNode(true)))
   }
 
+  const { lastBranch, nextRun } = appended
   return lastBranch ? { lastBranch, nextRun } : null
+}
+
+const copyAttributes = (
+  original: HTMLImageElement,
+  image: HTMLImageElement,
+  attributes: readonly string[],
+) => {
+  for (const attribute of attributes) {
+    const value = original.getAttribute(attribute)
+    if (value === null) image.removeAttribute(attribute)
+    else image.setAttribute(attribute, value)
+  }
 }
 
 export const preserveImageAttributes = (
@@ -123,21 +291,95 @@ export const preserveImageAttributes = (
   for (const [index, image] of replacements.entries()) {
     const original = originals[index]
     if (!original) continue
-    for (const attribute of attributes) {
-      const value = original.getAttribute(attribute)
-      if (value === null) image.removeAttribute(attribute)
-      else image.setAttribute(attribute, value)
-    }
+    copyAttributes(original, image, attributes)
+  }
+}
+
+export type Letterfit = {
+  readonly lines: readonly LineTrack[]
+  readonly inherited: number
+}
+
+export type RenderedLayout = {
+  readonly lines: readonly Line[]
+  readonly target: number
+  readonly fits: readonly LineFit[] | null
+  readonly letterfit: Letterfit | null
+}
+
+const renderedUnits = (block: ExtractedBlock, line: Line) => {
+  const { sliceStart, sliceEnd } = trimmedSlice(block, line)
+  let units = line.breakKind === "hyphen" ? 1 : 0
+  for (let offset = sliceStart; offset < sliceEnd; offset += 1) {
+    const code = block.text.charCodeAt(offset)
+    if (code < 0xdc00 || code > 0xdfff) units += 1
+  }
+  return units
+}
+
+const applyHangs = (element: HTMLElement, line: Line) => {
+  if (line.hangStart > 0) {
+    element.style.marginInlineStart = `${-line.hangStart}px`
+  }
+  if (line.hangEnd > 0) {
+    element.style.marginInlineEnd = `${-line.hangEnd}px`
+  }
+}
+
+type LinePlan = {
+  readonly fit: LineFit | undefined
+  readonly track: LineTrack | undefined
+  readonly units: number
+  readonly inherited: number
+  readonly target: number
+}
+
+const applyLetterfit = (element: HTMLElement, plan: LinePlan) => {
+  const gain = plan.track?.gain ?? 0
+  if (gain === 0 || plan.units === 0) return
+  element.style.letterSpacing = `${plan.inherited + gain / plan.units}px`
+}
+
+const applyRescue = (element: HTMLElement, line: Line, plan: LinePlan) => {
+  const { fit, track } = plan
+  const natural = line.naturalWidth + (fit?.gain ?? 0) + (track?.gain ?? 0)
+  const shrink = track?.shrink ?? fit?.shrink ?? line.shrink
+  const overflow = Math.min(natural - plan.target, shrink)
+  if (overflow > 0 && line.spaceCount > 0) {
+    element.style.wordSpacing = `${-(overflow / line.spaceCount)}px`
+  }
+}
+
+const applyFit = (element: HTMLElement, line: Line, plan: LinePlan) => {
+  const { fit } = plan
+  if (fit && fit.pct !== 100) element.style.fontStretch = `${fit.pct}%`
+  applyLetterfit(element, plan)
+  applyRescue(element, line, plan)
+}
+
+const planFor = (
+  block: ExtractedBlock,
+  layout: RenderedLayout,
+  index: number,
+): LinePlan => {
+  const { letterfit } = layout
+  const line = layout.lines[index] as Line
+  return {
+    fit: layout.fits?.[index],
+    track: letterfit?.lines[index],
+    units: letterfit ? renderedUnits(block, line) : 0,
+    inherited: letterfit?.inherited ?? 0,
+    target: layout.target,
   }
 }
 
 export const renderLines = (
   element: HTMLElement,
   block: ExtractedBlock,
-  lines: readonly Line[],
-  targetWidth: number,
+  layout: RenderedLayout,
   preservedImageAttributes: readonly string[],
 ) => {
+  const { lines } = layout
   const document = element.ownerDocument
   const output = document.createDocumentFragment()
   const lineElements: HTMLElement[] = []
@@ -155,11 +397,8 @@ export const renderLines = (
 
     const target = document.createElement("span")
     target.dataset.linebreakLine = line.breakKind
-
-    const overflow = Math.min(line.naturalWidth - targetWidth, line.shrink)
-    if (overflow > 0 && line.spaceCount > 0) {
-      target.style.wordSpacing = `${-(overflow / line.spaceCount)}px`
-    }
+    applyHangs(target, line)
+    applyFit(target, line, planFor(block, layout, index))
 
     const rendered = appendLine(target, block, line, nextRun)
     if (!rendered) return null
@@ -173,4 +412,61 @@ export const renderLines = (
   element.replaceChildren(output)
   element.setAttribute(TYPESET_ATTRIBUTE, String(lines.length))
   return lineElements
+}
+
+export type WrittenLines = {
+  readonly elements: readonly HTMLElement[]
+  readonly layout: RenderedLayout
+}
+
+type Tightening = {
+  readonly element: HTMLElement
+  readonly spacing: number
+}
+
+const OVERSET_EPSILON = 0.05
+
+const adjustedLine = (layout: RenderedLayout, index: number) => {
+  const line = layout.lines[index]
+  if (!line || line.spaceCount === 0) return null
+  const pct = layout.fits?.[index]?.pct ?? 100
+  const gain = layout.letterfit?.lines[index]?.gain ?? 0
+  return pct !== 100 || gain !== 0 ? line : null
+}
+
+const tighteningFor = (
+  element: HTMLElement,
+  line: Line,
+  target: number,
+): Tightening | null => {
+  const allowed = target + line.hangStart + line.hangEnd
+  const overset = element.getBoundingClientRect().width - allowed
+  if (overset <= OVERSET_EPSILON) return null
+
+  const spacing = Number.parseFloat(element.style.wordSpacing || "0")
+  return { element, spacing: spacing - overset / line.spaceCount }
+}
+
+const oversetOf = (written: WrittenLines): Tightening[] => {
+  const { layout } = written
+  const tightenings: Tightening[] = []
+  if (!layout.fits && !layout.letterfit) return tightenings
+
+  for (const [index, element] of written.elements.entries()) {
+    const line = adjustedLine(layout, index)
+    if (!line) continue
+
+    const tightening = tighteningFor(element, line, layout.target)
+    if (tightening) tightenings.push(tightening)
+  }
+  return tightenings
+}
+
+export const tightenOverset = (written: Iterable<WrittenLines>) => {
+  const tightenings: Tightening[] = []
+  for (const block of written) tightenings.push(...oversetOf(block))
+  for (const tightening of tightenings) {
+    tightening.element.style.wordSpacing = `${tightening.spacing}px`
+  }
+  return tightenings.length
 }

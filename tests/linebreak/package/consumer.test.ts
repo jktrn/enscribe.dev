@@ -42,50 +42,87 @@ const run = (
     ...options,
   })
 
+const packTarball = (into: string) => {
+  const [packed] = JSON.parse(
+    run("npm", [
+      "pack",
+      "--ignore-scripts",
+      "--json",
+      "--pack-destination",
+      into,
+      "--cache",
+      join(into, "npm-cache"),
+    ]),
+  ) as Array<{ filename?: string }>
+  if (!packed?.filename) {
+    throw new Error("npm pack did not report a tarball filename")
+  }
+  return join(into, packed.filename)
+}
+
+const expectOnlyPublishedFiles = (entries: readonly string[]) => {
+  for (const required of [
+    "package/LICENSE",
+    "package/README.md",
+    "package/package.json",
+  ]) {
+    expect(entries).toContain(required)
+  }
+  for (const entry of entries) {
+    expect(entry).toMatch(
+      /^package\/(dist\/|LICENSE$|README\.md$|package\.json$)/,
+    )
+  }
+}
+
+const expectEveryExportPacked = (
+  entries: readonly string[],
+  exports: Record<string, { default?: string } | string>,
+) => {
+  for (const target of Object.values(exports)) {
+    const file = typeof target === "string" ? target : target.default
+    if (!file || file.endsWith("package.json")) continue
+    expect(entries).toContain(`package/${file.replace(/^\.\//, "")}`)
+  }
+}
+
+const expectExportsInOrder = (manifest: PackedPackageManifest) => {
+  const subpaths = Object.keys(manifest.exports)
+  for (const required of [
+    ".",
+    "./layout",
+    "./text",
+    "./auto",
+    "./attributes",
+    "./hyphenation",
+    "./styles.css",
+    "./package.json",
+  ]) {
+    expect(subpaths).toContain(required)
+  }
+  for (const [subpath, target] of Object.entries(manifest.exports)) {
+    if (typeof target === "string") continue
+    expect(Object.keys(target)[0], `${subpath} lists types first`).toBe("types")
+    expect(Object.keys(target).at(-1), `${subpath} lists default last`).toBe(
+      "default",
+    )
+  }
+}
+
 test("the packed package works for Node, TypeScript, and browser consumers", async () => {
   run("bun", ["run", "build"])
 
   const temporaryDirectory = await mkdtemp(join(tmpdir(), "linebreak-package-"))
 
   try {
-    const [packed] = JSON.parse(
-      run("npm", [
-        "pack",
-        "--ignore-scripts",
-        "--json",
-        "--pack-destination",
-        temporaryDirectory,
-        "--cache",
-        join(temporaryDirectory, "npm-cache"),
-      ]),
-    ) as Array<{ filename?: string }>
-    if (!packed?.filename) {
-      throw new Error("npm pack did not report a tarball filename")
-    }
-
-    const tarball = join(temporaryDirectory, packed.filename)
+    const tarball = packTarball(temporaryDirectory)
     const entries = run("tar", ["-tf", tarball]).trim().split("\n").sort()
-    for (const required of [
-      "package/LICENSE",
-      "package/README.md",
-      "package/package.json",
-    ]) {
-      expect(entries).toContain(required)
-    }
-    for (const entry of entries) {
-      expect(entry).toMatch(
-        /^package\/(dist\/|LICENSE$|README\.md$|package\.json$)/,
-      )
-    }
+    expectOnlyPublishedFiles(entries)
 
     const packedManifest = JSON.parse(
       run("tar", ["-xOf", tarball, "package/package.json"]),
     ) as { exports: Record<string, { default?: string } | string> }
-    for (const target of Object.values(packedManifest.exports)) {
-      const file = typeof target === "string" ? target : target.default
-      if (!file || file.endsWith("package.json")) continue
-      expect(entries).toContain(`package/${file.replace(/^\.\//, "")}`)
-    }
+    expectEveryExportPacked(entries, packedManifest.exports)
 
     const unpacked = join(temporaryDirectory, "unpacked")
     await mkdir(unpacked)
@@ -105,26 +142,7 @@ test("the packed package works for Node, TypeScript, and browser consumers", asy
     expect(manifest.private).toBeUndefined()
     expect(manifest.publishConfig?.access).toBe("public")
     expect(manifest.keywords?.length).toBeGreaterThan(0)
-    const subpaths = Object.keys(manifest.exports)
-    for (const required of [
-      ".",
-      "./layout",
-      "./auto",
-      "./attributes",
-      "./styles.css",
-      "./package.json",
-    ]) {
-      expect(subpaths).toContain(required)
-    }
-    for (const [subpath, target] of Object.entries(manifest.exports)) {
-      if (typeof target === "string") continue
-      expect(Object.keys(target)[0], `${subpath} lists types first`).toBe(
-        "types",
-      )
-      expect(Object.keys(target).at(-1), `${subpath} lists default last`).toBe(
-        "default",
-      )
-    }
+    expectExportsInOrder(manifest)
 
     const installedModules = join(unpacked, "node_modules")
     await mkdir(join(installedModules, "@chenglou"), { recursive: true })
@@ -167,14 +185,59 @@ if (ATTRIBUTES.atom !== "data-linebreak-atom") throw new Error("attribute contra
     run("node", [join(consumer, "runtime.mjs")], { cwd: consumer })
 
     await writeFile(
+      join(consumer, "headless.mjs"),
+      `import { breakParagraph } from "@enscribe/linebreak/layout"
+import { compileText, createMetrics } from "@enscribe/linebreak/text"
+
+if (typeof document !== "undefined") throw new Error("this process has a document")
+if (typeof window !== "undefined") throw new Error("this process has a window")
+
+const text = "Knuth and Plass break a paragraph by considering it whole."
+const metrics = createMetrics({ measure: (piece) => piece.length * 7.5 })
+const compiled = compileText(text, metrics, { protrude: true, track: 0.03 })
+if (!compiled.ok) throw new Error("compileText declined: " + compiled.reason)
+if (!compiled.hangs || !compiled.tracking) throw new Error("expected hangs and tracking")
+
+const result = breakParagraph(compiled.items, 200, { hangs: compiled.hangs, flex: compiled.flex })
+if (!result.ok) throw new Error("expected a solution")
+if (result.lines.length < 2) throw new Error("expected more than one line")
+
+let rebuilt = ""
+for (const [index, line] of result.lines.entries()) {
+  if (index > 0 && result.lines[index - 1].breakKind === "space") rebuilt += " "
+  rebuilt += text.slice(line.sourceStart, line.sourceEnd)
+}
+if (rebuilt !== text) throw new Error("lines do not reconstruct the paragraph: " + rebuilt)
+`,
+    )
+    run("node", [join(consumer, "headless.mjs")], { cwd: consumer })
+    run("bun", [join(consumer, "headless.mjs")], { cwd: consumer })
+
+    await writeFile(
       join(consumer, "consumer.ts"),
       `import { createLinebreaker, type Composition, type Outcome } from "@enscribe/linebreak"
 import { createTypesetter } from "@enscribe/linebreak/auto"
+import { englishHyphenator } from "@enscribe/linebreak/hyphenation"
+import {
+  compileText,
+  createMetrics,
+  segmentText,
+  type Advance,
+  type CompileResult,
+  type FontMetrics,
+  type TextSegment,
+} from "@enscribe/linebreak/text"
 import "@enscribe/linebreak/styles.css"
+
+const advance: Advance = (piece) => piece.length * 7.5
+const segments: TextSegment[] = segmentText("headless prose")
+const headless: FontMetrics = createMetrics({ measure: advance, segment: () => segments })
+const compiled: CompileResult = compileText("headless prose", headless, { track: 0.03 })
+if (compiled.ok) console.log(compiled.items.length, compiled.tracking)
 
 declare const paragraph: HTMLElement
 
-const linebreaker = createLinebreaker({ locale: "en-US", hyphenate: true })
+const linebreaker = createLinebreaker({ locale: "en-US", hyphenate: englishHyphenator })
 const compositions: readonly Composition[] = linebreaker.compose([paragraph])
 const outcomes: readonly Outcome[] = linebreaker.apply(compositions)
 for (const outcome of outcomes) {
