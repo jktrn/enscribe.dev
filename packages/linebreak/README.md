@@ -151,6 +151,13 @@ const outcomes = linebreaker.typeset(proseBlocks(article))
 before writing — `compose` performs layout reads and never touches the DOM,
 `apply` writes:
 
+Protrusion needs to know whether the engine honours a negative inline margin,
+which can only be answered by laying one out. `warm(document)` asks once and
+caches the answer per instance; call it inside whatever brackets your writes,
+before the first `compose`. `createTypesetter` does this in `start()`. Skip it
+and the first `compose` asks for you, which is the one case where `compose`
+appends and removes a hidden element.
+
 ```ts
 const compositions = linebreaker.compose(blocks)
 const worthIt = compositions.filter((c) => c.status === "ready" && c.lines >= 4)

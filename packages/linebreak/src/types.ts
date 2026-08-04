@@ -87,6 +87,7 @@ export type LinebreakerStats = {
 }
 
 export interface Linebreaker {
+  warm(document: Document): void
   compose(elements: Iterable<HTMLElement>): readonly Composition[]
   apply(compositions: Iterable<Composition>): readonly Outcome[]
   typeset(elements: Iterable<HTMLElement>): readonly Outcome[]

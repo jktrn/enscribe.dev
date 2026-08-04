@@ -219,6 +219,12 @@ class BrowserLinebreaker implements Linebreaker {
     this.report = options.onOutcome
   }
 
+  warm(document: Document) {
+    this.assertUsable()
+    if (!this.protrude) return
+    this.hangable ??= honoursHangingMargins(document)
+  }
+
   compose(elements: Iterable<HTMLElement>): readonly Composition[] {
     this.assertUsable()
     const out: Composition[] = []

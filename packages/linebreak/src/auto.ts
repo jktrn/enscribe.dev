@@ -123,6 +123,13 @@ class BrowserTypesetter<Token> implements Typesetter {
       })
     }
 
+    const token = this.options.beforeWrite?.() as Token
+    try {
+      this.linebreaker.warm(document)
+    } finally {
+      this.options.afterWrite?.(token)
+    }
+
     this.paused.delete("stopped")
     this.rescan()
     this.observeResize()
