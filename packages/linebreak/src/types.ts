@@ -65,6 +65,7 @@ export type LinebreakerOptions = {
   expand?: boolean
   track?: boolean
   lastLineMinWidth?: number
+  emergencyStretch?: number | "auto"
   preserveImageAttributes?: readonly string[]
 
   policy?: Partial<LayoutPolicy>

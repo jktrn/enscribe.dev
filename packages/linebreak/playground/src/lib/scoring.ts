@@ -15,6 +15,12 @@ export type Metric = {
   readonly read: (metrics: ColumnMetrics) => number
   readonly format: (value: number) => string
   readonly direction: Direction
+  /**
+   * Whether the row colours a winner. A setting an engine spends to buy quality
+   * elsewhere is reported but not scored: counting it charges the engine twice
+   * for one decision.
+   */
+  readonly ranked: boolean
   /** Included in the sweep dialog's six small multiples. */
   readonly charted: boolean
 }
@@ -36,6 +42,7 @@ export const METRICS: readonly Metric[] = [
     read: (m) => m.lines,
     format: count,
     direction: "lower",
+    ranked: false,
     charted: true,
   },
   {
@@ -45,6 +52,7 @@ export const METRICS: readonly Metric[] = [
     read: (m) => m.hyphens,
     format: count,
     direction: "lower",
+    ranked: false,
     charted: true,
   },
   {
@@ -54,6 +62,7 @@ export const METRICS: readonly Metric[] = [
     read: (m) => m.overfull,
     format: count,
     direction: "lower",
+    ranked: true,
     charted: false,
   },
   {
@@ -63,6 +72,7 @@ export const METRICS: readonly Metric[] = [
     read: (m) => m.shortLast,
     format: count,
     direction: "lower",
+    ranked: true,
     charted: false,
   },
   {
@@ -72,6 +82,7 @@ export const METRICS: readonly Metric[] = [
     read: (m) => m.meanSpace,
     format: percent,
     direction: "near-one",
+    ranked: true,
     charted: true,
   },
   {
@@ -81,6 +92,7 @@ export const METRICS: readonly Metric[] = [
     read: (m) => m.deviation,
     format: percent,
     direction: "lower",
+    ranked: true,
     charted: true,
   },
   {
@@ -90,6 +102,7 @@ export const METRICS: readonly Metric[] = [
     read: (m) => m.sigma,
     format: percent,
     direction: "lower",
+    ranked: true,
     charted: true,
   },
   {
@@ -99,6 +112,7 @@ export const METRICS: readonly Metric[] = [
     read: (m) => m.loosest,
     format: relative,
     direction: "near-one",
+    ranked: true,
     charted: false,
   },
   {
@@ -108,6 +122,7 @@ export const METRICS: readonly Metric[] = [
     read: (m) => m.tightest,
     format: relative,
     direction: "near-one",
+    ranked: true,
     charted: false,
   },
   {
@@ -117,6 +132,7 @@ export const METRICS: readonly Metric[] = [
     read: (m) => m.totalBadness,
     format: badness,
     direction: "lower",
+    ranked: true,
     charted: true,
   },
   {
@@ -126,6 +142,7 @@ export const METRICS: readonly Metric[] = [
     read: (m) => m.worstBadness,
     format: badness,
     direction: "lower",
+    ranked: true,
     charted: false,
   },
 ]
@@ -138,21 +155,38 @@ const scoreOf = (direction: Direction, value: number) =>
   direction === "lower" ? value : Math.abs(value - 1)
 
 /**
- * Ranks one row's values. A row where every engine ties ranks every cell
- * `mid`, so a tie never reads as a win.
+ * The browser is the baseline both optimizers are trying to beat, not a third
+ * competitor. Ranking it wins rows nobody was contesting: it never shrinks a
+ * space below its natural width, so it takes any tightness row by declining to
+ * do the work.
+ */
+const BASELINE: EngineId = "browser"
+
+const RANKED_COLUMNS = ENGINES.flatMap((engine, index) =>
+  engine === BASELINE ? [] : [index],
+)
+
+/**
+ * Ranks one row's contested columns. An unranked metric, or one where the
+ * optimizers tie, ranks every cell `mid`, so neither reads as a win.
  */
 export const rankValues = (
-  direction: Direction,
+  metric: Metric,
   values: readonly number[],
 ): Rank[] => {
-  const scores = values.map((value) => scoreOf(direction, value))
+  const ranks: Rank[] = values.map(() => "mid")
+  if (!metric.ranked) return ranks
+
+  const scores = RANKED_COLUMNS.map((column) =>
+    scoreOf(metric.direction, values[column] as number),
+  )
   const best = Math.min(...scores)
-  const worst = Math.max(...scores)
-  if (best === worst) return scores.map(() => "mid")
-  return scores.map((score) => {
-    if (score === best) return "best"
-    return score === worst ? "worst" : "mid"
-  })
+  if (best === Math.max(...scores)) return ranks
+
+  for (const [index, column] of RANKED_COLUMNS.entries()) {
+    ranks[column] = scores[index] === best ? "best" : "worst"
+  }
+  return ranks
 }
 
 export type Row = {
@@ -173,7 +207,7 @@ export const rowFor = (metric: Metric, columns: Triple): Row => {
     metric,
     values,
     formatted: values.map(metric.format),
-    ranks: rankValues(metric.direction, values),
+    ranks: rankValues(metric, values),
   }
 }
 
@@ -192,11 +226,13 @@ export type Verdict = {
 }
 
 /**
- * Counts outright row wins per engine. Rows where every engine ties count for
- * nobody, so `wins` need not sum to `total`.
+ * Counts outright row wins per engine over the ranked rows only. Ties and
+ * unranked rows count for nobody, so `wins` need not sum to `total`.
  */
 export const verdictFor = (groups: readonly Group[]): Verdict => {
-  const rows = groups.flatMap((group) => group.rows)
+  const rows = groups
+    .flatMap((group) => group.rows)
+    .filter((row) => row.metric.ranked)
   const wins = ENGINES.map((engine, index) => ({
     engine,
     count: rows.filter((row) => row.ranks[index] === "best").length,

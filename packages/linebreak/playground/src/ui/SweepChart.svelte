@@ -100,7 +100,13 @@
   <figcaption>
     <span class="chart-title">{metric.label}</span>
     <span class="axis-hint">
-      {metric.direction === "lower" ? "lower wins" : "nearer 100% wins"}
+      {#if !metric.ranked}
+        not scored
+      {:else if metric.direction === "lower"}
+        lower wins
+      {:else}
+        nearer 100% wins
+      {/if}
     </span>
   </figcaption>
 

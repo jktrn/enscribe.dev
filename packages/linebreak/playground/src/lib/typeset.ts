@@ -62,6 +62,23 @@ export const fillSample = (surface: Surface, state: State) => {
 }
 
 /**
+ * Waits for every face the filled sample actually needs, not just the body
+ * face. A code chip carries its own family, and that request only starts once
+ * the sample is in the document and laid out. Measuring before it arrives
+ * sizes the chip in the fallback and overruns the measure. Reading geometry
+ * first starts the request; the second round covers a face that only became
+ * reachable once the first one resolved.
+ */
+const facesSettled = async (host: Element) => {
+  if (!document.fonts) return
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    host.getBoundingClientRect()
+    await document.fonts.ready
+    if (document.fonts.status !== "loading") return
+  }
+}
+
+/**
  * Fills, typesets, and measures one surface. The browser column is left to the
  * native engine; the other two are driven and may decline paragraphs.
  */
@@ -70,6 +87,8 @@ export const typesetSurface = async (
   state: State,
 ): Promise<{ outcomes: Outcomes; columns: Triple }> => {
   fillSample(surface, state)
+  const first = surface[0]
+  if (first !== undefined) await facesSettled(first.typeset)
 
   const outcomes: Outcomes = {}
   const linebreak = slotFor(surface, "linebreak")

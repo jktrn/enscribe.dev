@@ -136,6 +136,16 @@
     />
 
     <Slider
+      label="emergency stretch"
+      value={controls.emergencyStretch}
+      min={RANGES.emergencyStretch.min}
+      max={RANGES.emergencyStretch.max}
+      step={RANGES.emergencyStretch.step}
+      format={(value) => `${value} spaces`}
+      onchange={(emergencyStretch) => patch({ emergencyStretch })}
+    />
+
+    <Slider
       label="text indent"
       value={controls.indent}
       min={RANGES.indent.min}

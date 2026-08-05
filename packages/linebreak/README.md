@@ -160,6 +160,7 @@ These options work with both browser entries.
 | `expand` | `false` | Lets a responsive width axis adjust eligible glyph widths by up to 2% |
 | `track` | `false` | Lets letter spacing adjust eligible box widths by up to 3% |
 | `lastLineMinWidth` | `0` | Discourages a final line shorter than this fraction of the measure |
+| `emergencyStretch` | `"auto"` | Sets the extra stretch, in pixels, the last-resort pass may spend |
 | `preserveImageAttributes` | `[]` | Copies named live attributes to rebuilt images |
 | `policy` | TeX defaults | Overrides tolerances, penalties, and demerits |
 | `glue` | `{ stretch: 1/2, shrink: 1/3 }` | Sets how far word spaces may move |
@@ -225,6 +226,22 @@ createTypesetter({
 `lastLineMinWidth` is a soft floor for the last line. It tries stricter break
 routes first, then falls back to a continuous penalty if no route can meet the
 floor. An authored `<br>` is never penalized for making a short final line.
+
+`emergencyStretch` is TeX's `\emergencystretch`. When no arrangement fits
+inside `tolerance`, the last-resort pass adds this much stretch to every line
+before judging it, which lets a paragraph be set at the cost of loose spacing.
+`"auto"` spends 12 space widths, which is the classical 3em against a
+quarter-em space.
+
+The value only matters on narrow measures, where that pass actually runs, and
+it trades spacing against containment in both directions. Raising it loosens
+lines for nothing: at 320px, going from 12 to 14 takes the average space from
+59% wider than natural to 64% wider and the loosest line from 2.6x to 3.8x,
+without removing a single overfull line. Lowering it tightens spacing until
+the pass stops being able to contain hard content: at 8 and below, prose keeps
+improving but paragraphs holding unbreakable code spans start to overrun the
+measure. 12 and 10 both hold every corpus measured here at zero overfull
+lines.
 
 The DOM engine also reads ordinary first-line `text-indent`, including
 percentages and negative values. The `hanging` and `each-line` forms affect

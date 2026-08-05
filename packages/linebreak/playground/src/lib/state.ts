@@ -21,6 +21,8 @@ export type State = {
   expand: boolean
   track: boolean
   lastLineMinWidth: number
+  /** Last-resort stretch, in space widths, handed to both engines alike. */
+  emergencyStretch: number
   indent: number
   hang: HangMode
   view: "side" | "single"
@@ -42,6 +44,7 @@ export const DEFAULT_STATE: State = {
   expand: true,
   track: false,
   lastLineMinWidth: 0.33,
+  emergencyStretch: 12,
   indent: 0,
   hang: "line-end-only",
   view: "side",
@@ -66,6 +69,7 @@ export const RANGES = {
   measure: { min: 240, max: 900, step: 10 },
   size: { min: 13, max: 24, step: 0.5 },
   lastLineMinWidth: { min: 0, max: 0.5, step: 0.01 },
+  emergencyStretch: { min: 0, max: 20, step: 1 },
   indent: { min: 0, max: 4, step: 0.25 },
 } as const
 

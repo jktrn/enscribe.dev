@@ -114,7 +114,7 @@ const tallyMetric = (
 ) => {
   const wins = ENGINES.map(() => 0)
   for (const run of runs) {
-    const ranks = rankValues(metric.direction, run.columns.map(metric.read))
+    const ranks = rankValues(metric, run.columns.map(metric.read))
     for (const [index, rank] of ranks.entries()) {
       if (rank === "best") wins[index] = (wins[index] ?? 0) + 1
     }
@@ -124,13 +124,14 @@ const tallyMetric = (
 
 const tallyAll = (runs: readonly Run[]): Tally => {
   const wins = ENGINES.map(() => 0)
-  for (const metric of METRICS) {
+  const contested = METRICS.filter((metric) => metric.ranked)
+  for (const metric of contested) {
     const one = tallyMetric(runs, metric)
     for (const [index, count] of one.wins.entries()) {
       wins[index] = (wins[index] ?? 0) + count
     }
   }
-  return { wins, total: runs.length * METRICS.length }
+  return { wins, total: runs.length * contested.length }
 }
 
 export type Report = {
@@ -145,7 +146,7 @@ export type Report = {
 export const reportFor = (runs: readonly Run[]): Report => ({
   runs: runs.length,
   overall: tallyAll(runs),
-  byMetric: METRICS.map((metric) => ({
+  byMetric: METRICS.filter((metric) => metric.ranked).map((metric) => ({
     key: metric.key,
     label: metric.label,
     tally: tallyMetric(runs, metric),
