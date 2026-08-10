@@ -56,6 +56,7 @@ export const cacheKey = (axis: SweepAxis, step: number, state: State) =>
     state.expand,
     state.track,
     state.lastLineMinWidth,
+    state.emergencyStretch,
     state.indent,
     state.hang,
     axis === "measure" ? state.size : state.measure,

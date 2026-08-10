@@ -35,9 +35,11 @@
     }))
 
   const render = async (at: State) => {
-    if (typesetEls.length < ENGINES.length) return
+    if (typesetEls.length < ENGINES.length) {
+      results.busy = false
+      return
+    }
     const round = ++generation
-    results.busy = true
 
     await loadFont(fontById(at.font), at.size)
     if (round !== generation) return
@@ -66,6 +68,8 @@
   $effect(() => {
     const at = store.state
     void store.revision
+    results.busy = true
+    if (results.locked) return
     const timer = setTimeout(() => void render(at), 60)
     return () => clearTimeout(timer)
   })

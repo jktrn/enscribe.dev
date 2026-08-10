@@ -8,6 +8,7 @@ class Results {
   widthResponse = $state(0)
   outcomes = $state<Outcomes>({})
   busy = $state(true)
+  locked = $state(false)
 }
 
 export const results = new Results()

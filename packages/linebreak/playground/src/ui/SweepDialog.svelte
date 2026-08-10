@@ -72,6 +72,7 @@
 
     while (results.busy) await yieldToUi()
     if (mine !== token) return
+    results.locked = true
 
     points = []
     done = 0
@@ -100,12 +101,18 @@
       },
     })
     inflight = run
-    await run
+    try {
+      await run
+    } finally {
+      if (mine === token) {
+        inflight = null
+        running = false
+        controller = null
+        results.locked = false
+      }
+    }
     if (mine !== token) return
 
-    inflight = null
-    running = false
-    controller = null
     store.invalidate()
   }
 
