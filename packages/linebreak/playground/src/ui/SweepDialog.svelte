@@ -42,10 +42,7 @@
   let nativeEls = $state<HTMLElement[]>([])
 
   let controller: AbortController | null = null
-  /** Resolves when the in-flight loop has actually unwound, not merely been
-   *  told to stop. Two loops sharing one host produce nonsense geometry. */
   let inflight: Promise<unknown> | null = null
-  /** Discriminates the current run, so a straggling callback cannot append. */
   let token = 0
 
   const stop = () => {
@@ -58,8 +55,6 @@
     if (host === undefined || typesetEls.length < ENGINES.length) return
 
     stop()
-    // Abort only *requests* a stop; the loop is mid-await and still owns the
-    // host until it returns.
     await inflight
 
     const mine = ++token
@@ -75,8 +70,6 @@
       return
     }
 
-    // The engines are module-level singletons shared with the live canvas.
-    // Waiting for its pass to finish keeps the two off each other.
     while (results.busy) await yieldToUi()
     if (mine !== token) return
 
@@ -113,13 +106,9 @@
     inflight = null
     running = false
     controller = null
-    // The sweep tore down the engines behind the live columns; make the
-    // canvas typeset itself again.
     store.invalidate()
   }
 
-  // Re-sweep whenever anything the run depends on moves. The cache key is
-  // exactly that set, so tracking it needs no separate list to keep in sync.
   $effect(() => {
     if (!open) {
       stop()
@@ -241,9 +230,6 @@
   {/snippet}
 </Dialog>
 
-<!-- Off-screen typesetting host. Kept fully rendered rather than hidden with
-     `visibility` or `display`, because every metric is read back from live
-     layout geometry. -->
 <div class="sweep-host" aria-hidden="true" bind:this={host}>
   {#each ENGINES as engine, index (engine)}
     <div class="stack">

@@ -17,7 +17,6 @@
     justif: __JUSTIF_VERSION__,
   }
 
-  /** The browser column has nothing to reveal — it already is the native one. */
   const mirrored = (engine: EngineId) => engine !== "browser"
 
   let typesetEls = $state<HTMLElement[]>([])
@@ -64,8 +63,6 @@
     store.persist()
   }
 
-  // One debounced pass per state change. Reading `store.state` wholesale is
-  // enough to depend on every control, because `patch` replaces the object.
   $effect(() => {
     const at = store.state
     void store.revision
@@ -82,9 +79,6 @@
   onpointercancel={() => reveal(false)}
 />
 
-<!-- Press-and-hold swaps the typeset columns for the browser's own wrapping.
-     The topbar carries a real toggle for the same thing; this is the shortcut,
-     not the only route, so the div needs no keyboard handler of its own. -->
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <div class="canvas" onpointerdown={() => reveal(true)}>
   <div class="columns" data-view={controls.view}>

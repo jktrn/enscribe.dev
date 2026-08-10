@@ -60,8 +60,6 @@
   const start = async () => {
     if (host === undefined || typesetEls.length < ENGINES.length) return
     stop()
-    // Abort only requests a stop; the loop still owns the host until it
-    // returns, and two loops in one host measure nonsense.
     await inflight
 
     const mine = ++token
@@ -122,7 +120,6 @@
       ? `${Math.round(ms / 1000)}s`
       : `${Math.floor(ms / 60_000)}m ${Math.round((ms % 60_000) / 1000)}s`
 
-  /** Projected from the rate actually observed, not from a guessed constant. */
   const remaining = $derived.by(() => {
     if (!running || done === 0) return null
     return seconds((elapsed / done) * (configs.length - done))
@@ -294,8 +291,6 @@
   {/snippet}
 </Dialog>
 
-<!-- Off-screen typesetting host, kept fully laid out because every metric is
-     read back from live geometry. -->
 <div class="sweep-host" aria-hidden="true" bind:this={host}>
   {#each ENGINES as engine, index (engine)}
     <div class="stack">

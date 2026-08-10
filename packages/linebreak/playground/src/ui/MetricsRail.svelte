@@ -24,8 +24,6 @@
 </script>
 
 <aside class="rail">
-  <!-- Establishes column order and the engine hues once, so the table below
-       needs no repeated header. -->
   <section class="verdict">
     <p class="lede">
       {#if verdict.leader === null}

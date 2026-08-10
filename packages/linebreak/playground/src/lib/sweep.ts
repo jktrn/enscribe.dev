@@ -14,7 +14,6 @@ export type SweepSpec = {
   readonly unit: string
   readonly min: number
   readonly max: number
-  /** Offered step sizes, coarsest first. The middle one is the default. */
   readonly steps: readonly number[]
 }
 
@@ -46,10 +45,6 @@ export const stepsFor = (axis: SweepAxis, step: number) => {
   return values
 }
 
-/**
- * Identifies a run by everything that shapes it except the swept axis itself,
- * so reopening the dialog with the same settings reuses the finished points.
- */
 export const cacheKey = (axis: SweepAxis, step: number, state: State) =>
   JSON.stringify([
     axis,
@@ -71,11 +66,6 @@ const cache = new Map<string, SweepPoint[]>()
 export const cached = (axis: SweepAxis, step: number, state: State) =>
   cache.get(cacheKey(axis, step, state))
 
-/**
- * Walks the axis, typesetting and measuring every point in a hidden host. Each
- * point forces a real layout, so the loop yields a frame between points: that
- * lets the chart paint progressively and gives cancellation somewhere to land.
- */
 export const runSweep = async (options: {
   readonly axis: SweepAxis
   readonly step: number
@@ -97,10 +87,6 @@ export const runSweep = async (options: {
     const at: State = { ...state, [axis]: value }
     host.style.setProperty("--measure", `${at.measure}px`)
     host.style.setProperty("--size", `${at.size}px`)
-    // `--column` is declared on :root, and a custom property's var()
-    // references are substituted where it is declared. Overriding `--measure`
-    // here would leave the inherited `--column` at the root's width, so it has
-    // to be restated against this element's own values.
     host.style.setProperty(
       "--column",
       `calc(${at.measure}px + 2 * var(--hang))`,

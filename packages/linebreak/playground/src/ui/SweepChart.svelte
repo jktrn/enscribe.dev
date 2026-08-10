@@ -15,9 +15,7 @@
     metric: Metric
     points: readonly SweepPoint[]
     spec: SweepSpec
-    /** Index of the hovered point, or null when the pointer is away. */
     cursor: number | null
-    /** Axis value the live columns are currently set to. */
     marker: number
     oncursor: (index: number | null) => void
     oncommit: ((value: number) => void) | null
@@ -43,8 +41,6 @@
     const hi = Math.max(...all)
     if (lo === hi) return { lo: Math.min(0, lo - 1), hi: hi + 1 }
     const pad = (hi - lo) * 0.08
-    // Padding below zero would print an axis bound no count or deviation can
-    // reach, so a series that never goes negative keeps a floor of zero.
     return { lo: lo >= 0 ? Math.max(0, lo - pad) : lo - pad, hi: hi + pad }
   })
 
@@ -66,7 +62,6 @@
       })
       .join(" ")
 
-  /** Index of the sampled point nearest the pointer, for the shared cursor. */
   const indexAt = (event: PointerEvent) => {
     if (points.length === 0) return null
     const box = (

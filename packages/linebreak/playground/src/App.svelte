@@ -12,7 +12,6 @@
 
   const controls = $derived(store.state)
 
-  // The sidebar folds into a drawer first; the rail holds on to 900px.
   const sidebarDrawn = matches("(max-width: 1400px)")
   const railDrawn = matches("(max-width: 900px)")
 
@@ -22,7 +21,6 @@
   let sidebarDrawer = $state(false)
   let railDrawer = $state(false)
 
-  // Sweep and benchmark drive the same engine singletons, so only one may run.
   const openSweep = () => {
     benchmark = false
     sweep = true
@@ -32,7 +30,6 @@
     benchmark = true
   }
 
-  // Everything the stylesheet needs to know about the current controls.
   $effect(() => {
     const root = document.documentElement
     root.dataset.theme = controls.theme
@@ -43,8 +40,6 @@
     document.body.classList.toggle("rulers", controls.rulers)
   })
 
-  // A viewport change moves the measure edges, so the geometry has to be
-  // read again even though no control moved.
   let resizeTimer = 0
   const onresize = () => {
     clearTimeout(resizeTimer)

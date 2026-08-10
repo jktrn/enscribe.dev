@@ -20,12 +20,6 @@ export type ParagraphOutcome = {
   readonly reason: string
 }
 
-/**
- * The control is in space widths so it means the same thing at any size, but
- * both engines want pixels. Neither library's own automatic value would do:
- * they resolve it differently, so the slider has to convert once and hand the
- * same number to each.
- */
 const spaceWidthOf = (paragraph: HTMLElement | undefined) => {
   if (paragraph === undefined) return 0
   const style = getComputedStyle(paragraph)

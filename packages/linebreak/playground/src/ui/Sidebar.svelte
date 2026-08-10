@@ -8,7 +8,6 @@
 
   const controls = $derived(store.state)
 
-  /** A width axis this shallow cannot carry the expansion budget. */
   const AXIS_FLOOR = 0.001
   const expandable = $derived(results.widthResponse >= AXIS_FLOOR)
 

@@ -85,7 +85,6 @@ test("a face that moves the text's own metrics re-sets the document", async ({
     { family: await bodyFamily(page), url: await unlikeBodyFontUrl(page) },
   )
 
-  // Guard the premise: if the swap changed nothing, not re-setting is right.
   expect(swap.family).not.toBe("")
   expect(swap.after).not.toBeCloseTo(swap.before, 1)
   await settle(page)

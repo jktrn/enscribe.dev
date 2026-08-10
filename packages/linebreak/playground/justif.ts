@@ -26,11 +26,6 @@ export const justifVersion = (() => {
   }
 })()
 
-/**
- * Points `playground/vendor/justif` at the checkout. Vite resolves justif
- * through an alias and needs no symlink, but tsconfig `paths` cannot read an
- * environment variable, so the typechecker reaches the sources through here.
- */
 export const linkVendor = async () => {
   const link = join(here, "vendor/justif")
   await mkdir(join(here, "vendor"), { recursive: true })

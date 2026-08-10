@@ -19,8 +19,6 @@
   const service = useMachine(toggleGroup.machine, () => ({
     id,
     value: [value],
-    // Re-pressing the active item clears the selection; a segmented control
-    // always has exactly one, so an empty change is ignored.
     onValueChange: (details: toggleGroup.ValueChangeDetails) => {
       const next = details.value[0]
       if (next !== undefined) onchange(next)

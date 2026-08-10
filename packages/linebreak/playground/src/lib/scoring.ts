@@ -3,7 +3,6 @@ import { ENGINES, type EngineId } from "./state"
 
 export type Triple = readonly [ColumnMetrics, ColumnMetrics, ColumnMetrics]
 
-/** Whether a smaller number is better, or one closer to natural (1.0). */
 export type Direction = "lower" | "near-one"
 
 export type Rank = "best" | "worst" | "mid"
@@ -15,13 +14,7 @@ export type Metric = {
   readonly read: (metrics: ColumnMetrics) => number
   readonly format: (value: number) => string
   readonly direction: Direction
-  /**
-   * Whether the row colours a winner. A setting an engine spends to buy quality
-   * elsewhere is reported but not scored: counting it charges the engine twice
-   * for one decision.
-   */
   readonly ranked: boolean
-  /** Included in the sweep dialog's six small multiples. */
   readonly charted: boolean
 }
 
@@ -154,22 +147,12 @@ export const GROUP_TITLES = ["lines", "spacing", "quality"] as const
 const scoreOf = (direction: Direction, value: number) =>
   direction === "lower" ? value : Math.abs(value - 1)
 
-/**
- * The browser is the baseline both optimizers are trying to beat, not a third
- * competitor. Ranking it wins rows nobody was contesting: it never shrinks a
- * space below its natural width, so it takes any tightness row by declining to
- * do the work.
- */
 const BASELINE: EngineId = "browser"
 
 const RANKED_COLUMNS = ENGINES.flatMap((engine, index) =>
   engine === BASELINE ? [] : [index],
 )
 
-/**
- * Ranks one row's contested columns. An unranked metric, or one where the
- * optimizers tie, ranks every cell `mid`, so neither reads as a win.
- */
 export const rankValues = (
   metric: Metric,
   values: readonly number[],
@@ -225,10 +208,6 @@ export type Verdict = {
   readonly total: number
 }
 
-/**
- * Counts outright row wins per engine over the ranked rows only. Ties and
- * unranked rows count for nobody, so `wins` need not sum to `total`.
- */
 export const verdictFor = (groups: readonly Group[]): Verdict => {
   const rows = groups
     .flatMap((group) => group.rows)

@@ -1,7 +1,3 @@
-/* ==========================================================================
-   Faces. Licensed families are served by the vite font plugin, not public/.
-   ========================================================================== */
-
 @font-face {
   font-family: "MD Lorien";
   src: url("/fonts/MDLorien-Regular.woff2") format("woff2");
@@ -46,21 +42,6 @@
   font-style: normal;
   font-display: block;
 }
-
-/* ==========================================================================
-   Tokens.
-
-   Two grounds, deliberately different: the specimen sits on warm paper,
-   because judging text colour against a cool white shifts what you see; the
-   instrument around it sits on cool grey, so chrome never reads as part of
-   the page being set.
-
-   Engine hues are identity, fixed per engine and never reassigned by rank.
-   Both modes pass the categorical six checks (lightness band, chroma floor,
-   CVD separation, normal-vision floor, contrast). Dark-mode tritan
-   separation sits in the 6-8 floor band, which is why every chart series is
-   also directly labelled.
-   ========================================================================== */
 
 :root {
   color-scheme: light;
@@ -139,10 +120,6 @@
   --focus: #7da3f5;
 }
 
-/* ==========================================================================
-   Base
-   ========================================================================== */
-
 * {
   box-sizing: border-box;
 }
@@ -162,8 +139,6 @@ body {
   overflow: hidden;
 }
 
-/* Headings are bold in the UA stylesheet. Nothing in this interface changes
-   weight; hierarchy is carried by colour and position alone. */
 h1,
 h2,
 h3,
@@ -188,8 +163,6 @@ h4 {
   border: 0;
 }
 
-/* Section and column heading. Sentence case, same weight and size as body
-   text; only colour separates it from what it labels. */
 .section-title {
   margin: 0;
   font-family: var(--ui);
@@ -197,14 +170,9 @@ h4 {
   color: var(--faint);
 }
 
-/* The one emphasis device left once weight, case and size are fixed. */
 .lead {
   color: var(--ink);
 }
-
-/* ==========================================================================
-   Shell
-   ========================================================================== */
 
 .shell {
   display: grid;
@@ -222,10 +190,6 @@ h4 {
   min-width: 0;
   min-height: 0;
 }
-
-/* ==========================================================================
-   Topbar
-   ========================================================================== */
 
 .topbar {
   display: flex;
@@ -257,10 +221,6 @@ h4 {
 .topbar .spacer {
   flex: 1;
 }
-
-/* ==========================================================================
-   Controls
-   ========================================================================== */
 
 button,
 select,
@@ -359,10 +319,6 @@ input {
   cursor: default;
 }
 
-/* ==========================================================================
-   Sidebar
-   ========================================================================== */
-
 .sidebar {
   display: flex;
   flex-direction: column;
@@ -437,7 +393,6 @@ input {
   cursor: default;
 }
 
-/* Zag slider */
 .slider {
   --track: 3px;
   position: relative;
@@ -478,10 +433,6 @@ input {
   outline: 2px solid var(--focus);
   outline-offset: 2px;
 }
-
-/* ==========================================================================
-   Canvas
-   ========================================================================== */
 
 .canvas {
   overflow: auto;
@@ -667,10 +618,6 @@ body.revealing .overlay {
   color: var(--ink);
 }
 
-/* ==========================================================================
-   Metrics rail
-   ========================================================================== */
-
 .rail {
   display: flex;
   flex-direction: column;
@@ -740,14 +687,6 @@ body.revealing .overlay {
   color: var(--ink);
 }
 
-/* ==========================================================================
-   Metrics table
-
-   One header of engine swatches, matching the verdict card's order, instead
-   of a repeated row of abbreviations. Rank is a chip behind the cell rather
-   than a glyph beside it, so the tabular numerals stay in their columns.
-   ========================================================================== */
-
 .metrics {
   --cols: 1fr repeat(3, 5.6ch);
   --gap: 6px;
@@ -795,8 +734,6 @@ body.revealing .overlay {
   white-space: nowrap;
 }
 
-/* Filled versus outlined, so best and worst stay distinguishable without
-   relying on the green/red pair. */
 .metrics .cell[data-rank="best"] {
   background: color-mix(in srgb, var(--good) 15%, transparent);
   color: var(--good);
@@ -818,10 +755,6 @@ body.revealing .overlay {
 .rail .actions .btn {
   justify-content: center;
 }
-
-/* ==========================================================================
-   Dialog
-   ========================================================================== */
 
 .backdrop {
   position: fixed;
@@ -884,7 +817,6 @@ body.revealing .overlay {
   background: var(--chrome);
 }
 
-/* Asymmetry notes */
 .notes {
   display: flex;
   flex-direction: column;
@@ -915,10 +847,6 @@ body.revealing .overlay {
   border-radius: 3px;
   padding: 0 0.3em;
 }
-
-/* ==========================================================================
-   Sweep
-   ========================================================================== */
 
 .sweep-bar {
   display: flex;
@@ -982,8 +910,6 @@ body.revealing .overlay {
 }
 
 .chart {
-  /* figure carries a 40px UA side margin, which otherwise leaves every card
-     floating inside its grid column. */
   margin: 0;
   border: 1px solid var(--rule);
   border-radius: 8px;
@@ -999,8 +925,6 @@ body.revealing .overlay {
   margin-bottom: 6px;
 }
 
-/* Not `.section-title`: these labels carry real symbols — "spread σ" must not be
-   uppercased into "SPREAD Σ". */
 .chart-title {
   font-size: 14px;
   color: var(--ink);
@@ -1018,8 +942,6 @@ body.revealing .overlay {
   stroke-width: 1;
 }
 
-/* viewBox units, not rendered pixels. The chart draws at roughly 1.6x, so 8
-   here lands at about body size on screen. */
 .chart .axis-text {
   font-family: var(--ui);
   font-size: 8px;
@@ -1040,8 +962,6 @@ body.revealing .overlay {
   opacity: 0.6;
 }
 
-/* Where the live columns are set. Deliberately not an engine hue — a blue
-   marker would read as the linebreak series. */
 .chart .marker {
   stroke: var(--faint);
   stroke-width: 1;
@@ -1058,8 +978,6 @@ body.revealing .overlay {
   cursor: ew-resize;
 }
 
-/* Identity is carried by the swatch, never by the numeral's colour, and the
-   column order matches the legend. */
 .readout {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -1124,10 +1042,6 @@ body.revealing .overlay {
   text-align: center;
   color: var(--faint);
 }
-
-/* ==========================================================================
-   Benchmark
-   ========================================================================== */
 
 .brief {
   max-width: 64ch;
@@ -1240,8 +1154,6 @@ body.revealing .overlay {
   color: var(--muted);
 }
 
-/* Feature rows carry two engine names rather than a bar and one name, so
-   they need even columns wide enough for the longest. */
 .cut-row[data-shape="pair"] {
   grid-template-columns: 10ch 1fr 1fr;
 }
@@ -1250,8 +1162,6 @@ body.revealing .overlay {
   overflow-wrap: anywhere;
 }
 
-/* One bar per row, split by share of wins. A 2px surface gap keeps adjacent
-   segments from reading as a single blended block. */
 .stack-bar {
   display: flex;
   gap: 2px;
@@ -1279,10 +1189,6 @@ body.revealing .overlay {
   color: var(--faint);
 }
 
-/* The host the sweep typesets into. Moved off-screen rather than hidden:
-   `display: none` removes layout entirely, and `visibility: hidden` is a
-   weaker guarantee than simply painting it where nobody looks. Every metric
-   is read back from live geometry, so the boxes have to be real. */
 .sweep-host {
   position: fixed;
   inset-block-start: 0;
@@ -1291,12 +1197,6 @@ body.revealing .overlay {
   gap: 20px;
   pointer-events: none;
 }
-
-/* ==========================================================================
-   Responsive. The sidebar folds away first and the rail holds on as long as
-   it can: the sidebar asks the question, the rail is the answer, and the
-   answer should stay on screen while you drag a control.
-   ========================================================================== */
 
 .drawer-trigger {
   display: none;
@@ -1340,7 +1240,6 @@ body.revealing .overlay {
   }
 }
 
-/* Inside a drawer the panel fills the dialog rather than the grid cell. */
 .dialog .sidebar,
 .dialog .rail {
   border: 0;

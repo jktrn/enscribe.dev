@@ -3,7 +3,6 @@ import { ENGINES, type EngineId, type State } from "./state"
 import { effectiveState, type Surface, typesetSurface } from "./typeset"
 import { yieldToUi } from "./schedule"
 
-/** The four feature flags the benchmark permutes. */
 export const FLAGS = ["hyphenate", "protrude", "expand", "track"] as const
 
 export type Flag = (typeof FLAGS)[number]
@@ -29,10 +28,6 @@ export type Plan = {
   readonly permuteFlags: boolean
 }
 
-/**
- * Three grid sizes. Every point costs a full three-engine typeset plus layout
- * readback, so the count is the cost — it is shown before the run starts.
- */
 export const planFor = (
   scale: Scale,
   state: State,
@@ -100,14 +95,10 @@ export const configsFor = (plan: Plan, state: State): Config[] => {
 }
 
 export type Tally = {
-  /** Outright wins per engine, positionally indexed to ENGINES. */
   readonly wins: readonly number[]
-  /** Contests counted, which is runs times metrics. Ties count for nobody, so
-   *  the wins need not sum to it. */
   readonly total: number
 }
 
-/** Tallies one metric over one slice of runs. */
 const tallyMetric = (
   runs: readonly Run[],
   metric: (typeof METRICS)[number],
@@ -142,7 +133,6 @@ export type Report = {
   readonly byMeasure: { measure: number; tally: Tally }[]
 }
 
-/** Collapses the raw runs into the cuts worth reading. */
 export const reportFor = (runs: readonly Run[]): Report => ({
   runs: runs.length,
   overall: tallyAll(runs),
@@ -170,10 +160,6 @@ export const leaderOf = (tally: Tally): EngineId | null => {
   return leaders.length === 1 ? (leaders[0] as EngineId) : null
 }
 
-/**
- * Typesets every configuration in the hidden host and measures all three
- * engines. Yields a frame per run so progress paints and cancellation lands.
- */
 export const runBenchmark = async (options: {
   readonly configs: readonly Config[]
   readonly state: State

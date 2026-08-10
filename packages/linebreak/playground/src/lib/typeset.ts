@@ -5,7 +5,6 @@ import { SAMPLES } from "./samples"
 import type { Triple } from "./scoring"
 import { ENGINES, type EngineId, type State } from "./state"
 
-/** One engine's slot in a rendering surface: the live canvas, or the sweep. */
 export type Slot = {
   readonly engine: EngineId
   readonly typeset: HTMLElement
@@ -16,7 +15,6 @@ export type Surface = readonly Slot[]
 
 export type Outcomes = Partial<Record<EngineId, ParagraphOutcome[]>>
 
-/** A width axis this shallow cannot carry the expansion budget. */
 const AXIS_FLOOR = 0.001
 
 export const sampleHtml = (id: string) =>
@@ -28,10 +26,6 @@ export const applyNativeHyphens = (element: HTMLElement, on: boolean) => {
   element.style.setProperty("hyphenate-limit-chars", "5 2 3")
 }
 
-/**
- * Resolves the two controls whose availability depends on the chosen face and
- * on another control, so both engines are asked for the same thing.
- */
 export const effectiveState = (state: State): State => {
   const response = widthAxisResponse(fontById(state.font).stack, state.size)
   return {
@@ -61,14 +55,6 @@ export const fillSample = (surface: Surface, state: State) => {
   }
 }
 
-/**
- * Waits for every face the filled sample actually needs, not just the body
- * face. A code chip carries its own family, and that request only starts once
- * the sample is in the document and laid out. Measuring before it arrives
- * sizes the chip in the fallback and overruns the measure. Reading geometry
- * first starts the request; the second round covers a face that only became
- * reachable once the first one resolved.
- */
 const facesSettled = async (host: Element) => {
   if (!document.fonts) return
   for (let attempt = 0; attempt < 3; attempt += 1) {
@@ -78,10 +64,6 @@ const facesSettled = async (host: Element) => {
   }
 }
 
-/**
- * Fills, typesets, and measures one surface. The browser column is left to the
- * native engine; the other two are driven and may decline paragraphs.
- */
 export const typesetSurface = async (
   surface: Surface,
   state: State,

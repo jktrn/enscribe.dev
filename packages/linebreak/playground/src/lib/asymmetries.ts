@@ -15,10 +15,6 @@ const HANG_LABELS: Record<HangMode, string> = {
   "all-line-edges": "all line edges",
 }
 
-/**
- * Splits a backtick-delimited body into plain and code runs, so the notes can
- * render as elements rather than as an `innerHTML` string.
- */
 const segments = (body: string): Segment[] =>
   body
     .split("`")

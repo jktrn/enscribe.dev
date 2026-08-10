@@ -21,7 +21,6 @@ export type State = {
   expand: boolean
   track: boolean
   lastLineMinWidth: number
-  /** Last-resort stretch, in space widths, handed to both engines alike. */
   emergencyStretch: number
   indent: number
   hang: HangMode
@@ -64,7 +63,6 @@ export const ENGINE_LABELS: Record<EngineId, string> = {
   justif: "justif",
 }
 
-/** Inclusive bounds and step for each numeric control. */
 export const RANGES = {
   measure: { min: 240, max: 900, step: 10 },
   size: { min: 13, max: 24, step: 0.5 },
@@ -110,10 +108,6 @@ const readValue = (key: keyof State, raw: string) => {
   return readString(key, raw)
 }
 
-/**
- * Serialises only the keys that differ from the defaults, so a shared link
- * stays short enough to paste into an issue.
- */
 export const encodeState = (state: State) => {
   const params = new URLSearchParams()
   for (const key of KEYS) {
@@ -150,7 +144,6 @@ const stored = (): Partial<State> => {
   }
 }
 
-/** URL wins over localStorage, which wins over the defaults. */
 export const loadState = (): State => ({
   ...DEFAULT_STATE,
   ...stored(),

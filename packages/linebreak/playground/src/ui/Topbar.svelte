@@ -20,8 +20,6 @@
         copied = false
       }, 1600)
     } catch {
-      // Clipboard access can be refused; the URL bar already carries the
-      // same state, so there is nothing to recover from.
       copied = false
     }
   }

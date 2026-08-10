@@ -160,7 +160,7 @@ These options work with both browser entries.
 | `expand` | `false` | Lets a responsive width axis adjust eligible glyph widths by up to 2% |
 | `track` | `false` | Lets letter spacing adjust eligible box widths by up to 3% |
 | `lastLineMinWidth` | `0` | Discourages a final line shorter than this fraction of the measure |
-| `emergencyStretch` | `"auto"` | Sets the extra stretch, in pixels, the last-resort pass may spend |
+| `emergencyStretch` | `"auto"` | Extra stretch available to fallback passes, in pixels |
 | `preserveImageAttributes` | `[]` | Copies named live attributes to rebuilt images |
 | `policy` | TeX defaults | Overrides tolerances, penalties, and demerits |
 | `glue` | `{ stretch: 1/2, shrink: 1/3 }` | Sets how far word spaces may move |
@@ -227,21 +227,10 @@ createTypesetter({
 routes first, then falls back to a continuous penalty if no route can meet the
 floor. An authored `<br>` is never penalized for making a short final line.
 
-`emergencyStretch` is TeX's `\emergencystretch`. When no arrangement fits
-inside `tolerance`, the last-resort pass adds this much stretch to every line
-before judging it, which lets a paragraph be set at the cost of loose spacing.
-`"auto"` spends 12 space widths, which is the classical 3em against a
-quarter-em space.
-
-The value only matters on narrow measures, where that pass actually runs, and
-it trades spacing against containment in both directions. Raising it loosens
-lines for nothing: at 320px, going from 12 to 14 takes the average space from
-59% wider than natural to 64% wider and the loosest line from 2.6x to 3.8x,
-without removing a single overfull line. Lowering it tightens spacing until
-the pass stops being able to contain hard content: at 8 and below, prose keeps
-improving but paragraphs holding unbreakable code spans start to overrun the
-measure. 12 and 10 both hold every corpus measured here at zero overfull
-lines.
+`emergencyStretch` corresponds to TeX's `\emergencystretch`. When the normal
+passes fail, it adds the configured stretch to each line. Higher values can
+reduce overflow but loosen word spacing; `"auto"` uses 12 times the paragraph's
+mean space width.
 
 The DOM engine also reads ordinary first-line `text-indent`, including
 percentages and negative values. The `hanging` and `each-line` forms affect
@@ -528,13 +517,11 @@ The checked-in playground places native browser wrapping,
 `@enscribe/linebreak`, and [Justif](https://github.com/lyallcooper/justif) in
 the same font and measure. Its report uses rendered word rectangles rather
 than either library's internal score. It counts lines, hyphens, overfull lines,
-short endings, space-width deviation, and TeX badness. The metrics rail scores
-every row as you drag a control, so the numbers and the type stay on one
-screen.
+short endings, space-width deviation, and TeX badness.
 
-![Three columns of justified text — native browser wrapping, @enscribe/linebreak and Justif — beside a rail of measured metrics](./playground/screenshot.png)
+![Native browser wrapping, @enscribe/linebreak, and Justif beside their rendered metrics](./playground/screenshot.png)
 
-Reproduce it from the repository root:
+Reproduce the comparison from the repository root:
 
 ```sh
 git clone --depth 1 --branch v0.7.0 \
@@ -544,35 +531,24 @@ git clone --depth 1 --branch v0.7.0 \
 bun run --cwd packages/linebreak playground
 ```
 
-Set `JUSTIF_PATH` to use another checkout. The column badge reports the version
-found there, so it cannot drift from what is running. Controls serialise into
-the URL hash, so a configuration worth arguing about can be pasted into an
-issue.
+Set `JUSTIF_PATH` to use another checkout. The playground reads its version
+from that checkout and stores settings in the URL for sharing.
 
 ### Sweep a range
 
-One measurement is one measure. The sweep walks the column width from 240 to
-900px, or the font size from 13 to 24px, retypesetting all three engines at
-every step in an off-screen host and plotting six metrics against one shared
-axis.
+A sweep plots line count, hyphens, spacing, and badness across a range of
+column widths or font sizes. Drag a chart to apply that value to the live
+comparison.
 
-![Six small-multiple line charts plotting line count, hyphens, mean space, deviation, spread and total badness against column width for all three engines](./playground/sweep.png)
-
-Small multiples rather than one chart with a metric picker, because the
-interesting reading is the trade between them: where a lower badness is bought
-with hyphens. Dragging any chart sets the live columns to that point.
+![Six charts comparing line count, hyphens, spacing, and badness across column widths](./playground/sweep.png)
 
 ### Run the benchmark
 
-The sweep varies one thing. The benchmark varies all of them: every combination
-of the four feature flags across a grid of measures, font sizes and samples,
-counting which engine takes each metric. Ties count for nobody.
+The benchmark compares the two libraries across combinations of feature flags,
+measures, font sizes, and samples. The browser is an unranked baseline, and
+ties do not count.
 
-![Benchmark report showing overall wins per engine, with breakdowns by metric, by feature flag and by measure](./playground/benchmark.png)
-
-The quick grid is 48 runs and finishes in about a second; the thorough grid is
-1,152 and takes under a minute. Both are cancelable, and the estimate shown
-comes from the rate actually observed rather than a guess.
+![Benchmark wins by metric, feature flag, and measure](./playground/benchmark.png)
 
 Both projects apply Knuth–Plass ideas to browser text. This package focuses on
 measured Latin prose, TeX-compatible policy, explicit outcomes and fallback,
@@ -595,13 +571,6 @@ bun run --cwd packages/linebreak playground:typecheck
 three fields from its prepared paragraphs through a structural type, so an
 upstream contract change fails typechecking instead of becoming a silent
 measurement error.
-
-The playground is Svelte 5 and Vite, with [Zag](https://zagjs.com) supplying
-the dialog, slider and toggle-group behaviour. Its dependencies are dev-only —
-`files` ships `dist` alone, so none of them reach the published package.
-`playground/vite.config.ts` resolves `justif` and `@enscribe/linebreak` to
-sources, stages the licensed faces into `public/fonts`, and links
-`vendor/justif` for the typechecker.
 
 ## References
 
