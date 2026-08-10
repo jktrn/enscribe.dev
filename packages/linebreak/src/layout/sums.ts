@@ -71,7 +71,10 @@ const flexedSums = (items: readonly Item[], flex: Flex): Sums => {
   return { width, stretch, shrink, starts: lineStarts(items) }
 }
 
-export const prefixSums = (items: readonly Item[], flex: Flex | undefined): Sums => {
+export const prefixSums = (
+  items: readonly Item[],
+  flex: Flex | undefined,
+): Sums => {
   const cached = sumsCache.get(items)
   if (cached && cached.flex === flex) return cached.sums
 

@@ -403,8 +403,8 @@ const emitTextSegment = (
 ) => {
   const { items, pending } = scope.emit
   const { policy } = scope.settings
-  const edge =
-    pending.take() + (scope.leadingApplied ? 0 : scope.edges.leading) + trailing
+  const leading =
+    pending.take() + (scope.leadingApplied ? 0 : scope.edges.leading)
   scope.leadingApplied = true
 
   const before = items.length
@@ -424,15 +424,14 @@ const emitTextSegment = (
   )
 
   const first = items[before]
-  if (edge !== 0 && first?.kind === "box") {
-    items[before] = { ...first, width: first.width + edge }
-  } else if (edge !== 0) {
-    pending.defer(edge)
+  if (leading !== 0 && first?.kind === "box") {
+    items[before] = { ...first, width: first.width + leading }
+    scope.emit.folded?.add(before)
+  } else if (leading !== 0) {
+    pending.defer(leading)
   }
-  if (edge !== 0 && scope.emit.folded) {
-    scope.emit.folded.add(before)
-    scope.emit.folded.add(items.length - 1)
-  }
+
+  pending.onto(items, trailing)
 }
 
 const creditSegment = (scope: TextScope, from: number) => {

@@ -1,4 +1,3 @@
-import type { Line } from "../layout/breaker"
 import { LINE_SELECTOR } from "./render"
 import { cssPixels } from "./style"
 
@@ -21,14 +20,6 @@ export const resolvedLineHeight = (style: CSSStyleDeclaration) => {
   if (Number.isFinite(value)) return value
   const fontSize = Number.parseFloat(style.fontSize)
   return Number.isFinite(fontSize) ? fontSize * 1.2 : Number.NaN
-}
-
-export const hangSlack = (lines: readonly Line[]) => {
-  let most = 0
-  for (const line of lines) {
-    if (line.hangEnd > most) most = line.hangEnd
-  }
-  return most
 }
 
 export const layoutMismatch = (

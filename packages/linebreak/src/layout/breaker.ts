@@ -667,7 +667,7 @@ const meanGlueWidth = (items: readonly Item[]) => {
   return count > 0 ? total / count : 0
 }
 
-const EMERGENCY_STRETCH_SPACES = 14
+const EMERGENCY_STRETCH_SPACES = 12
 
 const emergencyStretchFor = (
   items: readonly Item[],

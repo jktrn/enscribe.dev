@@ -517,6 +517,28 @@ describe("the fallback ladder", () => {
     expect(result.lines.length).toBeGreaterThanOrEqual(12)
   })
 
+  test("setting the emergency stretch to zero removes that rung entirely", () => {
+    const result = breakParagraph(unbreakable(), MEASURE, {
+      emergencyStretch: 0,
+    })
+    expect(result.ok).toBe(true)
+    if (!result.ok) return
+    expect(result.pass).toBe("forced")
+  })
+
+  test("a larger emergency stretch buys looser lines at a lower reported cost", () => {
+    const loosest = (stretch: number) => {
+      const result = breakParagraph(unbreakable(), MEASURE, {
+        emergencyStretch: stretch,
+      })
+      expect(result.ok).toBe(true)
+      if (!result.ok) return Number.NaN
+      expect(result.pass).toBe("emergency")
+      return Math.max(...result.lines.map((l) => Math.abs(l.adjustmentRatio)))
+    }
+    expect(loosest(SPACE * 14)).toBeLessThan(loosest(SPACE * 4))
+  })
+
   test("the forced pass is what catches a paragraph nothing else can", () => {
     const result = breakParagraphOnce([box(5000), ...finish()], MEASURE, {
       tolerance: texDefaults.tolerance,

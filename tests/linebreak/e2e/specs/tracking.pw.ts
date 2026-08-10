@@ -5,6 +5,8 @@ test.use({ viewport: { width: 1440, height: 900 } })
 
 const SPACING = 1
 
+const ROUNDING = 1
+
 const LIGATURES = '"liga" 1, "clig" 1'
 
 const LIGATED = "The affluent office staff filed a final waffle briefing."
@@ -16,6 +18,7 @@ type Probe = {
   readonly text: string
   readonly spacing: number
   readonly features: string
+  readonly ligatures?: string
 }
 
 const advance = (page: import("@playwright/test").Page, probe: Probe) =>
@@ -27,6 +30,7 @@ const advance = (page: import("@playwright/test").Page, probe: Probe) =>
     span.style.font = `16px ${spec.family}`
     span.style.letterSpacing = `${spec.spacing}px`
     if (spec.features !== "") span.style.fontFeatureSettings = spec.features
+    if (spec.ligatures) span.style.fontVariantLigatures = spec.ligatures
     span.textContent = spec.text
     document.body.appendChild(span)
     const width = span.getBoundingClientRect().width
@@ -94,16 +98,33 @@ test.describe("letterfit tracking in a real browser", () => {
     }
   })
 
-  test("letterspacing suppresses ligatures, costing at most one unit", async ({
+  test("letterspacing costs its own width plus the ligatures it dissolves", async ({
     page,
   }) => {
     await settleTypeset(page)
 
     for (const family of [await bodyFamily(page), '"IBM Plex Sans"']) {
+      const natural = await advance(page, {
+        family,
+        text: LIGATED,
+        spacing: 0,
+        features: "",
+      })
+      const dissolved = await advance(page, {
+        family,
+        text: LIGATED,
+        spacing: 0,
+        features: "",
+        ligatures: "none",
+      })
       const growth = await grew(page, family, LIGATED)
+      const ligatureCost = dissolved - natural
 
-      expect(growth).toBeLessThanOrEqual(SPACING * units(LIGATED) + 0.001)
-      expect(growth).toBeGreaterThan(SPACING * (units(LIGATED) - 2))
+      expect(ligatureCost).toBeGreaterThanOrEqual(0)
+      expect(growth).toBeGreaterThanOrEqual(SPACING * units(LIGATED) - 0.001)
+      expect(
+        Math.abs(growth - (SPACING * units(LIGATED) + ligatureCost)),
+      ).toBeLessThanOrEqual(ROUNDING)
     }
   })
 

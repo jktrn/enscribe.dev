@@ -419,6 +419,7 @@ class BrowserTypesetter<Token> implements Typesetter {
 
   private readonly onFontsChanged = () => {
     if (this.paused.has("stopped")) return
+    if (!this.linebreaker.fontsMoved(document)) return
     const token = this.options.beforeWrite?.() as Token
     try {
       this.linebreaker.reset(this.known)

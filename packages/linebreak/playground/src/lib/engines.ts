@@ -20,18 +20,47 @@ export type ParagraphOutcome = {
   readonly reason: string
 }
 
-export const linebreakOptions = (state: State): LinebreakerOptions => ({
+const spaceWidthOf = (paragraph: HTMLElement | undefined) => {
+  if (paragraph === undefined) return 0
+  const style = getComputedStyle(paragraph)
+  const probe = document.createElement("span")
+  probe.setAttribute("aria-hidden", "true")
+  probe.style.cssText =
+    "position:absolute;left:-100000px;top:0;visibility:hidden;" +
+    "pointer-events:none;white-space:pre;contain:layout style paint"
+  probe.style.font = `${style.fontStyle} ${style.fontWeight} ${style.fontSize} ${style.fontFamily}`
+  probe.style.letterSpacing = style.letterSpacing
+  probe.textContent = "x x"
+  document.body.append(probe)
+
+  const range = document.createRange()
+  const node = probe.firstChild as Text
+  range.setStart(node, 1)
+  range.setEnd(node, 2)
+  const width = range.getBoundingClientRect().width
+  probe.remove()
+  return width
+}
+
+export const linebreakOptions = (
+  state: State,
+  spaceWidth: number,
+): LinebreakerOptions => ({
   hyphenate: state.hyphenate ? englishHyphenator : undefined,
   protrude: state.protrude,
   expand: state.expand,
   track: state.track,
   lastLineMinWidth: state.lastLineMinWidth,
+  emergencyStretch: state.emergencyStretch * spaceWidth,
   policy: texDefaults,
   glue: GLUE,
   minimumWidth: 160,
 })
 
-export const justifOptions = (state: State): JustifyOptions => ({
+export const justifOptions = (
+  state: State,
+  spaceWidth: number,
+): JustifyOptions => ({
   hyphenate: state.hyphenate ? hyphenateEnUS : undefined,
   protrusion: state.protrude,
   hangingPunctuation: state.protrude ? state.hang : "none",
@@ -42,6 +71,7 @@ export const justifOptions = (state: State): JustifyOptions => ({
     ? { max: TRACKING_BUDGET, shrink: TRACKING_BUDGET }
     : false,
   lastLineMinWidth: state.lastLineMinWidth,
+  emergencyStretch: state.emergencyStretch * spaceWidth,
   lastLineFit: 0,
   spacing: { ...GLUE, pull: 0, boundaryShrink: 1 },
   tolerance: texDefaults.tolerance,
@@ -66,7 +96,9 @@ export const runLinebreak = (
   state: State,
 ): ParagraphOutcome[] => {
   breaker?.dispose()
-  breaker = createLinebreaker(linebreakOptions(state))
+  breaker = createLinebreaker(
+    linebreakOptions(state, spaceWidthOf(paragraphs[0])),
+  )
   breaker.warm(document)
 
   const reported: ParagraphOutcome[] = []
@@ -89,7 +121,7 @@ export const runJustif = async (
 
   const reported: ParagraphOutcome[] = []
   controller = justify(paragraphs, {
-    ...justifOptions(state),
+    ...justifOptions(state, spaceWidthOf(paragraphs[0])),
     onSkip: (paragraph, reason) => {
       reported.push({
         index: paragraphs.indexOf(paragraph),

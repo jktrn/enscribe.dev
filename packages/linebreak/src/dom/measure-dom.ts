@@ -60,6 +60,17 @@ export const domWidths = (
   }
 }
 
+export const currentAdvance = (
+  document: Document,
+  font: string,
+  text: string,
+): number | null => {
+  const context = document.createElement("canvas").getContext("2d")
+  if (!context) return null
+  context.font = font
+  return context.measureText(text).width
+}
+
 export const metricsForStyle = (
   document: Document,
   style: CSSStyleDeclaration,

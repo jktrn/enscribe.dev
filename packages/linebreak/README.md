@@ -160,6 +160,7 @@ These options work with both browser entries.
 | `expand` | `false` | Lets a responsive width axis adjust eligible glyph widths by up to 2% |
 | `track` | `false` | Lets letter spacing adjust eligible box widths by up to 3% |
 | `lastLineMinWidth` | `0` | Discourages a final line shorter than this fraction of the measure |
+| `emergencyStretch` | `"auto"` | Extra stretch available to fallback passes, in pixels |
 | `preserveImageAttributes` | `[]` | Copies named live attributes to rebuilt images |
 | `policy` | TeX defaults | Overrides tolerances, penalties, and demerits |
 | `glue` | `{ stretch: 1/2, shrink: 1/3 }` | Sets how far word spaces may move |
@@ -225,6 +226,11 @@ createTypesetter({
 `lastLineMinWidth` is a soft floor for the last line. It tries stricter break
 routes first, then falls back to a continuous penalty if no route can meet the
 floor. An authored `<br>` is never penalized for making a short final line.
+
+`emergencyStretch` corresponds to TeX's `\emergencystretch`. When the normal
+passes fail, it adds the configured stretch to each line. Higher values can
+reduce overflow but loosen word spacing; `"auto"` uses 12 times the paragraph's
+mean space width.
 
 The DOM engine also reads ordinary first-line `text-indent`, including
 percentages and negative values. The `hanging` and `each-line` forms affect
@@ -513,10 +519,9 @@ the same font and measure. Its report uses rendered word rectangles rather
 than either library's internal score. It counts lines, hyphens, overfull lines,
 short endings, space-width deviation, and TeX badness.
 
-![Three-column comparison of native browser wrapping, @enscribe/linebreak, and Justif](./playground/screenshot.png)
+![Native browser wrapping, @enscribe/linebreak, and Justif beside their rendered metrics](./playground/screenshot.png)
 
-The screenshot was captured against Justif 0.7.0. Reproduce that comparison
-from the repository root:
+Reproduce the comparison from the repository root:
 
 ```sh
 git clone --depth 1 --branch v0.7.0 \
@@ -526,7 +531,24 @@ git clone --depth 1 --branch v0.7.0 \
 bun run --cwd packages/linebreak playground
 ```
 
-Set `JUSTIF_PATH` to use another checkout.
+Set `JUSTIF_PATH` to use another checkout. The playground reads its version
+from that checkout and stores settings in the URL for sharing.
+
+### Sweep a range
+
+A sweep plots line count, hyphens, spacing, and badness across a range of
+column widths or font sizes. Drag a chart to apply that value to the live
+comparison.
+
+![Six charts comparing line count, hyphens, spacing, and badness across column widths](./playground/sweep.png)
+
+### Run the benchmark
+
+The benchmark compares the two libraries across combinations of feature flags,
+measures, font sizes, and samples. The browser is an unranked baseline, and
+ties do not count.
+
+![Benchmark wins by metric, feature flag, and measure](./playground/benchmark.png)
 
 Both projects apply Knuth–Plass ideas to browser text. This package focuses on
 measured Latin prose, TeX-compatible policy, explicit outcomes and fallback,
