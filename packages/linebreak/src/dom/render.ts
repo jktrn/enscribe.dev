@@ -14,33 +14,44 @@ export const TYPESET_ATTRIBUTE = "data-linebreak-typeset"
 export const TYPESET_SELECTOR = "[data-linebreak-typeset]"
 
 const PROBE_HANG = 16
-const PROBE_LINE = "width:1000px;white-space:nowrap;font:16px/1 monospace"
+const PROBE_BLOCK =
+  "width:200px;text-align:justify;text-align-last:start;font:16px/1 monospace"
+const PROBE_LINE = "display:inline;white-space:nowrap"
+const PROBE_SET = "aaa bbb ccc ddd"
+const PROBE_OVERFLOW = "eeeeeeeeeeeeeeeeeeeeeeee"
 
 const honoured = new WeakMap<Document, boolean>()
 
-const hangShift = (host: HTMLDivElement) => {
-  const line = host.ownerDocument.createElement("div")
-  line.style.cssText = PROBE_LINE
-  const anchor = host.ownerDocument.createElement("span")
-  anchor.textContent = "."
-  const follower = host.ownerDocument.createElement("span")
-  follower.textContent = "."
-  line.append(anchor, follower)
-  host.append(line)
+const hangReach = (host: HTMLDivElement) => {
+  const document = host.ownerDocument
+  const block = document.createElement("div")
+  block.style.cssText = PROBE_BLOCK
 
-  const before = follower.getBoundingClientRect().left
-  anchor.style.marginInlineEnd = `${-PROBE_HANG}px`
-  return before - follower.getBoundingClientRect().left
+  const line = document.createElement("span")
+  line.style.cssText = PROBE_LINE
+  line.textContent = PROBE_SET
+
+  const overflow = document.createElement("span")
+  overflow.style.cssText = PROBE_LINE
+  overflow.textContent = PROBE_OVERFLOW
+
+  block.append(line, document.createTextNode(" "), overflow)
+  host.append(block)
+
+  line.style.marginInlineEnd = `${-PROBE_HANG}px`
+  return (
+    line.getBoundingClientRect().right - block.getBoundingClientRect().right
+  )
 }
 
 export const honoursHangingMargins = (document: Document) => {
   const cached = honoured.get(document)
   if (cached !== undefined) return cached
 
-  const shift = offscreen(document, hangShift)
-  if (shift === null) return false
+  const reach = offscreen(document, hangReach)
+  if (reach === null) return false
 
-  const supported = shift >= PROBE_HANG - 0.5
+  const supported = reach >= PROBE_HANG - 0.5
   honoured.set(document, supported)
   return supported
 }
@@ -317,44 +328,71 @@ const renderedUnits = (block: ExtractedBlock, line: Line) => {
   return units
 }
 
-const applyHangs = (element: HTMLElement, line: Line) => {
-  if (line.hangStart > 0) {
-    element.style.marginInlineStart = `${-line.hangStart}px`
-  }
-  if (line.hangEnd > 0) {
-    element.style.marginInlineEnd = `${-line.hangEnd}px`
-  }
-}
-
 type LinePlan = {
   readonly fit: LineFit | undefined
   readonly track: LineTrack | undefined
   readonly units: number
   readonly inherited: number
   readonly target: number
+  readonly excess: number
+  readonly shrink: number
 }
 
-const applyLetterfit = (element: HTMLElement, plan: LinePlan) => {
-  const gain = plan.track?.gain ?? 0
-  if (gain === 0 || plan.units === 0) return
-  element.style.letterSpacing = `${plan.inherited + gain / plan.units}px`
-}
-
-const applyRescue = (element: HTMLElement, line: Line, plan: LinePlan) => {
-  const { fit, track } = plan
+const elasticOf = (layout: RenderedLayout, index: number) => {
+  const line = layout.lines[index] as Line
+  const fit = layout.fits?.[index]
+  const track = layout.letterfit?.lines[index]
   const natural = line.naturalWidth + (fit?.gain ?? 0) + (track?.gain ?? 0)
-  const shrink = track?.shrink ?? fit?.shrink ?? line.shrink
-  const overflow = Math.min(natural - plan.target, shrink)
-  if (overflow > 0 && line.spaceCount > 0) {
-    element.style.wordSpacing = `${-(overflow / line.spaceCount)}px`
+  return {
+    excess: natural - layout.target,
+    shrink: track?.shrink ?? fit?.shrink ?? line.shrink,
   }
+}
+
+const overrunOf = (excess: number, shrink: number) =>
+  Math.max(0, excess - shrink)
+
+export const layoutSlack = (layout: RenderedLayout) => {
+  let most = 0
+  for (let index = 0; index < layout.lines.length; index += 1) {
+    const line = layout.lines[index] as Line
+    const { excess, shrink } = elasticOf(layout, index)
+    const reach = line.hangEnd + overrunOf(excess, shrink)
+    if (reach > most) most = reach
+  }
+  return most
+}
+
+const applyHangs = (element: HTMLElement, line: Line, plan: LinePlan) => {
+  if (line.hangStart > 0) {
+    element.style.marginInlineStart = `${-line.hangStart}px`
+  }
+  const end = line.hangEnd + overrunOf(plan.excess, plan.shrink)
+  if (end > 0) element.style.marginInlineEnd = `${-end}px`
+}
+
+const letterfitOf = (line: Line, plan: LinePlan) => {
+  const gain = plan.track?.gain ?? 0
+  const letters = plan.units - line.spaceCount
+  return gain === 0 || letters <= 0 ? 0 : gain / letters
+}
+
+const rescueOf = (line: Line, plan: LinePlan) => {
+  const overflow = Math.min(plan.excess, plan.shrink)
+  return overflow > 0 && line.spaceCount > 0 ? overflow / line.spaceCount : 0
 }
 
 const applyFit = (element: HTMLElement, line: Line, plan: LinePlan) => {
   const { fit } = plan
   if (fit && fit.pct !== 100) element.style.fontStretch = `${fit.pct}%`
-  applyLetterfit(element, plan)
-  applyRescue(element, line, plan)
+
+  const perLetter = letterfitOf(line, plan)
+  if (perLetter !== 0) {
+    element.style.letterSpacing = `${plan.inherited + perLetter}px`
+  }
+
+  const spacing = -perLetter - rescueOf(line, plan)
+  if (spacing !== 0) element.style.wordSpacing = `${spacing}px`
 }
 
 const planFor = (
@@ -370,6 +408,7 @@ const planFor = (
     units: letterfit ? renderedUnits(block, line) : 0,
     inherited: letterfit?.inherited ?? 0,
     target: layout.target,
+    ...elasticOf(layout, index),
   }
 }
 
@@ -397,8 +436,9 @@ export const renderLines = (
 
     const target = document.createElement("span")
     target.dataset.linebreakLine = line.breakKind
-    applyHangs(target, line)
-    applyFit(target, line, planFor(block, layout, index))
+    const plan = planFor(block, layout, index)
+    applyHangs(target, line, plan)
+    applyFit(target, line, plan)
 
     const rendered = appendLine(target, block, line, nextRun)
     if (!rendered) return null
@@ -437,9 +477,8 @@ const adjustedLine = (layout: RenderedLayout, index: number) => {
 const tighteningFor = (
   element: HTMLElement,
   line: Line,
-  target: number,
+  allowed: number,
 ): Tightening | null => {
-  const allowed = target + line.hangStart + line.hangEnd
   const overset = element.getBoundingClientRect().width - allowed
   if (overset <= OVERSET_EPSILON) return null
 
@@ -456,7 +495,10 @@ const oversetOf = (written: WrittenLines): Tightening[] => {
     const line = adjustedLine(layout, index)
     if (!line) continue
 
-    const tightening = tighteningFor(element, line, layout.target)
+    const { excess, shrink } = elasticOf(layout, index)
+    const allowed =
+      layout.target + line.hangStart + line.hangEnd + overrunOf(excess, shrink)
+    const tightening = tighteningFor(element, line, allowed)
     if (tightening) tightenings.push(tightening)
   }
   return tightenings

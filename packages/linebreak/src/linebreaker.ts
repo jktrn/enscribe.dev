@@ -19,9 +19,10 @@ import type { FontMetrics } from "./text/segments"
 import { engineDefaults, engineLimits } from "./policy"
 import type { StretchScale } from "./text/stretch"
 import { invalidateStretchScales, stretchScaleFor } from "./dom/stretch"
-import { metricsForStyle } from "./dom/measure-dom"
+import { currentAdvance, metricsForStyle } from "./dom/measure-dom"
 import {
   honoursHangingMargins,
+  layoutSlack,
   LINE_SELECTOR,
   renderLines,
   type RenderedLayout,
@@ -37,7 +38,6 @@ import {
 } from "./dom/restore"
 import {
   contentWidth,
-  hangSlack,
   layoutMismatch,
   resolvedLineHeight,
   styleOf,
@@ -109,6 +109,18 @@ const DECLINED: ReadonlySet<string> = new Set(DECLINE_REASONS)
 
 const TRANSIENT: ReadonlySet<string> = new Set(["already-typeset"])
 
+const WITNESS_CHARACTERS = 64
+
+const WITNESS_EPSILON = 0.01
+
+type Witness = {
+  readonly font: string
+  readonly characters: Set<string>
+  width: number
+}
+
+const witnessText = (witness: Witness) => [...witness.characters].join("")
+
 const WIDTH_DEPENDENT: ReadonlySet<string> = new Set([
   "no-feasible-breaking",
   "unstable-width",
@@ -144,6 +156,7 @@ class BrowserLinebreaker implements Linebreaker {
     ComposeReason | FailureReason
   >()
   private readonly metrics = new Map<string, FontMetrics>()
+  private readonly witnesses = new Map<string, Witness>()
   private readonly drafts = new WeakMap<Composition, Draft>()
   private readonly counters = {
     typeset: 0,
@@ -290,8 +303,20 @@ class BrowserLinebreaker implements Linebreaker {
     }
     if (!elements) this.remembered.clear()
     this.metrics.clear()
+    this.witnesses.clear()
     invalidateMeasurements()
     invalidateStretchScales()
+  }
+
+  fontsMoved(document: Document) {
+    for (const witness of this.witnesses.values()) {
+      if (witness.characters.size === 0) continue
+      const now = currentAdvance(document, witness.font, witnessText(witness))
+      if (now !== null && Math.abs(now - witness.width) > WITNESS_EPSILON) {
+        return true
+      }
+    }
+    return false
   }
 
   refresh() {
@@ -525,11 +550,11 @@ class BrowserLinebreaker implements Linebreaker {
     results: Map<Composition, Outcome>,
   ) {
     const draft = this.drafts.get(composition)
-    if (!draft) return false
+    if (!draft?.written) return false
 
     const failure = this.verify(
       composition.element,
-      draft.lines,
+      draft.written,
       draft.width + shift,
     )
     if (!failure) {
@@ -655,7 +680,7 @@ class BrowserLinebreaker implements Linebreaker {
 
   private verify(
     element: HTMLElement,
-    lines: readonly Line[],
+    written: WrittenLines,
     expectedWidth: number,
   ): FailureReason | null {
     const style = styleOf(element)
@@ -669,7 +694,8 @@ class BrowserLinebreaker implements Linebreaker {
     if (!Number.isFinite(resolvedLineHeight(style))) {
       return "line-height-unresolved"
     }
-    return layoutMismatch(element, lines.length, hangSlack(lines))
+    const { lines } = written.layout
+    return layoutMismatch(element, lines.length, layoutSlack(written.layout))
       ? "layout-mismatch"
       : null
   }
@@ -721,15 +747,40 @@ class BrowserLinebreaker implements Linebreaker {
     style: CSSStyleDeclaration,
     locale: string,
     document: Document,
+    sample: string,
   ) {
     const font = computedFont(style)
     const letterSpacing = cssPixels(style.letterSpacing)
     const key = `${locale}|${letterSpacing}|${variantKey(style)}|${font}`
     const cached = this.metrics.get(key)
-    if (cached) return cached
-    const metrics = metricsForStyle(document, style, font, letterSpacing)
-    if (metrics) this.metrics.set(key, metrics)
+    const metrics =
+      cached ?? metricsForStyle(document, style, font, letterSpacing)
+    if (!metrics) return null
+    if (!cached) this.metrics.set(key, metrics)
+    this.witness(key, font, sample, document)
     return metrics
+  }
+
+  private witness(
+    key: string,
+    font: string,
+    sample: string,
+    document: Document,
+  ) {
+    let witness = this.witnesses.get(key)
+    if (!witness) {
+      witness = { font, characters: new Set<string>(), width: 0 }
+      this.witnesses.set(key, witness)
+    }
+
+    const before = witness.characters.size
+    for (const character of sample) {
+      if (witness.characters.size >= WITNESS_CHARACTERS) break
+      if (character.trim() !== "") witness.characters.add(character)
+    }
+    if (witness.characters.size === before) return
+
+    witness.width = currentAdvance(document, font, witnessText(witness)) ?? 0
   }
 
   private measure(
@@ -754,7 +805,12 @@ class BrowserLinebreaker implements Linebreaker {
       const runStyle = reader(run.sourceElement)
       const metrics = unmodellableProperty(runStyle)
         ? null
-        : this.metricsFor(runStyle, basis.locale, element.ownerDocument)
+        : this.metricsFor(
+            runStyle,
+            basis.locale,
+            element.ownerDocument,
+            run.kind === "text" ? run.text : "",
+          )
       if (!metrics) unmodellable ??= "unmeasurable"
       return metrics
     }

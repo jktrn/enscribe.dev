@@ -214,8 +214,10 @@ const hasToc = Astro.slots.has("toc") && !wide
          gutter's resting value — the live gutter is viewport-fluid and would
          make this cap drift, re-typesetting prose on every resize tick. */
       max-inline-size: calc(
-        7 * ((var(--grid-max-width) - 13 * var(--grid-gutter-max)) / 12) + 6 *
-          var(--grid-gutter-max)
+        7 *
+        ((var(--grid-max-width) - 13 * var(--grid-gutter-max)) / 12) +
+        6 *
+        var(--grid-gutter-max)
       );
     }
 

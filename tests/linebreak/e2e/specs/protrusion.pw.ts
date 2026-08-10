@@ -1,5 +1,10 @@
 import { expect, test } from "@playwright/test"
-import { measureLines, settleTypeset, sweepViewport } from "../support/page"
+import {
+  honoursHangingMargins,
+  measureLines,
+  settleTypeset,
+  sweepViewport,
+} from "../support/page"
 import { PROTRUSION } from "../support/protrusion"
 
 test.use({ viewport: { width: 1440, height: 900 } })
@@ -151,6 +156,12 @@ test("punctuation hangs past the measure on both sides", async ({ page }) => {
   await settleTypeset(page)
   const report = await edges(page, PROTRUSION)
 
+  if (!(await honoursHangingMargins(page))) {
+    expect(report.hung).toBe(0)
+    expect(report.maxHang).toBe(0)
+    return
+  }
+
   expect(report.hung).toBeGreaterThan(50)
   expect(report.checkedStarts).toBeGreaterThan(0)
   expect(report.checkedEnds).toBeGreaterThan(20)
@@ -163,11 +174,17 @@ test("a hanging glyph is not mistaken for overflow", async ({ page }) => {
   await settleTypeset(page)
   const report = await measureLines(page)
 
-  expect(report.hangingLines).toBeGreaterThan(50)
-  expect(report.overflowingBlocks).toBeGreaterThan(0)
   expect(report.unhungOverflowBlocks).toBe(0)
   expect(report.worstUnhungOverflowPx).toBe(0)
   expect(report.wrappedBlocks).toBe(0)
+
+  if (!(await honoursHangingMargins(page))) {
+    expect(report.hangingLines).toBe(0)
+    return
+  }
+
+  expect(report.hangingLines).toBeGreaterThan(50)
+  expect(report.overflowingBlocks).toBeGreaterThan(0)
 })
 
 test("protrusion does not cost a retry or a failure", async ({ page }) => {
@@ -261,15 +278,23 @@ test("a monospace run inside prose does not hang into the margin", async ({
   )
 
   const [control, monoBlock, monoInset] = report
+  const hangs = await honoursHangingMargins(page)
+
   expect(control?.typeset).toBe(true)
   expect(control?.lines).toBeGreaterThan(2)
-  expect(control?.hung).toBeGreaterThan(0)
 
   expect(monoBlock?.typeset).toBe(true)
   expect(monoBlock?.lines).toBeGreaterThan(2)
-  expect(monoBlock?.hung).toBeGreaterThan(0)
 
   expect(monoInset?.typeset).toBe(true)
   expect(monoInset?.lines).toBeGreaterThan(2)
   expect(monoInset?.hung).toBe(0)
+
+  if (!hangs) {
+    expect(control?.hung).toBe(0)
+    expect(monoBlock?.hung).toBe(0)
+    return
+  }
+  expect(control?.hung).toBeGreaterThan(0)
+  expect(monoBlock?.hung).toBeGreaterThan(0)
 })

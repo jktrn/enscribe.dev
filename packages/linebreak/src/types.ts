@@ -94,6 +94,7 @@ export interface Linebreaker {
   typeset(elements: Iterable<HTMLElement>): readonly Outcome[]
   restore(elements?: Iterable<HTMLElement>): void
   reset(elements?: Iterable<HTMLElement>): void
+  fontsMoved(document: Document): boolean
   refresh(): void
   stats(): LinebreakerStats
   dispose(): void

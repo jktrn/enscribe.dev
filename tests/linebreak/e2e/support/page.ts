@@ -18,6 +18,33 @@ export const sweepViewport = async (page: Page) => {
   await waitForQuiet(page)
 }
 
+export const honoursHangingMargins = (page: Page) =>
+  page.evaluate(() => {
+    const HANG = 16
+    const host = document.createElement("div")
+    host.style.cssText =
+      "position:absolute;top:-9999px;left:0;visibility:hidden;contain:layout style"
+    const block = document.createElement("div")
+    block.style.cssText =
+      "width:200px;text-align:justify;text-align-last:start;font:16px/1 monospace"
+    const line = document.createElement("span")
+    line.style.cssText = "display:inline;white-space:nowrap"
+    line.textContent = "aaa bbb ccc ddd"
+    const rest = document.createElement("span")
+    rest.style.cssText = "display:inline;white-space:nowrap"
+    rest.textContent = "eeeeeeeeeeeeeeeeeeeeeeee"
+
+    block.append(line, document.createTextNode(" "), rest)
+    host.append(block)
+    document.body.append(host)
+
+    line.style.marginInlineEnd = `${-HANG}px`
+    const reach =
+      line.getBoundingClientRect().right - block.getBoundingClientRect().right
+    host.remove()
+    return reach >= HANG - 0.5
+  })
+
 export const waitForQuiet = async (page: Page, settleMs = 500) => {
   await page
     .waitForFunction(

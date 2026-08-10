@@ -76,14 +76,26 @@ describe("the width the font really delivered", () => {
     const { span } = settle(
       lineOf({ naturalWidth: 340, shrink: 30 }),
       300,
-      [{ pct: 98, gain: -8, stretch: 20, shrink: 9 }],
+      [{ pct: 98, gain: -8, stretch: 20, shrink: 32 }],
       303,
     )
 
     expect(Number.parseFloat(span.style.wordSpacing as string)).toBeCloseTo(
-      -(12 / 7),
+      -(35 / 7),
       9,
     )
+  })
+
+  test("a line that cannot close its overrun is not squeezed for it", () => {
+    const { span, tightened } = settle(
+      lineOf({ naturalWidth: 340, shrink: 30 }),
+      300,
+      [{ pct: 98, gain: -8, stretch: 20, shrink: 9 }],
+      303,
+    )
+
+    expect(tightened).toBe(0)
+    expect(span.style.wordSpacing).toBe(`${-(9 / 7)}px`)
   })
 
   test("a line may still reach past the measure by what it hangs", () => {

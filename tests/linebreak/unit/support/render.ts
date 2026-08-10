@@ -146,7 +146,11 @@ export const renderText = (
 ) =>
   renderIn(
     blockFor(text),
-    lineOf({ sourceEnd: text.length, breakKind: "space" }),
+    lineOf({
+      sourceEnd: text.length,
+      breakKind: "space",
+      spaceCount: (text.trim().match(/ /g) ?? []).length,
+    }),
     target,
     null,
     letterfit,
