@@ -1,0 +1,400 @@
+---
+import { CITIES, DEFAULT_CITY_ID, cityIndexForPlace } from "@/lib/food-cities"
+import data from "@/data/beli-places.json"
+
+// [lon, lat, cityIndex, score] — 5 decimals is ~1.1m, invisible at this dot
+// size; -1 marks an unscored place. Colour and label are both derived from the
+// score at paint time, so neither is shipped. Every city travels in one payload
+// so switching never costs a request; places no view covers are dropped.
+const points = data.places
+  .filter((place) => place.latitude !== null && place.longitude !== null)
+  .map((place) => [
+    Number(place.longitude.toFixed(5)),
+    Number(place.latitude.toFixed(5)),
+    cityIndexForPlace(place.id, place.latitude, place.longitude),
+    place.score ?? -1,
+  ])
+  .filter((point) => point[2] >= 0)
+
+const payload = JSON.stringify(points).replaceAll("<", "\\u003c")
+---
+
+<div class="food-map" data-food-map>
+  <div class="food-map-canvas" data-food-map-canvas></div>
+
+  <label class="food-map-city">
+    <span class="sr-only">Show places in</span>
+    <select data-food-map-city>
+      {CITIES.map((city) => (
+          <option value={city.id} selected={city.id === DEFAULT_CITY_ID}>
+            {city.label}
+          </option>
+        ))}
+    </select>
+  </label>
+
+  <script
+    is:inline
+    type="application/json"
+    data-food-map-data
+    set:html={payload}
+  />
+</div>
+
+<script>
+  import { CITIES, DEFAULT_CITY_ID, cityById } from "@/lib/food-cities"
+  import { createColorResolver, TILE_ZOOM_RANGE } from "@/lib/map-style"
+
+  type Row = [number, number, number, number]
+
+  const STORAGE_KEY = "food-map-city"
+
+  const cityIndex = (id: string) => CITIES.findIndex((city) => city.id === id)
+
+  const toFeatureCollection = (rows: Row[]) => ({
+    type: "FeatureCollection" as const,
+    features: rows.map(([lon, lat, city, score]) => ({
+      type: "Feature" as const,
+      properties: { city, score },
+      geometry: { type: "Point" as const, coordinates: [lon, lat] },
+    })),
+  })
+
+  let teardown: (() => void) | undefined
+
+  const mount = async (root: HTMLElement) => {
+    const canvas = root.querySelector<HTMLElement>("[data-food-map-canvas]")
+    const dataNode = root.querySelector<HTMLElement>("[data-food-map-data]")
+    if (!canvas || !dataNode?.textContent) return
+
+    const rows = JSON.parse(dataNode.textContent) as Row[]
+
+    // Destructure directly off the awaited import — routing the namespace
+    // through Promise.all defeats tree-shaking of the maplibre chunk.
+    const maplibrePromise = import("maplibre-gl")
+    const [workerUrl, mapStyleModule] = await Promise.all([
+      import("maplibre-gl/dist/maplibre-gl-worker.mjs?url").then(
+        (module) => module.default,
+      ),
+      import("@/lib/map-style"),
+    ])
+    const {
+      applyMapTheme,
+      collapseDuplicateWaterLabels,
+      bubbleColorsForScore,
+      loadMapStyle,
+      TILE_LAYER_IDS,
+    } = mapStyleModule
+    const { Map: MapLibreMap, setWorkerUrl } = await maplibrePromise
+
+    setWorkerUrl(workerUrl)
+
+    let storedCity: string | null = null
+    try {
+      storedCity = sessionStorage.getItem(STORAGE_KEY)
+    } catch {}
+    const startCity = cityById(storedCity) ?? cityById(DEFAULT_CITY_ID)!
+
+    const color = createColorResolver()
+    const map = new MapLibreMap({
+      container: canvas,
+      style: await loadMapStyle({
+        keepLayerIds: TILE_LAYER_IDS,
+        instantTransitions: true,
+      }),
+      center: [...startCity.center],
+      zoom: startCity.zoom,
+      // Guardrails tied to the range TILE_LAYER_IDS was derived for.
+      minZoom: TILE_ZOOM_RANGE.min,
+      maxZoom: TILE_ZOOM_RANGE.max,
+      interactive: false,
+      attributionControl: false, // credited on /food, which this tile links to
+      // Native resolution, not a cap. A cap looks fine until the display or the
+      // browser zoom exceeds it, at which point the canvas is upscaled and the
+      // whole tile reads as a low-res image. This map draws a few frames and
+      // then idles, so the extra fragments are paid once. See syncPixelRatio.
+      pixelRatio: window.devicePixelRatio,
+      // MSAA is normally a poor trade on a map, since it multiplies fragment
+      // work every frame. This one draws a handful of frames and then idles, so
+      // it is paid once — and without it the polygon fills (coastline, water,
+      // parks) have hard stair-stepped edges that read as a low-res image.
+      // Lines and text are antialiased in-shader regardless.
+      canvasContextAttributes: {
+        antialias: true,
+        powerPreference: "low-power",
+      },
+      fadeDuration: 0,
+      refreshExpiredTiles: false,
+      crossSourceCollisions: false,
+      renderWorldCopies: false,
+      maxTileCacheZoomLevels: 12, // hold all five cities, so switching back is a hit
+      validateStyle: import.meta.env.DEV,
+    })
+
+    // interactive:false disables the gesture handlers but leaves ~18 DOM
+    // listeners attached, including non-passive touchmove/wheel on the canvas
+    // container — which would block scrolling that starts over this cell.
+    // map.remove() calls this too, so a double destroy is a no-op.
+    ;(
+      map as unknown as { _handlers?: { destroy?: () => void } }
+    )._handlers?.destroy?.()
+
+    // Every place renders; they simply overlap. The number is drawn INTO the
+    // dot image so each place is a single symbol — a symbol layer draws all its
+    // text above all its icons, so a separate text layer would float a buried
+    // place's number over the dot covering it.
+    const DOT_RADIUS = 8.5
+    const RING_WIDTH = 1.25
+    const LABEL_SIZE = 8 // "10.0" measures 14.1px here, inside a 17px dot
+    // Bubbles are real bitmaps, so they must be baked at the display's density
+    // or they blur while the vector basemap around them stays sharp.
+    const imageScale = () =>
+      Math.min(Math.max(Math.ceil(window.devicePixelRatio), 1), 4)
+
+    const scoreLabel = (score: number) =>
+      score < 0 ? "\u2014" : score.toFixed(1)
+
+    const dotImage = (score: number, scale: number) => {
+      const { fill, ink, ring } = bubbleColorsForScore(
+        score < 0 ? null : score,
+        color.resolve,
+      )
+      const box = Math.ceil((DOT_RADIUS + RING_WIDTH) * 2)
+      const canvas = document.createElement("canvas")
+      canvas.width = canvas.height = box * scale
+      const ctx = canvas.getContext("2d")
+      if (!ctx) return null
+      ctx.scale(scale, scale)
+      const mid = box / 2
+      ctx.beginPath()
+      ctx.arc(mid, mid, DOT_RADIUS, 0, Math.PI * 2)
+      ctx.fillStyle = fill
+      ctx.fill()
+      ctx.lineWidth = RING_WIDTH
+      ctx.strokeStyle = ring
+      ctx.stroke()
+      ctx.fillStyle = ink
+      ctx.font = `${LABEL_SIZE}px "MD Lorien", sans-serif`
+      ctx.textAlign = "center"
+      ctx.textBaseline = "middle"
+      ctx.fillText(scoreLabel(score), mid, mid + 0.5)
+      return ctx.getImageData(0, 0, canvas.width, canvas.height)
+    }
+
+    const scores = [...new Set(rows.map((row) => row[3]))]
+    const syncDotImages = () => {
+      const scale = imageScale()
+      for (const score of scores) {
+        const image = dotImage(score, scale)
+        if (!image) continue
+        const id = `dot-${score}`
+        // Removed rather than updated: updateImage keeps the original
+        // pixelRatio, so a density change would leave the bitmap upscaled.
+        if (map.hasImage(id)) map.removeImage(id)
+        map.addImage(id, image, { pixelRatio: scale })
+      }
+    }
+
+    // devicePixelRatio changes on browser zoom and when a window moves between
+    // displays. It does not change the container's CSS size, so MapLibre's
+    // resize observer never fires and the canvas would stay at its old density.
+    let densityQuery: MediaQueryList | undefined
+    const syncPixelRatio = () => {
+      map.setPixelRatio(window.devicePixelRatio)
+      if (map.getLayer("places")) syncDotImages()
+      densityQuery?.removeEventListener("change", syncPixelRatio)
+      densityQuery = matchMedia(`(resolution: ${window.devicePixelRatio}dppx)`)
+      densityQuery.addEventListener("change", syncPixelRatio)
+    }
+    syncPixelRatio()
+
+    const theme = () => {
+      applyMapTheme(map, color.resolve)
+      if (!map.getLayer("places")) return
+      syncDotImages()
+    }
+
+    map.on("style.load", () => {
+      // Before theming, so its own label layer exists in time to be painted.
+      collapseDuplicateWaterLabels(map)
+      applyMapTheme(map, color.resolve)
+      map.addSource("places", {
+        type: "geojson",
+        data: toFeatureCollection(rows),
+      })
+      syncDotImages()
+      // No beforeId, so this appends last and sits above every basemap label —
+      // the z-order DOM markers used to get by living in the canvas container.
+      map.addLayer({
+        id: "places",
+        type: "symbol",
+        source: "places",
+        filter: ["==", ["get", "city"], cityIndex(startCity.id)],
+        layout: {
+          "icon-image": ["concat", "dot-", ["to-string", ["get", "score"]]],
+          // Draw every place, overlapping where they must.
+          "icon-allow-overlap": true,
+          "icon-ignore-placement": true,
+          // Ascending, so the best score is drawn last and lands on top.
+          "symbol-sort-key": ["get", "score"],
+        },
+      } as never)
+    })
+
+    map.on("load", () => {
+      root.dataset.ready = "true"
+    })
+
+    const select = root.querySelector<HTMLSelectElement>("[data-food-map-city]")
+    if (select) select.value = startCity.id
+    const showCity = () => {
+      const city = cityById(select?.value)
+      if (!city) return
+      // jumpTo, not flyTo: an animated camera re-runs tile coverage every frame
+      // and would stream the whole path (NY->Tokyo measured 16 requests vs 2).
+      map.jumpTo({ center: [...city.center], zoom: city.zoom })
+      // Frames overlap between neighbouring metros, so the camera alone cannot
+      // keep one city's pins out of another's view — the filter does.
+      map.setFilter("places", [
+        "==",
+        ["get", "city"],
+        cityIndex(city.id),
+      ] as never)
+      try {
+        sessionStorage.setItem(STORAGE_KEY, city.id)
+      } catch {}
+    }
+    select?.addEventListener("change", showCity)
+
+    const scheme = matchMedia("(prefers-color-scheme: dark)")
+    scheme.addEventListener("change", theme)
+    const observer = new MutationObserver(theme)
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["data-theme"],
+    })
+
+    teardown = () => {
+      densityQuery?.removeEventListener("change", syncPixelRatio)
+      select?.removeEventListener("change", showCity)
+      scheme.removeEventListener("change", theme)
+      observer.disconnect()
+      color.dispose()
+      map.remove()
+      delete root.dataset.ready
+    }
+  }
+
+  const setup = () => {
+    teardown?.()
+    teardown = undefined
+    const root = document.querySelector<HTMLElement>("[data-food-map]")
+    if (!root) return
+
+    if (!("IntersectionObserver" in window)) {
+      void mount(root)
+      return
+    }
+
+    const watcher = new IntersectionObserver(
+      (entries) => {
+        if (!entries.some((entry) => entry.isIntersecting)) return
+        watcher.disconnect()
+        void mount(root)
+      },
+      { rootMargin: "200px" },
+    )
+    watcher.observe(root)
+  }
+
+  document.addEventListener("astro:page-load", setup)
+  document.addEventListener("astro:before-swap", () => {
+    teardown?.()
+    teardown = undefined
+  })
+</script>
+
+<style>
+  .food-map {
+    position: absolute;
+    inset: 0;
+    background: var(--background-l0);
+  }
+
+  /*
+   * This element is also MapLibre's container, so it carries the two rules the
+   * tile needs from maplibre-gl.css: a positioning context (absolute already
+   * provides one — do NOT let a .maplibregl-map rule override it back to
+   * relative, which collapses the height to 0) and clipping. With no DOM
+   * markers, controls or popups, the sheet's other ~700 selectors are dead
+   * weight, and it costs 83KB raw / 10KB gzip.
+   */
+  .food-map-canvas {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+
+  .food-map[data-ready="true"] .food-map-canvas {
+    opacity: 1;
+  }
+
+  :global(.food-map .maplibregl-canvas) {
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+
+  .food-map-city {
+    position: absolute;
+    inset-block-start: 0.375rem;
+    inset-inline-start: 0.375rem;
+    z-index: 1;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+
+  .food-map[data-ready="true"] .food-map-city {
+    opacity: 1;
+  }
+
+  .food-map-city select {
+    padding: 0.125rem 0.25rem;
+    /*
+     * The control floats over live map tiles, so the ring has to clear every
+     * basemap surface at once. The basemap is confined to ramp steps 0-5, so
+     * step 8 is outside it by construction: worst-case contrast 1.82 against
+     * both land and water in both schemes. --border and --background-l0 both
+     * measure exactly 1.00 against one surface or the other — they ARE the
+     * water and land fills — so neither can work here.
+     */
+    border: 2px solid var(--background-l8);
+    outline: 0;
+    color: var(--foreground);
+    background: var(--background-l0);
+    font-family: inherit;
+    font-size: 0.6875rem;
+    cursor: pointer;
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .food-map-canvas,
+    .food-map-city {
+      transition: none;
+    }
+  }
+</style>
