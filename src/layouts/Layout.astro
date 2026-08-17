@@ -17,6 +17,7 @@ import "@/styles/file-tree.css"
 import "@/styles/tabs.css"
 import "@/styles/layout.css"
 import "@/styles/reference.css"
+import "@/styles/sidenote.css"
 import "@/styles/scroll-fade.css"
 import "@/styles/icon-button.css"
 import "@/styles/bar.css"
@@ -31,6 +32,7 @@ import Search from "@/components/Search.astro"
 import Footer from "@/components/Footer.astro"
 import MetaHead from "@/components/MetaHead.astro"
 import Sidebar from "@/components/Sidebar.astro"
+import Sidenotes from "@/components/Sidenotes.astro"
 import { SITE } from "@/consts"
 import type { InlineLabel } from "@/lib/content"
 
@@ -57,7 +59,7 @@ const hasToc = Astro.slots.has("toc") && !wide
           >
         </page-nav>
         {hasToc && (
-            <page-toc><slot name="toc" /></page-toc>
+            <page-toc><slot name="toc" /><Sidenotes /></page-toc>
           )}
       </page-header>
       <page-content data-wide={wide || undefined}>
@@ -208,11 +210,6 @@ const hasToc = Astro.slots.has("toc") && !wide
   @media (width >= 64rem) {
     page-grid:not([data-toc]) page-content:not([data-wide]) {
       grid-column: 3 / 13;
-      /* Cap at the article rail (columns 3–10) at the grid's resting width,
-         so TOC-less pages hold a constant measure that matches article pages
-         at rest instead of tracking the mid-band TOC squeeze. Uses the
-         gutter's resting value — the live gutter is viewport-fluid and would
-         make this cap drift, re-typesetting prose on every resize tick. */
       max-inline-size: calc(
         7 *
         ((var(--grid-max-width) - 13 * var(--grid-gutter-max)) / 12) +

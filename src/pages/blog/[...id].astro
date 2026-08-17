@@ -55,12 +55,7 @@ const sections = rendered.map(({ entry, headings }, i) => ({
   href: `/blog/${entry.id}`,
   label: entryInline(entry, "title"),
   open: entry.id === post.id,
-  headings: enrichHeadings(
-    headings.filter(
-      ({ depth, text }) => depth >= 2 && depth <= 4 && text.trim(),
-    ),
-    entry.rendered?.metadata?.frontmatter,
-  ),
+  headings: enrichHeadings(headings, entry.rendered?.metadata?.frontmatter),
 }))
 const hasToc =
   sections.length > 1 || sections.some(({ headings }) => headings.length > 0)

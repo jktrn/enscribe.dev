@@ -1,0 +1,204 @@
+---
+---
+
+<sidenote-layer
+  aria-hidden="true"
+  data-linebreak-root
+  data-linebreak-narrow
+></sidenote-layer>
+
+<script>
+  import { onReaderModeChange } from "@/lib/typography/preference-events"
+  import { rescanProse } from "@/lib/typography/prose-justification"
+  import { hashId } from "@/lib/utils"
+
+  type Sidenote = {
+    scope: Element
+    id: string
+    el: HTMLElement
+    ref: HTMLElement | null
+  }
+
+  const resolve = ({ scope, id, ref }: Sidenote) =>
+    ref?.isConnected
+      ? ref
+      : scope.querySelector<HTMLElement>(`[id="${CSS.escape(id)}"]`)
+
+  const build = (layer: HTMLElement) => {
+    const notes: Sidenote[] = []
+    const lists = document.querySelectorAll<HTMLElement>(
+      "prose-content .footnotes",
+    )
+
+    for (const list of lists) {
+      const scope = list.closest("prose-content")
+      if (!scope) continue
+
+      for (const ref of scope.querySelectorAll<HTMLElement>(
+        "[data-footnote-ref]",
+      )) {
+        if (ref.closest(".footnotes") || !ref.id) continue
+        const source = list.querySelector(
+          `li[id="${CSS.escape(hashId((ref as HTMLAnchorElement).hash))}"]`,
+        )
+        if (!source) continue
+
+        const marker = document.createElement("sidenote-marker")
+        marker.textContent = ref.textContent
+        const body = document.createElement("sidenote-body")
+        body.append(...source.cloneNode(true).childNodes)
+        body.querySelector("[data-footnote-backref]")?.remove()
+        for (const node of body.querySelectorAll("[id]")) {
+          node.removeAttribute("id")
+        }
+        for (const link of body.querySelectorAll("a[href]")) {
+          link.setAttribute("tabindex", "-1")
+        }
+
+        const el = document.createElement("sidenote")
+        el.setAttribute("for", ref.id)
+        el.append(marker, body)
+        layer.append(el)
+        notes.push({ scope, id: ref.id, el, ref })
+      }
+    }
+
+    return { notes, lists }
+  }
+
+  const pairing = (notes: Sidenote[]) => {
+    const style = document.createElement("style")
+    style.setAttribute("data-linebreak-skip", "")
+    const lit = notes
+      .filter(({ id }) => /^[\w-]+$/.test(id))
+      .flatMap(({ id }) => [
+        `body:has([id="${id}"]:is(:hover, :focus-visible)) :is(sidenote[for="${id}"], [id="${id}"])`,
+        `body:has(sidenote[for="${id}"]:hover) :is(sidenote[for="${id}"], [id="${id}"])`,
+      ])
+    if (lit.length === 0) return style
+    style.textContent = `${lit.join(",")}{--lit: var(--foreground); --lit-fill: color-mix(in oklab, var(--muted) 60%, transparent);}`
+    return style
+  }
+
+  let teardown: (() => void) | undefined
+
+  const setup = () => {
+    teardown?.()
+    teardown = undefined
+
+    const layer = document.querySelector<HTMLElement>("page-toc sidenote-layer")
+    if (!layer) return
+    layer.replaceChildren()
+
+    const { notes, lists } = build(layer)
+    const first = notes[0]
+    if (!first) return
+    layer.append(pairing(notes))
+
+    const root = document.documentElement
+    const controller = new AbortController()
+    const { signal } = controller
+    const wide = matchMedia("screen and (min-width: 64rem)")
+
+    let frame: number | undefined
+    let active = false
+    let pad = 0
+
+    const layout = () => {
+      frame = undefined
+      if (!active) return
+
+      const rail = layer.getBoundingClientRect()
+      if (rail.height === 0) return
+
+      const boxes = notes.map((note) => resolve(note)?.getBoundingClientRect())
+      const heights = notes.map((note) => note.el.offsetHeight)
+
+      const tops: number[] = []
+      const flush: boolean[] = []
+      let cursor = Number.NEGATIVE_INFINITY
+      for (const [i, box] of boxes.entries()) {
+        if (!box) {
+          tops.push(Number.NEGATIVE_INFINITY)
+          flush.push(false)
+          continue
+        }
+        const wanted = box.top - rail.top - pad
+        const top = Math.max(wanted, cursor)
+        tops.push(top)
+        flush.push(wanted <= cursor)
+        cursor = top + heights[i]!
+      }
+
+      for (const [i, note] of notes.entries()) {
+        const top = tops[i]!
+        const on =
+          boxes[i] !== undefined && top + heights[i]! > 0 && top < rail.height
+        note.el.toggleAttribute("visible", on)
+        if (!on) continue
+        note.el.style.translate = `0 ${Math.round(top)}px`
+        note.el.toggleAttribute("run-start", !flush[i])
+        note.el.toggleAttribute("run-end", !flush[i + 1])
+      }
+    }
+
+    const schedule = () => {
+      if (frame === undefined) frame = requestAnimationFrame(layout)
+    }
+
+    const apply = () => {
+      const on = wide.matches && root.dataset.readerMode === undefined
+      if (on === active) return
+      active = on
+      root.toggleAttribute("data-sidenotes", on)
+      for (const list of lists) {
+        list.toggleAttribute("data-collapsed", on)
+        list.toggleAttribute("data-linebreak-skip", on)
+      }
+      if (on) return schedule()
+      for (const note of notes) note.el.removeAttribute("visible")
+    }
+
+    const claimed = new Set(notes.map(({ id }) => id))
+    document.addEventListener(
+      "click",
+      (event) => {
+        const ref = (event.target as Element | null)?.closest?.(
+          "[data-footnote-ref]",
+        )
+        if (active && ref && claimed.has(ref.id)) event.preventDefault()
+      },
+      { signal, capture: true },
+    )
+
+    const railResize = new ResizeObserver(() => {
+      pad = Number.parseFloat(getComputedStyle(first.el).paddingBlockStart) || 0
+      schedule()
+    })
+    railResize.observe(layer)
+
+    const noteResize = new ResizeObserver(schedule)
+    for (const note of notes) noteResize.observe(note.el)
+
+    teardown = () => {
+      controller.abort()
+      railResize.disconnect()
+      noteResize.disconnect()
+      if (frame !== undefined) cancelAnimationFrame(frame)
+      root.removeAttribute("data-sidenotes")
+      for (const list of lists) {
+        list.removeAttribute("data-collapsed")
+        list.removeAttribute("data-linebreak-skip")
+      }
+    }
+
+    addEventListener("scroll", schedule, { passive: true, signal })
+    wide.addEventListener("change", apply, { signal })
+    onReaderModeChange(apply, signal)
+
+    apply()
+    rescanProse()
+  }
+
+  document.addEventListener("astro:page-load", setup)
+</script>

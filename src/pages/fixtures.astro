@@ -5,12 +5,7 @@ import Layout from "@/layouts/Layout.astro"
 import { enrichHeadings } from "@/lib/content"
 import { Content, frontmatter, getHeadings } from "./_fixtures.md"
 
-const headings = enrichHeadings(
-  getHeadings().filter(
-    ({ depth, text }) => depth >= 2 && depth <= 4 && text.trim(),
-  ),
-  frontmatter,
-)
+const headings = enrichHeadings(getHeadings(), frontmatter)
 ---
 
 <Layout crumbs={[{ label: "Fixtures", href: "/fixtures" }]}>
