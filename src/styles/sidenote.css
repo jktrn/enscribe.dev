@@ -8,59 +8,75 @@ sidenote-layer {
     inset-block: calc(-1 * var(--page-offset-top))
       calc(-1 * var(--page-offset-bottom));
     z-index: 1;
-    overflow: hidden;
+    clip-path: inset(0 -100vw);
     pointer-events: none;
 
     sidenote {
       position: absolute;
       inset-inline: 0;
       inset-block-start: 0;
+      --fill: var(--background);
+
       display: grid;
       grid-template-columns: 1.4em 1fr;
       padding-block: var(--space-2xs);
-      background-color: var(--background);
+      background-color: var(--fill);
       font-size: var(--step--1);
       line-height: calc(var(--leading-offset) + 1em);
       color: var(--lit, var(--prose-foreground));
       visibility: hidden;
       transition: color 0.2s ease;
+      clip-path: inset(-1lh -100vw var(--clip, -1lh) -100vw);
 
       &[visible] {
         visibility: visible;
         pointer-events: auto;
+        cursor: pointer;
       }
 
-      &[run-start]::before,
-      &[run-end]::after {
+      sidenote-layer:has(sidenote[expanded]) &:not([expanded]) {
+        --lit: color-mix(in oklab, var(--prose-foreground) 40%, transparent);
+      }
+
+      @media (prefers-reduced-motion: no-preference) {
+        sidenote-layer[animating] & {
+          transition:
+            translate 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+            clip-path 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+            color 0.2s ease;
+        }
+      }
+
+      &::before,
+      &::after {
         content: "";
         position: absolute;
         inset-inline: 0;
-        block-size: var(--space-xs);
+        block-size: 1lh;
         pointer-events: none;
       }
 
-      &[run-start]::before {
+      &::before {
         inset-block-end: 100%;
         background: linear-gradient(
           to top,
-          var(--background),
-          rgb(from var(--background) r g b / 0)
+          var(--fill),
+          rgb(from var(--fill) r g b / 0)
         );
       }
 
-      &[run-end]::after {
+      &::after {
         inset-block-start: 100%;
         background: linear-gradient(
           to bottom,
-          var(--background),
-          rgb(from var(--background) r g b / 0)
+          var(--fill),
+          rgb(from var(--fill) r g b / 0)
         );
       }
 
       sidenote-marker {
         font-size: 0.75em;
         translate: 0 -0.35em;
-        font-variant-numeric: tabular-nums;
         color: var(--lit, var(--muted-foreground));
         transition: color 0.2s ease;
       }
@@ -84,7 +100,7 @@ sidenote-layer {
         }
 
         a {
-          --underline: currentColor;
+          --underline: var(--muted-foreground);
         }
       }
     }

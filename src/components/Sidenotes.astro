@@ -69,14 +69,21 @@
   const pairing = (notes: Sidenote[]) => {
     const style = document.createElement("style")
     style.setAttribute("data-linebreak-skip", "")
-    const lit = notes
-      .filter(({ id }) => /^[\w-]+$/.test(id))
-      .flatMap(({ id }) => [
-        `body:has([id="${id}"]:is(:hover, :focus-visible)) :is(sidenote[for="${id}"], [id="${id}"])`,
-        `body:has(sidenote[for="${id}"]:hover) :is(sidenote[for="${id}"], [id="${id}"])`,
-      ])
-    if (lit.length === 0) return style
-    style.textContent = `${lit.join(",")}{--lit: var(--foreground); --lit-fill: color-mix(in oklab, var(--muted) 60%, transparent);}`
+    const ids = notes.map(({ id }) => id).filter((id) => /^[\w-]+$/.test(id))
+    if (ids.length === 0) return style
+
+    const lit = ids.map(
+      (id) =>
+        `body:has([id="${id}"]:is(:hover, :focus-visible), sidenote[for="${id}"]:is([expanded], :hover)) :is(sidenote[for="${id}"], [id="${id}"])`,
+    )
+    const pinned = ids.map(
+      (id) =>
+        `body:has(sidenote[for="${id}"][expanded]) :is(sidenote[for="${id}"]:not([expanded]), [id="${id}"])`,
+    )
+    style.textContent = [
+      `${lit.join(",")}{--lit: var(--foreground); --lit-fill: var(--background-l3);}`,
+      `${pinned.join(",")}{--lit: var(--primary-foreground); --lit-fill: var(--primary);}`,
+    ].join("")
     return style
   }
 
@@ -103,6 +110,9 @@
     let frame: number | undefined
     let active = false
     let pad = 0
+    let lead = 0
+    let step = 0
+    let expanded: Sidenote | undefined
 
     const layout = () => {
       frame = undefined
@@ -114,32 +124,96 @@
       const boxes = notes.map((note) => resolve(note)?.getBoundingClientRect())
       const heights = notes.map((note) => note.el.offsetHeight)
 
-      const tops: number[] = []
-      const flush: boolean[] = []
-      let cursor = Number.NEGATIVE_INFINITY
-      for (const [i, box] of boxes.entries()) {
-        if (!box) {
-          tops.push(Number.NEGATIVE_INFINITY)
-          flush.push(false)
+      const wanted = boxes.map((box) => box && box.top - rail.top - pad)
+
+      const spread: (number | undefined)[] = []
+      let prev: number | undefined
+      for (const top of wanted) {
+        if (top === undefined) {
+          spread.push(undefined)
           continue
         }
-        const wanted = box.top - rail.top - pad
-        const top = Math.max(wanted, cursor)
-        tops.push(top)
-        flush.push(wanted <= cursor)
-        cursor = top + heights[i]!
+        const kept =
+          prev === undefined || top - prev >= lead ? top : prev + step
+        spread.push(kept)
+        prev = kept
       }
 
-      for (const [i, note] of notes.entries()) {
-        const top = tops[i]!
-        const on =
-          boxes[i] !== undefined && top + heights[i]! > 0 && top < rail.height
-        note.el.toggleAttribute("visible", on)
-        if (!on) continue
-        note.el.style.translate = `0 ${Math.round(top)}px`
-        note.el.toggleAttribute("run-start", !flush[i])
-        note.el.toggleAttribute("run-end", !flush[i + 1])
+      let last = -1
+      let shift = 0
+      if (expanded) {
+        const i = notes.indexOf(expanded)
+        const top = spread[i]
+        if (top !== undefined) {
+          last = i
+          const next = spread.slice(i + 1).find((w) => w !== undefined)
+          if (next !== undefined) {
+            shift = Math.max(0, top + heights[i]! - next)
+          }
+        }
       }
+
+      const tops = spread.map((top, i) =>
+        top === undefined ? undefined : i > last ? top + shift : top,
+      )
+
+      const below: (number | undefined)[] = new Array(notes.length)
+      let seen: number | undefined
+      for (let i = notes.length - 1; i >= 0; i--) {
+        below[i] = seen
+        if (tops[i] !== undefined) seen = tops[i]
+      }
+
+      let lost = false
+      for (const [i, note] of notes.entries()) {
+        const top = tops[i]
+        const height = heights[i]!
+        if (top === undefined) {
+          note.el.removeAttribute("visible")
+          if (note === expanded) lost = true
+          continue
+        }
+        const on = top + height > 0 && top < rail.height
+        note.el.toggleAttribute("visible", on)
+        if (note === expanded && !on) lost = true
+        if (!on) continue
+
+        note.el.style.translate = `0 ${Math.round(top)}px`
+        const next = below[i]
+        const room = next === undefined ? height : next - top
+        const clipped = room < height
+        note.el.toggleAttribute("clipped", clipped)
+        if (clipped) {
+          note.el.style.setProperty("--clip", `${Math.round(height - room)}px`)
+        } else {
+          note.el.style.removeProperty("--clip")
+        }
+      }
+
+      if (lost) collapse()
+    }
+
+    let motion: ReturnType<typeof setTimeout> | undefined
+
+    const settle = () => {
+      if (motion !== undefined) clearTimeout(motion)
+      motion = undefined
+      layer.removeAttribute("animating")
+    }
+
+    const animate = () => {
+      layer.setAttribute("animating", "")
+      if (motion !== undefined) clearTimeout(motion)
+      motion = setTimeout(settle, 320)
+    }
+
+    const collapse = (animated = false) => {
+      if (animated) animate()
+      else settle()
+      if (!expanded) return
+      expanded.el.removeAttribute("expanded")
+      expanded = undefined
+      schedule()
     }
 
     const schedule = () => {
@@ -163,16 +237,38 @@
     document.addEventListener(
       "click",
       (event) => {
-        const ref = (event.target as Element | null)?.closest?.(
-          "[data-footnote-ref]",
-        )
-        if (active && ref && claimed.has(ref.id)) event.preventDefault()
+        if (!active) return
+        const target = event.target as Element | null
+        const ref = target?.closest?.("[data-footnote-ref]")
+        const el = target?.closest?.("sidenote")
+
+        let note: Sidenote | undefined
+        if (ref && claimed.has(ref.id)) {
+          event.preventDefault()
+          note = notes.find(({ id }) => id === ref.id)
+        } else if (el) {
+          if (target?.closest?.("a[href]")) return
+          if (getSelection()?.isCollapsed === false) return
+          note = notes.find(({ el: own }) => own === el)
+        } else return
+
+        if (!note) return
+        if (note === expanded) return collapse(true)
+
+        expanded?.el.removeAttribute("expanded")
+        expanded = note
+        note.el.setAttribute("expanded", "")
+        animate()
+        schedule()
       },
       { signal, capture: true },
     )
 
     const railResize = new ResizeObserver(() => {
-      pad = Number.parseFloat(getComputedStyle(first.el).paddingBlockStart) || 0
+      const style = getComputedStyle(first.el)
+      pad = Number.parseFloat(style.paddingBlockStart) || 0
+      lead = Number.parseFloat(style.lineHeight) || 0
+      step = pad + 2 * lead
       schedule()
     })
     railResize.observe(layer)
@@ -182,6 +278,7 @@
 
     teardown = () => {
       controller.abort()
+      if (motion !== undefined) clearTimeout(motion)
       railResize.disconnect()
       noteResize.disconnect()
       if (frame !== undefined) cancelAnimationFrame(frame)
@@ -192,7 +289,14 @@
       }
     }
 
-    addEventListener("scroll", schedule, { passive: true, signal })
+    addEventListener(
+      "scroll",
+      () => {
+        settle()
+        schedule()
+      },
+      { passive: true, signal },
+    )
     wide.addEventListener("change", apply, { signal })
     onReaderModeChange(apply, signal)
 
