@@ -34,8 +34,10 @@ sidenote-layer {
         cursor: pointer;
       }
 
-      sidenote-layer:has(sidenote[expanded]) &:not([expanded]) {
-        --lit: color-mix(in oklab, var(--prose-foreground) 40%, transparent);
+      sidenote-layer:has(sidenote[expanded]) &:not([expanded], :hover) {
+        :is(sidenote-marker, sidenote-body) {
+          opacity: 0.4;
+        }
       }
 
       @media (prefers-reduced-motion: no-preference) {
@@ -78,11 +80,14 @@ sidenote-layer {
         font-size: 0.75em;
         translate: 0 -0.35em;
         color: var(--lit, var(--muted-foreground));
-        transition: color 0.2s ease;
+        transition:
+          color 0.2s ease,
+          opacity 0.2s ease;
       }
 
       sidenote-body {
         display: block;
+        transition: opacity 0.2s ease;
         min-inline-size: 0;
         overflow-wrap: break-word;
 
