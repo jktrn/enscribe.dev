@@ -62,10 +62,7 @@ class ProseJustificationElement extends HTMLElement {
   }
 
   rescan() {
-    if (!justificationEnabled()) return
-    for (const typesetter of this.#typesetters) {
-      void typesetter.start().then(() => typesetter.rescan())
-    }
+    for (const typesetter of this.#typesetters) typesetter.rescan()
   }
 
   disconnectedCallback() {

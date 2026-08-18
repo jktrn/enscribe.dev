@@ -12,11 +12,13 @@ sidenote-layer {
     pointer-events: none;
 
     sidenote {
+      --fill: var(--background);
+      --fade: 0.2s ease;
+      --glide: 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+
       position: absolute;
       inset-inline: 0;
       inset-block-start: 0;
-      --fill: var(--background);
-
       display: grid;
       grid-template-columns: 1.4em 1fr;
       padding-block: var(--space-2xs);
@@ -25,13 +27,17 @@ sidenote-layer {
       line-height: calc(var(--leading-offset) + 1em);
       color: var(--lit, var(--prose-foreground));
       visibility: hidden;
-      transition: color 0.2s ease;
+      transition: color var(--fade);
       clip-path: inset(-1lh -100vw var(--clip, -1lh) -100vw);
 
       &[visible] {
         visibility: visible;
         pointer-events: auto;
         cursor: pointer;
+      }
+
+      &[lit] {
+        --lit: var(--foreground);
       }
 
       sidenote-layer:has(sidenote[expanded]) &:not([expanded], :hover) {
@@ -43,9 +49,9 @@ sidenote-layer {
       @media (prefers-reduced-motion: no-preference) {
         sidenote-layer[animating] & {
           transition:
-            translate 0.28s cubic-bezier(0.22, 1, 0.36, 1),
-            clip-path 0.28s cubic-bezier(0.22, 1, 0.36, 1),
-            color 0.2s ease;
+            translate var(--glide),
+            clip-path var(--glide),
+            color var(--fade);
         }
       }
 
@@ -56,24 +62,23 @@ sidenote-layer {
         inset-inline: 0;
         block-size: 1lh;
         pointer-events: none;
+        background: linear-gradient(
+          to var(--edge),
+          var(--fill),
+          rgb(from var(--fill) r g b / 0)
+        );
       }
 
       &::before {
+        --edge: top;
+
         inset-block-end: 100%;
-        background: linear-gradient(
-          to top,
-          var(--fill),
-          rgb(from var(--fill) r g b / 0)
-        );
       }
 
       &::after {
+        --edge: bottom;
+
         inset-block-start: 100%;
-        background: linear-gradient(
-          to bottom,
-          var(--fill),
-          rgb(from var(--fill) r g b / 0)
-        );
       }
 
       sidenote-marker {
@@ -81,15 +86,15 @@ sidenote-layer {
         translate: 0 -0.35em;
         color: var(--lit, var(--muted-foreground));
         transition:
-          color 0.2s ease,
-          opacity 0.2s ease;
+          color var(--fade),
+          opacity var(--fade);
       }
 
       sidenote-body {
         display: block;
-        transition: opacity 0.2s ease;
         min-inline-size: 0;
         overflow-wrap: break-word;
+        transition: opacity var(--fade);
 
         > * {
           margin-block: 0 0.6em;
@@ -112,24 +117,32 @@ sidenote-layer {
   }
 }
 
-:root[data-sidenotes] prose-content {
-  [data-footnote-ref] {
-    --underline: transparent;
+:root[data-sidenotes] prose-content [data-footnote-ref] {
+  --underline: transparent;
 
-    cursor: default;
-    padding-inline: 0.2em;
-    margin-inline: -0.2em;
-    border-radius: var(--radius-sm);
-    color: var(--lit, inherit);
-    background-color: var(--lit-fill, transparent);
-    transition:
-      background-color 0.2s ease,
-      color 0.2s ease;
+  cursor: default;
+  padding-inline: 0.2em;
+  margin-inline: -0.2em;
+  border-radius: var(--radius-sm);
+  color: var(--lit, inherit);
+  background-color: var(--lit-fill, transparent);
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+
+  &[lit] {
+    --lit: var(--foreground);
+    --lit-fill: var(--background-l3);
+  }
+
+  &[pinned] {
+    --lit: var(--primary-foreground);
+    --lit-fill: var(--primary);
   }
 }
 
 .sr-only,
-prose-content .footnotes[data-collapsed] {
+:root[data-sidenotes] prose-content .footnotes {
   position: absolute;
   inline-size: 1px;
   block-size: 1px;

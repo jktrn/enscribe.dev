@@ -37,7 +37,7 @@
 </script>
 
 <script>
-  import { hashId, normalizePath } from "@/lib/utils"
+  import { hashId, normalizePath, queryId } from "@/lib/utils"
 
   const hashTarget = (hash: string) => {
     try {
@@ -51,7 +51,7 @@
     try {
       const id = hashId(hash)
       if (root.id === id) return root
-      return root.querySelector(`[id="${CSS.escape(id)}"]`)
+      return queryId(root, id)
     } catch {
       return null
     }
