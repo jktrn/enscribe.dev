@@ -660,6 +660,22 @@
     {
       "contentType": "image/svg+xml",
       "group": "graphics",
+      "key": "graphics/blog/soul-and-intention/banner-dark.svg",
+      "localPath": "graphics/blog/soul-and-intention/banner-dark.svg",
+      "sha256": "d84d4cbf2e4670cb0544b20186c2093884e10c454339a88806ff9fc234f0598a",
+      "size": 316581
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "graphics",
+      "key": "graphics/blog/soul-and-intention/banner-light.svg",
+      "localPath": "graphics/blog/soul-and-intention/banner-light.svg",
+      "sha256": "5547e1220564006625e6d360078a751b9485081aa7c37c563c5530798fccbe17",
+      "size": 319153
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "graphics",
       "key": "graphics/blog/wolvctf-2023-wannaflag/banner.svg",
       "localPath": "graphics/blog/wolvctf-2023-wannaflag/banner.svg",
       "sha256": "41bb6d46378b6756620948625f8a8c1222b6efd9931c1f9659dfc12b14f98533",
@@ -736,6 +752,14 @@
       "localPath": "src/content/blog/actf-2023-gcd-query/assets/banner-light.webp",
       "sha256": "f22a367d05d60e78152656c45a5d7d40100a94e6d8445c6ce54ec798f7f52531",
       "size": 47626
+    },
+    {
+      "contentType": "image/png",
+      "group": "build",
+      "key": "src/content/blog/actf-2023-gcd-query/assets/banner-og.png",
+      "localPath": "src/content/blog/actf-2023-gcd-query/assets/banner-og.png",
+      "sha256": "2edaa4a207dfd6c5d523fd58166b2082c4c5f7a66c7047e55b288c19dc4fcde2",
+      "size": 23991
     },
     {
       "contentType": "image/png",
@@ -840,6 +864,14 @@
       "localPath": "src/content/blog/azusawas-gacha-world/assets/banner-light.webp",
       "sha256": "455c949720a8565661a0bbaeb451025236eb181fb4407a6e0ae329e88d3134ff",
       "size": 210824
+    },
+    {
+      "contentType": "image/png",
+      "group": "build",
+      "key": "src/content/blog/azusawas-gacha-world/assets/banner-og.png",
+      "localPath": "src/content/blog/azusawas-gacha-world/assets/banner-og.png",
+      "sha256": "e3ee98c4f9c2f47b471920d80825884df8fbbd033c3b90ad173715c5c1b09ec4",
+      "size": 104811
     },
     {
       "contentType": "image/png",
@@ -1240,6 +1272,14 @@
       "localPath": "src/content/blog/dhhutc-2022-port-authority/assets/banner-light.webp",
       "sha256": "2137f7de027b6685160c5f80d7ba326f46dd83d9261ed812194c1f0c8c131d63",
       "size": 195578
+    },
+    {
+      "contentType": "image/png",
+      "group": "build",
+      "key": "src/content/blog/dhhutc-2022-port-authority/assets/banner-og.png",
+      "localPath": "src/content/blog/dhhutc-2022-port-authority/assets/banner-og.png",
+      "sha256": "6a772f2a1946b7ef03c29beb717e0e0433e143d72d87a79cd121deb99b9e6a41",
+      "size": 177566
     },
     {
       "contentType": "image/png",
@@ -1940,6 +1980,14 @@
     {
       "contentType": "image/png",
       "group": "build",
+      "key": "src/content/blog/idekctf-2023-nmpz/assets/banner-og.png",
+      "localPath": "src/content/blog/idekctf-2023-nmpz/assets/banner-og.png",
+      "sha256": "c371aa59ff1f1baf7352d5540ac15f59a348a835ec7c12aae79cb0d3686d9066",
+      "size": 221151
+    },
+    {
+      "contentType": "image/png",
+      "group": "build",
       "key": "src/content/blog/idekctf-2023-nmpz/assets/banner.png",
       "localPath": "src/content/blog/idekctf-2023-nmpz/assets/banner.png",
       "sha256": "6849285a7f8d0064ad8e92b9ef5dc965b1db05f8e81332352f756b2227f30e09",
@@ -2112,6 +2160,14 @@
       "localPath": "src/content/blog/japan-retrospective/assets/banner-light.webp",
       "sha256": "372f25a6464b512b246c975639c581528419e8aa64f6420de565be730fe296e8",
       "size": 179902
+    },
+    {
+      "contentType": "image/png",
+      "group": "build",
+      "key": "src/content/blog/japan-retrospective/assets/banner-og.png",
+      "localPath": "src/content/blog/japan-retrospective/assets/banner-og.png",
+      "sha256": "fa113aa07f9ee35947de09f9893c6239283b1eadb79ab2312088f8d25030c4b0",
+      "size": 140322
     },
     {
       "contentType": "image/png",
@@ -4844,6 +4900,14 @@
     {
       "contentType": "image/png",
       "group": "build",
+      "key": "src/content/blog/mhsctf-2023-matchmaker/assets/banner-og.png",
+      "localPath": "src/content/blog/mhsctf-2023-matchmaker/assets/banner-og.png",
+      "sha256": "d39b3bf24fee1cdd23b62c6d4266ac200a8cfe1231e10940bf5d2c5671f69148",
+      "size": 18637
+    },
+    {
+      "contentType": "image/png",
+      "group": "build",
       "key": "src/content/blog/mhsctf-2023-matchmaker/assets/banner.png",
       "localPath": "src/content/blog/mhsctf-2023-matchmaker/assets/banner.png",
       "sha256": "7e40fe2cfa4b0dc8847f405285838ff33a5c8030c7120a8290a4841831405d09",
@@ -4972,6 +5036,14 @@
     {
       "contentType": "image/png",
       "group": "build",
+      "key": "src/content/blog/picoctf-2022-buffer-overflow/assets/banner-og.png",
+      "localPath": "src/content/blog/picoctf-2022-buffer-overflow/assets/banner-og.png",
+      "sha256": "49252e433b8cb22ec3c6ed913dc3b5f746a80a845df1e963cc959dac80d01d54",
+      "size": 35841
+    },
+    {
+      "contentType": "image/png",
+      "group": "build",
       "key": "src/content/blog/picoctf-2022-buffer-overflow/assets/banner.png",
       "localPath": "src/content/blog/picoctf-2022-buffer-overflow/assets/banner.png",
       "sha256": "a38b3009f049bafb18321f4c8342065bb6e9c001584c79cc87a0e6a00c17d8f1",
@@ -5072,6 +5144,70 @@
       "localPath": "src/content/blog/picoctf-2022-buffer-overflow/assets/stack-visual2.png",
       "sha256": "bdb247aecf9bc227d4582fc5dbed8d2a59d4b1e8cc661300abd1e0ae7ff1dbd0",
       "size": 16187
+    },
+    {
+      "contentType": "image/jpeg",
+      "group": "build",
+      "key": "src/content/blog/soul-and-intention/assets/airplane.jpg",
+      "localPath": "src/content/blog/soul-and-intention/assets/airplane.jpg",
+      "sha256": "7674348d53c787fd9b5111fda98e34ab2a1e6014ebe358e620d68b1aebd1b5ce",
+      "size": 2638483
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "build",
+      "key": "src/content/blog/soul-and-intention/assets/banner-dark.svg",
+      "localPath": "src/content/blog/soul-and-intention/assets/banner-dark.svg",
+      "sha256": "b9bd645c32313e171bc8fa40e44a85daa074d38a1befb1bd69ef7999458fe73b",
+      "size": 316581
+    },
+    {
+      "contentType": "image/webp",
+      "group": "build",
+      "key": "src/content/blog/soul-and-intention/assets/banner-dark.webp",
+      "localPath": "src/content/blog/soul-and-intention/assets/banner-dark.webp",
+      "sha256": "e5edab81e857c75f4025edc44c7b3c618194978971410b3c6b3d1f075b155d1b",
+      "size": 79024
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "build",
+      "key": "src/content/blog/soul-and-intention/assets/banner-light.svg",
+      "localPath": "src/content/blog/soul-and-intention/assets/banner-light.svg",
+      "sha256": "5547e1220564006625e6d360078a751b9485081aa7c37c563c5530798fccbe17",
+      "size": 319153
+    },
+    {
+      "contentType": "image/webp",
+      "group": "build",
+      "key": "src/content/blog/soul-and-intention/assets/banner-light.webp",
+      "localPath": "src/content/blog/soul-and-intention/assets/banner-light.webp",
+      "sha256": "d7d4fc116fd1ee9fe02693ec7c7cdfdd7dd056e095e60d352076a73ecd07f1bf",
+      "size": 67120
+    },
+    {
+      "contentType": "image/png",
+      "group": "build",
+      "key": "src/content/blog/soul-and-intention/assets/banner-og.png",
+      "localPath": "src/content/blog/soul-and-intention/assets/banner-og.png",
+      "sha256": "f494e0275af74d6a2358b12c639645a13489170f124ffd0f9fd2ea704f088296",
+      "size": 37994
+    },
+    {
+      "contentType": "image/png",
+      "group": "build",
+      "key": "src/content/blog/soul-and-intention/assets/fuck-united.png",
+      "localPath": "src/content/blog/soul-and-intention/assets/fuck-united.png",
+      "sha256": "c358e4dc1d7e83a5723f3a967d873691965fe14dbb88700b74d741c201dd93d8",
+      "size": 186018
+    },
+    {
+      "contentType": "image/jpeg",
+      "group": "build",
+      "key": "src/content/blog/soul-and-intention/assets/funeral-home.jpg",
+      "localPath": "src/content/blog/soul-and-intention/assets/funeral-home.jpg",
+      "sha256": "0861c817a412f2a1bc3f278a1dd5c40900b774f3beb60da686233241062755b5",
+      "size": 3150983
     },
     {
       "contentType": "image/png",

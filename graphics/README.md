@@ -25,6 +25,13 @@ graphics/blog/<post>/<name>-light.svg
   → src/content/blog/<post>/assets/<name>-light.webp
 ```
 
+Social unfurlers (iMessage, Slack, some Discord clients) cannot decode WebP, so 
+`banner-dark.svg` also renders a 1200-wide PNG used as the post's `og:image`:
+
+```text
+banner-dark.svg → src/content/blog/<post>/assets/banner-og.png
+```
+
 The command renders all matching sources and overwrites their WebP outputs. It
 is a manual rendering command, not part of `bun run build`.
 

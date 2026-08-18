@@ -3,7 +3,6 @@ title: 'picoCTF 2022: “Buffer Overflow” Series'
 description: 'A comprehensive walkthrough of the picoCTF 2022 buffer overflow challenges, exploring stack-based exploitation techniques and binary security fundamentals.'
 date: 2022-06-16
 tags: ['ctf', 'pwn']
-image: './assets/banner.png'
 banner:
   light: './assets/banner-light.svg'
   dark: './assets/banner-dark.svg'
