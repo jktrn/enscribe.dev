@@ -130,6 +130,10 @@ sidenote-layer {
     background-color 0.2s ease,
     color 0.2s ease;
 
+  &:hover {
+    text-decoration-color: transparent;
+  }
+
   &[lit] {
     --lit: var(--foreground);
     --lit-fill: var(--background-l3);

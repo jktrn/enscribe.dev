@@ -24,7 +24,10 @@
   const excerpt = (source: Element) => {
     const el = document.createElement("sidenote-body")
     el.append(...source.cloneNode(true).childNodes)
-    el.querySelector("[data-footnote-backref]")?.remove()
+    const backref = el.querySelector("[data-footnote-backref]")
+    const host = backref?.parentElement
+    backref?.remove()
+    if (host && host !== el && !host.firstChild) host.remove()
     for (const node of el.querySelectorAll("[id]")) node.removeAttribute("id")
     for (const link of el.querySelectorAll("a[href]")) {
       link.setAttribute("tabindex", "-1")
@@ -187,7 +190,7 @@
         const shift =
           crowded === undefined
             ? 0
-            : Math.max(0, pivot.top + pivot.height - crowded)
+            : Math.max(0, pivot.top + pivot.height + lead - crowded)
         for (const entry of trailing) {
           if (entry.top !== undefined) entry.top += shift
         }
