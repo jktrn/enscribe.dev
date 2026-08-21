@@ -20,6 +20,28 @@ if (process.platform === "darwin") {
   }
 }
 
+function resolveTokens(source: string, mode: "light" | "dark", path: string) {
+  return Buffer.from(
+    source.replace(
+      /var\(--((?:background|foreground|accent)-l\d+)\)/g,
+      (match, token) => {
+        const hex = ramp[mode].get(token)
+        if (!hex) throw new Error(`${path}: no ${mode} value for ${match}`)
+        return hex
+      },
+    ),
+  )
+}
+
+async function renderOgCard(svg: Buffer, width: number, outDir: string) {
+  const out = join(outDir, "banner-og.png")
+  await sharp(svg, { density: (72 * 1200) / width, limitInputPixels: false })
+    .resize(1200)
+    .png({ compressionLevel: 9, quality: 90, effort: 10 })
+    .toFile(out)
+  return out
+}
+
 const masters = readdirSync(GRAPHICS_BLOG, { recursive: true })
   .map(String)
   .filter((path) => /-(light|dark)\.svg$/.test(path))
@@ -42,16 +64,7 @@ const outputs = await Promise.all(
       throw new Error(`${path}: no post at ${outDir}`)
     }
 
-    const svg = Buffer.from(
-      source.replace(
-        /var\(--((?:background|foreground|accent)-l\d+)\)/g,
-        (match, token) => {
-          const hex = ramp[mode].get(token)
-          if (!hex) throw new Error(`${path}: no ${mode} value for ${match}`)
-          return hex
-        },
-      ),
-    )
+    const svg = resolveTokens(source, mode, path)
 
     const { width = 1200 } = await sharp(svg, {
       limitInputPixels: false,
@@ -65,7 +78,27 @@ const outputs = await Promise.all(
       .resize(target)
       .webp({ quality: 84 })
       .toFile(out)
-    return out
+
+    if (stem !== "banner-dark") return [out]
+    return [out, await renderOgCard(svg, width, outDir)]
   }),
 )
-for (const out of outputs) console.log(out)
+
+const contentOnly = readdirSync(CONTENT_BLOG).filter(
+  (post) =>
+    existsSync(join(CONTENT_BLOG, post, "assets/banner-dark.svg")) &&
+    !existsSync(join(GRAPHICS_BLOG, post, "banner-dark.svg")),
+)
+const contentCards = await Promise.all(
+  contentOnly.map(async (post) => {
+    const outDir = join(CONTENT_BLOG, post, "assets")
+    const path = join(outDir, "banner-dark.svg")
+    const svg = resolveTokens(readFileSync(path, "utf8"), "dark", path)
+    const { width = 1200 } = await sharp(svg, {
+      limitInputPixels: false,
+    }).metadata()
+    return renderOgCard(svg, width, outDir)
+  }),
+)
+
+for (const out of [...outputs.flat(), ...contentCards]) console.log(out)

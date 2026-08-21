@@ -38,6 +38,20 @@ const rasters = import.meta.glob<{ default: ImageMetadata }>(
 
 export type BannerRaster = { light: ImageMetadata; dark: ImageMetadata }
 
+const ogCards = import.meta.glob<{ default: ImageMetadata }>(
+  "/src/content/blog/*/assets/banner-og.png",
+  { eager: true },
+)
+
+export function bannerOgImage(
+  entry: CollectionEntry<"blog">,
+): ImageMetadata | null {
+  const post = entry.id.split("/")[0]
+  return (
+    ogCards[`/src/content/blog/${post}/assets/banner-og.png`]?.default ?? null
+  )
+}
+
 export function bannerRaster(
   entry: CollectionEntry<"blog">,
 ): BannerRaster | null {

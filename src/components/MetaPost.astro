@@ -1,6 +1,7 @@
 ---
 import { getEntries, type CollectionEntry } from "astro:content"
 import { SITE } from "@/consts"
+import { bannerOgImage } from "@/lib/assets/banner"
 import { pageTitle } from "@/lib/content"
 
 type Props = {
@@ -16,8 +17,9 @@ const authors = await getEntries(post.data.authors)
 const authorNames = authors.map((author) => author.data.name)
 const url = new URL(Astro.url.pathname, base)
 const canonical = new URL(canonicalPath ?? Astro.url.pathname, base)
-const ogImage = image
-  ? new URL(image.src, base)
+const card = image ?? bannerOgImage(post)
+const ogImage = card
+  ? new URL(card.src, base)
   : new URL(SITE.defaultPostImage, base)
 ---
 
