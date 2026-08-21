@@ -1,5 +1,5 @@
 ---
-title: 'Designing on the Web with Soul and Intention'
+title: 'Smart Eyes, Stupid Hands'
 description: "Now that web development is a solved problem, “taste” is, unfortunately, the final divide between me and brain-atrophying AI psychosis."
 date: 2026-08-21
 tags: ['design']
