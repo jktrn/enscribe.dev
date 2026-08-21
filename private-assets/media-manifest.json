@@ -756,6 +756,14 @@
     {
       "contentType": "image/png",
       "group": "build",
+      "key": "src/content/blog/actf-2023-gcd-query/assets/banner-og.png",
+      "localPath": "src/content/blog/actf-2023-gcd-query/assets/banner-og.png",
+      "sha256": "2edaa4a207dfd6c5d523fd58166b2082c4c5f7a66c7047e55b288c19dc4fcde2",
+      "size": 23991
+    },
+    {
+      "contentType": "image/png",
+      "group": "build",
       "key": "src/content/blog/actf-2023-gcd-query/assets/banner.png",
       "localPath": "src/content/blog/actf-2023-gcd-query/assets/banner.png",
       "sha256": "ee64ca5511f70094b495eac490408d63a19c4a314e587e81239046ba4a018951",
@@ -856,6 +864,14 @@
       "localPath": "src/content/blog/azusawas-gacha-world/assets/banner-light.webp",
       "sha256": "455c949720a8565661a0bbaeb451025236eb181fb4407a6e0ae329e88d3134ff",
       "size": 210824
+    },
+    {
+      "contentType": "image/png",
+      "group": "build",
+      "key": "src/content/blog/azusawas-gacha-world/assets/banner-og.png",
+      "localPath": "src/content/blog/azusawas-gacha-world/assets/banner-og.png",
+      "sha256": "e3ee98c4f9c2f47b471920d80825884df8fbbd033c3b90ad173715c5c1b09ec4",
+      "size": 104811
     },
     {
       "contentType": "image/png",
@@ -1256,6 +1272,14 @@
       "localPath": "src/content/blog/dhhutc-2022-port-authority/assets/banner-light.webp",
       "sha256": "2137f7de027b6685160c5f80d7ba326f46dd83d9261ed812194c1f0c8c131d63",
       "size": 195578
+    },
+    {
+      "contentType": "image/png",
+      "group": "build",
+      "key": "src/content/blog/dhhutc-2022-port-authority/assets/banner-og.png",
+      "localPath": "src/content/blog/dhhutc-2022-port-authority/assets/banner-og.png",
+      "sha256": "6a772f2a1946b7ef03c29beb717e0e0433e143d72d87a79cd121deb99b9e6a41",
+      "size": 177566
     },
     {
       "contentType": "image/png",
@@ -1956,6 +1980,14 @@
     {
       "contentType": "image/png",
       "group": "build",
+      "key": "src/content/blog/idekctf-2023-nmpz/assets/banner-og.png",
+      "localPath": "src/content/blog/idekctf-2023-nmpz/assets/banner-og.png",
+      "sha256": "c371aa59ff1f1baf7352d5540ac15f59a348a835ec7c12aae79cb0d3686d9066",
+      "size": 221151
+    },
+    {
+      "contentType": "image/png",
+      "group": "build",
       "key": "src/content/blog/idekctf-2023-nmpz/assets/banner.png",
       "localPath": "src/content/blog/idekctf-2023-nmpz/assets/banner.png",
       "sha256": "6849285a7f8d0064ad8e92b9ef5dc965b1db05f8e81332352f756b2227f30e09",
@@ -2128,6 +2160,14 @@
       "localPath": "src/content/blog/japan-retrospective/assets/banner-light.webp",
       "sha256": "372f25a6464b512b246c975639c581528419e8aa64f6420de565be730fe296e8",
       "size": 179902
+    },
+    {
+      "contentType": "image/png",
+      "group": "build",
+      "key": "src/content/blog/japan-retrospective/assets/banner-og.png",
+      "localPath": "src/content/blog/japan-retrospective/assets/banner-og.png",
+      "sha256": "fa113aa07f9ee35947de09f9893c6239283b1eadb79ab2312088f8d25030c4b0",
+      "size": 140322
     },
     {
       "contentType": "image/png",
@@ -4860,6 +4900,14 @@
     {
       "contentType": "image/png",
       "group": "build",
+      "key": "src/content/blog/mhsctf-2023-matchmaker/assets/banner-og.png",
+      "localPath": "src/content/blog/mhsctf-2023-matchmaker/assets/banner-og.png",
+      "sha256": "d39b3bf24fee1cdd23b62c6d4266ac200a8cfe1231e10940bf5d2c5671f69148",
+      "size": 18637
+    },
+    {
+      "contentType": "image/png",
+      "group": "build",
       "key": "src/content/blog/mhsctf-2023-matchmaker/assets/banner.png",
       "localPath": "src/content/blog/mhsctf-2023-matchmaker/assets/banner.png",
       "sha256": "7e40fe2cfa4b0dc8847f405285838ff33a5c8030c7120a8290a4841831405d09",
@@ -4984,6 +5032,14 @@
       "localPath": "src/content/blog/picoctf-2022-buffer-overflow/assets/banner-light.webp",
       "sha256": "131cba29214fe45045887cfa795e560dca3bea2cf77596310c28169a6474caf4",
       "size": 64144
+    },
+    {
+      "contentType": "image/png",
+      "group": "build",
+      "key": "src/content/blog/picoctf-2022-buffer-overflow/assets/banner-og.png",
+      "localPath": "src/content/blog/picoctf-2022-buffer-overflow/assets/banner-og.png",
+      "sha256": "49252e433b8cb22ec3c6ed913dc3b5f746a80a845df1e963cc959dac80d01d54",
+      "size": 35841
     },
     {
       "contentType": "image/png",
@@ -5122,6 +5178,14 @@
       "size": 675558
     },
     {
+      "contentType": "image/jpeg",
+      "group": "build",
+      "key": "src/content/blog/soul-and-intention/assets/airplane.jpg",
+      "localPath": "src/content/blog/soul-and-intention/assets/airplane.jpg",
+      "sha256": "7674348d53c787fd9b5111fda98e34ab2a1e6014ebe358e620d68b1aebd1b5ce",
+      "size": 2638483
+    },
+    {
       "contentType": "image/svg+xml",
       "group": "build",
       "key": "src/content/blog/soul-and-intention/assets/banner-dark.svg",
@@ -5152,6 +5216,14 @@
       "localPath": "src/content/blog/soul-and-intention/assets/banner-light.webp",
       "sha256": "d7d4fc116fd1ee9fe02693ec7c7cdfdd7dd056e095e60d352076a73ecd07f1bf",
       "size": 67120
+    },
+    {
+      "contentType": "image/png",
+      "group": "build",
+      "key": "src/content/blog/soul-and-intention/assets/banner-og.png",
+      "localPath": "src/content/blog/soul-and-intention/assets/banner-og.png",
+      "sha256": "f494e0275af74d6a2358b12c639645a13489170f124ffd0f9fd2ea704f088296",
+      "size": 37994
     },
     {
       "contentType": "image/png",
@@ -5194,12 +5266,36 @@
       "size": 132730
     },
     {
+      "contentType": "image/jpeg",
+      "group": "build",
+      "key": "src/content/blog/soul-and-intention/assets/buddy.jpg",
+      "localPath": "src/content/blog/soul-and-intention/assets/buddy.jpg",
+      "sha256": "c26f001dfd0ae70871e9a1cd41190f949169b1a015256db7921f5cc8a7c597d6",
+      "size": 1595242
+    },
+    {
       "contentType": "image/png",
       "group": "build",
       "key": "src/content/blog/soul-and-intention/assets/claude-generation.png",
       "localPath": "src/content/blog/soul-and-intention/assets/claude-generation.png",
       "sha256": "cc11c65bf193305c775207ba833fe177070ef7393da4da1369d58194eb8b6059",
       "size": 329077
+    },
+    {
+      "contentType": "image/png",
+      "group": "build",
+      "key": "src/content/blog/soul-and-intention/assets/fuck-united.png",
+      "localPath": "src/content/blog/soul-and-intention/assets/fuck-united.png",
+      "sha256": "c358e4dc1d7e83a5723f3a967d873691965fe14dbb88700b74d741c201dd93d8",
+      "size": 186018
+    },
+    {
+      "contentType": "image/jpeg",
+      "group": "build",
+      "key": "src/content/blog/soul-and-intention/assets/funeral-home.jpg",
+      "localPath": "src/content/blog/soul-and-intention/assets/funeral-home.jpg",
+      "sha256": "0861c817a412f2a1bc3f278a1dd5c40900b774f3beb60da686233241062755b5",
+      "size": 3150983
     },
     {
       "contentType": "image/png",
@@ -5224,6 +5320,14 @@
       "localPath": "src/content/blog/soul-and-intention/assets/material-system.png",
       "sha256": "831d03f562a9b9613c352903c8d2954e4c16a7d6ec54d0a23cd286b7a726829b",
       "size": 100846
+    },
+    {
+      "contentType": "image/png",
+      "group": "build",
+      "key": "src/content/blog/soul-and-intention/assets/playground.png",
+      "localPath": "src/content/blog/soul-and-intention/assets/playground.png",
+      "sha256": "0215a9b675dc682a3123297198e62189da1f17d5b978b59c1e13ca78c6d3ab76",
+      "size": 2484943
     },
     {
       "contentType": "image/png",

@@ -26,6 +26,7 @@
     "linebreak:check": "bun run --cwd packages/linebreak check && bun run --cwd tests/linebreak check",
     "favicons:check": "bun scripts/check-favicon-assets.ts",
     "media:manifest": "bun scripts/generate-private-media-manifest.ts",
+    "media:sync": "bun run media:prepare && bun run content:render && bun run media:manifest && bun run media:upload",
     "media:prepare": "bun scripts/manage-private-media.ts prepare",
     "media:prepare:graphics": "bun scripts/manage-private-media.ts prepare-graphics",
     "media:upload": "bun scripts/manage-private-media.ts upload",
