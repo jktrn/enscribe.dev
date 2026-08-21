@@ -3,6 +3,7 @@ import { mkdir, readFile, rename, rm, writeFile } from "node:fs/promises"
 import { dirname, extname, resolve, sep } from "node:path"
 import {
   GetObjectCommand,
+  HeadObjectCommand,
   PutObjectCommand,
   S3Client,
 } from "@aws-sdk/client-s3"
@@ -182,6 +183,32 @@ async function uploadAsset(
   )
 }
 
+async function remoteSha256(
+  client: S3Client,
+  bucket: string,
+  key: string,
+): Promise<string | null> {
+  try {
+    const response = await client.send(
+      new HeadObjectCommand({ Bucket: bucket, Key: key }),
+      { abortSignal: AbortSignal.timeout(requestTimeoutMs) },
+    )
+    return response.Metadata?.sha256 ?? null
+  } catch (error) {
+    const status =
+      error instanceof Error && "$metadata" in error
+        ? (error.$metadata as { httpStatusCode?: number }).httpStatusCode
+        : undefined
+    if (
+      status === 404 ||
+      (error instanceof Error && error.name === "NotFound")
+    ) {
+      return null
+    }
+    throw error
+  }
+}
+
 async function verifyRemoteAsset(
   client: S3Client,
   bucket: string,
@@ -267,7 +294,24 @@ export async function uploadAssets(
 ): Promise<void> {
   const client = createR2Client()
   try {
-    await runWithConcurrency(assets, `Uploaded to ${bucket}`, (asset) =>
+    const stale: PrivateAsset[] = []
+    await runWithConcurrency(assets, `Compared to ${bucket}`, async (asset) => {
+      if (!(await readVerified(repoRoot, asset))) {
+        throw new Error(
+          `${asset.localPath} is missing or does not match the private asset manifest`,
+        )
+      }
+      if ((await remoteSha256(client, bucket, asset.key)) !== asset.sha256) {
+        stale.push(asset)
+      }
+    })
+
+    if (stale.length === 0) {
+      console.log(`All ${assets.length} assets already match ${bucket}`)
+      return
+    }
+
+    await runWithConcurrency(stale, `Uploaded to ${bucket}`, (asset) =>
       uploadAsset(client, bucket, repoRoot, asset),
     )
   } finally {

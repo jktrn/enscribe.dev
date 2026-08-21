@@ -314,7 +314,7 @@ const title = asInline(titleLabel)
 </style>
 
 <script>
-  import { hashId, normalizePath } from "@/lib/utils"
+  import { hashId, normalizePath, pixels, queryId } from "@/lib/utils"
 
   let teardown: (() => void) | undefined
 
@@ -369,7 +369,7 @@ const title = asInline(titleLabel)
       const target = article
         ? article.id === id
           ? article
-          : article.querySelector(`[id="${CSS.escape(id)}"]`)
+          : queryId(article, id)
         : document.querySelectorAll(`[id="${CSS.escape(id)}"]`)[nth]
       if (target) links.set(target, a)
     }
@@ -486,7 +486,6 @@ const title = asInline(titleLabel)
       if (grew) center()
     }
 
-    const pixels = (value: string) => Number.parseFloat(value) || 0
     const observe = () => {
       const scrollPadding = pixels(
         getComputedStyle(document.documentElement).scrollPaddingBlockStart,

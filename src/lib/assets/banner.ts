@@ -61,6 +61,13 @@ export function bannerRaster(
     rasters[`/src/content/blog/${post}/assets/banner-light.webp`]?.default
   const dark =
     rasters[`/src/content/blog/${post}/assets/banner-dark.webp`]?.default
-  if (!light || !dark) return null
+  if (!light || !dark) {
+    throw new Error(
+      `${entry.id}: banner frontmatter without a rendered WebP pair at ` +
+        `src/content/blog/${post}/assets/banner-{light,dark}.webp. Copy the ` +
+        `SVG masters to graphics/blog/${post}/ and run ` +
+        `\`bun run content:render\` (see graphics/README.md)`,
+    )
+  }
   return { light, dark }
 }

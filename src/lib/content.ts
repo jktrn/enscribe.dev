@@ -41,13 +41,19 @@ export function entryInline(
 
 export type TocHeading = MarkdownHeading & { html?: string }
 
-export function enrichHeadings(
+const FOOTNOTE_LABEL = "footnote-label"
+
+export function tocHeadings(
   headings: MarkdownHeading[],
   frontmatter: unknown,
 ): TocHeading[] {
+  const outline = headings.filter(
+    ({ depth, slug, text }) =>
+      depth >= 2 && depth <= 4 && text.trim() && slug !== FOOTNOTE_LABEL,
+  )
   const inner = (frontmatter as RenderedFrontmatter | undefined)?.tocHtml
-  if (!inner) return headings
-  return headings.map((heading) => {
+  if (!inner) return outline
+  return outline.map((heading) => {
     const html = inner[heading.slug]
     return html && html !== heading.text ? { ...heading, html } : heading
   })

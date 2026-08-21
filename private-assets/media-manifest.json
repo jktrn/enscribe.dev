@@ -660,16 +660,16 @@
     {
       "contentType": "image/svg+xml",
       "group": "graphics",
-      "key": "graphics/blog/soul-and-intention/banner-dark.svg",
-      "localPath": "graphics/blog/soul-and-intention/banner-dark.svg",
+      "key": "graphics/blog/smart-eyes-stupid-hands/banner-dark.svg",
+      "localPath": "graphics/blog/smart-eyes-stupid-hands/banner-dark.svg",
       "sha256": "d84d4cbf2e4670cb0544b20186c2093884e10c454339a88806ff9fc234f0598a",
       "size": 316581
     },
     {
       "contentType": "image/svg+xml",
       "group": "graphics",
-      "key": "graphics/blog/soul-and-intention/banner-light.svg",
-      "localPath": "graphics/blog/soul-and-intention/banner-light.svg",
+      "key": "graphics/blog/smart-eyes-stupid-hands/banner-light.svg",
+      "localPath": "graphics/blog/smart-eyes-stupid-hands/banner-light.svg",
       "sha256": "5547e1220564006625e6d360078a751b9485081aa7c37c563c5530798fccbe17",
       "size": 319153
     },
@@ -5146,68 +5146,220 @@
       "size": 16187
     },
     {
+      "contentType": "image/png",
+      "group": "build",
+      "key": "src/content/blog/smart-eyes-stupid-hands/assets/2022.png",
+      "localPath": "src/content/blog/smart-eyes-stupid-hands/assets/2022.png",
+      "sha256": "db203abad78292f866637fa4b0fc752dd7e75dcf4bf3b1cda33f93a21015d3cd",
+      "size": 87254
+    },
+    {
+      "contentType": "image/png",
+      "group": "build",
+      "key": "src/content/blog/smart-eyes-stupid-hands/assets/2023.png",
+      "localPath": "src/content/blog/smart-eyes-stupid-hands/assets/2023.png",
+      "sha256": "90be291f739d7c97bf8d5d373316262682794eb643c33d9d86d51ff30ea35d53",
+      "size": 227851
+    },
+    {
+      "contentType": "image/png",
+      "group": "build",
+      "key": "src/content/blog/smart-eyes-stupid-hands/assets/2024.png",
+      "localPath": "src/content/blog/smart-eyes-stupid-hands/assets/2024.png",
+      "sha256": "45f1d334e2adf06d2cbb026ef2931fe80f9a59201e5ea649ee35f57a58f39f77",
+      "size": 698857
+    },
+    {
+      "contentType": "image/png",
+      "group": "build",
+      "key": "src/content/blog/smart-eyes-stupid-hands/assets/2025.png",
+      "localPath": "src/content/blog/smart-eyes-stupid-hands/assets/2025.png",
+      "sha256": "45ad223126745c4cd6190fda6b34d427860a1fe15362d271e6f233629f08b9e1",
+      "size": 675558
+    },
+    {
       "contentType": "image/jpeg",
       "group": "build",
-      "key": "src/content/blog/soul-and-intention/assets/airplane.jpg",
-      "localPath": "src/content/blog/soul-and-intention/assets/airplane.jpg",
+      "key": "src/content/blog/smart-eyes-stupid-hands/assets/airplane.jpg",
+      "localPath": "src/content/blog/smart-eyes-stupid-hands/assets/airplane.jpg",
       "sha256": "7674348d53c787fd9b5111fda98e34ab2a1e6014ebe358e620d68b1aebd1b5ce",
       "size": 2638483
     },
     {
       "contentType": "image/svg+xml",
       "group": "build",
-      "key": "src/content/blog/soul-and-intention/assets/banner-dark.svg",
-      "localPath": "src/content/blog/soul-and-intention/assets/banner-dark.svg",
+      "key": "src/content/blog/smart-eyes-stupid-hands/assets/banner-dark.svg",
+      "localPath": "src/content/blog/smart-eyes-stupid-hands/assets/banner-dark.svg",
       "sha256": "b9bd645c32313e171bc8fa40e44a85daa074d38a1befb1bd69ef7999458fe73b",
       "size": 316581
     },
     {
       "contentType": "image/webp",
       "group": "build",
-      "key": "src/content/blog/soul-and-intention/assets/banner-dark.webp",
-      "localPath": "src/content/blog/soul-and-intention/assets/banner-dark.webp",
+      "key": "src/content/blog/smart-eyes-stupid-hands/assets/banner-dark.webp",
+      "localPath": "src/content/blog/smart-eyes-stupid-hands/assets/banner-dark.webp",
       "sha256": "e5edab81e857c75f4025edc44c7b3c618194978971410b3c6b3d1f075b155d1b",
       "size": 79024
     },
     {
       "contentType": "image/svg+xml",
       "group": "build",
-      "key": "src/content/blog/soul-and-intention/assets/banner-light.svg",
-      "localPath": "src/content/blog/soul-and-intention/assets/banner-light.svg",
+      "key": "src/content/blog/smart-eyes-stupid-hands/assets/banner-light.svg",
+      "localPath": "src/content/blog/smart-eyes-stupid-hands/assets/banner-light.svg",
       "sha256": "5547e1220564006625e6d360078a751b9485081aa7c37c563c5530798fccbe17",
       "size": 319153
     },
     {
       "contentType": "image/webp",
       "group": "build",
-      "key": "src/content/blog/soul-and-intention/assets/banner-light.webp",
-      "localPath": "src/content/blog/soul-and-intention/assets/banner-light.webp",
+      "key": "src/content/blog/smart-eyes-stupid-hands/assets/banner-light.webp",
+      "localPath": "src/content/blog/smart-eyes-stupid-hands/assets/banner-light.webp",
       "sha256": "d7d4fc116fd1ee9fe02693ec7c7cdfdd7dd056e095e60d352076a73ecd07f1bf",
       "size": 67120
     },
     {
       "contentType": "image/png",
       "group": "build",
-      "key": "src/content/blog/soul-and-intention/assets/banner-og.png",
-      "localPath": "src/content/blog/soul-and-intention/assets/banner-og.png",
+      "key": "src/content/blog/smart-eyes-stupid-hands/assets/banner-og.png",
+      "localPath": "src/content/blog/smart-eyes-stupid-hands/assets/banner-og.png",
       "sha256": "f494e0275af74d6a2358b12c639645a13489170f124ffd0f9fd2ea704f088296",
       "size": 37994
     },
     {
       "contentType": "image/png",
       "group": "build",
-      "key": "src/content/blog/soul-and-intention/assets/fuck-united.png",
-      "localPath": "src/content/blog/soul-and-intention/assets/fuck-united.png",
+      "key": "src/content/blog/smart-eyes-stupid-hands/assets/banner.png",
+      "localPath": "src/content/blog/smart-eyes-stupid-hands/assets/banner.png",
+      "sha256": "e746122092a2aeee04e1ec2e25d6ce20ce6f0fed4030c520c795461ddba9ccb6",
+      "size": 124477
+    },
+    {
+      "contentType": "image/png",
+      "group": "build",
+      "key": "src/content/blog/smart-eyes-stupid-hands/assets/bean-accessories.png",
+      "localPath": "src/content/blog/smart-eyes-stupid-hands/assets/bean-accessories.png",
+      "sha256": "98a17c433818007e7fe90670a246644fafc3a4da3dba91bcd4f770f7bf4a34fe",
+      "size": 29429
+    },
+    {
+      "contentType": "image/png",
+      "group": "build",
+      "key": "src/content/blog/smart-eyes-stupid-hands/assets/bean-decisions.png",
+      "localPath": "src/content/blog/smart-eyes-stupid-hands/assets/bean-decisions.png",
+      "sha256": "5e775f636d742f962b882a8cefa8e98545e6ca5a9baaf76c6683bfb873b1d5c0",
+      "size": 26260
+    },
+    {
+      "contentType": "image/png",
+      "group": "build",
+      "key": "src/content/blog/smart-eyes-stupid-hands/assets/bean.png",
+      "localPath": "src/content/blog/smart-eyes-stupid-hands/assets/bean.png",
+      "sha256": "2944e28bff4da1b59cfbb7dcfb4f8129e304f938bbcd567188195f640aed88a7",
+      "size": 2375
+    },
+    {
+      "contentType": "image/png",
+      "group": "build",
+      "key": "src/content/blog/smart-eyes-stupid-hands/assets/bento-structure.png",
+      "localPath": "src/content/blog/smart-eyes-stupid-hands/assets/bento-structure.png",
+      "sha256": "914bbaf7d20c81bfa589c2ce408a940252035c655fa71da5be09fcd399c0e8b5",
+      "size": 132730
+    },
+    {
+      "contentType": "image/jpeg",
+      "group": "build",
+      "key": "src/content/blog/smart-eyes-stupid-hands/assets/buddy.jpg",
+      "localPath": "src/content/blog/smart-eyes-stupid-hands/assets/buddy.jpg",
+      "sha256": "c26f001dfd0ae70871e9a1cd41190f949169b1a015256db7921f5cc8a7c597d6",
+      "size": 1595242
+    },
+    {
+      "contentType": "image/png",
+      "group": "build",
+      "key": "src/content/blog/smart-eyes-stupid-hands/assets/claude-generation.png",
+      "localPath": "src/content/blog/smart-eyes-stupid-hands/assets/claude-generation.png",
+      "sha256": "cc11c65bf193305c775207ba833fe177070ef7393da4da1369d58194eb8b6059",
+      "size": 329077
+    },
+    {
+      "contentType": "image/png",
+      "group": "build",
+      "key": "src/content/blog/smart-eyes-stupid-hands/assets/fuck-united.png",
+      "localPath": "src/content/blog/smart-eyes-stupid-hands/assets/fuck-united.png",
       "sha256": "c358e4dc1d7e83a5723f3a967d873691965fe14dbb88700b74d741c201dd93d8",
       "size": 186018
     },
     {
       "contentType": "image/jpeg",
       "group": "build",
-      "key": "src/content/blog/soul-and-intention/assets/funeral-home.jpg",
-      "localPath": "src/content/blog/soul-and-intention/assets/funeral-home.jpg",
+      "key": "src/content/blog/smart-eyes-stupid-hands/assets/funeral-home.jpg",
+      "localPath": "src/content/blog/smart-eyes-stupid-hands/assets/funeral-home.jpg",
       "sha256": "0861c817a412f2a1bc3f278a1dd5c40900b774f3beb60da686233241062755b5",
       "size": 3150983
+    },
+    {
+      "contentType": "image/png",
+      "group": "build",
+      "key": "src/content/blog/smart-eyes-stupid-hands/assets/holy-grail.png",
+      "localPath": "src/content/blog/smart-eyes-stupid-hands/assets/holy-grail.png",
+      "sha256": "bd68d07cd4117e909d5c58aad487acdca3327f2faf9bdf34e3dba384349e1967",
+      "size": 418189
+    },
+    {
+      "contentType": "image/png",
+      "group": "build",
+      "key": "src/content/blog/smart-eyes-stupid-hands/assets/improper-grid.png",
+      "localPath": "src/content/blog/smart-eyes-stupid-hands/assets/improper-grid.png",
+      "sha256": "34d6634e6ba1c2233a8c16e2d0ce2ed1f79c11a860eb41b9c01f8ea71cebb7df",
+      "size": 3052
+    },
+    {
+      "contentType": "image/png",
+      "group": "build",
+      "key": "src/content/blog/smart-eyes-stupid-hands/assets/material-system.png",
+      "localPath": "src/content/blog/smart-eyes-stupid-hands/assets/material-system.png",
+      "sha256": "831d03f562a9b9613c352903c8d2954e4c16a7d6ec54d0a23cd286b7a726829b",
+      "size": 100846
+    },
+    {
+      "contentType": "image/png",
+      "group": "build",
+      "key": "src/content/blog/smart-eyes-stupid-hands/assets/playground.png",
+      "localPath": "src/content/blog/smart-eyes-stupid-hands/assets/playground.png",
+      "sha256": "0215a9b675dc682a3123297198e62189da1f17d5b978b59c1e13ca78c6d3ab76",
+      "size": 2484943
+    },
+    {
+      "contentType": "image/png",
+      "group": "build",
+      "key": "src/content/blog/smart-eyes-stupid-hands/assets/proper-grid.png",
+      "localPath": "src/content/blog/smart-eyes-stupid-hands/assets/proper-grid.png",
+      "sha256": "619ae5ff49551a5935d9f4a888706b5b14e0fad275d5cc61b10daa98e0b6bda2",
+      "size": 2840
+    },
+    {
+      "contentType": "image/png",
+      "group": "build",
+      "key": "src/content/blog/smart-eyes-stupid-hands/assets/shadcn-system.png",
+      "localPath": "src/content/blog/smart-eyes-stupid-hands/assets/shadcn-system.png",
+      "sha256": "1c1e1c9861fb68900222a4750ddb3c2d41f84de801276e3db8e62a208baa0761",
+      "size": 476891
+    },
+    {
+      "contentType": "image/png",
+      "group": "build",
+      "key": "src/content/blog/smart-eyes-stupid-hands/assets/tailwind-temperatures.png",
+      "localPath": "src/content/blog/smart-eyes-stupid-hands/assets/tailwind-temperatures.png",
+      "sha256": "1c4c45138ad5b14e38c7b6b86b065d93576ccd1f6c6cffbcc82d2e740ecd5d0f",
+      "size": 25624
+    },
+    {
+      "contentType": "image/png",
+      "group": "build",
+      "key": "src/content/blog/smart-eyes-stupid-hands/assets/v0-generation.png",
+      "localPath": "src/content/blog/smart-eyes-stupid-hands/assets/v0-generation.png",
+      "sha256": "d6c0af9f195cdb92d1b8be424537f940b61a28945f751cc8dd3fc86787086ee0",
+      "size": 924080
     },
     {
       "contentType": "image/png",

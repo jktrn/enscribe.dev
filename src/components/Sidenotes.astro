@@ -1,0 +1,335 @@
+---
+---
+
+<sidenote-layer
+  aria-hidden="true"
+  data-linebreak-root
+  data-linebreak-narrow
+></sidenote-layer>
+
+<script>
+  import { onReaderModeChange } from "@/lib/typography/preference-events"
+  import { rescanProse } from "@/lib/typography/prose-justification"
+  import { hashId, pixels, queryId } from "@/lib/utils"
+
+  type Sidenote = {
+    scope: Element
+    id: string
+    el: HTMLElement
+    ref: HTMLElement | null
+  }
+
+  type Placement = { note: Sidenote; height: number; top: number | undefined }
+
+  const excerpt = (source: Element) => {
+    const el = document.createElement("sidenote-body")
+    el.append(...source.cloneNode(true).childNodes)
+    const backref = el.querySelector("[data-footnote-backref]")
+    const host = backref?.parentElement
+    backref?.remove()
+    if (host && host !== el && !host.firstChild) host.remove()
+    for (const node of el.querySelectorAll("[id]")) node.removeAttribute("id")
+    for (const link of el.querySelectorAll("a[href]")) {
+      link.setAttribute("tabindex", "-1")
+    }
+    return el
+  }
+
+  const build = (layer: HTMLElement) => {
+    const notes: Sidenote[] = []
+    const lists: HTMLElement[] = []
+
+    for (const scope of document.querySelectorAll("prose-content")) {
+      const list = scope.querySelector<HTMLElement>(".footnotes")
+      if (!list) continue
+      lists.push(list)
+
+      for (const ref of scope.querySelectorAll<HTMLAnchorElement>(
+        "a[data-footnote-ref]",
+      )) {
+        if (ref.closest(".footnotes") || !ref.id) continue
+        const source = queryId(list, hashId(ref.hash))
+        if (!source) continue
+
+        const marker = document.createElement("sidenote-marker")
+        marker.textContent = ref.textContent
+
+        const el = document.createElement("sidenote")
+        el.setAttribute("for", ref.id)
+        el.append(marker, excerpt(source))
+        layer.append(el)
+        notes.push({ scope, id: ref.id, el, ref })
+      }
+    }
+
+    return { notes, lists }
+  }
+
+  let teardown: (() => void) | undefined
+
+  const setup = () => {
+    teardown?.()
+    teardown = undefined
+
+    const layer = document.querySelector<HTMLElement>("page-toc sidenote-layer")
+    if (!layer) return
+    layer.replaceChildren()
+
+    const { notes, lists } = build(layer)
+    const first = notes[0]
+    if (!first) return
+
+    const root = document.documentElement
+    const controller = new AbortController()
+    const { signal } = controller
+    const byId = new Map(notes.map((note) => [note.id, note]))
+
+    let frame: number | undefined
+    let active = false
+    let pad = 0
+    let lead = 0
+    let step = 0
+    let expanded: Sidenote | undefined
+    let hovered: Sidenote | undefined
+    let focused: Sidenote | undefined
+
+    const resolve = (note: Sidenote) => {
+      if (!note.ref?.isConnected) note.ref = queryId(note.scope, note.id)
+      return note.ref
+    }
+
+    const paint = (note: Sidenote | undefined) => {
+      if (!note) return
+      const lit = note === hovered || note === focused || note === expanded
+      const ref = resolve(note)
+      note.el.toggleAttribute("lit", lit)
+      ref?.toggleAttribute("lit", lit)
+      ref?.toggleAttribute("pinned", note === expanded)
+    }
+
+    const hover = (note: Sidenote | undefined) => {
+      if (note === hovered) return
+      const previous = hovered
+      hovered = note
+      paint(previous)
+      paint(note)
+    }
+
+    const focus = (note: Sidenote | undefined) => {
+      if (note === focused) return
+      const previous = focused
+      focused = note
+      paint(previous)
+      paint(note)
+    }
+
+    const owner = (target: EventTarget | null) => {
+      const el = target instanceof Element ? target : null
+      const ref = el?.closest("[data-footnote-ref]")
+      if (ref) return { note: byId.get(ref.id), fromRef: true }
+      const own = el?.closest("sidenote")
+      const note = own ? byId.get(own.getAttribute("for") ?? "") : undefined
+      return { note, fromRef: false }
+    }
+
+    const schedule = () => {
+      if (frame === undefined) frame = requestAnimationFrame(layout)
+    }
+
+    const settle = () => layer.removeAttribute("animating")
+
+    const animate = () => layer.setAttribute("animating", "")
+
+    const expand = (note: Sidenote | undefined) => {
+      const previous = expanded
+      if (note === previous) return
+      expanded = note
+      previous?.el.removeAttribute("expanded")
+      note?.el.setAttribute("expanded", "")
+      paint(previous)
+      paint(note)
+      schedule()
+    }
+
+    const collapse = (animated = false) => {
+      if (animated) animate()
+      else settle()
+      expand(undefined)
+    }
+
+    const layout = () => {
+      frame = undefined
+      if (!active) return
+
+      const rail = layer.getBoundingClientRect()
+      if (rail.height === 0) return
+
+      const placed: Placement[] = []
+      let flow: number | undefined
+      for (const note of notes) {
+        const stale = note.ref
+        const box = resolve(note)?.getBoundingClientRect()
+        const height = note.el.offsetHeight
+        if (note.ref !== stale) paint(note)
+        if (!box) {
+          placed.push({ note, height, top: undefined })
+          continue
+        }
+        const wanted = box.top - rail.top - pad
+        const top =
+          flow === undefined || wanted - flow >= lead ? wanted : flow + step
+        flow = top
+        placed.push({ note, height, top })
+      }
+
+      const index = placed.findIndex(({ note }) => note === expanded)
+      const pivot = index === -1 ? undefined : placed[index]
+      if (pivot?.top !== undefined) {
+        const trailing = placed.slice(index + 1)
+        const crowded = trailing.find(({ top }) => top !== undefined)?.top
+        const shift =
+          crowded === undefined
+            ? 0
+            : Math.max(0, pivot.top + pivot.height + lead - crowded)
+        for (const entry of trailing) {
+          if (entry.top !== undefined) entry.top += shift
+        }
+      }
+
+      let lost = false
+      let below: number | undefined
+      for (let i = placed.length - 1; i >= 0; i--) {
+        const { note, height, top } = placed[i]
+        const on = top !== undefined && top + height > 0 && top < rail.height
+        note.el.toggleAttribute("visible", on)
+        if (note === expanded && !on) lost = true
+        if (top === undefined) continue
+        if (on) {
+          const room = below === undefined ? height : below - top
+          note.el.style.translate = `0 ${Math.round(top)}px`
+          note.el.toggleAttribute("clipped", room < height)
+          if (room < height) {
+            note.el.style.setProperty(
+              "--clip",
+              `${Math.round(height - room)}px`,
+            )
+          } else {
+            note.el.style.removeProperty("--clip")
+          }
+        }
+        below = top
+      }
+
+      if (lost) collapse()
+    }
+
+    const apply = () => {
+      const on =
+        getComputedStyle(layer).display !== "none" &&
+        root.dataset.readerMode === undefined
+      if (on === active) return
+      active = on
+      root.toggleAttribute("data-sidenotes", on)
+      for (const list of lists) list.toggleAttribute("data-linebreak-skip", on)
+      if (on) return schedule()
+      hover(undefined)
+      focus(undefined)
+      for (const note of notes) note.el.removeAttribute("visible")
+    }
+
+    document.addEventListener(
+      "click",
+      (event) => {
+        if (!active) return
+        const { note, fromRef } = owner(event.target)
+        if (!note) return
+        if (fromRef) {
+          event.preventDefault()
+        } else {
+          if ((event.target as Element).closest?.("a[href]")) return
+          if (getSelection()?.isCollapsed === false) return
+        }
+        if (note === expanded) collapse(true)
+        else {
+          expand(note)
+          animate()
+        }
+      },
+      { signal, capture: true },
+    )
+
+    document.addEventListener(
+      "pointerover",
+      (event) => {
+        if (active) hover(owner(event.target).note)
+      },
+      { signal, passive: true },
+    )
+
+    document.addEventListener("pointerleave", () => hover(undefined), {
+      signal,
+      passive: true,
+    })
+
+    document.addEventListener(
+      "focusin",
+      (event) => {
+        const { note } = owner(event.target)
+        const visible = (event.target as Element).matches?.(":focus-visible")
+        focus(note && visible ? note : undefined)
+      },
+      { signal },
+    )
+
+    document.addEventListener("focusout", () => focus(undefined), { signal })
+
+    const railResize = new ResizeObserver(() => {
+      const style = getComputedStyle(first.el)
+      pad = pixels(style.paddingBlockStart)
+      lead = pixels(style.lineHeight)
+      step = pad + 2 * lead
+      apply()
+      schedule()
+    })
+    railResize.observe(layer)
+
+    const noteResize = new ResizeObserver(schedule)
+    for (const note of notes) noteResize.observe(note.el)
+
+    teardown = () => {
+      controller.abort()
+      settle()
+      railResize.disconnect()
+      noteResize.disconnect()
+      if (frame !== undefined) cancelAnimationFrame(frame)
+      root.removeAttribute("data-sidenotes")
+      for (const list of lists) list.removeAttribute("data-linebreak-skip")
+    }
+
+    layer.addEventListener(
+      "transitionend",
+      (event) => {
+        const { propertyName } = event
+        if (propertyName === "translate" || propertyName === "clip-path") {
+          settle()
+        }
+      },
+      { signal },
+    )
+
+    addEventListener(
+      "scroll",
+      () => {
+        settle()
+        schedule()
+      },
+      { passive: true, signal },
+    )
+    onReaderModeChange(apply, signal)
+
+    apply()
+    rescanProse()
+  }
+
+  document.addEventListener("astro:page-load", setup)
+</script>
