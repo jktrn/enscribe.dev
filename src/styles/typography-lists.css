@@ -1,4 +1,4 @@
-prose-content {
+:is(prose-content, sidenote-body) {
   :is(ul, ol) {
     padding-inline-start: 1.5rem;
 

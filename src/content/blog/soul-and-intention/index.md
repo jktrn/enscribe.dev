@@ -13,7 +13,7 @@ I can only write blog posts on airplanes now. I apologize since meta writing is 
 
 [^cogs]: ![Spongebob](https://media.tenor.com/73gXPAWp9LkAAAAM/spongebob.gif)
 
-I will set the setting for no particular reason: I’m writing in an inconveniently small Apple Notes window and cranking my brightness as low as possible since I’m in 45J,[^airplane] an aisle row, and as a serial aisle-rower I know that eyes tend to do a lot of wandering in these lands.
+I will set the setting for no particular reason: I’m writing in an inconveniently small Apple Notes window and cranking my brightness as low as possible since I’m in 45J,[^airplane] an aisle row, and as a serial aisle-rower I know that eyes tend to do a lot of wandering in these lands. Writing is somehow a bit embarrassing; no, I am not trying to be performative.
 
 [^airplane]: ![Airplane](assets/airplane.jpg)
 
@@ -26,13 +26,17 @@ I admit that I did eventually cave in and buy Viasat, but unfortunately Unitedwi
 
 Today I want to write about “taste”. Invoking this word surfaces a gross and bourgeoisie persona within me that I did not know I had, but unfortunately it communicates my point the clearest as the buzzword du jour. I work a lot with my taste as part of this line of work, and lately it’s the only component of my brain that activates whenever meaningful work must get done. The rest has lie dormant since I started using LLMs on a daily basis. As such, my taste is now the final moat[^moat] between myself and brain-atrophying AI psychosis.
 
-[^moat]: Yes I know you read the word “moat” and subconsciously flinched a bit. It’s also equally as gross as the word taste. I’m going to try to use the word “orthogonal” later in this post to piss even more people off.
+[^moat]: Yes I know you read the word “moat” and subconsciously flinched a bit. It’s also equally as gross as the word taste. I’m going to try to use the word “orthogonal” later in this post to piss even more people off. This is like that [viral weatherman](https://www.businessinsider.com/tiktok-weather-reporters-tv-tiktok-words-news-reports-2023-3) who sneaks memes into his weather reports.
 
 I vividly recall the first time I used AI. I kinda had AI psychosis[^psychosis] before it was cool because I was so busy learning Tetris openers in 11th grade pre-calculus that I ended up needing to bubble zigzags into my Scantrons when 12th grade AP Calculus rolled around.[^ap-calculus]
 
 [^psychosis]: I am not using the word AI psychosis here correctly. I am substituting “the deferring of my life and brain energy to some other entity” which will probably be my definition throughout this piece because it’s funny. If you want the definition of “AI psychosis”, please feel free to refer to Garry Tan’s Twitter account.
 
-[^ap-calculus]: I’m pretty sure I didn’t actually learn what the Product rule was until a week before the AP exam. I also took the AB course since my school didn’t offer BC, but then I still took the BC exam because my to-this-day goat David M. told me to do it to skip classes in university. When I asked the teacher to teach BC content for the students taking the BC exam his response was basically equivalent to the “slowly cranking up the middle finger with a turn mechanism” emote:
+[^ap-calculus]: I’m pretty sure I didn’t actually learn what the Product rule was until a week before the AP exam. I also took the AB course since my school didn’t offer BC, but then I still took the BC exam because my to-this-day goat David M. told me to do it to skip classes in university.
+
+    You also probably have no idea what an AP class is or what AB/BC is if you are outside of the United States, sorry. An AP class is just a hard class with an exam at the end that can give you university units if you pass. AB and BC are particular offerings of AP Calculus, where the latter is more difficult because it crams two additional units of content into the same timeframe.
+
+    When I asked the teacher to teach BC content for the students taking the BC exam his response was equivalent to the “slowly cranking up the middle finger with a turn mechanism” emote:
 
     ![Chris Pratt](https://media.tenor.com/-z-4s1hmrAEAAAAM/fuck-you-middle-finger.gif)
     
@@ -52,7 +56,7 @@ I started making websites pretty to create a space for myself on the internet. A
 
 [^bean]: The first instance of me ever drawing the bean guy was in Mr. Moser’s 7th grade history class, which involved a lot of artistic expression, coloring maps, etc. I was a very artsy middle schooler which is why the girls loved it when I brought my tin of 64 Prismacolor colored pencils like a little Crazy Rich Asian.
 
-Eventually I started receiving positive feedback for my work. They’d always talk about how pretty the websites looked rather than how good it was to read. Huh, that’s odd, maybe I have a knack for this. I get a couple of requests and “commissions” to design pretty stuff, and eventually I start quoting and charging. At some point I start calling them “clients” rather than “commissioners” and I start calling myself a “freelancer”. Wow, I’m so epic and employed.
+Eventually I started receiving positive feedback for my work. They’d always talk about how pretty the websites looked rather than how good it was to read. Huh, that’s odd, maybe I have a knack for this. I get a couple of requests and “commissions” to design pretty stuff, and eventually I start quoting and charging. At some point I start calling them “clients” rather than “commissioners” and I start calling myself a “freelancer”. Wow, I’m so epic and employed and so much better than my fellow 16-year-old classmates.
 
 ## Post-AP-calculus
 
@@ -120,7 +124,70 @@ The ACCC club becomes a little ridiculous, however, when its members treat membe
 
 [^capitalism]: I feel like I am subconsciously writing this analogy in a way that lets me off the hook. I cannot meaningfully opt out of capitalism. I can probably write the fucking commit title myself.
 
-### Smart eyes, stupid hands
+#### Smart eyes, stupid hands
+
+My definition of taste was divided into "input" and "output," which I will now map to "judgement" and "craft" so that it feels more sophisticated and philosophical (it means the same thing). Both the NTTC and ACCC also allow for "taste" to be defined as "the human residuals left post-automation" (both clubs concern the coping mechanisms surrounding automation, rather than the process itself).
+
+With AI I get infinite practice for my judgement. Never in all of history has a designer been able to exercise their judgement so frequently.[^judgement]
+
+The primary issue is craft. AI has created this odd arrangement for me because now that I am simply accepting or rejecting clanked results, I practice judgement without ever practicing construction. Maybe this makes me a creative director; I don't just provide yes/no responses, but I also nudge clankers in directions more aligned with my grand vision. Maybe creative direction is now an acceptable form of creation. But it does mean that, perpetually, my eyes get smarter and my hands get stupider. At the global optimum I will be able to reject 999 of 1000 variations, without having a single clue on how to make the accepted variant look like anything else without asking the clanker that made it.
+
+[^judgement]: It's like that thing where because of Instagram you have seen more half-naked hot women than all of your ancestors combined.
+
+## Jungle gyms
+
+When I was scrolling Instagram Reels[^reels] prior to entering the plane I actually encountered [this Reel](https://www.instagram.com/reels/DcE5zejqxrT/) that talked about how children's [jungle gyms](https://en.wikipedia.org/wiki/Jungle_gym) have been trending towards too cushy and safe the past decade. "This (a crazy and tall metal jungle gym) is not good because kids can die, but this (a moderately normal jungle gym) is good because kids can get hurt," the presenter said. Apparently this is an entire [culture war](https://cps.ca/en/documents/position/outdoor-risky-play), and proponents of "risky play" have differentiated between "risks" and "hazards" within the playground environment.
+
+[^reels]: I am terribly addicted to scrolling Reels. This probably liquifies my frontal lobe as fast, if not faster than vibe-coding, but at least I get to make this upcoming analogy.
+
+This is quite a gem of a Reel because now I can come full circle and talk about playgrounds after I just finished talking about classes and clubs (we've done a loop around the entire school).
+
+What these playground architects are modeling around is the very straightforward idea that friction cultivates growth. Our relationship with our clankers maps well to this; clankers are hyperoptimized friction-eliminating machines, and they treat all play as "hazards" rather than "risks." Thus, we have "bad friction" and we have "good friction." I wrestled with writing about this for a while and have come to the conclusion that it is simply not interesting. You can very obviously change your workflows so that you keep good friction, it just takes discipline.
+
+The issue with discipline is that I don't really have much of it. If you recall:
+
+> A very important part of my personality is that I will do everything in my power to avoid something I don’t want to do.
+
+I never really liked any of the jungle-gymmy parts of playgrounds. I grew up going to [Thornburg Park](https://maps.app.goo.gl/BBSbUmfEFEXhDoe99) playing at [this particular playground](https://maps.app.goo.gl/rEfATpZdyBsf2djD7)[^playground] after Vietnamese school on Sundays. I didn't like the (literal) friction of going down that fireman pole and how it felt on my fingers. I also didn't like playing on the swings because they were always kinda dirty and the playground sand had a lot of these weird bugs flying around and burying themselves. I probably also had a lunch I disliked because the Sunday school people always served wonky vegetarian food I didn't like at the time. Overall it was just quite an unpleasant experience, and so I often opted out and just sat near the shade of the pagoda playing with blades of grass.
+
+[^playground]: ![Playground](assets/playground.png)
+
+As such, for someone as undisciplined as me, how do I stop cucking myself by letting the clanker do all of my work on behalf of me?
+
+## Becoming uncuckable
+
+The status quo is that there is a very obedient and helpful clanker at arm's reach that can do everything for present me. Present me wants a website. Future me wants to remain capable of making websites. Since the clanker only hears from present me, it requires discipline for present me to voluntarily respect future me. This is a very poor construction; surely I don't need to have to make this virtuous choice every 5 minutes.
+
+The jungle gym, by construction, has no button that transports the child to the final monkey bar. The playground tightly couples the reward to the exercise. Adding one would suddenly introduce the discipline of "do not press the teleport button." A clanker that best protects my development would thus need to be less obedient and worse at completing my immediate request.
+
+This is a terrible idea. If the clanker refused to do my bidding I would just get pissed at it and try to sidestep its guardrails. If the clanker simply was too dumb to fulfill my request I would get pissed at its incompetence and try other models or something. As such, we are at a deadlock: I want (1) an obedient clanker, (2) to not require discipline, and (3) to still be doing the work. This was already demonstrated by me as a child, as the playground offered me exercise and sunlight and I chose to sit in the shade and play with the grass. Even if architecture can invite effort, if a path of lesser resistance exists it cannot make you take the more difficult one without coercion.
+
+I've come to the conclusion that a setting where all of (1), (2), and (3) exists is impossible. There are actually only two things that you can do to solve this dilemma:
+
+1. You want the activity more than the result.
+2. The path of least resistance becomes suddenly unavailable for reasons you cannot negotiate in the moment.
+
+Point #2 is the circumstance that led me to write this post. Point #1 is our true solution to becoming uncuckable.
+
+### "For the love of the game"
+
+In college I was super hardstuck Ascendant 1 in Valorant. I would duo until 3am with my buddy and always hop off on a loss with net negative RR and would just think it was the end of the world. I would blame my games on crypto wintraders or cheaters or the bottom frag or any combination of the three (unless I was myself the bottom frag). It was such a bit that I now have an Ascendant buddy on my car keys.[^keys]
+
+I eventually stumbled across [this YouTube video](https://www.youtube.com/watch?v=GJCngmLFDgw) by famous retired Overwatch coach [@WizardHyeong](https://x.com/WizardHyeong?). He introduces "the hardstuck gamer" and "the genius gamer," and explains that their only differentiating factor is that the latter displays a trait known as "autotelicity."
+
+For an action to be autotelic is to "have a purpose in and not apart from itself." Simply put, an autotelic person does something for no other reason other than the fact that they love doing it. WizardHyeong claims that this is why he never truly succeeded in bodybuilding, because he was too motivated by extrinsic factors (appearance and status) rather than by intrinsic factors (loving the feeling of exercise).
+
+[^keys]: ![Buddy](assets/buddy.jpg)
+
+<!--
+
+
+Broken Viasat forced me to wrestle with my own thought. If it had functioned then this essay would have been one giant cosmic joke because I would be deferring my thoughts to Claude while writing about the deferring of thoughts to Claude... via Claude. What a world we live in.
+
+The playground people want environments that are as safe as necessary, not as safe as possible. I want a creative process that is as efficient as necessary, not as efficient as possible.
+
+Every once in a while, let United Wi-Fi shit itself.-->
+
 
 <style>
 .frame-half {

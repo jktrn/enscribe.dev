@@ -1,4 +1,4 @@
-prose-content {
+:is(prose-content, sidenote-body) {
   counter-reset: tmlEqnNo;
 
   :is(math, math *) {
