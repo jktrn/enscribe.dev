@@ -1,6 +1,6 @@
 ---
 title: 'Smart Eyes, Stupid Hands'
-description: "Now that web development is a solved problem, “taste” is, unfortunately, the final divide between me and brain-atrophying AI psychosis."
+description: "I keep turning to AI to make the tiny decisions that hone my taste, then subsequently wonder why my hands are getting stupider."
 date: 2026-08-21
 tags: ['design']
 banner:
