@@ -2,6 +2,7 @@
 import MetaPost from "@/components/MetaPost.astro"
 import PostActions from "@/components/PostActions.astro"
 import ReaderModeToggle from "@/components/ReaderModeToggle.astro"
+import ReadingTime from "@/components/ReadingTime.astro"
 import SeriesReader from "@/components/SeriesReader.astro"
 import TableOfContents from "@/components/TableOfContents.astro"
 import ThemedBannerImage from "@/components/ThemedBannerImage.astro"
@@ -10,6 +11,7 @@ import Layout from "@/layouts/Layout.astro"
 import { bannerRaster, themedBanner } from "@/lib/assets/banner"
 import {
   entryInline,
+  entryMinutes,
   getPosts,
   getSubposts,
   pageTitle,
@@ -124,6 +126,7 @@ if (isSubpost(post.id)) {
               </post-authors>
             )}
             <FormattedDate date={entry.data.date} />
+            <ReadingTime minutes={entryMinutes(entry)} />
             {entry.data.tags && (
               <post-tags>
                 {entry.data.tags.map((tag) => (
@@ -190,6 +193,7 @@ if (isSubpost(post.id)) {
 
     post-meta {
       --underline: var(--muted-foreground);
+      --dim: color-mix(in oklab, var(--muted-foreground) 50%, transparent);
 
       display: flex;
       flex-wrap: wrap;
@@ -219,8 +223,15 @@ if (isSubpost(post.id)) {
         }
       }
 
-      post-authors ~ :global(time)::before {
+      post-authors ~ :global(time)::before,
+      :global(time) ~ :global(reading-time)::before,
+      :global(time) ~ post-tags::before {
         content: "·";
+        color: var(--dim);
+      }
+
+      post-authors ~ :global(time)::before,
+      :global(time) ~ :global(reading-time)::before {
         margin-inline-end: var(--space-3xs);
       }
 
@@ -232,16 +243,12 @@ if (isSubpost(post.id)) {
         gap: var(--space-3xs);
 
         a {
-          color: color-mix(in oklab, var(--muted-foreground) 50%, transparent);
+          color: var(--dim);
 
           &:hover {
             color: var(--foreground);
           }
         }
-      }
-
-      time ~ post-tags::before {
-        content: "·";
       }
 
       a {

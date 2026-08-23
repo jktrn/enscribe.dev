@@ -1,0 +1,14 @@
+---
+type Props = { minutes: number }
+
+const { minutes } = Astro.props
+---
+
+{minutes > 0 && <reading-time>{minutes} min read</reading-time>}
+
+<style>
+  reading-time {
+    color: var(--dim);
+    font-variant-numeric: oldstyle-nums;
+  }
+</style>

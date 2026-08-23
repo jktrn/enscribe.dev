@@ -19,6 +19,7 @@ export const asInline = (label: InlineLabel): InlineRendered =>
 type RenderedFrontmatter = {
   inline?: Partial<Record<"title" | "description", InlineRendered>>
   tocHtml?: Record<string, string>
+  readingMinutes?: number
 }
 
 type RenderableEntry = {
@@ -37,6 +38,17 @@ export function entryInline(
   if (rendered) return rendered
   const raw = String(entry.data[field] ?? "")
   return { html: escapeHtml(raw), text: raw }
+}
+
+export function entryMinutes(entry: RenderableEntry): number {
+  const frontmatter = entry.rendered?.metadata?.frontmatter as
+    | RenderedFrontmatter
+    | undefined
+  return frontmatter?.readingMinutes ?? 0
+}
+
+export function chainMinutes(entries: readonly RenderableEntry[]): number {
+  return entries.reduce((total, entry) => total + entryMinutes(entry), 0)
 }
 
 export type TocHeading = MarkdownHeading & { html?: string }
