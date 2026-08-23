@@ -660,22 +660,6 @@
     {
       "contentType": "image/svg+xml",
       "group": "graphics",
-      "key": "graphics/blog/soul-and-intention/banner-dark.svg",
-      "localPath": "graphics/blog/soul-and-intention/banner-dark.svg",
-      "sha256": "d84d4cbf2e4670cb0544b20186c2093884e10c454339a88806ff9fc234f0598a",
-      "size": 316581
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "graphics",
-      "key": "graphics/blog/soul-and-intention/banner-light.svg",
-      "localPath": "graphics/blog/soul-and-intention/banner-light.svg",
-      "sha256": "5547e1220564006625e6d360078a751b9485081aa7c37c563c5530798fccbe17",
-      "size": 319153
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "graphics",
       "key": "graphics/blog/wolvctf-2023-wannaflag/banner.svg",
       "localPath": "graphics/blog/wolvctf-2023-wannaflag/banner.svg",
       "sha256": "41bb6d46378b6756620948625f8a8c1222b6efd9931c1f9659dfc12b14f98533",
@@ -5144,70 +5128,6 @@
       "localPath": "src/content/blog/picoctf-2022-buffer-overflow/assets/stack-visual2.png",
       "sha256": "bdb247aecf9bc227d4582fc5dbed8d2a59d4b1e8cc661300abd1e0ae7ff1dbd0",
       "size": 16187
-    },
-    {
-      "contentType": "image/jpeg",
-      "group": "build",
-      "key": "src/content/blog/soul-and-intention/assets/airplane.jpg",
-      "localPath": "src/content/blog/soul-and-intention/assets/airplane.jpg",
-      "sha256": "7674348d53c787fd9b5111fda98e34ab2a1e6014ebe358e620d68b1aebd1b5ce",
-      "size": 2638483
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "build",
-      "key": "src/content/blog/soul-and-intention/assets/banner-dark.svg",
-      "localPath": "src/content/blog/soul-and-intention/assets/banner-dark.svg",
-      "sha256": "b9bd645c32313e171bc8fa40e44a85daa074d38a1befb1bd69ef7999458fe73b",
-      "size": 316581
-    },
-    {
-      "contentType": "image/webp",
-      "group": "build",
-      "key": "src/content/blog/soul-and-intention/assets/banner-dark.webp",
-      "localPath": "src/content/blog/soul-and-intention/assets/banner-dark.webp",
-      "sha256": "e5edab81e857c75f4025edc44c7b3c618194978971410b3c6b3d1f075b155d1b",
-      "size": 79024
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "build",
-      "key": "src/content/blog/soul-and-intention/assets/banner-light.svg",
-      "localPath": "src/content/blog/soul-and-intention/assets/banner-light.svg",
-      "sha256": "5547e1220564006625e6d360078a751b9485081aa7c37c563c5530798fccbe17",
-      "size": 319153
-    },
-    {
-      "contentType": "image/webp",
-      "group": "build",
-      "key": "src/content/blog/soul-and-intention/assets/banner-light.webp",
-      "localPath": "src/content/blog/soul-and-intention/assets/banner-light.webp",
-      "sha256": "d7d4fc116fd1ee9fe02693ec7c7cdfdd7dd056e095e60d352076a73ecd07f1bf",
-      "size": 67120
-    },
-    {
-      "contentType": "image/png",
-      "group": "build",
-      "key": "src/content/blog/soul-and-intention/assets/banner-og.png",
-      "localPath": "src/content/blog/soul-and-intention/assets/banner-og.png",
-      "sha256": "f494e0275af74d6a2358b12c639645a13489170f124ffd0f9fd2ea704f088296",
-      "size": 37994
-    },
-    {
-      "contentType": "image/png",
-      "group": "build",
-      "key": "src/content/blog/soul-and-intention/assets/fuck-united.png",
-      "localPath": "src/content/blog/soul-and-intention/assets/fuck-united.png",
-      "sha256": "c358e4dc1d7e83a5723f3a967d873691965fe14dbb88700b74d741c201dd93d8",
-      "size": 186018
-    },
-    {
-      "contentType": "image/jpeg",
-      "group": "build",
-      "key": "src/content/blog/soul-and-intention/assets/funeral-home.jpg",
-      "localPath": "src/content/blog/soul-and-intention/assets/funeral-home.jpg",
-      "sha256": "0861c817a412f2a1bc3f278a1dd5c40900b774f3beb60da686233241062755b5",
-      "size": 3150983
     },
     {
       "contentType": "image/png",
