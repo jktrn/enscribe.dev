@@ -30,6 +30,18 @@ main :is(strong, b) {
   font-weight: 400;
 }
 
+main .gsc-left-header,
+main .gsc-upvote-button,
+main .gsc-reactions-button {
+  display: none;
+}
+
+main .gsc-replies {
+  padding-top: 0;
+  background: var(--color-canvas-subtle) !important;
+  border-radius: 0 !important;
+}
+
 main textarea::placeholder {
   color: var(--color-fg-subtle);
   opacity: 1;

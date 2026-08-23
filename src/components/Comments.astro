@@ -22,7 +22,7 @@ const theme = import.meta.env.DEV
 ---
 
 <post-comments>
-  <h2>Comments</h2>
+  <h2>Comments <span data-count></span></h2>
   <div
     class="giscus"
     data-term={term}
@@ -42,11 +42,23 @@ const theme = import.meta.env.DEV
       margin-block-end: var(--space-s);
       font-size: var(--step-1);
       font-weight: var(--font-weight-medium);
+
+      span:empty {
+        display: none;
+      }
+
+      span {
+        color: var(--muted-foreground);
+      }
     }
 
     :global(.giscus-frame) {
       inline-size: 100%;
       border: none;
+
+      &:focus-visible {
+        outline: none;
+      }
     }
   }
 </style>
@@ -65,6 +77,8 @@ const theme = import.meta.env.DEV
     if (!mount || mount.childElementCount > 0) return
 
     const { term, themeLight, themeDark } = mount.dataset
+    const controller = new AbortController()
+    const { signal } = controller
 
     const themeUrl = (name: "light" | "dark") =>
       (name === "dark" ? themeDark : themeLight) ??
@@ -92,7 +106,7 @@ const theme = import.meta.env.DEV
       term,
       strict: "1",
       reactionsEnabled: "0",
-      emitMetadata: "0",
+      emitMetadata: "1",
       inputPosition: "top",
       theme: currentTheme(),
       lang: "en",
@@ -108,7 +122,6 @@ const theme = import.meta.env.DEV
       )
     }
 
-    const controller = new AbortController()
     const observer = new MutationObserver(syncTheme)
     teardown = () => {
       controller.abort()
@@ -119,7 +132,19 @@ const theme = import.meta.env.DEV
     matchMedia("(prefers-color-scheme: dark)").addEventListener(
       "change",
       syncTheme,
-      { signal: controller.signal },
+      { signal },
+    )
+
+    addEventListener(
+      "message",
+      (event: MessageEvent) => {
+        if (event.origin !== ORIGIN) return
+        const total = event.data?.giscus?.discussion?.totalCommentCount
+        if (typeof total !== "number") return
+        const label = document.querySelector<HTMLElement>("[data-count]")
+        if (label) label.textContent = total > 0 ? `(${total})` : ""
+      },
+      { signal },
     )
   }
 
