@@ -76,7 +76,7 @@ The reason my occupation exists in the first place is that WTLLS factor is hard 
 - Taste is such a horrible thing because many people dismiss it as something that is just magically handed to you by the grace of God as an infant. We should probably define it somewhat coherently:
   :::definition[Taste]
   I think of taste as three components:
-  1. Taste is the ability to (un)consciously understand when something looks, feels, smells, tastes, or sounds "correct." Taste desides what should exist.
+  1. Taste is the ability to (un)consciously understand when something looks, feels, smells, tastes, or sounds "correct." Taste decides what should exist.
   2. Craft is the ability to create something that satisfies those constraints. Craft determines whether you can make it exist.
   3. Style is the recurring pattern across the decisions you make while doing so. Style is what your taste looks like once applied through your craft.
 
@@ -122,7 +122,7 @@ Taste is the most important skill within the ACCC, as it serves as the ultimate 
 
 Massively using AI while criticizing it is hypocritical, but not necessarily contradictory. You can participate in a system, benefit from it, and still understand that it has consequences (holy shit this guy just described capitalism... we live in a society). People participate in arrangements they dislike all the time because the arrangements are convenient or compulsory, or because nonparticipation is really hard (capitalism).[^capitalism]
 
-The ACCC club becomes a little ridiculous, however, when its members treat membership as this sort of get-out-of-jail-free card. Since I'm in the ACCC, I can just boil the ocean via clank with zero ramification because I've done my land acknowledgement. ACCC membership gives me [carbon credits](https://en.wikipedia.org/wiki/Carbon_offsets_and_credits). Just because you can thoughtfully describe your codependence doesn't mean that you are immune to experiencing it; this is all just very elaborate cope.
+The ACCC becomes a little ridiculous, however, when its members treat membership as this sort of get-out-of-jail-free card. Since I'm in the ACCC, I can just boil the ocean via clank with zero ramifications because I've done my land acknowledgement. ACCC membership gives me [carbon credits](https://en.wikipedia.org/wiki/Carbon_offsets_and_credits). Just because you can thoughtfully describe your codependence doesn't mean that you are immune to experiencing it; this is all just very elaborate cope.
 
 As such, while the NTTC are the ignorant AI-psychotic, the ACCC are the self-aware AI psychotic (which is not the same thing as immunity). The former mistakes output for skill, while the latter can accurately describe a codependency they cannot shake.
 
@@ -132,7 +132,7 @@ As such, while the NTTC are the ignorant AI-psychotic, the ACCC are the self-awa
 
 Judgement has always been immensely easier than construction. Why do you think there are so many movie critics while there are so few cinematographers? With AI, never in human history have designers been able to exercise their judgement this frequently.[^judgement]
 
-The primary issue is craft. AI has created this odd arrangement for me because now that I am simply accepting or rejecting clanked results, I practice judgement without ever practicing construction. Maybe this makes me a creative director; I don't just provide yes/no responses, but I also nudge clankers in directions more aligned with my grand vision. Maybe creative direction is now an acceptable form of creation. Everyone wants to direct a movie
+The primary issue is craft. AI has created this odd arrangement for me because now that I am simply accepting or rejecting clanked results, I practice judgement without ever practicing construction. Maybe this makes me a creative director; I don't just provide yes/no responses, but I also nudge clankers in directions more aligned with my grand vision. Maybe creative direction is now an acceptable form of creation. Everyone wants to direct a movie.
 
 My eyes get smarter, but my hands get stupider. At the global optimum I will be able to reject 999 of 1000 variations, without having a single clue on how to make the accepted variant look like anything else without asking the clanker that made it.
 
@@ -144,7 +144,7 @@ When I was scrolling Instagram Reels[^reels] prior to entering the plane, I actu
 
 [^reels]: I am terribly addicted to scrolling Reels. This probably liquefies my frontal lobe as fast, if not faster than vibe-coding, but at least I get to make this upcoming analogy.
 
-A "risk" is something a child can recognize, evaluate, and decide to take on; a "hazard" is something they cannot reasonably see or manage. Monkey bars are a risk; a rotten-down monkey bar is a hazard. The goal is to extract the hazard without extracting the challenge.
+A "risk" is something a child can recognize, evaluate, and decide to take on; a "hazard" is something they cannot reasonably see or manage. Monkey bars are a risk; a rotten monkey bar is a hazard. The goal is to remove the hazard without removing the challenge.
 
 Creative work has the same split. We have "bad friction" (hassles, e.g., your tooling breaks) and "good friction" (the actual work, e.g., choosing a layout, failing to make it look right, noticing why, and trying again). This is the environment where judgement and craft develop together.
 
@@ -173,7 +173,7 @@ This is a terrible idea. If the clanker refused to do my bidding, I would just g
 I've come to the conclusion that a setting where all of (1), (2), and (3) exist is impossible. There are actually only two things that you can do to solve this dilemma:
 
 1. You want the activity more than the result.
-2. The path of least resistance becomes suddenly unavailable for reasons you cannot negotiate in the moment.
+2. The path of least resistance suddenly becomes unavailable for reasons you cannot negotiate in the moment.
 
 Point #2 is the circumstance that led me to write this post. Point #1 is our true solution to becoming uncuckable.
 
@@ -185,7 +185,7 @@ In college, I was super hardstuck Ascendant 1 in Valorant. I would duo until 3am
 
 I eventually stumbled across [this YouTube video](https://www.youtube.com/watch?v=GJCngmLFDgw) by famous retired Overwatch coach [@WizardHyeong](https://x.com/WizardHyeong?). He introduces "the hardstuck gamer" and "the genius gamer," and explains that their only differentiating factor is that the latter displays a trait known as "autotelicity."
 
-For an action to be autotelic is to ["have a purpose in and not apart from itself."](https://www.merriam-webster.com/dictionary/autotelic) Simply put, an autotelic person does something for no other reason other than the fact that they love doing it. WizardHyeong claims that this is why he never truly succeeded in bodybuilding: he was too motivated by extrinsic factors (appearance and status) rather than by intrinsic factors (loving the feeling of exercise).
+For an action to be autotelic is to ["have a purpose in and not apart from itself."](https://www.merriam-webster.com/dictionary/autotelic) Simply put, an autotelic person does something for no reason other than the fact that they love doing it. WizardHyeong claims that this is why he never truly succeeded in bodybuilding: he was too motivated by extrinsic factors (appearance and status) rather than by intrinsic factors (loving the feeling of exercise).
 
 Many struggling gamers measure their progress externally, which is why losses feel so crushing: a loss indicates that they've gotten worse somehow. This especially happens once a player converts from casual to professional play (apparently there are entire "gaming academies" in Korea), and they begin to shell out money on coaching and begin to pressure themselves to improve. Now every game they play is a referendum against every life choice they've made. As such, he recommends that his players detach themselves from external rewards; doing so makes the players more curious, and they begin to study and mimic their role models, experiment with ideas, and accept failure. They iterate like this hundreds of times, because there is joy in getting slightly closer to the answers they wish to find.
 
@@ -206,7 +206,7 @@ As such, maybe the most detrimental moment of my life was not pasting my AP Calc
 
 In this sense, the clanker becomes a bit less culpable than I would like to admit. I also blame myself a bit less now for my lack of discipline, because clanking is an entirely rational response to reaching an external reward as fast as possible. The clanker is now more of a diagnostic tool, since if you feel so relieved delegating the activity, you probably never wanted it in the first place. There is no point in clanking away a journey you wanted to experience.
 
-If you really think about it, clanking is now an activity that you can be autotelic about! If you enjoy prompting and orchestrating and watching your vision unfold in front of you, amazing. Now, clanking doesn't remove play from the process, but instead replaces play with an entirely different game. The primary caveat is that the clanking game will probably not work the same muscles as whatever it is replacing. Managing clankers will only make you better at managing clankers. So I can't be sad watching my eyes get smarter and my hands get stupider because this is what I signed up for. Membership of the ACCC gives me the self-awareness to name the muscle I am no longer exercising, but it will not exercise it for me.
+If you really think about it, clanking is now an activity that you can be autotelic about! If you enjoy prompting and orchestrating and watching your vision unfold in front of you, amazing. Now, clanking doesn't remove play from the process, but instead replaces play with an entirely different game. The primary caveat is that the clanking game will probably not work the same muscles as whatever it is replacing. Managing clankers will only make you better at managing clankers. So I can't be sad watching my eyes get smarter and my hands get stupider because this is what I signed up for. Membership in the ACCC gives me the self-awareness to name the muscle I am no longer exercising, but it will not exercise it for me.
 
 ### Making to make
 
@@ -214,9 +214,9 @@ Thus, becoming uncuckable means protecting and cherishing the activities you fin
 
 In life, there are two types of creation: (1) making because you want the thing, and (2) making because you want to make. Although this would be so awesome, it is unfortunately impossible for your life to entirely consist of (2), nor is it feasible to strive towards (2) as an endgame. That is just the way life is.
 
-Concretely, say a client wants a website. If all I desire is for a website to exist, then outsourcing a clanker is an entirely rational response. I should be honest with myself and with my client that I practiced the art of clanking rather than the art of making a website. Conversely, if I am curious and am aching to sate my curiosity, if I want to exercise my taste and make my micro-decisions, then clanking cannot be a solution. There is no point in clanking away a journey you wanted to experience.
+Concretely, say a client wants a website. If all I desire is for a website to exist, then outsourcing the work to a clanker is an entirely rational response. I should be honest with myself and with my client that I practiced the art of clanking rather than the art of making a website. Conversely, if I am curious and am aching to sate my curiosity, if I want to exercise my taste and make my micro-decisions, then clanking cannot be a solution. There is no point in clanking away a journey you wanted to experience.
 
-If I choose to exercise (1), I am agreeing to not improve at design. This can also happen with (2), because I can love an activity and remain complacent with my skillset (if this is your goal, then it is entirely okay). Autotelicity solves the discipline problem, but it doesn't the growth problem. All it does is make you want to show up; curiosity is what makes you wander into things you cannot already do.
+If I choose to exercise (1), I am agreeing to not improve at design. This can also happen with (2), because I can love an activity and remain complacent with my skillset (if this is your goal, then it is entirely okay). Autotelicity solves the discipline problem, but it doesn't solve the growth problem. All it does is make you want to show up; curiosity is what makes you wander into things you cannot already do.
 
 I am incredibly privileged that the thing that I happen to cherish also serves as a nice portfolio piece and demonstrates that I am employable. It is also quite unlucky because now I have deeply mixed up my work and my play and now have to reprioritize. Unfortunately, I cannot order myself to reconcile this relationship. Wanting to love an activity is not the same thing as actually loving it. The only thing I can do is notice when I am performing (1) and when I am performing (2), and stop optimizing them as if they were the same thing.
 
