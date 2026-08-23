@@ -1,0 +1,94 @@
+---
+type Props = { term: string }
+
+const { term } = Astro.props
+---
+
+<post-comments>
+  <h2>Comments</h2>
+  <div class="giscus" data-term={term}></div>
+</post-comments>
+
+<style>
+  post-comments {
+    display: block;
+    margin-block-start: var(--space-xl);
+    padding-block-start: var(--space-xl);
+    border-block-start: 2px solid var(--border);
+
+    h2 {
+      margin-block-end: var(--space-s);
+      font-size: var(--step-1);
+      font-weight: var(--font-weight-medium);
+    }
+
+    :global(.giscus-frame) {
+      inline-size: 100%;
+      border: none;
+    }
+  }
+</style>
+
+<script>
+  const ORIGIN = "https://giscus.app"
+  const root = document.documentElement
+  const mount = document.querySelector<HTMLElement>(".giscus")
+
+  if (mount) {
+    const { term } = mount.dataset
+
+    // The giscus iframe is https and can't fetch a stylesheet off a plain-http
+    // origin, so localhost falls back to the built-in themes. Any https origin
+    // — production, a Workers preview, a tunnel — serves its own copy.
+    const themeUrl = (name: "light" | "dark") =>
+      location.protocol === "https:"
+        ? `${location.origin}/giscus/${name}.css`
+        : name
+
+    const currentTheme = () =>
+      themeUrl(
+        root.dataset.theme === "dark" ||
+          (!root.dataset.theme &&
+            matchMedia("(prefers-color-scheme: dark)").matches)
+          ? "dark"
+          : "light",
+      )
+
+    const script = document.createElement("script")
+    script.src = `${ORIGIN}/client.js`
+    script.crossOrigin = "anonymous"
+    script.async = true
+    Object.assign(script.dataset, {
+      repo: "jktrn/enscribe.dev",
+      repoId: "R_kgDOKS3cog",
+      category: "Comments",
+      categoryId: "DIC_kwDOKS3cos4DECaf",
+      mapping: "specific",
+      term,
+      strict: "1",
+      reactionsEnabled: "1",
+      emitMetadata: "0",
+      inputPosition: "top",
+      theme: currentTheme(),
+      lang: "en",
+      loading: "lazy",
+    })
+    mount.append(script)
+
+    const syncTheme = () => {
+      const frame = document.querySelector<HTMLIFrameElement>(".giscus-frame")
+      frame?.contentWindow?.postMessage(
+        { giscus: { setConfig: { theme: currentTheme() } } },
+        ORIGIN,
+      )
+    }
+
+    new MutationObserver(syncTheme).observe(root, {
+      attributeFilter: ["data-theme"],
+    })
+    matchMedia("(prefers-color-scheme: dark)").addEventListener(
+      "change",
+      syncTheme,
+    )
+  }
+</script>
