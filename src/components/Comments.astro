@@ -5,9 +5,6 @@ type Props = { term: string }
 
 const { term } = Astro.props
 
-// The giscus iframe is https and can't fetch the theme off http://localhost,
-// so dev inlines it as a data: URL instead — edit public/giscus/*.css and
-// reload to see it. Production serves the files normally.
 const read = (name: string) =>
   readFileSync(
     new URL(`../../public/giscus/${name}.css`, import.meta.url),
@@ -69,8 +66,6 @@ const theme = import.meta.env.DEV
 
     const { term, themeLight, themeDark } = mount.dataset
 
-    // Dev supplies inline data: URLs; otherwise the theme is served from
-    // whichever origin the page is on, so preview deploys use their own copy.
     const themeUrl = (name: "light" | "dark") =>
       (name === "dark" ? themeDark : themeLight) ??
       `${location.origin}/giscus/${name}.css`

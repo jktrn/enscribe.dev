@@ -10,8 +10,6 @@ export default defineConfig({
   prefetch: { prefetchAll: true },
   vite: {
     resolve: { tsconfigPaths: true },
-    // Lets a tunnel reach the dev server, so the giscus iframe can fetch the
-    // theme in public/giscus over https while it's still being edited.
     server: { allowedHosts: [".trycloudflare.com"] },
     build: { rollupOptions: { external: ["/pagefind/pagefind.js"] } },
     plugins: [

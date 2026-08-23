@@ -1,6 +1,3 @@
-/* Absolute URLs: in dev this file is inlined as a data: URL, which has no base
- * to resolve against. Fonts are mirrored to public/fonts by fonts:prepare and
- * served with CORS for giscus.app only — see public/_headers. */
 @font-face {
   font-family: "MD Lorien";
   src: url("https://enscribe.dev/fonts/MDLorien-Regular.woff2") format("woff2");

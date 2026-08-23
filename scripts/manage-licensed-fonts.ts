@@ -61,9 +61,6 @@ const graphicsFontAssets = asPrivateAssets(graphicsFonts)
 const fontAssets = [...webFontAssets, ...graphicsFontAssets]
 const mode = process.argv[2]
 
-// The giscus comment widget renders in a cross-origin iframe, which can only
-// load fonts from a stable public URL — Astro content-hashes src/assets. These
-// copies stay gitignored; public/_headers scopes CORS to giscus.app.
 const publicFonts = ["MDLorien-Regular.woff2", "MDLorien-Italic.woff2"] as const
 
 async function mirrorFontsToPublic() {
