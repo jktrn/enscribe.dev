@@ -1,10 +1,19 @@
+/* MD Lorien can't be used here: webfonts need CORS to load cross-origin, and
+ * the iframe is on giscus.app. This is the closest stack of faces the reader
+ * already has locally. */
 main {
   font-family:
-    system-ui,
-    -apple-system,
-    "Segoe UI",
-    sans-serif;
+    ui-serif,
+    "Iowan Old Style",
+    Charter,
+    Georgia,
+    serif;
   font-size: 0.9375rem;
+}
+
+main textarea::placeholder {
+  color: var(--color-fg-subtle);
+  opacity: 1;
 }
 
 main .gsc-loading-image {
