@@ -1,8 +1,9 @@
 ---
 import ThemedBannerImage from "@/components/ThemedBannerImage.astro"
 import FormattedDate from "@/components/FormattedDate.astro"
+import ReadingTime from "@/components/ReadingTime.astro"
 import { bannerRaster } from "@/lib/assets/banner"
-import { entryInline } from "@/lib/content"
+import { chainMinutes, entryInline, getSubposts } from "@/lib/content"
 import { Image } from "astro:assets"
 import { getEntries, type CollectionEntry } from "astro:content"
 
@@ -11,6 +12,8 @@ type Props = { post: CollectionEntry<"blog"> }
 const { post } = Astro.props
 const authors = await getEntries(post.data.authors)
 const raster = bannerRaster(post)
+const series = await getSubposts()
+const minutes = chainMinutes([post, ...(series.get(post.id) ?? [])])
 ---
 
 <li>
@@ -48,13 +51,7 @@ const raster = bannerRaster(post)
           </entry-authors>
         )}
       <FormattedDate date={post.data.date} />
-      {post.data.tags && (
-          <entry-tags>
-            {post.data.tags.map((tag) => (
-              <span>#{tag}</span>
-            ))}
-          </entry-tags>
-        )}
+      <ReadingTime minutes={minutes} />
     </entry-meta>
     <p><Fragment set:html={entryInline(post, "description").html} /></p>
   </entry-info>
@@ -89,6 +86,8 @@ const raster = bannerRaster(post)
       }
 
       entry-meta {
+        --dim: color-mix(in oklab, var(--muted-foreground) 50%, transparent);
+
         display: flex;
         flex-wrap: wrap;
         align-items: center;
@@ -117,27 +116,11 @@ const raster = bannerRaster(post)
           }
         }
 
-        entry-authors ~ :global(time)::before {
+        entry-authors ~ :global(time)::before,
+        :global(time) ~ :global(reading-time)::before {
           content: "·";
           margin-inline-end: var(--space-3xs);
-        }
-
-        entry-tags {
-          display: flex;
-          flex-wrap: wrap;
-          gap: var(--space-3xs);
-
-          span {
-            color: color-mix(
-              in oklab,
-              var(--muted-foreground) 50%,
-              transparent
-            );
-          }
-        }
-
-        time ~ entry-tags::before {
-          content: "·";
+          color: var(--dim);
         }
       }
 

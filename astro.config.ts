@@ -11,6 +11,14 @@ export default defineConfig({
   vite: {
     resolve: { tsconfigPaths: true },
     build: { rollupOptions: { external: ["/pagefind/pagefind.js"] } },
+    plugins: [
+      {
+        name: "pagefind-dev-external",
+        apply: "serve",
+        resolveId: (id: string) =>
+          id === "/pagefind/pagefind.js" ? { id, external: true } : null,
+      },
+    ],
   },
   integrations: [
     sitemap({

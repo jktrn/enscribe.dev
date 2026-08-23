@@ -18,7 +18,11 @@ const MEASURES = [
     roots: "[data-linebreak-root]:not([data-linebreak-narrow])",
     minimumWidth: 240,
   },
-  { roots: "[data-linebreak-root][data-linebreak-narrow]", minimumWidth: 200 },
+  {
+    roots: "[data-linebreak-root][data-linebreak-narrow]",
+    minimumWidth: 200,
+    policy: { tolerance: 400 },
+  },
 ]
 
 const justificationEnabled = () =>
@@ -32,12 +36,12 @@ class ProseJustificationElement extends HTMLElement {
     this.#listeners = new AbortController()
     const { signal } = this.#listeners
 
-    this.#typesetters = MEASURES.map(({ roots, minimumWidth }) =>
+    this.#typesetters = MEASURES.map((measure) =>
       createTypesetter<ReadingAnchor | null>({
-        roots,
-        minimumWidth,
+        ...measure,
         skip: SKIP,
         hyphenate: englishHyphenator,
+        track: true,
         preserveImageAttributes: ["data-loaded"],
         beforeWrite: captureReadingAnchor,
         afterWrite: restoreReadingAnchor,

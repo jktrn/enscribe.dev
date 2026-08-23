@@ -1,6 +1,6 @@
 ---
 title: 'Smart Eyes, Stupid Hands'
-description: "Turning the craft I loved into a profession made corner-cutting easier to justify. Now, AI forces me to confront whether I still want the process or just the result."
+description: "Turning the craft I loved into a profession made corner-cutting easier to justify. Now, AI forces me to ask: do I still want the process? Or do I just want the result?"
 date: 2026-08-21
 tags: ['design']
 banner:
@@ -44,7 +44,7 @@ I vividly recall the first time I used AI. I kinda had AI psychosis[^psychosis] 
 
 A very important part of my personality is that I will do everything in my power to avoid something I don’t want to do. This has and will cause a lot of issues throughout my lifespan unless I get medicated. As such, when my tablemate said “hey, have you ever seen this tool before?” and showed me that godforsaken chat window, I pasted our classwork into it with the hope that I could outsource this discomfort.[^katex] I consider this the most detrimental moment of my life.
 
-[^katex]: Since we had some online platform that used [KaTeX](https://katex.org/), it got really fucky in the clipboard (e.g. `a 2 + b 2 = c 2 a^2+b^2=c^2 a2+b2=c2`), which GPT-3.5 got confused about. The webapp couldn’t render $\LaTeX$ at the time either, so the output was horrible.
+[^katex]: Since we had some online platform that used [KaTeX](https://katex.org/), it got really fucky in the clipboard, which GPT-3.5 got confused about. The webapp couldn’t render $\LaTeX$ at the time either, so the output was horrible.
 
 I partially attribute this stagnation in my neurogenesis as to why I am basically nontechnical today. I might have been a little bullish. At work I am consistently the dumbest person in the room, without fail, unless we have an even dumber intern in which then I feel joyous and glee. I make stickers and t-shirts for one-off events while my colleagues find six-figure world-ending apocalypse bugs in whatever PumpDogeRugCoinMoonshot that I’ve never heard about but somehow has 9 figures circulating in it? Where’s this evil fairy dust money spawning from? Did Biden print it? I don’t want to think about it, I just want my cute artsy microtasks.
 
@@ -204,7 +204,7 @@ I definitely still have this autotelicity within me. I feel it whenever I touch 
 
 As such, maybe the most detrimental moment of my life was not pasting my AP Calculus classwork into GPT-3.5; maybe it was when I started referring to my commissioners as "clients." I took an activity I enjoyed and attached money and competence to it; I am an aspiring professional gamer who committed to the Korean gaming academy.
 
-In this sense, the clanker becomes a bit less culpable than I would like to admit. I also blame myself a bit less now for my lack of discipline, because clanking is an entirely rational response to reaching an external reward as fast as possible. The clanker is now more of a diagnostic tool, since if you feel so relieved delegating the activity, you probably never wanted it in the first place. There is no point in clanking away a journey you wanted to experience.
+In this sense, the clanker becomes a bit less culpable than I would like to admit. I also blame myself a bit less now for my lack of discipline, because clanking is an entirely rational response to reaching an external reward as fast as possible. The clanker is now more of a diagnostic tool, since if you feel so relieved delegating the activity, you probably never wanted it in the first place.
 
 If you really think about it, clanking is now an activity that you can be autotelic about! If you enjoy prompting and orchestrating and watching your vision unfold in front of you, amazing. Now, clanking doesn't remove play from the process, but instead replaces play with an entirely different game. The primary caveat is that the clanking game will probably not work the same muscles as whatever it is replacing. Managing clankers will only make you better at managing clankers. So I can't be sad watching my eyes get smarter and my hands get stupider because this is what I signed up for. Membership in the ACCC gives me the self-awareness to name the muscle I am no longer exercising, but it will not exercise it for me.
 
@@ -222,4 +222,4 @@ I am incredibly privileged that the thing that I happen to cherish also serves a
 
 Broken Viasat forced me to wrestle with my own thoughts. If it had functioned, then this essay would have been one giant cosmic joke because I would be deferring my thoughts to Claude while writing about the deferring of thoughts to Claude... via Claude. What a world we live in.
 
-The playground people want environments that are as safe as necessary, not as safe as possible. For the work I wish to experience, I want a creative process that is as efficient as necessary, not as efficient as possible.
+Playground architects want environments that are as safe as necessary, not as safe as possible. For the work I wish to experience, I want a creative process that is as efficient as necessary, not as efficient as possible.
