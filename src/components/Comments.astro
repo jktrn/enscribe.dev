@@ -1,34 +1,13 @@
 ---
-import { readFileSync } from "node:fs"
-
 type Props = { term: string }
 
 const { term } = Astro.props
-
-const read = (name: string) =>
-  readFileSync(
-    new URL(`../../public/giscus/${name}.css`, import.meta.url),
-    "utf8",
-  )
-
-const inline = (name: string) => {
-  const css = read("base") + read(name).replace(/@import[^;]+;/, "")
-  return `data:text/css;base64,${Buffer.from(css).toString("base64")}`
-}
-
-const theme = import.meta.env.DEV
-  ? { light: inline("light"), dark: inline("dark") }
-  : { light: undefined, dark: undefined }
 ---
 
-<post-comments>
+<post-comments data-term={term}>
   <h2>Comments <span data-count></span></h2>
-  <div
-    class="giscus"
-    data-term={term}
-    data-theme-light={theme.light}
-    data-theme-dark={theme.dark}
-  ></div>
+  <comment-list></comment-list>
+  <a data-reply href="#" rel="noreferrer noopener">Reply on GitHub</a>
 </post-comments>
 
 <style>
@@ -39,113 +18,159 @@ const theme = import.meta.env.DEV
     border-block-start: 2px solid var(--border);
 
     h2 {
-      margin-block-end: var(--space-s);
       font-size: var(--step-1);
       font-weight: var(--font-weight-medium);
 
-      span:empty {
-        display: none;
-      }
-
       span {
         color: var(--muted-foreground);
+
+        &:empty {
+          display: none;
+        }
       }
     }
+  }
 
-    :global(.giscus-frame) {
-      inline-size: 100%;
-      border: none;
+  comment-list {
+    display: block;
 
-      &:focus-visible {
-        outline: none;
+    &:empty {
+      display: none;
+    }
+  }
+
+  a[data-reply] {
+    display: inline-block;
+    margin-block-start: var(--space-m);
+    font-size: var(--step--1);
+    color: var(--muted-foreground);
+
+    &:hover {
+      color: var(--foreground);
+    }
+
+    &[hidden] {
+      display: none;
+    }
+  }
+
+  comment-entry {
+    display: block;
+    margin-block-start: var(--space-m);
+
+    comment-head {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3xs);
+      margin-block-end: var(--space-3xs);
+      font-size: var(--step--1);
+      color: var(--muted-foreground);
+
+      img {
+        inline-size: 18px;
+        block-size: 18px;
+        border-radius: var(--radius-full);
+      }
+
+      a {
+        color: var(--foreground);
+      }
+
+      time::before {
+        content: "·";
+        margin-inline-end: var(--space-3xs);
+        color: color-mix(in oklab, var(--muted-foreground) 50%, transparent);
       }
     }
+  }
+
+  comment-replies {
+    display: block;
+    margin-inline-start: var(--space-s);
+    padding-inline-start: var(--space-s);
+    border-inline-start: 2px solid var(--border);
   }
 </style>
 
 <script>
-  const ORIGIN = "https://giscus.app"
-  const root = document.documentElement
+  import { formatDate } from "@/lib/utils"
 
-  let teardown: (() => void) | undefined
+  type Author = { login: string; url: string; avatarUrl: string }
+  type Comment = {
+    id: string
+    url: string
+    createdAt: string
+    bodyHTML: string
+    author: Author | null
+    replies: Comment[]
+  }
+  type Discussion = { url: string | null; total: number; comments: Comment[] }
 
-  const setup = () => {
-    teardown?.()
-    teardown = undefined
+  const REPO = "https://github.com/jktrn/enscribe.dev/discussions"
 
-    const mount = document.querySelector<HTMLElement>(".giscus")
-    if (!mount || mount.childElementCount > 0) return
+  const el = (tag: string) => document.createElement(tag)
 
-    const { term, themeLight, themeDark } = mount.dataset
-    const controller = new AbortController()
-    const { signal } = controller
+  const renderComment = (comment: Comment) => {
+    const entry = el("comment-entry")
+    const head = el("comment-head")
 
-    const themeUrl = (name: "light" | "dark") =>
-      (name === "dark" ? themeDark : themeLight) ??
-      `${location.origin}/giscus/${name}.css`
-
-    const currentTheme = () =>
-      themeUrl(
-        root.dataset.theme === "dark" ||
-          (!root.dataset.theme &&
-            matchMedia("(prefers-color-scheme: dark)").matches)
-          ? "dark"
-          : "light",
-      )
-
-    const script = document.createElement("script")
-    script.src = `${ORIGIN}/client.js`
-    script.crossOrigin = "anonymous"
-    script.async = true
-    Object.assign(script.dataset, {
-      repo: "jktrn/enscribe.dev",
-      repoId: "R_kgDOKS3cog",
-      category: "Comments",
-      categoryId: "DIC_kwDOKS3cos4DECaf",
-      mapping: "specific",
-      term,
-      strict: "1",
-      reactionsEnabled: "0",
-      emitMetadata: "1",
-      inputPosition: "top",
-      theme: currentTheme(),
-      lang: "en",
-      loading: "lazy",
-    })
-    mount.append(script)
-
-    const syncTheme = () => {
-      const frame = document.querySelector<HTMLIFrameElement>(".giscus-frame")
-      frame?.contentWindow?.postMessage(
-        { giscus: { setConfig: { theme: currentTheme() } } },
-        ORIGIN,
-      )
+    if (comment.author) {
+      const avatar = document.createElement("img")
+      avatar.src = comment.author.avatarUrl
+      avatar.alt = ""
+      avatar.width = 18
+      avatar.height = 18
+      const name = document.createElement("a")
+      name.href = comment.author.url
+      name.textContent = comment.author.login
+      head.append(avatar, name)
     }
 
-    const observer = new MutationObserver(syncTheme)
-    teardown = () => {
-      controller.abort()
-      observer.disconnect()
+    const time = document.createElement("time")
+    time.dateTime = comment.createdAt
+    time.textContent = formatDate(new Date(comment.createdAt))
+    head.append(time)
+
+    const body = el("prose-content")
+    body.innerHTML = comment.bodyHTML
+
+    entry.append(head, body)
+
+    if (comment.replies.length > 0) {
+      const replies = el("comment-replies")
+      for (const reply of comment.replies) replies.append(renderComment(reply))
+      entry.append(replies)
     }
 
-    observer.observe(root, { attributeFilter: ["data-theme"] })
-    matchMedia("(prefers-color-scheme: dark)").addEventListener(
-      "change",
-      syncTheme,
-      { signal },
-    )
+    return entry
+  }
 
-    addEventListener(
-      "message",
-      (event: MessageEvent) => {
-        if (event.origin !== ORIGIN) return
-        const total = event.data?.giscus?.discussion?.totalCommentCount
-        if (typeof total !== "number") return
-        const label = document.querySelector<HTMLElement>("[data-count]")
-        if (label) label.textContent = total > 0 ? `(${total})` : ""
-      },
-      { signal },
+  const setup = async () => {
+    const root = document.querySelector<HTMLElement>("post-comments")
+    if (!root) return
+
+    const { term } = root.dataset
+    const list = root.querySelector<HTMLElement>("comment-list")
+    const count = root.querySelector<HTMLElement>("[data-count]")
+    const reply = root.querySelector<HTMLAnchorElement>("[data-reply]")
+    if (!term || !list || !count || !reply) return
+
+    reply.hidden = true
+
+    const response = await fetch(
+      `/api/comments?term=${encodeURIComponent(term)}`,
     )
+    if (!response.ok) return
+
+    const discussion = (await response.json()) as Discussion
+    list.replaceChildren(...discussion.comments.map(renderComment))
+    count.textContent = discussion.total > 0 ? `(${discussion.total})` : ""
+    reply.href = discussion.url ?? REPO
+    reply.textContent =
+      discussion.total > 0
+        ? "Reply on GitHub"
+        : "Start the discussion on GitHub"
+    reply.hidden = false
   }
 
   document.addEventListener("astro:page-load", setup)
