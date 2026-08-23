@@ -1,3 +1,4 @@
+import { copyFile, mkdir } from "node:fs/promises"
 import { resolve } from "node:path"
 import {
   contentTypeForPath,
@@ -60,8 +61,25 @@ const graphicsFontAssets = asPrivateAssets(graphicsFonts)
 const fontAssets = [...webFontAssets, ...graphicsFontAssets]
 const mode = process.argv[2]
 
+// The giscus comment widget renders in a cross-origin iframe, which can only
+// load fonts from a stable public URL — Astro content-hashes src/assets. These
+// copies stay gitignored; public/_headers scopes CORS to giscus.app.
+const publicFonts = ["MDLorien-Regular.woff2", "MDLorien-Italic.woff2"] as const
+
+async function mirrorFontsToPublic() {
+  const target = resolve(repoRoot, "public/fonts")
+  await mkdir(target, { recursive: true })
+  for (const name of publicFonts) {
+    await copyFile(
+      resolve(repoRoot, "src/assets/fonts", name),
+      resolve(target, name),
+    )
+  }
+}
+
 if (mode === "prepare") {
   await prepareAssets(fontBucket, repoRoot, webFontAssets)
+  await mirrorFontsToPublic()
 } else if (mode === "prepare-graphics") {
   await prepareAssets(fontBucket, repoRoot, graphicsFontAssets)
 } else if (mode === "upload") {
