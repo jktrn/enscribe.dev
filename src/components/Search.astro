@@ -127,19 +127,7 @@ import SearchIcon from "@/assets/icons/search.svg"
 </style>
 
 <script>
-  type PagefindResult = {
-    data: () => Promise<{
-      url: string
-      excerpt: string
-      meta: { title?: string }
-    }>
-  }
-  type Pagefind = {
-    init?: () => void
-    debouncedSearch: (
-      query: string,
-    ) => Promise<{ results: PagefindResult[] } | null>
-  }
+  type Pagefind = typeof import("/pagefind/pagefind.js")
 
   const dialog = document.querySelector<HTMLDialogElement>("#search-dialog")
   const input = dialog?.querySelector("input")
@@ -158,10 +146,10 @@ import SearchIcon from "@/assets/icons/search.svg"
   const load = async () => {
     if (pagefind !== undefined) return
     try {
-      const url = new URL("/pagefind/pagefind.js", location.origin).href
-      pagefind = (await import(/* @vite-ignore */ url)) as Pagefind
-      pagefind.init?.()
-    } catch {
+      pagefind = await import("/pagefind/pagefind.js")
+      pagefind.init()
+    } catch (error) {
+      console.error("Failed to load the Pagefind index.", error)
       pagefind = null
     }
   }

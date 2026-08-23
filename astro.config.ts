@@ -8,7 +8,10 @@ export default defineConfig({
   server: { port: 4321 },
   compressHTML: true,
   prefetch: { prefetchAll: true },
-  vite: { resolve: { tsconfigPaths: true } },
+  vite: {
+    resolve: { tsconfigPaths: true },
+    build: { rollupOptions: { external: ["/pagefind/pagefind.js"] } },
+  },
   integrations: [
     sitemap({
       filter: (page) =>
