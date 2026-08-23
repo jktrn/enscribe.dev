@@ -1,8 +1,8 @@
-prose-content {
+:is(prose-content, sidenote-body) {
   :is(ul, ol) {
     padding-inline-start: 1.5rem;
 
-    :is(ul, ol) {
+    > li > :is(ul, ol) {
       margin-block: 0.5em 0;
     }
   }

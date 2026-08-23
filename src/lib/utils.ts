@@ -56,3 +56,10 @@ export const normalizePath = (pathname: string) => {
 }
 
 export const hashId = (hash: string) => decodeURIComponent(hash.slice(1))
+
+export const queryId = <T extends Element = HTMLElement>(
+  root: ParentNode,
+  id: string,
+) => root.querySelector<T>(`[id="${CSS.escape(id)}"]`)
+
+export const pixels = (value: string) => Number.parseFloat(value) || 0

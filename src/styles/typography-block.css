@@ -1,16 +1,7 @@
-prose-content {
+:is(prose-content, sidenote-body) {
   > * {
     min-inline-size: 0;
     max-inline-size: 100%;
-  }
-
-  :where(div):has(img, video) {
-    max-inline-size: 100%;
-
-    > * {
-      min-inline-size: 0;
-      max-inline-size: 100%;
-    }
   }
 
   blockquote {
@@ -20,6 +11,15 @@ prose-content {
 
     :is(p, li) {
       color: inherit;
+    }
+  }
+
+  :where(div):has(img, video) {
+    max-inline-size: 100%;
+
+    > * {
+      min-inline-size: 0;
+      max-inline-size: 100%;
     }
   }
 
@@ -46,27 +46,6 @@ prose-content {
 
   details[open] summary {
     margin-block-end: 0.5em;
-  }
-
-  .footnotes {
-    margin-block-start: var(--space-l);
-    padding-block-start: var(--space-s);
-    border-block-start: 1.5px solid var(--border);
-  }
-
-  :is(math, math *) {
-    letter-spacing: normal;
-  }
-
-  math {
-    font-family: var(--font-math);
-  }
-
-  math-display {
-    display: flex;
-    justify-content: safe center;
-    overflow-x: auto;
-    overflow-y: hidden;
   }
 
   .expressive-code {
@@ -106,6 +85,12 @@ prose-content {
       margin-block: var(--space-3xs);
     }
   }
+}
+
+prose-content .footnotes {
+  margin-block-start: var(--space-l);
+  padding-block-start: var(--space-s);
+  border-block-start: 1.5px solid var(--border);
 }
 
 :root[data-js]
