@@ -1,6 +1,6 @@
 ---
 title: 'Smart Eyes, Stupid Hands'
-description: "I keep turning to AI to make the tiny decisions that hone my taste, then subsequently wonder why my hands are getting stupider."
+description: "Turning the craft I loved into a profession made corner-cutting easier to justify. Now, AI forces me to confront whether I still want the process or just the result."
 date: 2026-08-21
 tags: ['design']
 banner:
@@ -30,7 +30,7 @@ Today I want to write about “taste”. Invoking this word surfaces a gross and
 
 I vividly recall the first time I used AI. I kinda had AI psychosis[^psychosis] before it was cool because I was so busy learning Tetris openers in 11th grade pre-calculus that I ended up needing to bubble zigzags into my Scantrons when 12th grade AP Calculus rolled around.[^ap-calculus]
 
-[^psychosis]: I am not using the word AI psychosis here correctly. I am substituting “the deferring of my life and brain energy to some other entity” which will probably be my definition throughout this piece because it’s funny. If you want the definition of “AI psychosis”, please feel free to refer to Garry Tan’s Twitter account.
+[^psychosis]: I am not using the word AI psychosis here correctly. I am substituting “the deferring of my life and brain energy to some other entity” which will probably be my definition throughout this piece because it’s funny. If you want to see a concrete example of “AI psychosis”, please feel free to refer to [garrytan/gstack](https://github.com/garrytan/gstack).
 
 [^ap-calculus]: I’m pretty sure I didn’t actually learn what the Product rule was until a week before the AP exam. I also took the AB course since my school didn’t offer BC, but then I still took the BC exam because my to-this-day goat David M. told me to do it to skip classes in university.
 
@@ -42,7 +42,7 @@ I vividly recall the first time I used AI. I kinda had AI psychosis[^psychosis] 
     
     Why do you even teach? You’re obviously not in it for the money.
 
-A very important part of my personality is that I will do everything in my power to avoid something I don’t want to do. This has and will cause a lot of issues throughout my lifespan unless I get medicated. As such, when my tablemate said “hey, have you ever seen this tool before?” and showed me that godforsaken chat window, I pasted our classwork into it with the hope that I could offshore this discomfort.[^katex] I consider this the most detrimental moment of my life.
+A very important part of my personality is that I will do everything in my power to avoid something I don’t want to do. This has and will cause a lot of issues throughout my lifespan unless I get medicated. As such, when my tablemate said “hey, have you ever seen this tool before?” and showed me that godforsaken chat window, I pasted our classwork into it with the hope that I could outsource this discomfort.[^katex] I consider this the most detrimental moment of my life.
 
 [^katex]: Since we had some online platform that used [KaTeX](https://katex.org/), it got really fucky in the clipboard (e.g. `a 2 + b 2 = c 2 a^2+b^2=c^2 a2+b2=c2`), which GPT-3.5 got confused about. The webapp couldn’t render $\LaTeX$ at the time either, so the output was horrible.
 
@@ -69,22 +69,22 @@ I believe that the ability to WTLLS is now the most important skill to have post
 - Web development is a solved problem. This comes with the added benefit that you will never need to learn React in your entire life! Life is so good.
 - The frontier is now: how sexy can you make your output? Now that you’re able to observe so much bullshit at scale, what mechanism are you using to filter it? This is the WTLLS factor, or “taste”.
 
-The reason my occupation exists in the first place is that WTLLS factor is hard to obtain.[^humblebrag]
+The reason my occupation exists in the first place is that WTLLS factor is hard to obtain.
 
 - The primary pitfall I see everyone fall into is the “oh, you can always tell if it’s vibecoded”; they then proceed to take everything that gives it that “vibed” smell and put it as a list of anti-patterns[^smell] in a SKILL.md. It then proceeds to get renamed as “TASTE.md” or “SOUL.md” or something equally delusional and wow oh my God 10,000 GitHub stargazers! This objectively improves your output, but you haven't made any decisions since all of them have already been made for you and distilled into a document.
 - The root cause of the above behavior is that our beloved tech bubble fetishizes efficiency above all else. We want the “smartest” solutions to have the least friction and effort, and there is a lot of both involved when attempting to develop your taste. I will dub this the "Ghibli avatar effect."[^ghibli]
 - Taste is such a horrible thing because many people dismiss it as something that is just magically handed to you by the grace of God as an infant. We should probably define it somewhat coherently:
   :::definition[Taste]
-  I think of taste as two parts:
-  1. The ability to (un)consciously understand when something looks, feels, smells, tastes, or sounds "correct" (input), and
-  2. the ability to create something within the constraints outlined by your input (output).
+  I think of taste as three components:
+  1. Taste is the ability to (un)consciously understand when something looks, feels, smells, tastes, or sounds "correct." Taste desides what should exist.
+  2. Craft is the ability to create something that satisfies those constraints. Craft determines whether you can make it exist.
+  3. Style is the recurring pattern across the decisions you make while doing so. Style is what your taste looks like once applied through your craft.
 
-  We can also define taste as a unit of work, a "micro-decision." Taste is dozens, if not hundreds of micro-decisions that you (un)consciously make when intaking or outputting something.
+  We can also define taste as a unit of work, a "micro-decision." Taste is dozens, if not hundreds of micro-decisions that you (un)consciously make when exercising craft.
   :::
   Although taste can be a talent, it is also a skill, and it needs to be honed through experience and practice. You can be a piano prodigy, but you are nothing without practice.
 - It's difficult to quantify how your taste improves. Let's ride the piano analogy a little bit. In this realm it's a little simpler to see your improvement, either via harder repertoire or by more emotional/nuanced performances (although this is a bit subjective). In design, something simply "looking better" is hard to quantify, but it's often the case that when looking back at previous work, you have a sense of linear progression in terms of how happy you are with the result in retrospect. The further you go back in your portfolio, the more flaws you should be able to point out and the more "I would have done this differently"s you should be able to say.
 
-[^humblebrag]: Right now it seems like I’m tooting my own horn really hard; I sorta am, but in a slightly more tasteful way than a humblebrag would. If it helps, AI will at some point probably emulate taste in some indiscernible way. At this point I will take up gardening with my father.
 [^ghibli]: This was a trend that happened about a year before this post's publication date, when Twitter microcelebrities and their moms would generate a Ghibli-style avatar for themselves (see [this](https://www.straitstimes.com/life/entertainment/chatgpts-ghibli-style-images-go-viral-raises-copyright-questions) and [this](https://www.cnn.com/2025/03/27/style/chatgpt-studio-ghibli-ai-images-intl-hnk)). Although I have my opinions of this at a macro level (i.e., how insulting it is to the studio themselves), at the micro level it is amusing to observe how little WTLLS factor any of these people have.
 [^smell]: The most notorious ones are probably (1) "no Geist/Inter" (and lately Instrument Serif probably needs to join the bunch), (2) "no rounded corners" (although rounded corners are probably back in fashion to some capacity due to Apple's Liquid Glass), and (3) "no purple gradient" (which is actually [Adam Wathan](https://x.com/adamwathan/status/1953510802159219096?lang=en)'s fault).
 
@@ -96,7 +96,7 @@ As a recap, I've discussed:
 - However, the motions of micro-decision-making are the only way to develop your taste. As such, we are now stuck in this cycle where your taste can never properly develop, because AI lets you plausibly skip this friction.
 :::
 
-[^super]: If you have super AI psychosis you can even have the clankers judge themselves rather than you judging the output! Offshore both your craft and your judgement!
+[^super]: If you have super AI psychosis you can even have the clankers judge themselves rather than you judging the output! Outsource both your craft and your judgement!
 
 ## Social clubs for a post-skill society
 
@@ -108,7 +108,7 @@ I've observed that there are two emerging social circles, whose identities depen
 
 The NTTC's primary issue is that they conflate their ability to prompt with their ability to engineer. They will supervise a clanker, receive a technically competent output, and then attribute the competence to themselves afterwards. They will also tend to flagrantly boast their usage of AI (e.g. how many agents they're running in parallel, how many Codex subscriptions they have, how many tokens they've burned) since they see it as evidence that they have somehow outsmarted the traditional methods of skill acquisition. This is the AI psychosis club.
 
-There is also a second layer of delusion that NTTC members can employ where they can just have the clanker fill in their missing gaps in understanding by asking it to explain its own output. If the member can understand its explanation, they can feign understanding of the topic and now can pitch it to angels and accelerators. Wow, you now have an eight-figure seed round! You have offshored both your intelligence and your understanding of what that intelligence created.
+There is also a second layer of delusion that NTTC members can employ where they can just have the clanker fill in their missing gaps in understanding by asking it to explain its own output. If the member can understand its explanation, they can feign understanding of the topic and now can pitch it to angels and accelerators. Wow, you now have an eight-figure seed round! You have outsourced both your intelligence and your understanding of what that intelligence created.
 
 ### The anti-clanker clanker club
 
@@ -118,21 +118,23 @@ Although both NTTC and ACCC members want credit for clanked intelligence, an ACC
 
 [^technical]: An ACCC member doesn't necessarily need to be non-technical. They can also be non-technical by choice (as in they've always hated programming, and loved the destination more than the journey). This is the labor arrangement that created the concept of "the internship," since prior to orchestrating agents, you would orchestrate interns and do creative direction that way.
 
-Taste is the most important skill within the ACCC, as it serves as the ultimate clanker detergent. The stronger your taste is, the tougher the clanker stains you can beat. Effectively, the ACCC specializes in clanker laundering; my taste conceals the machine so successfully that it also conceals how much of the process I surrendered to it. You'll never know if this paragraph was initially AI-generated and then parsed through my taste filter to make it sound like me. Do I have any original thoughts?
+Taste is the most important skill within the ACCC, as it serves as the ultimate clanker detergent. The stronger your taste is, the tougher the clanker stains you can beat. Effectively, the ACCC specializes in clanker laundering; my taste tells me which parts do not sound like me, and my style is what I apply until they do. The final result conceals the machine so successfully that it also conceals how much of the process I surrendered to it. You'll never know if this paragraph was initially AI-generated and then passed through my taste filter. Do I have any original thoughts?
 
 Massively using AI while criticizing it is hypocritical, but not necessarily contradictory. You can participate in a system, benefit from it, and still understand that it has consequences (holy shit this guy just described capitalism... we live in a society). People participate in arrangements they dislike all the time because the arrangements are convenient or compulsory, or because nonparticipation is really hard (capitalism).[^capitalism]
 
 The ACCC club becomes a little ridiculous, however, when its members treat membership as this sort of get-out-of-jail-free card. Since I'm in the ACCC, I can just boil the ocean via clank with zero ramification because I've done my land acknowledgement. ACCC membership gives me [carbon credits](https://en.wikipedia.org/wiki/Carbon_offsets_and_credits). Just because you can thoughtfully describe your codependence doesn't mean that you are immune to experiencing it; this is all just very elaborate cope.
 
+As such, while the NTTC are the ignorant AI-psychotic, the ACCC are the self-aware AI psychotic (which is not the same thing as immunity). The former mistakes output for skill, while the latter can accurately describe a codependency they cannot shake.
+
 [^capitalism]: I feel like I am subconsciously writing this analogy in a way that lets me off the hook. I cannot meaningfully opt out of capitalism. I can probably write the fucking commit title myself.
 
 #### Smart eyes, stupid hands
 
-My definition of taste was divided into "input" and "output," which I will now map to "judgement" and "craft" so that it feels more sophisticated and philosophical (it means the same thing). Both the NTTC and ACCC also allow for "taste" to be defined as "the human residuals left post-automation" (both clubs concern the coping mechanisms surrounding automation, rather than the process itself).
+Judgement has always been immensely easier than construction. Why do you think there are so many movie critics while there are so few cinematographers? With AI, never in human history have designers been able to exercise their judgement this frequently.[^judgement]
 
-With AI, I get infinite practice for my judgement. Never in all of history has a designer been able to exercise their judgement so frequently.[^judgement]
+The primary issue is craft. AI has created this odd arrangement for me because now that I am simply accepting or rejecting clanked results, I practice judgement without ever practicing construction. Maybe this makes me a creative director; I don't just provide yes/no responses, but I also nudge clankers in directions more aligned with my grand vision. Maybe creative direction is now an acceptable form of creation. Everyone wants to direct a movie
 
-The primary issue is craft. AI has created this odd arrangement for me because now that I am simply accepting or rejecting clanked results, I practice judgement without ever practicing construction. Maybe this makes me a creative director; I don't just provide yes/no responses, but I also nudge clankers in directions more aligned with my grand vision. Maybe creative direction is now an acceptable form of creation. But it does mean that, perpetually, my eyes get smarter and my hands get stupider. At the global optimum I will be able to reject 999 of 1000 variations, without having a single clue on how to make the accepted variant look like anything else without asking the clanker that made it.
+My eyes get smarter, but my hands get stupider. At the global optimum I will be able to reject 999 of 1000 variations, without having a single clue on how to make the accepted variant look like anything else without asking the clanker that made it.
 
 [^judgement]: It's like that thing where because of Instagram you have seen more half-naked hot women than all of your ancestors combined.
 
@@ -142,9 +144,13 @@ When I was scrolling Instagram Reels[^reels] prior to entering the plane, I actu
 
 [^reels]: I am terribly addicted to scrolling Reels. This probably liquefies my frontal lobe as fast, if not faster than vibe-coding, but at least I get to make this upcoming analogy.
 
-This is quite a gem of a Reel because now I can come full circle and talk about playgrounds after I just finished talking about classes and clubs (we've done a loop around the entire school).
+A "risk" is something a child can recognize, evaluate, and decide to take on; a "hazard" is something they cannot reasonably see or manage. Monkey bars are a risk; a rotten-down monkey bar is a hazard. The goal is to extract the hazard without extracting the challenge.
 
-What these playground architects are modeling around is the very straightforward idea that "friction cultivates growth." Our relationship with our clankers maps well to this; clankers are hyperoptimized friction-eliminating machines, and they treat all play as "hazards" rather than "risks." Thus, we have "bad friction" and we have "good friction." I wrestled with writing about this for a while and have come to the conclusion that it is simply not interesting. You can very obviously change your workflows so that you keep good friction. It just takes discipline.
+Creative work has the same split. We have "bad friction" (hassles, e.g., your tooling breaks) and "good friction" (the actual work, e.g., choosing a layout, failing to make it look right, noticing why, and trying again). This is the environment where judgement and craft develop together.
+
+A clanker sees both kinds of friction as distance between my request and the result. Clankers are hyperoptimized friction-neutralizing machines. It will fix my broken tooling and make my creative decisions with the same enthusiasm. It doesn't care for any contrived human notions of "good" or "bad" friction.
+
+The obvious answer is for me to construct a workflow that preserves "good friction." The issue is that maintaining this boundary requires me to repeatedly refuse the easier path. It just takes discipline.
 
 The issue with discipline is that I don't really have much of it. If you recall:
 
@@ -200,16 +206,20 @@ As such, maybe the most detrimental moment of my life was not pasting my AP Calc
 
 In this sense, the clanker becomes a bit less culpable than I would like to admit. I also blame myself a bit less now for my lack of discipline, because clanking is an entirely rational response to reaching an external reward as fast as possible. The clanker is now more of a diagnostic tool, since if you feel so relieved delegating the activity, you probably never wanted it in the first place. There is no point in clanking away a journey you wanted to experience.
 
-If you really think about it, clanking is now an activity that you can be autotelic about! If you enjoy prompting and orchestrating and watching your vision unfold in front of you, amazing. Now, clanking doesn't remove play from the process, but instead replaces play with an entirely different game. The primary caveat is that the clanking game will probably not work the same muscles as whatever it is replacing. Managing clankers will only make you better at managing clankers. So I can't be sad watching my eyes get smarter and my hands get stupider because this is what I signed up for.
+If you really think about it, clanking is now an activity that you can be autotelic about! If you enjoy prompting and orchestrating and watching your vision unfold in front of you, amazing. Now, clanking doesn't remove play from the process, but instead replaces play with an entirely different game. The primary caveat is that the clanking game will probably not work the same muscles as whatever it is replacing. Managing clankers will only make you better at managing clankers. So I can't be sad watching my eyes get smarter and my hands get stupider because this is what I signed up for. Membership of the ACCC gives me the self-awareness to name the muscle I am no longer exercising, but it will not exercise it for me.
 
 ### Making to make
 
-Thus, becoming uncuckable means that you must protect and cherish the places where you find the activity to be the reward. I am incredibly privileged that the thing that I happen to cherish also serves as a nice portfolio piece and demonstrates that I am employable. It is also quite unlucky because now I have deeply mixed up my work and my play and now have to reprioritize. All that matters for you is that you find an activity that answers questions you want answers to. This is where you cultivate and grow your taste, as a side effect of satisfying your curiosity.
+Thus, becoming uncuckable means protecting and cherishing the activities you find to be inherently rewarding.
 
-Unfortunately, I cannot order myself to reconcile my relationship with design. The only thing I can do is notice when I am making something because I want the thing and when I am making it because I want the making. I have been optimizing them as if they were the same thing, which is how you wrench the joy out of making.
+In life, there are two types of creation: (1) making because you want the thing, and (2) making because you want to make. Although this would be so awesome, it is unfortunately impossible for your life to entirely consist of (2), nor is it feasible to strive towards (2) as an endgame. That is just the way life is.
+
+Concretely, say a client wants a website. If all I desire is for a website to exist, then outsourcing a clanker is an entirely rational response. I should be honest with myself and with my client that I practiced the art of clanking rather than the art of making a website. Conversely, if I am curious and am aching to sate my curiosity, if I want to exercise my taste and make my micro-decisions, then clanking cannot be a solution. There is no point in clanking away a journey you wanted to experience.
+
+If I choose to exercise (1), I am agreeing to not improve at design. This can also happen with (2), because I can love an activity and remain complacent with my skillset (if this is your goal, then it is entirely okay). Autotelicity solves the discipline problem, but it doesn't the growth problem. All it does is make you want to show up; curiosity is what makes you wander into things you cannot already do.
+
+I am incredibly privileged that the thing that I happen to cherish also serves as a nice portfolio piece and demonstrates that I am employable. It is also quite unlucky because now I have deeply mixed up my work and my play and now have to reprioritize. Unfortunately, I cannot order myself to reconcile this relationship. Wanting to love an activity is not the same thing as actually loving it. The only thing I can do is notice when I am performing (1) and when I am performing (2), and stop optimizing them as if they were the same thing.
 
 Broken Viasat forced me to wrestle with my own thoughts. If it had functioned, then this essay would have been one giant cosmic joke because I would be deferring my thoughts to Claude while writing about the deferring of thoughts to Claude... via Claude. What a world we live in.
 
-The playground people want environments that are as safe as necessary, not as safe as possible. I want a creative process that is as efficient as necessary, not as efficient as possible.
-
-Every once in a while, let United Wi-Fi shit itself. The only permanent defense, however, is to do it for the love of the game.
+The playground people want environments that are as safe as necessary, not as safe as possible. For the work I wish to experience, I want a creative process that is as efficient as necessary, not as efficient as possible.
