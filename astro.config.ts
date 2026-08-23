@@ -2,7 +2,12 @@ import { defineConfig } from "astro/config"
 import sitemap from "@astrojs/sitemap"
 import { satteri } from "@astrojs/markdown-satteri"
 import { hastPlugins, mdastPlugins } from "./src/lib/markdown"
+import { existsSync } from "node:fs"
 import { fetchDiscussion } from "./src/lib/discussions"
+
+for (const file of [".env", ".env.local"]) {
+  if (existsSync(file)) process.loadEnvFile(file)
+}
 
 export default defineConfig({
   site: "https://enscribe.dev",
