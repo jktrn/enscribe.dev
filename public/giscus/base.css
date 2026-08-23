@@ -25,6 +25,11 @@ main {
   font-size: 0.9375rem;
 }
 
+main .gsc-comments-count,
+main :is(strong, b) {
+  font-weight: 400;
+}
+
 main textarea::placeholder {
   color: var(--color-fg-subtle);
   opacity: 1;
