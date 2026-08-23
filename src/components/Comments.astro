@@ -1,12 +1,37 @@
 ---
+import { readFileSync } from "node:fs"
+
 type Props = { term: string }
 
 const { term } = Astro.props
+
+// The giscus iframe is https and can't fetch the theme off http://localhost,
+// so dev inlines it as a data: URL instead — edit public/giscus/*.css and
+// reload to see it. Production serves the files normally.
+const read = (name: string) =>
+  readFileSync(
+    new URL(`../../public/giscus/${name}.css`, import.meta.url),
+    "utf8",
+  )
+
+const inline = (name: string) => {
+  const css = read("base") + read(name).replace(/@import[^;]+;/, "")
+  return `data:text/css;base64,${Buffer.from(css).toString("base64")}`
+}
+
+const theme = import.meta.env.DEV
+  ? { light: inline("light"), dark: inline("dark") }
+  : { light: undefined, dark: undefined }
 ---
 
 <post-comments>
   <h2>Comments</h2>
-  <div class="giscus" data-term={term}></div>
+  <div
+    class="giscus"
+    data-term={term}
+    data-theme-light={theme.light}
+    data-theme-dark={theme.dark}
+  ></div>
 </post-comments>
 
 <style>
@@ -32,18 +57,23 @@ const { term } = Astro.props
 <script>
   const ORIGIN = "https://giscus.app"
   const root = document.documentElement
-  const mount = document.querySelector<HTMLElement>(".giscus")
 
-  if (mount) {
-    const { term } = mount.dataset
+  let teardown: (() => void) | undefined
 
-    // The giscus iframe is https and can't fetch a stylesheet off a plain-http
-    // origin, so localhost falls back to the built-in themes. Any https origin
-    // — production, a Workers preview, a tunnel — serves its own copy.
+  const setup = () => {
+    teardown?.()
+    teardown = undefined
+
+    const mount = document.querySelector<HTMLElement>(".giscus")
+    if (!mount || mount.childElementCount > 0) return
+
+    const { term, themeLight, themeDark } = mount.dataset
+
+    // Dev supplies inline data: URLs; otherwise the theme is served from
+    // whichever origin the page is on, so preview deploys use their own copy.
     const themeUrl = (name: "light" | "dark") =>
-      location.protocol === "https:"
-        ? `${location.origin}/giscus/${name}.css`
-        : name
+      (name === "dark" ? themeDark : themeLight) ??
+      `${location.origin}/giscus/${name}.css`
 
     const currentTheme = () =>
       themeUrl(
@@ -83,12 +113,20 @@ const { term } = Astro.props
       )
     }
 
-    new MutationObserver(syncTheme).observe(root, {
-      attributeFilter: ["data-theme"],
-    })
+    const controller = new AbortController()
+    const observer = new MutationObserver(syncTheme)
+    teardown = () => {
+      controller.abort()
+      observer.disconnect()
+    }
+
+    observer.observe(root, { attributeFilter: ["data-theme"] })
     matchMedia("(prefers-color-scheme: dark)").addEventListener(
       "change",
       syncTheme,
+      { signal: controller.signal },
     )
   }
+
+  document.addEventListener("astro:page-load", setup)
 </script>
