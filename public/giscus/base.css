@@ -25,32 +25,49 @@ main {
   font-size: 0.9375rem;
 }
 
-main .gsc-comments-count,
-main :is(strong, b) {
+#__next .font-semibold,
+#__next .font-medium,
+#__next :is(h1, h2, h3, h4, h5, h6),
+#__next :is(strong, b) {
   font-weight: 400;
 }
 
-main .gsc-left-header,
-main .gsc-upvote-button,
-main .gsc-reactions-button {
+#__next :is(.gsc-left-header, .gsc-comment-reactions, .gsc-reply-reactions),
+#__next :is(.gsc-reactions, .gsc-upvote-button, .gsc-reactions-button) {
   display: none;
 }
 
-main .gsc-replies {
-  padding-top: 0;
-  background: var(--color-canvas-subtle) !important;
-  border-radius: 0 !important;
+#__next .gsc-comment > .color-box-border-info {
+  border-color: var(--color-border-default);
 }
 
-main textarea::placeholder {
+#__next .gsc-replies {
+  padding-top: 0;
+  background: var(--color-canvas-subtle);
+  border-radius: 0;
+}
+
+#__next .gsc-comment-box {
+  border-radius: 0.375rem;
+}
+
+#__next :is(.gsc-comment-header, .gsc-reply-header) {
+  font-size: 0.875rem;
+}
+
+#__next :is(.gsc-comment-content, .gsc-reply-content) a {
+  text-underline-offset: 0.15em;
+}
+
+#__next textarea::placeholder {
   color: var(--color-fg-subtle);
   opacity: 1;
 }
 
-main .gsc-loading-image {
+#__next .gsc-loading-image {
   background-image: url("https://github.githubassets.com/images/mona-loading-default.gif");
 }
 
-main .pagination-loader-container {
+#__next .pagination-loader-container {
   background-image: none;
 }
