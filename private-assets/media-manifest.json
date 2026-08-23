@@ -662,8 +662,8 @@
       "group": "graphics",
       "key": "graphics/blog/smart-eyes-stupid-hands/banner-dark.svg",
       "localPath": "graphics/blog/smart-eyes-stupid-hands/banner-dark.svg",
-      "sha256": "d84d4cbf2e4670cb0544b20186c2093884e10c454339a88806ff9fc234f0598a",
-      "size": 316581
+      "sha256": "f39a4174faf0385388f0b8a142eb9f3025543da5fce43e7ea19ff666d6dba156",
+      "size": 316585
     },
     {
       "contentType": "image/svg+xml",
@@ -5190,16 +5190,16 @@
       "group": "build",
       "key": "src/content/blog/smart-eyes-stupid-hands/assets/banner-dark.svg",
       "localPath": "src/content/blog/smart-eyes-stupid-hands/assets/banner-dark.svg",
-      "sha256": "b9bd645c32313e171bc8fa40e44a85daa074d38a1befb1bd69ef7999458fe73b",
-      "size": 316581
+      "sha256": "f39a4174faf0385388f0b8a142eb9f3025543da5fce43e7ea19ff666d6dba156",
+      "size": 316585
     },
     {
       "contentType": "image/webp",
       "group": "build",
       "key": "src/content/blog/smart-eyes-stupid-hands/assets/banner-dark.webp",
       "localPath": "src/content/blog/smart-eyes-stupid-hands/assets/banner-dark.webp",
-      "sha256": "e5edab81e857c75f4025edc44c7b3c618194978971410b3c6b3d1f075b155d1b",
-      "size": 79024
+      "sha256": "7c4e8bc7e99aaa54434a985c6fc826a8800e10f2fb269a41f714639655e5a739",
+      "size": 75892
     },
     {
       "contentType": "image/svg+xml",
@@ -5222,8 +5222,8 @@
       "group": "build",
       "key": "src/content/blog/smart-eyes-stupid-hands/assets/banner-og.png",
       "localPath": "src/content/blog/smart-eyes-stupid-hands/assets/banner-og.png",
-      "sha256": "f494e0275af74d6a2358b12c639645a13489170f124ffd0f9fd2ea704f088296",
-      "size": 37994
+      "sha256": "057785895f9bed8bdeb108240a21be0ac43a3171d4943ff7aed14314e63e1c62",
+      "size": 37917
     },
     {
       "contentType": "image/png",

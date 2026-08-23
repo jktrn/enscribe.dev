@@ -82,6 +82,7 @@ if (import.meta.main) {
       mediaBucket,
       repoRoot,
       manifest.assets.filter((asset) => asset.group === "graphics"),
+      "keep",
     )
   } else if (mode === "upload") {
     await uploadAssets(mediaBucket, repoRoot, manifest.assets)

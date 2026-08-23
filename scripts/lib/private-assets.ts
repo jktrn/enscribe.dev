@@ -102,25 +102,35 @@ function localAssetPath(repoRoot: string, asset: PrivateAsset): string {
   return path
 }
 
-async function readVerified(
+type LocalState = "absent" | "stale" | Buffer
+
+async function readLocal(
   repoRoot: string,
   asset: PrivateAsset,
-): Promise<Buffer | null> {
+): Promise<LocalState> {
   try {
     const contents = await readFile(localAssetPath(repoRoot, asset))
     if (
       contents.byteLength !== asset.size ||
       sha256(contents) !== asset.sha256
     ) {
-      return null
+      return "stale"
     }
     return contents
   } catch (error) {
     if (error instanceof Error && "code" in error && error.code === "ENOENT") {
-      return null
+      return "absent"
     }
     throw error
   }
+}
+
+async function readVerified(
+  repoRoot: string,
+  asset: PrivateAsset,
+): Promise<Buffer | null> {
+  const state = await readLocal(repoRoot, asset)
+  return Buffer.isBuffer(state) ? state : null
 }
 
 async function downloadAsset(
@@ -264,12 +274,33 @@ export async function prepareAssets(
   bucket: string,
   repoRoot: string,
   assets: readonly PrivateAsset[],
+  onStale: "fail" | "keep" = "fail",
 ): Promise<void> {
   const missing: PrivateAsset[] = []
+  const stale: PrivateAsset[] = []
   for (const asset of assets) {
-    if (!(await readVerified(repoRoot, asset))) {
+    const state = await readLocal(repoRoot, asset)
+    if (state === "absent") {
       missing.push(asset)
+    } else if (state === "stale") {
+      stale.push(asset)
     }
+  }
+
+  if (stale.length > 0) {
+    const paths = stale.map((asset) => `  ${asset.localPath}`).join("\n")
+    if (onStale === "fail") {
+      throw new Error(
+        `${stale.length} private asset(s) differ from private-assets/media-manifest.json:\n${paths}\n` +
+          "Refusing to overwrite local edits. Publish them with " +
+          "`bun run content:render && bun run media:manifest && bun run media:upload`, " +
+          "or delete the file(s) to restore the manifest version.",
+      )
+    }
+    console.log(
+      `Keeping ${stale.length} locally modified asset(s):\n${paths}\n` +
+        "Run `bun run media:manifest && bun run media:upload` to publish them.",
+    )
   }
 
   if (missing.length === 0) {
