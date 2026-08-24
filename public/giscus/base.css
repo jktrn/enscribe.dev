@@ -444,7 +444,7 @@ main {
 #__next
   .gsc-comment-box-bottom
   > button.link-secondary:has(.octicon-sign-out):hover {
-  color: var(--color-fg-muted);
+  color: var(--color-fg-default);
 }
 
 #__next
