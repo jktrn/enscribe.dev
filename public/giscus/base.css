@@ -102,13 +102,34 @@ main {
   border-radius: 0;
 }
 
+#__next .gsc-comment-box-is-reply {
+  border: 1px solid var(--color-border-default);
+}
+
+#__next .gsc-comment-box-is-reply .gsc-comment-box-tabs {
+  border-top: none;
+}
+
 #__next :is(.input-contrast, .input-contrast:focus),
 #__next .gsc-comment-box-tabs {
   background-color: var(--color-canvas-default);
 }
 
-#__next .gsc-comment-box {
-  border-radius: 0.375rem;
+#__next :is(
+  .BtnGroup,
+  .BtnGroup-item,
+  .btn,
+  .gsc-comment-box,
+  .gsc-comment-box button,
+  .gsc-comment-box-tabs,
+  .gsc-comment-box-write,
+  .gsc-comment-box-textarea,
+  .gsc-comment-box-textarea-extras,
+  .gsc-replies,
+  .gsc-reply-box,
+  .gsc-reply-box > button
+) {
+  border-radius: 0;
 }
 
 #__next :is(.gsc-comment-content, .gsc-reply-content) a {

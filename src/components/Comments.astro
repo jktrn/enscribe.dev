@@ -65,6 +65,7 @@ const theme = import.meta.env.DEV
 
 <script>
   const ORIGIN = "https://giscus.app"
+  const SESSION_KEY = "giscus-session"
   const root = document.documentElement
 
   let teardown: (() => void) | undefined
@@ -93,33 +94,79 @@ const theme = import.meta.env.DEV
           : "light",
       )
 
-    const script = document.createElement("script")
-    script.src = `${ORIGIN}/client.js`
-    script.crossOrigin = "anonymous"
-    script.async = true
-    Object.assign(script.dataset, {
+    const url = new URL(location.href)
+    let session = url.searchParams.get("giscus") ?? ""
+    const savedSession = localStorage.getItem(SESSION_KEY)
+    url.searchParams.delete("giscus")
+    url.hash = ""
+    const cleanedLocation = url.toString()
+
+    if (session) {
+      localStorage.setItem(SESSION_KEY, JSON.stringify(session))
+      history.replaceState(history.state, document.title, cleanedLocation)
+    } else if (savedSession) {
+      try {
+        session = JSON.parse(savedSession)
+      } catch {
+        localStorage.removeItem(SESSION_KEY)
+      }
+    }
+
+    const description =
+      document.querySelector<HTMLMetaElement>("meta[property='og:description']")
+        ?.content ??
+      document.querySelector<HTMLMetaElement>("meta[name='description']")
+        ?.content ??
+      ""
+    const params = new URLSearchParams({
+      origin: cleanedLocation,
+      session,
+      theme: currentTheme(),
+      reactionsEnabled: "0",
+      emitMetadata: "1",
+      inputPosition: "top",
       repo: "jktrn/enscribe.dev",
       repoId: "R_kgDOKS3cog",
       category: "Comments",
       categoryId: "DIC_kwDOKS3cos4DECaf",
-      mapping: "specific",
-      term,
       strict: "1",
-      reactionsEnabled: "0",
-      emitMetadata: "1",
-      inputPosition: "top",
-      theme: currentTheme(),
-      lang: "en",
-      loading: "lazy",
+      description,
+      backLink: cleanedLocation,
+      term: term ?? "",
     })
-    mount.append(script)
+
+    const frame = document.createElement("iframe")
+    Object.assign(frame, {
+      className: "giscus-frame giscus-frame--loading",
+      title: "Comments",
+      scrolling: "no",
+      loading: "lazy",
+      src: `${ORIGIN}/en/widget?${params}`,
+    })
+    frame.allow = "clipboard-write"
+    frame.style.opacity = "0"
+    mount.append(frame)
 
     const syncTheme = () => {
-      const frame = document.querySelector<HTMLIFrameElement>(".giscus-frame")
-      frame?.contentWindow?.postMessage(
+      frame.contentWindow?.postMessage(
         { giscus: { setConfig: { theme: currentTheme() } } },
         ORIGIN,
       )
+    }
+
+    frame.addEventListener(
+      "load",
+      () => {
+        frame.style.removeProperty("opacity")
+        frame.classList.remove("giscus-frame--loading")
+        syncTheme()
+      },
+      { signal },
+    )
+
+    const signOut = () => {
+      params.delete("session")
+      frame.src = `${ORIGIN}/en/widget?${params}`
     }
 
     const observer = new MutationObserver(syncTheme)
@@ -138,10 +185,40 @@ const theme = import.meta.env.DEV
     addEventListener(
       "message",
       (event: MessageEvent) => {
-        if (event.origin !== ORIGIN) return
-        const total = event.data?.giscus?.discussion?.totalCommentCount
+        if (event.origin !== ORIGIN || event.source !== frame.contentWindow)
+          return
+        const data = event.data?.giscus
+        if (!data) return
+
+        if (data.resizeHeight) frame.style.height = `${data.resizeHeight}px`
+
+        if (data.signOut) {
+          localStorage.removeItem(SESSION_KEY)
+          signOut()
+          return
+        }
+
+        if (typeof data.error === "string") {
+          const sessionExpired = [
+            "Bad credentials",
+            "Invalid state value",
+            "State has expired",
+          ].some((message) => data.error.includes(message))
+
+          if (sessionExpired && localStorage.getItem(SESSION_KEY) !== null) {
+            localStorage.removeItem(SESSION_KEY)
+            signOut()
+          } else {
+            console.warn(`[giscus] ${data.error}`)
+          }
+          return
+        }
+
+        const total = data.discussion?.totalCommentCount
         if (typeof total !== "number") return
-        const label = document.querySelector<HTMLElement>("[data-count]")
+        const label = mount
+          .closest("post-comments")
+          ?.querySelector<HTMLElement>("[data-count]")
         if (label) label.textContent = total > 0 ? `(${total})` : ""
       },
       { signal },
