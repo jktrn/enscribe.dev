@@ -52,4 +52,12 @@ describe("content layout safety", () => {
       expect(await readFile(path, "utf8")).toContain(selector)
     }
   })
+
+  test("the comments iframe does not clip square Giscus corners", async () => {
+    const comments = await readFile("src/components/Comments.astro", "utf8")
+
+    expect(comments).toMatch(
+      /:global\(\.giscus-frame\)\s*\{[\s\S]*?border-radius:\s*0;/,
+    )
+  })
 })
