@@ -122,8 +122,6 @@ main {
 #__next {
   --giscus-icon-text:
     url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNTYgMjU2IiBmaWxsPSJjdXJyZW50Q29sb3IiPjxwYXRoIGQ9Ik0yMDgsMzJINDhBMTYsMTYsMCwwLDAsMzIsNDhWMjA4YTE2LDE2LDAsMCwwLDE2LDE2SDIwOGExNiwxNiwwLDAsMCwxNi0xNlY0OEExNiwxNiwwLDAsMCwyMDgsMzJaTTE4NCw5NmE4LDgsMCwwLDEtMTYsMFY4OEgxMzZ2ODhoMTJhOCw4LDAsMCwxLDAsMTZIMTA4YTgsOCwwLDAsMSwwLTE2aDEyVjg4SDg4djhhOCw4LDAsMCwxLTE2LDBWODBhOCw4LDAsMCwxLDgtOGg5NmE4LDgsMCwwLDEsOCw4WiIvPjwvc3ZnPg==");
-  --giscus-icon-markdown:
-    url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNTYgMjU2IiBmaWxsPSJjdXJyZW50Q29sb3IiPjxwYXRoIGQ9Ik0yMzIsNDhIMjRBMTYsMTYsMCwwLDAsOCw2NFYxOTJhMTYsMTYsMCwwLDAsMTYsMTZIMjMyYTE2LDE2LDAsMCwwLDE2LTE2VjY0QTE2LDE2LDAsMCwwLDIzMiw0OFpNMTI4LDE1MmE4LDgsMCwwLDEtMTYsMFYxMjMuMzFMOTMuNjYsMTQxLjY2YTgsOCwwLDAsMS0xMS4zMiwwTDY0LDEyMy4zMVYxNTJhOCw4LDAsMCwxLTE2LDBWMTA0YTgsOCwwLDAsMSwxMy42Ni01LjY2TDg4LDEyNC42OWwyNi4zNC0yNi4zNUE4LDgsMCwwLDEsMTI4LDEwNFptNzcuNjYtMTguMzQtMjQsMjRhOCw4LDAsMCwxLTExLjMyLDBsLTI0LTI0YTgsOCwwLDAsMSwxMS4zMi0xMS4zMkwxNjgsMTMyLjY5VjEwNGE4LDgsMCwwLDEsMTYsMHYyOC42OWwxMC4zNC0xMC4zNWE4LDgsMCwwLDEsMTEuMzIsMTEuMzJaIi8+PC9zdmc+");
   --giscus-icon-sign-out:
     url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNTYgMjU2IiBmaWxsPSJjdXJyZW50Q29sb3IiPjxwYXRoIGQ9Ik0xMjAsMjE2YTgsOCwwLDAsMS04LDhINDhhOCw4LDAsMCwxLTgtOFY0MGE4LDgsMCwwLDEsOC04aDY0YTgsOCwwLDAsMSwwLDE2SDU2VjIwOGg1NkE4LDgsMCwwLDEsMTIwLDIxNlptMTA5LjY2LTkzLjY2LTQwLTQwQTgsOCwwLDAsMCwxNzYsODh2MzJIMTEyYTgsOCwwLDAsMCwwLDE2aDY0djMyYTgsOCwwLDAsMCwxMy42Niw1LjY2bDQwLTQwQTgsOCwwLDAsMCwyMjkuNjYsMTIyLjM0WiIvPjwvc3ZnPg==");
   --giscus-icon-copy:
@@ -187,6 +185,10 @@ main {
 
 #__next .markdown :is(h1, h2, h3, h4, h5, h6) :is(strong, b) {
   font-style: normal;
+}
+
+#__next .markdown :is(code, kbd, pre, samp) {
+  font-family: var(--font-mono);
 }
 
 #__next .markdown :is(code:not(pre > code), kbd, samp),
@@ -341,6 +343,14 @@ main {
   box-shadow: none;
 }
 
+#__next .gsc-comment-box-textarea {
+  border-bottom-style: solid;
+}
+
+#__next .gsc-comment-box-textarea-extras {
+  display: none;
+}
+
 #__next .gsc-comment-box-tabs .color-text-primary {
   color: var(--color-fg-muted);
 }
@@ -349,7 +359,7 @@ main {
   color: var(--color-fg-subtle);
 }
 
-#__next :is(.gsc-toolbar-item, .gsc-comment-box-markdown-hint) {
+#__next .gsc-toolbar-item {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -366,7 +376,7 @@ main {
   transition: background-color 0.2s ease;
 }
 
-#__next :is(.gsc-toolbar-item, .gsc-comment-box-markdown-hint):hover {
+#__next .gsc-toolbar-item:hover {
   background-color: color-mix(
     in oklab,
     var(--color-canvas-subtle) 50%,
@@ -378,7 +388,7 @@ main {
   border-radius: 0.375rem;
 }
 
-#__next :is(.gsc-toolbar-item, .gsc-comment-box-markdown-hint) .octicon,
+#__next .gsc-toolbar-item .octicon,
 #__next
   .gsc-comment-box-bottom
   > button.link-secondary:has(.octicon-sign-out)
@@ -393,7 +403,7 @@ main {
   display: none;
 }
 
-#__next :is(.gsc-toolbar-item, .gsc-comment-box-markdown-hint)::after,
+#__next .gsc-toolbar-item::after,
 #__next
   .gsc-comment-box-bottom
   > button.link-secondary:has(.octicon-sign-out)::before,
@@ -420,10 +430,6 @@ main {
     var(--color-canvas-subtle) 50%,
     transparent
   );
-}
-
-#__next .gsc-comment-box-markdown-hint::after {
-  mask-image: var(--giscus-icon-markdown);
 }
 
 #__next

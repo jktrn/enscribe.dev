@@ -56,9 +56,16 @@ describe("content layout safety", () => {
 
   test("the comments iframe does not clip square Giscus corners", async () => {
     const comments = await readFile("src/components/Comments.astro", "utf8")
+    const astroConfig = await readFile("astro.config.ts", "utf8")
 
     expect(comments).toMatch(
       /:global\(\.giscus-frame\)\s*\{[\s\S]*?border-radius:\s*0;/,
+    )
+    expect(comments).toContain(").replaceAll(")
+    expect(comments).toContain('"https://enscribe.dev/",')
+    expect(comments).toContain("`${Astro.url.origin}/`)")
+    expect(astroConfig).toMatch(
+      /server:\s*\{[^}]*allowedHosts:\s*\["\.trycloudflare\.com"\][^}]*cors:\s*\{\s*origin:\s*"https:\/\/giscus\.app"\s*\}/,
     )
   })
 
@@ -71,8 +78,12 @@ describe("content layout safety", () => {
       /--giscus-icon-text:\s*url\("data:image\/svg\+xml;base64,[^"]+"\);/,
     )
     expect(theme).toMatch(
-      /--giscus-icon-markdown:\s*url\("data:image\/svg\+xml;base64,[^"]+"\);/,
+      /\.gsc-comment-box-textarea\s*\{[^}]*border-bottom-style:\s*solid;/,
     )
+    expect(theme).toMatch(
+      /\.gsc-comment-box-textarea-extras\s*\{[^}]*display:\s*none;/,
+    )
+    expect(theme).not.toContain("--giscus-icon-markdown")
     expect(theme).toMatch(
       /--giscus-icon-sign-out:\s*url\("data:image\/svg\+xml;base64,[^"]+"\);/,
     )
@@ -86,13 +97,10 @@ describe("content layout safety", () => {
       /\.gsc-toolbar-item::after\s*\{\s*mask-image:\s*var\(--giscus-icon-text\)/,
     )
     expect(theme).toMatch(
-      /\.gsc-comment-box-markdown-hint::after\s*\{\s*mask-image:\s*var\(--giscus-icon-markdown\)/,
+      /\.gsc-toolbar-item\s*\{[^}]*display:\s*inline-flex;[^}]*align-items:\s*center;[^}]*justify-content:\s*center;[^}]*inline-size:\s*2rem;[^}]*block-size:\s*2rem;[^}]*padding:\s*0;[^}]*border-radius:\s*0\.375rem;[^}]*color:\s*var\(--color-fg-subtle\);[^}]*cursor:\s*pointer;[^}]*transition:\s*background-color 0\.2s ease;/,
     )
     expect(theme).toMatch(
-      /:is\(\.gsc-toolbar-item,\s*\.gsc-comment-box-markdown-hint\)\s*\{[^}]*display:\s*inline-flex;[^}]*align-items:\s*center;[^}]*justify-content:\s*center;[^}]*inline-size:\s*2rem;[^}]*block-size:\s*2rem;[^}]*padding:\s*0;[^}]*border-radius:\s*0\.375rem;[^}]*color:\s*var\(--color-fg-subtle\);[^}]*cursor:\s*pointer;[^}]*transition:\s*background-color 0\.2s ease;/,
-    )
-    expect(theme).toMatch(
-      /:is\(\.gsc-toolbar-item,\s*\.gsc-comment-box-markdown-hint\):hover\s*\{[^}]*background-color:\s*color-mix\(\s*in oklab,\s*var\(--color-canvas-subtle\) 50%,\s*transparent\s*\);/,
+      /\.gsc-toolbar-item:hover\s*\{[^}]*background-color:\s*color-mix\(\s*in oklab,\s*var\(--color-canvas-subtle\) 50%,\s*transparent\s*\);/,
     )
     expect(theme).toMatch(
       /button\.gsc-toolbar-item\s*\{[^}]*border-radius:\s*0\.375rem;/,
@@ -152,6 +160,9 @@ describe("content layout safety", () => {
     )
     expect(theme).toMatch(
       /\.markdown\s+pre\s*>\s*code\s*\{[^}]*font-size:\s*inherit;[^}]*line-height:\s*inherit;/,
+    )
+    expect(theme).toMatch(
+      /\.markdown\s+:is\(code,\s*kbd,\s*pre,\s*samp\)\s*\{[^}]*font-family:\s*var\(--font-mono\);/,
     )
     expect(theme).toMatch(
       /\.gsc-reply-content\)\s+a\s*\{[^}]*text-decoration-thickness:\s*max\(1px, 0\.0625em\);[^}]*text-underline-offset:\s*-0\.06em;[^}]*text-decoration-color 0\.2s ease;/,

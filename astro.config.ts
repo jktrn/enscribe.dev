@@ -10,7 +10,10 @@ export default defineConfig({
   prefetch: { prefetchAll: true },
   vite: {
     resolve: { tsconfigPaths: true },
-    server: { allowedHosts: [".trycloudflare.com"] },
+    server: {
+      allowedHosts: [".trycloudflare.com"],
+      cors: { origin: "https://giscus.app" },
+    },
     build: { rollupOptions: { external: ["/pagefind/pagefind.js"] } },
     plugins: [
       {

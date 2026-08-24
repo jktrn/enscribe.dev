@@ -11,7 +11,9 @@ const read = (name: string) =>
   readFileSync(resolve("public", "giscus", `${name}.css`), "utf8")
 
 const inline = (name: string) => {
-  const css = read("base") + read(name).replace(/@import[^;]+;/, "")
+  const css = (
+    read("base") + read(name).replace(/@import[^;]+;/, "")
+  ).replaceAll("https://enscribe.dev/", `${Astro.url.origin}/`)
   return `data:text/css;base64,${Buffer.from(css).toString("base64")}`
 }
 
