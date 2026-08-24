@@ -25,8 +25,9 @@ main {
   font-size: 0.9375rem;
 }
 
-#__next .font-semibold,
-#__next .font-medium,
+#__next :is(.font-semibold, .font-medium, .text-bold, .user-mention),
+#__next :is(.BtnGroup-item--selected, .gsc-comments-count-separator),
+#__next .email-hidden-toggle a,
 #__next :is(h1, h2, h3, h4, h5, h6),
 #__next :is(strong, b) {
   font-weight: 400;
@@ -106,7 +107,7 @@ main {
   text-underline-offset: 0.15em;
 }
 
-#__next .color-box-border-info {
+#__next :is(.color-box-border-info, .color-border-info) {
   border-color: var(--color-border-default);
 }
 
@@ -115,7 +116,7 @@ main {
   outline-offset: -2px;
 }
 
-#__next .form-control:focus {
+#__next :is(.form-control:focus, .gsc-comment-box-write:focus-within) {
   border-color: var(--color-fg-subtle);
   box-shadow: 0 0 0 2px var(--color-fg-subtle);
 }
