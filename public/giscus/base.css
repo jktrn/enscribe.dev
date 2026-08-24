@@ -118,7 +118,19 @@ main {
 
 #__next :is(.form-control:focus, .gsc-comment-box-write:focus-within) {
   border-color: var(--color-fg-subtle);
-  box-shadow: 0 0 0 2px var(--color-fg-subtle);
+  box-shadow: none;
+}
+
+#__next .gsc-comment-box-tabs .color-text-primary {
+  color: var(--color-fg-muted);
+}
+
+#__next .gsc-comment-box-tabs .color-text-secondary {
+  color: var(--color-fg-subtle);
+}
+
+#__next :is(.gsc-toolbar-item, .gsc-comment-box-markdown-hint) {
+  color: var(--color-fg-subtle);
 }
 
 #__next textarea::placeholder {
