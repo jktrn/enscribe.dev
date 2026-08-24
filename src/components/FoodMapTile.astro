@@ -2,10 +2,6 @@
 import { CITIES, DEFAULT_CITY_ID, cityIndexForPlace } from "@/lib/food-cities"
 import data from "@/data/beli-places.json"
 
-// [lon, lat, cityIndex, score] — 5 decimals is ~1.1m, invisible at this dot
-// size; -1 marks an unscored place. Colour and label are both derived from the
-// score at paint time, so neither is shipped. Every city travels in one payload
-// so switching never costs a request; places no view covers are dropped.
 const points = data.places
   .filter((place) => place.latitude !== null && place.longitude !== null)
   .map((place) => [
@@ -67,8 +63,6 @@ const payload = JSON.stringify(points).replaceAll("<", "\\u003c")
       rows.filter((row) => row[2] === index).sort((a, b) => a[3] - b[3]),
     )
 
-    // Destructure directly off the awaited import — routing the namespace
-    // through Promise.all defeats tree-shaking of the maplibre chunk.
     const maplibrePromise = import("maplibre-gl")
     const [workerUrl, mapStyleModule] = await Promise.all([
       import("maplibre-gl/dist/maplibre-gl-worker.mjs?url").then(
@@ -102,21 +96,11 @@ const payload = JSON.stringify(points).replaceAll("<", "\\u003c")
       }),
       center: [...startCity.center],
       zoom: startCity.zoom,
-      // Guardrails tied to the range TILE_LAYER_IDS was derived for.
       minZoom: TILE_ZOOM_RANGE.min,
       maxZoom: TILE_ZOOM_RANGE.max,
       interactive: false,
-      attributionControl: false, // credited on /food, which this tile links to
-      // Native resolution, not a cap. A cap looks fine until the display or the
-      // browser zoom exceeds it, at which point the canvas is upscaled and the
-      // whole tile reads as a low-res image. This map draws a few frames and
-      // then idles, so the extra fragments are paid once. See syncPixelRatio.
+      attributionControl: false,
       pixelRatio: window.devicePixelRatio,
-      // MSAA is normally a poor trade on a map, since it multiplies fragment
-      // work every frame. This one draws a handful of frames and then idles, so
-      // it is paid once — and without it the polygon fills (coastline, water,
-      // parks) have hard stair-stepped edges that read as a low-res image.
-      // Lines and text are antialiased in-shader regardless.
       canvasContextAttributes: {
         antialias: true,
         powerPreference: "low-power",
@@ -125,26 +109,17 @@ const payload = JSON.stringify(points).replaceAll("<", "\\u003c")
       refreshExpiredTiles: false,
       crossSourceCollisions: false,
       renderWorldCopies: false,
-      maxTileCacheZoomLevels: 12, // hold all five cities, so switching back is a hit
+      maxTileCacheZoomLevels: 12,
       validateStyle: import.meta.env.DEV,
     })
 
-    // interactive:false disables the gesture handlers but leaves ~18 DOM
-    // listeners attached, including non-passive touchmove/wheel on the canvas
-    // container — which would block scrolling that starts over this cell.
-    // map.remove() calls this too, so a double destroy is a no-op.
     ;(
       map as unknown as { _handlers?: { destroy?: () => void } }
     )._handlers?.destroy?.()
 
-    // The basemap and place bubbles use separate canvases so the basemap can be
-    // composited at reduced opacity exactly once. Per-layer opacity makes
-    // overlapping roads, fills, and labels brighten at their intersections.
     const DOT_RADIUS = 8.5
     const RING_WIDTH = 1.25
-    const LABEL_SIZE = 8 // "10.0" measures 14.1px here, inside a 17px dot
-    // Bubbles are real bitmaps, so they must be baked at the display's density
-    // or they blur while the vector basemap around them stays sharp.
+    const LABEL_SIZE = 8
     const imageScale = () =>
       Math.min(Math.max(Math.ceil(window.devicePixelRatio), 1), 4)
 
@@ -227,9 +202,6 @@ const payload = JSON.stringify(points).replaceAll("<", "\\u003c")
     }
     syncDotCanvases()
 
-    // devicePixelRatio changes on browser zoom and when a window moves between
-    // displays. It does not change the container's CSS size, so MapLibre's
-    // resize observer never fires and the canvas would stay at its old density.
     let densityQuery: MediaQueryList | undefined
     const syncPixelRatio = () => {
       map.setPixelRatio(window.devicePixelRatio)
@@ -248,7 +220,6 @@ const payload = JSON.stringify(points).replaceAll("<", "\\u003c")
     }
 
     map.on("style.load", () => {
-      // Before theming, so its own label layer exists in time to be painted.
       collapseDuplicateWaterLabels(map)
       applyMapTheme(map, color.resolve)
     })
@@ -264,8 +235,6 @@ const payload = JSON.stringify(points).replaceAll("<", "\\u003c")
     const showCity = () => {
       const city = cityById(select?.value)
       if (!city) return
-      // jumpTo, not flyTo: an animated camera re-runs tile coverage every frame
-      // and would stream the whole path (NY->Tokyo measured 16 requests vs 2).
       map.jumpTo({ center: [...city.center], zoom: city.zoom })
       activeCityIndex = cityIndex(city.id)
       drawPlaces()
@@ -330,14 +299,6 @@ const payload = JSON.stringify(points).replaceAll("<", "\\u003c")
     background: var(--background-l0);
   }
 
-  /*
-   * This element is also MapLibre's container, so it carries the two rules the
-   * tile needs from maplibre-gl.css: a positioning context (absolute already
-   * provides one — do NOT let a .maplibregl-map rule override it back to
-   * relative, which collapses the height to 0) and clipping. With no DOM
-   * markers, controls or popups, the sheet's other ~700 selectors are dead
-   * weight, and it costs 83KB raw / 10KB gzip.
-   */
   .food-map-canvas {
     position: absolute;
     inset: 0;
@@ -385,9 +346,6 @@ const payload = JSON.stringify(points).replaceAll("<", "\\u003c")
 
   .food-map-city select {
     padding: 0.125rem 0.25rem;
-    /*
-     * Follow the page surface: light in light mode and dark in dark mode.
-     */
     border: 2px solid var(--background-l0);
     outline: 0;
     color: var(--foreground);

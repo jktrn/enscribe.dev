@@ -333,16 +333,9 @@ const categoryCounts = Object.entries(data.metadata.categories).filter(
       new NavigationControl({ showCompass: false }),
       "bottom-right",
     )
-    map.addControl(
-      // Not compact: attribution may only be collapsed behind a toggle after
-      // it has been shown, so force-collapsing it from first paint is not a
-      // permitted presentation.
-      new AttributionControl({ compact: false }),
-      "bottom-right",
-    )
+    map.addControl(new AttributionControl({ compact: false }), "bottom-right")
 
     map.on("style.load", () => {
-      // Before theming, so its own label layer exists in time to be painted.
       collapseDuplicateWaterLabels(map)
       applyMapTheme(map, mapColor.resolve)
     })
@@ -877,13 +870,6 @@ const categoryCounts = Object.entries(data.metadata.categories).filter(
     border: 0;
     border-radius: 50%;
     background: var(--marker-color);
-    /*
-     * A flat dark ring, not a mix of the marker colour. Mixing in oklch
-     * interpolates hue, so blending toward the warm foreground rotated blue
-     * markers to teal and green ones to yellow-green; and --foreground-l0 is
-     * cream in dark mode, so the "darkening" mix came out lighter than the
-     * bubble it was meant to outline.
-     */
     box-shadow: 0 0 0 2px light-dark(var(--foreground-l0), var(--background-l0));
     font-family: var(--font-sans);
     font-size: var(--step--1);

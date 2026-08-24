@@ -1,18 +1,11 @@
 export type City = {
   readonly id: string
   readonly label: string
-  /** Camera. Frames may overlap between neighbouring cities. */
   readonly center: readonly [number, number]
   readonly zoom: number
-  /** Membership test: [south, north, west, east]. These must NOT overlap. */
   readonly bounds: readonly [number, number, number, number]
 }
 
-/**
- * Single places that would drag a whole view out to catch them.
- * Tasty Pot (Northridge), Basil And Co (Diamond Bar), Yard House (west Vegas),
- * Cafe Dinh (9km south of the rest of Hanoi's Old Quarter cluster).
- */
 export const EXCLUDED_PLACE_IDS: ReadonlySet<string> = new Set([
   "restaurants-77",
   "restaurants-105",
@@ -20,20 +13,6 @@ export const EXCLUDED_PLACE_IDS: ReadonlySet<string> = new Set([
   "coffee-tea-76",
 ])
 
-/**
- * Framing is derived from where the places actually are, not fitted at runtime:
- * a fixed camera per city keeps density consistent, and auto-fitting cannot
- * (Manhattan's places span 6km, Los Angeles County's span 45km).
- *
- * The cell is a 1:2 portrait while most metros are roughly square, so a view
- * wide enough to show a whole county is necessarily tall enough to overlap its
- * neighbour — Los Angeles County reaches into Orange County no matter how it is
- * centred. Rather than crop to avoid that, pins are filtered to the selected
- * city, which is what `bounds` is for. Frames may overlap; membership may not.
- *
- * Every zoom must stay inside TILE_ZOOM_RANGE in @/lib/map-style, which is what
- * the layer allowlist is derived from.
- */
 export const CITIES: readonly City[] = [
   {
     id: "manhattan",
@@ -147,7 +126,6 @@ export const DEFAULT_CITY_ID = "manhattan"
 export const cityById = (id: string | null | undefined) =>
   CITIES.find((city) => city.id === id)
 
-/** Index into CITIES, or -1 for places no view covers. */
 export const cityIndexForPlace = (
   id: string,
   latitude: number,
