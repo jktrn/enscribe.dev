@@ -36,3 +36,5 @@ packages/linebreak/playground/public/fonts/MDLorien-*.woff2
 packages/linebreak/playground/public/fonts/IBMPlexSans-Variable.woff2
 packages/linebreak/playground/public/fonts/IBMPlexMono-Regular.woff2
 packages/linebreak/playground/vendor/
+
+public/fonts/

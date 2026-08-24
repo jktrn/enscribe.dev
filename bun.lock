@@ -69,6 +69,14 @@
         "vite": "8.1.4",
       },
     },
+    "tests/site": {
+      "name": "@enscribe/site-tests",
+      "devDependencies": {
+        "@playwright/test": "1.61.1",
+        "@types/bun": "1.3.14",
+        "typescript": "6.0.3",
+      },
+    },
   },
   "overrides": {
     "@types/hast": "3.0.5",
@@ -251,6 +259,8 @@
     "@enscribe/linebreak": ["@enscribe/linebreak@workspace:packages/linebreak"],
 
     "@enscribe/linebreak-tests": ["@enscribe/linebreak-tests@workspace:tests/linebreak"],
+
+    "@enscribe/site-tests": ["@enscribe/site-tests@workspace:tests/site"],
 
     "@esbuild/aix-ppc64": ["@esbuild/aix-ppc64@0.28.1", "", { "os": "aix", "cpu": "ppc64" }, "sha512-Svl7tq8k/08+p6CXPpRjQ1fKX+1odH/BQbb48fV6fj3CWHhsoIOoY87w1oHXm0qEpkIK3ZfVgp0hed3XBXzXMQ=="],
 

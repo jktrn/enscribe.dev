@@ -1,6 +1,7 @@
 ---
 import ArrowLeft from "@/assets/icons/arrow-left.svg"
 import ArrowRight from "@/assets/icons/arrow-right.svg"
+import ChatCenteredDots from "@/assets/icons/chat-centered-dots.svg"
 import ReaderModeToggle from "@/components/ReaderModeToggle.astro"
 import ScrollToTop from "@/components/ScrollToTop.astro"
 import TextJustificationToggle from "@/components/TextJustificationToggle.astro"
@@ -17,18 +18,11 @@ const nextTitle = next?.title
   <post-reading-actions>
     <TextJustificationToggle />
     <ReaderModeToggle />
+    <a href="#comments" data-icon-button aria-label="Discuss" title="Discuss">
+      <ChatCenteredDots aria-hidden="true" />
+    </a>
   </post-reading-actions>
   <post-navigation-actions>
-    <a
-      href={next?.href}
-      data-icon-button
-      data-dir="next"
-      aria-label={nextTitle && `Next: ${nextTitle}`}
-      aria-hidden={!next || undefined}
-      title={nextTitle}
-    >
-      <ArrowRight />
-    </a>
     <a
       href={prev?.href}
       data-icon-button
@@ -39,6 +33,16 @@ const nextTitle = next?.title
     >
       <ArrowLeft />
     </a>
+    <a
+      href={next?.href}
+      data-icon-button
+      data-dir="next"
+      aria-label={nextTitle && `Next: ${nextTitle}`}
+      aria-hidden={!next || undefined}
+      title={nextTitle}
+    >
+      <ArrowRight />
+    </a>
     <ScrollToTop />
   </post-navigation-actions>
 </post-actions>
@@ -46,35 +50,31 @@ const nextTitle = next?.title
 <style>
   post-actions {
     display: flex;
-    align-items: center;
+    flex-direction: column;
+    align-items: flex-start;
     gap: 2px;
 
-    @media (width >= 48rem) and (width < 64rem) {
-      flex-direction: column;
-      align-items: flex-start;
-    }
-
     @media (width < 48rem) {
-      a {
+      post-navigation-actions a {
         display: none;
       }
     }
-  }
 
-  post-navigation-actions,
-  post-reading-actions {
-    display: flex;
-    align-items: center;
-    gap: 2px;
-  }
+    post-reading-actions,
+    post-navigation-actions {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+    }
 
-  a {
-    color: var(--foreground);
+    a {
+      color: var(--foreground);
 
-    &:not([href]) {
-      color: var(--muted-foreground);
-      opacity: 0.5;
-      pointer-events: none;
+      &:not([href]) {
+        color: var(--muted-foreground);
+        opacity: 0.5;
+        pointer-events: none;
+      }
     }
   }
 </style>

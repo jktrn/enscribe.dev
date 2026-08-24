@@ -1,4 +1,5 @@
 ---
+import Comments from "@/components/Comments.astro"
 import MetaPost from "@/components/MetaPost.astro"
 import PostActions from "@/components/PostActions.astro"
 import ReaderModeToggle from "@/components/ReaderModeToggle.astro"
@@ -168,6 +169,7 @@ if (isSubpost(post.id)) {
       </article>
     ))}
   {chain.length > 1 && <SeriesReader />}
+  <Comments term={`blog/${parent.id}`} />
 </Layout>
 
 <style>
