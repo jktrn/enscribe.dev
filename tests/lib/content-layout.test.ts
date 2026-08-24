@@ -95,6 +95,7 @@ describe("content layout safety", () => {
 
   test("the homepage map fades its basemap without fading place bubbles", async () => {
     const map = await readFile("src/components/FoodMapTile.astro", "utf8")
+    const homepage = await readFile("src/pages/index.astro", "utf8")
     const basemapReady = cssBlock(
       map,
       '.food-map[data-ready="true"] .food-map-canvas',
@@ -112,6 +113,12 @@ describe("content layout safety", () => {
     expect(map).toContain("const point = map.project([lon, lat])")
     expect(map).toContain('map.on("render", drawPlaces)')
     expect(map).not.toContain('map.addLayer({\n        id: "places"')
+    expect(cssBlock(map, ".food-map-city select")).toContain(
+      "border: 2px solid var(--background-l0);",
+    )
+    expect(cssBlock(homepage, "&[data-over-map]")).toContain(
+      "box-shadow: 0 0 0 2px var(--background-l0);",
+    )
   })
 
   test("the comments iframe does not clip square Giscus corners", async () => {

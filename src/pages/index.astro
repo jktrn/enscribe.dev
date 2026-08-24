@@ -715,17 +715,15 @@ const twitterHref =
     }
 
     /*
-     * Over live map tiles the fill (--border) is the exact colour of the map's
-     * water, so the button vanishes there. The basemap is confined to ramp
-     * steps 0-5, so a step-8 ring clears every surface it can sit on.
+     * Match the page surface: light in light mode and dark in dark mode.
      */
     &[data-over-map] {
-      box-shadow: 0 0 0 2px var(--background-l8);
+      box-shadow: 0 0 0 2px var(--background-l0);
 
       &:hover,
       &:focus-visible {
         box-shadow:
-          0 0 0 2px var(--background-l8),
+          0 0 0 2px var(--background-l0),
           0 0 0 4px var(--ring);
       }
     }

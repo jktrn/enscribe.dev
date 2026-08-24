@@ -386,14 +386,9 @@ const payload = JSON.stringify(points).replaceAll("<", "\\u003c")
   .food-map-city select {
     padding: 0.125rem 0.25rem;
     /*
-     * The control floats over live map tiles, so the ring has to clear every
-     * basemap surface at once. The basemap is confined to ramp steps 0-5, so
-     * step 8 is outside it by construction: worst-case contrast 1.82 against
-     * both land and water in both schemes. --border and --background-l0 both
-     * measure exactly 1.00 against one surface or the other — they ARE the
-     * water and land fills — so neither can work here.
+     * Follow the page surface: light in light mode and dark in dark mode.
      */
-    border: 2px solid var(--background-l8);
+    border: 2px solid var(--background-l0);
     outline: 0;
     color: var(--foreground);
     background: var(--background-l0);
