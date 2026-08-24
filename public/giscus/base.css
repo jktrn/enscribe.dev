@@ -93,10 +93,18 @@ main {
   padding-inline: 0;
 }
 
-#__next .gsc-reply-box {
+#__next :is(.gsc-reply-box, .gsc-comment-box-is-reply) {
+  position: relative;
+  z-index: 1;
   padding-inline: 0;
+  background-color: var(--color-canvas-default);
   border-top: none;
   border-radius: 0;
+}
+
+#__next :is(.input-contrast, .input-contrast:focus),
+#__next .gsc-comment-box-tabs {
+  background-color: var(--color-canvas-default);
 }
 
 #__next .gsc-comment-box {
