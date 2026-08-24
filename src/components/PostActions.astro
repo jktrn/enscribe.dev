@@ -24,16 +24,6 @@ const nextTitle = next?.title
   </post-reading-actions>
   <post-navigation-actions>
     <a
-      href={next?.href}
-      data-icon-button
-      data-dir="next"
-      aria-label={nextTitle && `Next: ${nextTitle}`}
-      aria-hidden={!next || undefined}
-      title={nextTitle}
-    >
-      <ArrowRight />
-    </a>
-    <a
       href={prev?.href}
       data-icon-button
       data-dir="prev"
@@ -42,6 +32,16 @@ const nextTitle = next?.title
       title={prevTitle}
     >
       <ArrowLeft />
+    </a>
+    <a
+      href={next?.href}
+      data-icon-button
+      data-dir="next"
+      aria-label={nextTitle && `Next: ${nextTitle}`}
+      aria-hidden={!next || undefined}
+      title={nextTitle}
+    >
+      <ArrowRight />
     </a>
     <ScrollToTop />
   </post-navigation-actions>

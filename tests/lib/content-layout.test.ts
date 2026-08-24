@@ -54,6 +54,24 @@ describe("content layout safety", () => {
     }
   })
 
+  test("post navigation places previous on the left and next on the right", async () => {
+    const actions = await readFile("src/components/PostActions.astro", "utf8")
+    const navigation = actions.match(
+      /<post-navigation-actions>([\s\S]*?)<\/post-navigation-actions>/,
+    )?.[1]
+
+    expect(navigation).toBeDefined()
+    expect(navigation).toMatch(
+      /href=\{prev\?\.href\}[\s\S]*?data-dir="prev"[\s\S]*?<ArrowLeft/,
+    )
+    expect(navigation).toMatch(
+      /href=\{next\?\.href\}[\s\S]*?data-dir="next"[\s\S]*?<ArrowRight/,
+    )
+    expect(navigation!.indexOf('data-dir="prev"')).toBeLessThan(
+      navigation!.indexOf('data-dir="next"'),
+    )
+  })
+
   test("the comments iframe does not clip square Giscus corners", async () => {
     const comments = await readFile("src/components/Comments.astro", "utf8")
     const astroConfig = await readFile("astro.config.ts", "utf8")
