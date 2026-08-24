@@ -14,15 +14,104 @@
   font-display: swap;
 }
 
+@font-face {
+  font-family: "MD Lorien Fallback";
+  src: local("Georgia");
+  font-weight: 100 900;
+  font-style: normal;
+  size-adjust: 97.7891%;
+  ascent-override: 90.8077%;
+  descent-override: 31.9054%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: "MD Lorien Fallback";
+  src: local("Georgia Italic"), local("Georgia-Italic");
+  font-weight: 100 900;
+  font-style: italic;
+  size-adjust: 86.3861%;
+  ascent-override: 102.7943%;
+  descent-override: 36.1169%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: "IBM Plex Mono";
+  src: url("https://enscribe.dev/fonts/IBMPlexMono-Regular.woff2")
+    format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "IBM Plex Mono";
+  src: url("https://enscribe.dev/fonts/IBMPlexMono-Italic.woff2")
+    format("woff2");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "IBM Plex Mono";
+  src: url("https://enscribe.dev/fonts/IBMPlexMono-Medium.woff2")
+    format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "IBM Plex Mono";
+  src: url("https://enscribe.dev/fonts/IBMPlexMono-MediumItalic.woff2")
+    format("woff2");
+  font-weight: 500;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "IBM Plex Mono Fallback";
+  src: local("Courier New");
+  font-weight: 400 500;
+  font-style: normal;
+  size-adjust: 99.9837%;
+  ascent-override: 102.5167%;
+  descent-override: 27.5045%;
+}
+
+@font-face {
+  font-family: "IBM Plex Mono Fallback";
+  src: local("Courier New");
+  font-weight: 400 500;
+  font-style: italic;
+  size-adjust: 99.9837%;
+  ascent-override: 102.5167%;
+  descent-override: 27.5045%;
+}
+
+:root {
+  --font-sans:
+    "MD Lorien", "MD Lorien Fallback", "IBM Plex Sans", "Shippori Mincho B1",
+    "IBM Plex Sans Fallback", sans-serif;
+  --font-mono: "IBM Plex Mono", "IBM Plex Mono Fallback", monospace;
+  --font-family-default: var(--font-sans);
+  --font-family-monospace: var(--font-mono);
+  --step--1: clamp(0.8889rem, 0.8542rem + 0.1736vw, 0.9375rem);
+  --step-0: clamp(1rem, 0.9107rem + 0.4464vw, 1.125rem);
+  --step-1: clamp(1.125rem, 0.9643rem + 0.8036vw, 1.35rem);
+  --step-2: clamp(1.2656rem, 1.0125rem + 1.2656vw, 1.62rem);
+  --step-3: clamp(1.4238rem, 1.0523rem + 1.8578vw, 1.944rem);
+  --leading-offset: 0.6rem;
+}
+
 main {
-  font-family:
-    "MD Lorien",
-    ui-serif,
-    "Iowan Old Style",
-    Charter,
-    Georgia,
-    serif;
-  font-size: 0.9375rem;
+  font-family: var(--font-sans);
+  font-size: var(--step--1);
+  font-synthesis-weight: none;
+  text-wrap: pretty;
 }
 
 #__next {
@@ -44,6 +133,68 @@ main {
 #__next :is(h1, h2, h3, h4, h5, h6),
 #__next :is(strong, b) {
   font-weight: 400;
+}
+
+#__next
+  :is(
+    .gsc-comment-content,
+    .gsc-reply-content,
+    .gsc-comment-box-textarea,
+    .gsc-comment-box-preview
+  ) {
+  font-size: var(--step-0);
+  line-height: calc(var(--leading-offset) + 1em);
+}
+
+#__next .markdown :is(h1, h2, h3, h4, h5, h6) {
+  line-height: calc(var(--leading-offset) + 1em);
+  text-wrap: balance;
+}
+
+#__next .markdown h1 {
+  font-size: var(--step-3);
+}
+
+#__next .markdown h2 {
+  font-size: var(--step-2);
+}
+
+#__next .markdown h3 {
+  font-size: var(--step-1);
+}
+
+#__next .markdown h4 {
+  font-size: var(--step-0);
+}
+
+#__next .markdown :is(h5, h6) {
+  font-size: var(--step--1);
+}
+
+#__next .markdown :is(strong, b) {
+  font-style: italic;
+}
+
+#__next .markdown :is(h1, h2, h3, h4, h5, h6) :is(strong, b) {
+  font-style: normal;
+}
+
+#__next .markdown :is(code:not(pre > code), kbd, samp),
+#__next .markdown pre {
+  font-size: 0.9em;
+}
+
+#__next .markdown :is(code:not(pre > code), kbd, samp) {
+  line-height: 1;
+}
+
+#__next .markdown pre {
+  line-height: 1.5;
+}
+
+#__next .markdown pre > code {
+  font-size: inherit;
+  line-height: inherit;
 }
 
 #__next :is(.gsc-left-header, .gsc-comment-reactions, .gsc-reply-reactions),
@@ -147,11 +298,19 @@ main {
 
 #__next :is(.gsc-comment-content, .gsc-reply-content) a {
   color: var(--color-fg-default);
-  text-underline-offset: 0.15em;
+  text-decoration-color: var(--color-fg-muted);
+  text-decoration-thickness: max(1px, 0.0625em);
+  text-decoration-skip-ink: none;
+  text-underline-position: under;
+  text-underline-offset: -0.06em;
+  transition:
+    color 0.2s ease,
+    text-decoration-color 0.2s ease;
 }
 
 #__next :is(.gsc-comment-content, .gsc-reply-content) a:hover {
   color: var(--color-fg-default);
+  text-decoration-color: currentColor;
 }
 
 #__next :is(.gsc-comment-header, .gsc-reply-header) .link-secondary:hover {

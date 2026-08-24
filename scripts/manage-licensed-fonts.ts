@@ -61,7 +61,14 @@ const graphicsFontAssets = asPrivateAssets(graphicsFonts)
 const fontAssets = [...webFontAssets, ...graphicsFontAssets]
 const mode = process.argv[2]
 
-const publicFonts = ["MDLorien-Regular.woff2", "MDLorien-Italic.woff2"] as const
+const publicFonts = [
+  "MDLorien-Regular.woff2",
+  "MDLorien-Italic.woff2",
+  "IBMPlexMono-Regular.woff2",
+  "IBMPlexMono-Italic.woff2",
+  "IBMPlexMono-Medium.woff2",
+  "IBMPlexMono-MediumItalic.woff2",
+] as const
 
 async function mirrorFontsToPublic() {
   const target = resolve(repoRoot, "public/fonts")
