@@ -227,6 +227,9 @@ describe("content layout safety", () => {
     expect(prose).toMatch(
       /a\s*\{[^}]*text-decoration-thickness:\s*max\(1px, 0\.0625em\);[^}]*text-underline-offset:\s*-0\.06em;[^}]*text-decoration-color 0\.2s ease;/,
     )
+    expect(root).toMatch(
+      /:is\(\.gsc-comment-author,\s*\.gsc-reply-author\)\s+\.link-primary\s*\{[^}]*font-size:\s*var\(--step-0\);/,
+    )
     expect(cssBlock(prose, "a")).toMatch(
       /&:hover\s*\{[^}]*text-decoration-color:\s*currentColor;/,
     )

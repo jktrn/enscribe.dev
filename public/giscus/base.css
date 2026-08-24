@@ -241,6 +241,10 @@ main {
     }
   }
 
+  :is(.gsc-comment-author, .gsc-reply-author) .link-primary {
+    font-size: var(--step-0);
+  }
+
   :is(.gsc-comment-content, .gsc-reply-content) {
     padding-block: 0.375rem 0;
     padding-inline: 0;
