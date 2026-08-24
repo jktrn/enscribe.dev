@@ -1,6 +1,7 @@
 ---
 import ArrowLeft from "@/assets/icons/arrow-left.svg"
 import ArrowRight from "@/assets/icons/arrow-right.svg"
+import ChatCenteredDots from "@/assets/icons/chat-centered-dots.svg"
 import ReaderModeToggle from "@/components/ReaderModeToggle.astro"
 import ScrollToTop from "@/components/ScrollToTop.astro"
 import TextJustificationToggle from "@/components/TextJustificationToggle.astro"
@@ -17,6 +18,9 @@ const nextTitle = next?.title
   <post-reading-actions>
     <TextJustificationToggle />
     <ReaderModeToggle />
+    <a href="#comments" data-icon-button aria-label="Discuss" title="Discuss">
+      <ChatCenteredDots aria-hidden="true" />
+    </a>
   </post-reading-actions>
   <post-navigation-actions>
     <a
@@ -46,13 +50,9 @@ const nextTitle = next?.title
 <style>
   post-actions {
     display: flex;
-    align-items: center;
+    flex-direction: column;
+    align-items: flex-start;
     gap: 2px;
-
-    @media (width >= 48rem) and (width < 64rem) {
-      flex-direction: column;
-      align-items: flex-start;
-    }
 
     @media (width < 48rem) {
       a {
