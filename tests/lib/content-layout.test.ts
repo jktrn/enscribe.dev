@@ -115,6 +115,9 @@ describe("content layout safety", () => {
       /button\.link-secondary:has\(\.octicon-sign-out\)::before\s*\{\s*mask-image:\s*var\(--giscus-icon-sign-out\)/,
     )
     expect(theme).toMatch(
+      /button\.link-secondary:has\(\.octicon-sign-out\):hover\s*\{[^}]*color:\s*var\(--color-fg-muted\);/,
+    )
+    expect(theme).toMatch(
       /button\.link-secondary:has\(\.octicon-sign-out\)\s+\.octicon-sign-out,[^{]+\{\s*display:\s*none;/,
     )
     expect(theme).toMatch(
