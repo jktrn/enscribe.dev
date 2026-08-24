@@ -60,4 +60,32 @@ describe("content layout safety", () => {
       /:global\(\.giscus-frame\)\s*\{[\s\S]*?border-radius:\s*0;/,
     )
   })
+
+  test("Giscus utility controls use icon masks instead of text stand-ins", async () => {
+    const theme = await readFile("public/giscus/base.css", "utf8")
+
+    expect(theme).not.toContain('content: "Mono"')
+    expect(theme).not.toContain('content: "Markdown"')
+    expect(theme).toMatch(
+      /--giscus-icon-text:\s*url\("data:image\/svg\+xml;base64,[^"]+"\);/,
+    )
+    expect(theme).toMatch(
+      /--giscus-icon-markdown:\s*url\("data:image\/svg\+xml;base64,[^"]+"\);/,
+    )
+    expect(theme).toMatch(
+      /--giscus-icon-sign-out:\s*url\("data:image\/svg\+xml;base64,[^"]+"\);/,
+    )
+    expect(theme).toMatch(
+      /\.gsc-toolbar-item::after\s*\{\s*mask-image:\s*var\(--giscus-icon-text\)/,
+    )
+    expect(theme).toMatch(
+      /\.gsc-comment-box-markdown-hint::after\s*\{\s*mask-image:\s*var\(--giscus-icon-markdown\)/,
+    )
+    expect(theme).toMatch(
+      /button\.link-secondary:has\(\.octicon-sign-out\)::before\s*\{\s*mask-image:\s*var\(--giscus-icon-sign-out\)/,
+    )
+    expect(theme).toMatch(
+      /button\.link-secondary:has\(\.octicon-sign-out\)\s+\.octicon-sign-out,[^{]+\{\s*display:\s*none;/,
+    )
+  })
 })
