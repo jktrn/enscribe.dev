@@ -6,6 +6,22 @@ const unsafeFractionalTracks =
   /grid-template-columns\s*:\s*repeat\(\s*(?:[2-9]|\d{2,})\s*,\s*1fr\s*\)/
 const giscusTheme = readFile("public/giscus/base.css", "utf8")
 
+const cssBlock = (source: string, selector: string) => {
+  const marker = `${selector} {`
+  const start = source.indexOf(marker)
+  if (start < 0) throw new Error(`Missing CSS block: ${selector}`)
+
+  const open = start + marker.length - 1
+  let depth = 0
+  for (let index = open; index < source.length; index += 1) {
+    if (source[index] === "{") depth += 1
+    if (source[index] === "}") depth -= 1
+    if (depth === 0) return source.slice(open + 1, index)
+  }
+
+  throw new Error(`Unclosed CSS block: ${selector}`)
+}
+
 describe("content layout safety", () => {
   test("multi-column content grids use shrinkable tracks", async () => {
     const offenders: string[] = []
@@ -70,6 +86,11 @@ describe("content layout safety", () => {
     expect(navigation!.indexOf('data-dir="prev"')).toBeLessThan(
       navigation!.indexOf('data-dir="next"'),
     )
+
+    const styles = cssBlock(actions, "post-actions")
+    expect(styles).toContain("post-reading-actions,")
+    expect(styles).toContain("post-navigation-actions {")
+    expect(styles).toContain("a {")
   })
 
   test("the comments iframe does not clip square Giscus corners", async () => {
@@ -79,6 +100,11 @@ describe("content layout safety", () => {
     expect(comments).toMatch(
       /:global\(\.giscus-frame\)\s*\{[\s\S]*?border-radius:\s*0;/,
     )
+    expect(comments).toContain("<giscus-thread\n    data-term={term}")
+    expect(comments).toContain(
+      'document.querySelector<HTMLElement>("giscus-thread")',
+    )
+    expect(cssBlock(comments, "giscus-thread")).toContain("display: block;")
     expect(comments).toContain(").replaceAll(")
     expect(comments).toContain('"https://enscribe.dev/",')
     expect(comments).toContain("`${Astro.url.origin}/`)")
@@ -89,9 +115,17 @@ describe("content layout safety", () => {
 
   test("Giscus utility controls use icon masks instead of text stand-ins", async () => {
     const theme = await giscusTheme
+    const root = cssBlock(theme, "#__next")
+    const toolbar = cssBlock(root, ".gsc-toolbar-item")
+    const signOut = cssBlock(
+      cssBlock(root, ".gsc-comment-box-bottom"),
+      "> button.link-secondary:has(.octicon-sign-out)",
+    )
+    const clipboard = cssBlock(root, ".ClipboardButton")
 
     expect(theme).not.toContain('content: "Mono"')
     expect(theme).not.toContain('content: "Markdown"')
+    expect(theme.match(/#__next/g)).toHaveLength(1)
     expect(theme).toMatch(
       /--giscus-icon-text:\s*url\("data:image\/svg\+xml;base64,[^"]+"\);/,
     )
@@ -111,46 +145,50 @@ describe("content layout safety", () => {
     expect(theme).toMatch(
       /--giscus-icon-check:\s*url\("data:image\/svg\+xml;base64,[^"]+"\);/,
     )
-    expect(theme).toMatch(
-      /\.gsc-toolbar-item::after\s*\{\s*mask-image:\s*var\(--giscus-icon-text\)/,
+    expect(toolbar).toMatch(
+      /&::after\s*\{\s*mask-image:\s*var\(--giscus-icon-text\)/,
     )
-    expect(theme).toMatch(
-      /\.gsc-toolbar-item\s*\{[^}]*display:\s*inline-flex;[^}]*align-items:\s*center;[^}]*justify-content:\s*center;[^}]*inline-size:\s*2rem;[^}]*block-size:\s*2rem;[^}]*padding:\s*0;[^}]*border-radius:\s*0\.375rem;[^}]*color:\s*var\(--color-fg-subtle\);[^}]*cursor:\s*pointer;[^}]*transition:\s*background-color 0\.2s ease;/,
+    expect(toolbar).toMatch(
+      /display:\s*inline-flex;[^}]*align-items:\s*center;[^}]*justify-content:\s*center;[^}]*inline-size:\s*2rem;[^}]*block-size:\s*2rem;[^}]*padding:\s*0;[^}]*border-radius:\s*0\.375rem;[^}]*color:\s*var\(--color-fg-subtle\);[^}]*cursor:\s*pointer;[^}]*transition:\s*background-color 0\.2s ease;/,
     )
-    expect(theme).toMatch(
-      /\.gsc-toolbar-item:hover\s*\{[^}]*background-color:\s*color-mix\(\s*in oklab,\s*var\(--color-canvas-subtle\) 50%,\s*transparent\s*\);/,
+    expect(toolbar).toMatch(
+      /&:hover\s*\{[^}]*background-color:\s*color-mix\(\s*in oklab,\s*var\(--color-canvas-subtle\) 50%,\s*transparent\s*\);/,
     )
-    expect(theme).toMatch(
+    expect(root).toMatch(
       /button\.gsc-toolbar-item\s*\{[^}]*border-radius:\s*0\.375rem;/,
     )
-    expect(theme.indexOf("#__next button.gsc-toolbar-item")).toBeGreaterThan(
-      theme.indexOf(".gsc-comment-box button"),
+    expect(root.indexOf("button.gsc-toolbar-item")).toBeGreaterThan(
+      root.indexOf(".gsc-comment-box button"),
     )
-    expect(theme).toMatch(
+    expect(root).toMatch(
       /\.gsc-comment-box:has\(\.gsc-is-fixed-width\) \.gsc-toolbar-item\s*\{[^}]*color:\s*var\(--color-fg-default\);[^}]*background-color:\s*color-mix\(\s*in oklab,\s*var\(--color-canvas-subtle\) 50%,\s*transparent\s*\);/,
     )
-    expect(theme).toMatch(
-      /button\.link-secondary:has\(\.octicon-sign-out\)::before\s*\{\s*mask-image:\s*var\(--giscus-icon-sign-out\)/,
+    expect(signOut).toMatch(
+      /&::before\s*\{\s*mask-image:\s*var\(--giscus-icon-sign-out\)/,
     )
-    expect(theme).toMatch(
-      /button\.link-secondary:has\(\.octicon-sign-out\):hover\s*\{[^}]*color:\s*var\(--color-fg-default\);/,
+    expect(signOut).toMatch(
+      /&:hover\s*\{[^}]*color:\s*var\(--color-fg-default\);/,
     )
-    expect(theme).toMatch(
-      /button\.link-secondary:has\(\.octicon-sign-out\)\s+\.octicon-sign-out,[^{]+\{\s*display:\s*none;/,
+    expect(signOut).toMatch(/\.octicon-sign-out\s*\{\s*display:\s*none;/)
+    expect(clipboard).toMatch(
+      /:is\(\.js-clipboard-copy-icon,\s*\.js-clipboard-check-icon\)\s*\{\s*display:\s*none;/,
     )
-    expect(theme).toMatch(
-      /\.ClipboardButton\s+:is\(\.js-clipboard-copy-icon,\s*\.js-clipboard-check-icon\)\s*\{\s*display:\s*none;/,
+    expect(clipboard).toMatch(
+      /&::before\s*\{[^}]*mask-image:\s*var\(--giscus-icon-copy\)/,
     )
-    expect(theme).toMatch(
-      /\.ClipboardButton::before\s*\{[^}]*mask-image:\s*var\(--giscus-icon-copy\)/,
-    )
-    expect(theme).toMatch(
-      /\.ClipboardButton:has\(\.js-clipboard-copy-icon\.d-none\)::before\s*\{[^}]*mask-image:\s*var\(--giscus-icon-check\)/,
+    expect(clipboard).toMatch(
+      /&:has\(\.js-clipboard-copy-icon\.d-none\)::before\s*\{[^}]*mask-image:\s*var\(--giscus-icon-check\)/,
     )
   })
 
   test("Giscus uses the site typography system", async () => {
     const theme = await giscusTheme
+    const root = cssBlock(theme, "#__next")
+    const markdown = cssBlock(root, ".markdown")
+    const prose = cssBlock(
+      root,
+      ":is(.gsc-comment-content, .gsc-reply-content)",
+    )
     const fontStager = await readFile(
       "scripts/manage-licensed-fonts.ts",
       "utf8",
@@ -170,26 +208,26 @@ describe("content layout safety", () => {
     expect(theme).toMatch(
       /:is\(\s*\.gsc-comment-content,\s*\.gsc-reply-content,\s*\.gsc-comment-box-textarea,\s*\.gsc-comment-box-preview\s*\)[^{]*\{[^}]*font-size:\s*var\(--step-0\);[^}]*line-height:\s*calc\(var\(--leading-offset\) \+ 1em\);/,
     )
-    expect(theme).toMatch(
-      /\.markdown\s+:is\(p,\s*li\)\s*\{[^}]*color:\s*var\(--prose-foreground\);/,
+    expect(markdown).toMatch(
+      /:is\(p,\s*li\)\s*\{[^}]*color:\s*var\(--prose-foreground\);/,
     )
-    expect(theme).toMatch(
-      /\.markdown\s+:is\(strong,\s*b\)\s*\{[^}]*color:\s*var\(--color-fg-default\);[^}]*font-style:\s*italic;/,
+    expect(markdown).toMatch(
+      /:is\(strong,\s*b\)\s*\{[^}]*color:\s*var\(--color-fg-default\);[^}]*font-style:\s*italic;/,
     )
-    expect(theme).toMatch(
-      /\.markdown\s+:is\(h1,\s*h2,\s*h3,\s*h4,\s*h5,\s*h6\)\s*\{[^}]*line-height:\s*calc\(var\(--leading-offset\) \+ 1em\);[^}]*text-wrap:\s*balance;/,
+    expect(markdown).toMatch(
+      /:is\(h1,\s*h2,\s*h3,\s*h4,\s*h5,\s*h6\)\s*\{[^}]*line-height:\s*calc\(var\(--leading-offset\) \+ 1em\);[^}]*text-wrap:\s*balance;/,
     )
-    expect(theme).toMatch(
-      /\.markdown\s+pre\s*>\s*code\s*\{[^}]*font-size:\s*inherit;[^}]*line-height:\s*inherit;/,
+    expect(markdown).toMatch(
+      /pre\s*\{[^}]*> code\s*\{[^}]*font-size:\s*inherit;[^}]*line-height:\s*inherit;/,
     )
-    expect(theme).toMatch(
-      /\.markdown\s+:is\(code,\s*kbd,\s*pre,\s*samp\)\s*\{[^}]*font-family:\s*var\(--font-mono\);/,
+    expect(markdown).toMatch(
+      /:is\(code,\s*kbd,\s*pre,\s*samp\)\s*\{[^}]*font-family:\s*var\(--font-mono\);/,
     )
-    expect(theme).toMatch(
-      /\.gsc-reply-content\)\s+a\s*\{[^}]*text-decoration-thickness:\s*max\(1px, 0\.0625em\);[^}]*text-underline-offset:\s*-0\.06em;[^}]*text-decoration-color 0\.2s ease;/,
+    expect(prose).toMatch(
+      /a\s*\{[^}]*text-decoration-thickness:\s*max\(1px, 0\.0625em\);[^}]*text-underline-offset:\s*-0\.06em;[^}]*text-decoration-color 0\.2s ease;/,
     )
-    expect(theme).toMatch(
-      /\.gsc-reply-content\)\s+a:hover\s*\{[^}]*text-decoration-color:\s*currentColor;/,
+    expect(cssBlock(prose, "a")).toMatch(
+      /&:hover\s*\{[^}]*text-decoration-color:\s*currentColor;/,
     )
 
     for (const [step, value] of [
@@ -208,10 +246,8 @@ describe("content layout safety", () => {
       ["h3", "--step-1"],
       ["h4", "--step-0"],
     ]) {
-      expect(theme).toMatch(
-        new RegExp(
-          `\\.markdown ${heading}\\s*\\{[^}]*font-size: var\\(${step}\\);`,
-        ),
+      expect(markdown).toMatch(
+        new RegExp(`${heading}\\s*\\{[^}]*font-size: var\\(${step}\\);`),
       )
     }
 

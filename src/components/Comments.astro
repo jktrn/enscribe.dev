@@ -31,13 +31,12 @@ const theme = import.meta.env.DEV
 
 <post-comments id="comments">
   <h2>Comments <span data-count></span></h2>
-  <div
-    class="giscus"
+  <giscus-thread
     data-term={term}
     data-theme-light={theme.light}
     data-theme-dark={theme.dark}
     data-theme-version={themeVersion}
-  ></div>
+  ></giscus-thread>
 </post-comments>
 
 <style>
@@ -52,13 +51,17 @@ const theme = import.meta.env.DEV
       font-size: var(--step-1);
       font-weight: var(--font-weight-medium);
 
-      span:empty {
-        display: none;
-      }
-
       span {
         color: var(--muted-foreground);
+
+        &:empty {
+          display: none;
+        }
       }
+    }
+
+    giscus-thread {
+      display: block;
     }
 
     :global(.giscus-frame) {
@@ -84,7 +87,7 @@ const theme = import.meta.env.DEV
     teardown?.()
     teardown = undefined
 
-    const mount = document.querySelector<HTMLElement>(".giscus")
+    const mount = document.querySelector<HTMLElement>("giscus-thread")
     if (!mount || mount.childElementCount > 0) return
 
     const { term, themeLight, themeDark, themeVersion } = mount.dataset

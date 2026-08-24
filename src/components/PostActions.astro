@@ -59,22 +59,22 @@ const nextTitle = next?.title
         display: none;
       }
     }
-  }
 
-  post-navigation-actions,
-  post-reading-actions {
-    display: flex;
-    align-items: center;
-    gap: 2px;
-  }
+    post-reading-actions,
+    post-navigation-actions {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+    }
 
-  a {
-    color: var(--foreground);
+    a {
+      color: var(--foreground);
 
-    &:not([href]) {
-      color: var(--muted-foreground);
-      opacity: 0.5;
-      pointer-events: none;
+      &:not([href]) {
+        color: var(--muted-foreground);
+        opacity: 0.5;
+        pointer-events: none;
+      }
     }
   }
 </style>
