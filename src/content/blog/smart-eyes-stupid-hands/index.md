@@ -1,7 +1,7 @@
 ---
 title: 'Smart Eyes, Stupid Hands'
 description: "Turning the craft I loved into a profession made corner-cutting easier to justify. Now, AI forces me to ask: do I still want the process? Or do I just want the result?"
-date: 2026-08-21
+date: 2026-08-23
 tags: ['design']
 banner:
   light: './assets/banner-light.svg'

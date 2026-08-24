@@ -56,7 +56,7 @@ const { mobile = false } = Astro.props
       text-decoration-line: none;
     }
 
-    prose-content [data-favicon] {
+    prose-content :is([data-favicon], svg) {
       display: none !important;
     }
   }
