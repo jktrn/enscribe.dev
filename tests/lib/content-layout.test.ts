@@ -76,6 +76,12 @@ describe("content layout safety", () => {
       /--giscus-icon-sign-out:\s*url\("data:image\/svg\+xml;base64,[^"]+"\);/,
     )
     expect(theme).toMatch(
+      /--giscus-icon-copy:\s*url\("data:image\/svg\+xml;base64,[^"]+"\);/,
+    )
+    expect(theme).toMatch(
+      /--giscus-icon-check:\s*url\("data:image\/svg\+xml;base64,[^"]+"\);/,
+    )
+    expect(theme).toMatch(
       /\.gsc-toolbar-item::after\s*\{\s*mask-image:\s*var\(--giscus-icon-text\)/,
     )
     expect(theme).toMatch(
@@ -86,6 +92,15 @@ describe("content layout safety", () => {
     )
     expect(theme).toMatch(
       /button\.link-secondary:has\(\.octicon-sign-out\)\s+\.octicon-sign-out,[^{]+\{\s*display:\s*none;/,
+    )
+    expect(theme).toMatch(
+      /\.ClipboardButton\s+:is\(\.js-clipboard-copy-icon,\s*\.js-clipboard-check-icon\)\s*\{\s*display:\s*none;/,
+    )
+    expect(theme).toMatch(
+      /\.ClipboardButton::before\s*\{[^}]*mask-image:\s*var\(--giscus-icon-copy\)/,
+    )
+    expect(theme).toMatch(
+      /\.ClipboardButton:has\(\.js-clipboard-copy-icon\.d-none\)::before\s*\{[^}]*mask-image:\s*var\(--giscus-icon-check\)/,
     )
   })
 })

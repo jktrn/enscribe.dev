@@ -32,6 +32,10 @@ main {
     url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNTYgMjU2IiBmaWxsPSJjdXJyZW50Q29sb3IiPjxwYXRoIGQ9Ik0yMzIsNDhIMjRBMTYsMTYsMCwwLDAsOCw2NFYxOTJhMTYsMTYsMCwwLDAsMTYsMTZIMjMyYTE2LDE2LDAsMCwwLDE2LTE2VjY0QTE2LDE2LDAsMCwwLDIzMiw0OFpNMTI4LDE1MmE4LDgsMCwwLDEtMTYsMFYxMjMuMzFMOTMuNjYsMTQxLjY2YTgsOCwwLDAsMS0xMS4zMiwwTDY0LDEyMy4zMVYxNTJhOCw4LDAsMCwxLTE2LDBWMTA0YTgsOCwwLDAsMSwxMy42Ni01LjY2TDg4LDEyNC42OWwyNi4zNC0yNi4zNUE4LDgsMCwwLDEsMTI4LDEwNFptNzcuNjYtMTguMzQtMjQsMjRhOCw4LDAsMCwxLTExLjMyLDBsLTI0LTI0YTgsOCwwLDAsMSwxMS4zMi0xMS4zMkwxNjgsMTMyLjY5VjEwNGE4LDgsMCwwLDEsMTYsMHYyOC42OWwxMC4zNC0xMC4zNWE4LDgsMCwwLDEsMTEuMzIsMTEuMzJaIi8+PC9zdmc+");
   --giscus-icon-sign-out:
     url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNTYgMjU2IiBmaWxsPSJjdXJyZW50Q29sb3IiPjxwYXRoIGQ9Ik0xMjAsMjE2YTgsOCwwLDAsMS04LDhINDhhOCw4LDAsMCwxLTgtOFY0MGE4LDgsMCwwLDEsOC04aDY0YTgsOCwwLDAsMSwwLDE2SDU2VjIwOGg1NkE4LDgsMCwwLDEsMTIwLDIxNlptMTA5LjY2LTkzLjY2LTQwLTQwQTgsOCwwLDAsMCwxNzYsODh2MzJIMTEyYTgsOCwwLDAsMCwwLDE2aDY0djMyYTgsOCwwLDAsMCwxMy42Niw1LjY2bDQwLTQwQTgsOCwwLDAsMCwyMjkuNjYsMTIyLjM0WiIvPjwvc3ZnPg==");
+  --giscus-icon-copy:
+    url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNTYgMjU2IiBmaWxsPSJjdXJyZW50Q29sb3IiPjxwYXRoIGQ9Ik0xOTIsNzJWMjE2YTgsOCwwLDAsMS04LDhINDBhOCw4LDAsMCwxLTgtOFY3MmE4LDgsMCwwLDEsOC04SDE4NEE4LDgsMCwwLDEsMTkyLDcyWm0yNC00MEg3MmE4LDgsMCwwLDAsMCwxNkgyMDhWMTg0YTgsOCwwLDAsMCwxNiwwVjQwQTgsOCwwLDAsMCwyMTYsMzJaIi8+PC9zdmc+");
+  --giscus-icon-check:
+    url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNTYgMjU2IiBmaWxsPSJjdXJyZW50Q29sb3IiPjxwYXRoIGQ9Ik0yNDMuMzEsOTAuOTFsLTEyOC40LDEyOC40YTE2LDE2LDAsMCwxLTIyLjYyLDBsLTcxLjYyLTcyYTE2LDE2LDAsMCwxLDAtMjIuNjFsMjAtMjBhMTYsMTYsMCwwLDEsMjIuNTgsMEwxMDQsMTQ0LjIybDk2Ljc2LTk1LjU3YTE2LDE2LDAsMCwxLDIyLjU5LDBsMTkuOTUsMTkuNTRBMTYsMTYsMCwwLDEsMjQzLjMxLDkwLjkxWiIvPjwvc3ZnPg==");
 }
 
 #__next :is(.font-semibold, .font-medium, .text-bold, .user-mention),
@@ -189,6 +193,12 @@ main {
   display: none;
 }
 
+#__next
+  .ClipboardButton
+  :is(.js-clipboard-copy-icon, .js-clipboard-check-icon) {
+  display: none;
+}
+
 #__next :is(.gsc-toolbar-item, .gsc-comment-box-markdown-hint) {
   gap: 0;
   font-size: 0.75rem;
@@ -204,7 +214,8 @@ main {
 #__next :is(.gsc-toolbar-item, .gsc-comment-box-markdown-hint)::after,
 #__next
   .gsc-comment-box-bottom
-  > button.link-secondary:has(.octicon-sign-out)::before {
+  > button.link-secondary:has(.octicon-sign-out)::before,
+#__next .ClipboardButton::before {
   content: "";
   display: block;
   flex: none;
@@ -242,6 +253,17 @@ main {
   .gsc-comment-box-bottom
   > button.link-secondary:has(.octicon-sign-out)::before {
   mask-image: var(--giscus-icon-sign-out);
+}
+
+#__next .ClipboardButton::before {
+  margin: 0.5rem;
+  background-color: var(--color-fg-muted);
+  mask-image: var(--giscus-icon-copy);
+}
+
+#__next .ClipboardButton:has(.js-clipboard-copy-icon.d-none)::before {
+  background-color: var(--color-success-fg);
+  mask-image: var(--giscus-icon-check);
 }
 
 #__next textarea::placeholder {
