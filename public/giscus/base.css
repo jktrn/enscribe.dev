@@ -162,6 +162,37 @@ main {
   color: var(--color-fg-subtle);
 }
 
+#__next :is(.gsc-toolbar-item, .gsc-comment-box-markdown-hint) .octicon,
+#__next .gsc-comment-box-buttons .octicon-mark-github {
+  display: none;
+}
+
+#__next :is(.gsc-toolbar-item, .gsc-comment-box-markdown-hint) {
+  gap: 0;
+  font-size: 0.75rem;
+  line-height: 1;
+  text-decoration: none;
+}
+
+#__next .gsc-toolbar-item {
+  inline-size: auto;
+  padding-inline: 0.5rem;
+}
+
+#__next .gsc-toolbar-item::after {
+  content: "Mono";
+}
+
+#__next .gsc-comment-box:has(.gsc-is-fixed-width) .gsc-toolbar-item {
+  color: var(--color-fg-default);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+#__next .gsc-comment-box-markdown-hint::after {
+  content: "Markdown";
+}
+
 #__next textarea::placeholder {
   color: var(--color-fg-subtle);
   opacity: 1;
