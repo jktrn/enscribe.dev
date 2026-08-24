@@ -133,7 +133,16 @@ main {
 }
 
 #__next :is(.gsc-comment-content, .gsc-reply-content) a {
+  color: var(--color-fg-default);
   text-underline-offset: 0.15em;
+}
+
+#__next :is(.gsc-comment-content, .gsc-reply-content) a:hover {
+  color: var(--color-fg-default);
+}
+
+#__next :is(.gsc-comment-header, .gsc-reply-header) .link-secondary:hover {
+  color: var(--color-fg-muted);
 }
 
 #__next :is(.color-box-border-info, .color-border-info) {
