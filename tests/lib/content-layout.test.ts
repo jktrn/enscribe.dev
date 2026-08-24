@@ -105,9 +105,10 @@ describe("content layout safety", () => {
       'document.querySelector<HTMLElement>("giscus-thread")',
     )
     expect(cssBlock(comments, "giscus-thread")).toContain("display: block;")
-    expect(comments).toContain(").replaceAll(")
-    expect(comments).toContain('"https://enscribe.dev/",')
-    expect(comments).toContain("`${Astro.url.origin}/`)")
+    expect(comments).toContain('const THEME_PREFIX = "data:text/css;base64,"')
+    expect(comments).toContain("`${location.origin}/`,")
+    expect(comments).toContain("origin: authOrigin")
+    expect(comments).toContain("const savedSession = readSession()")
     expect(astroConfig).toMatch(
       /server:\s*\{[^}]*allowedHosts:\s*\["\.trycloudflare\.com"\][^}]*cors:\s*\{\s*origin:\s*"https:\/\/giscus\.app"\s*\}/,
     )
@@ -261,6 +262,9 @@ describe("content layout safety", () => {
 
     expect(await readFile("public/_headers", "utf8")).toMatch(
       /\/fonts\/\*\s+Access-Control-Allow-Origin:\s*https:\/\/giscus\.app/,
+    )
+    expect(await readFile("public/_headers", "utf8")).toMatch(
+      /\/giscus\/\*\s+Access-Control-Allow-Origin:\s*https:\/\/giscus\.app/,
     )
   })
 })

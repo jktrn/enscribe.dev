@@ -10,22 +10,24 @@ const { term } = Astro.props
 const read = (name: string) =>
   readFileSync(resolve("public", "giscus", `${name}.css`), "utf8")
 
-const inline = (name: string) => {
-  const css = (
-    read("base") + read(name).replace(/@import[^;]+;/, "")
-  ).replaceAll("https://enscribe.dev/", `${Astro.url.origin}/`)
+const baseTheme = read("base")
+const lightTheme = read("light")
+const darkTheme = read("dark")
+
+const inline = (variant: string) => {
+  const css = baseTheme + variant.replace(/@import[^;]+;/, "")
   return `data:text/css;base64,${Buffer.from(css).toString("base64")}`
 }
 
 const themeVersion = createHash("sha256")
-  .update(read("base"))
-  .update(read("light"))
-  .update(read("dark"))
+  .update(baseTheme)
+  .update(lightTheme)
+  .update(darkTheme)
   .digest("hex")
   .slice(0, 12)
 
 const theme = import.meta.env.DEV
-  ? { light: inline("light"), dark: inline("dark") }
+  ? { light: inline(lightTheme), dark: inline(darkTheme) }
   : { light: undefined, dark: undefined }
 ---
 
@@ -79,9 +81,30 @@ const theme = import.meta.env.DEV
 <script>
   const ORIGIN = "https://giscus.app"
   const SESSION_KEY = "giscus-session"
+  const THEME_PREFIX = "data:text/css;base64,"
   const root = document.documentElement
 
   let teardown: (() => void) | undefined
+
+  const readSession = () => {
+    try {
+      return localStorage.getItem(SESSION_KEY)
+    } catch {
+      return null
+    }
+  }
+
+  const saveSession = (session: string) => {
+    try {
+      localStorage.setItem(SESSION_KEY, JSON.stringify(session))
+    } catch {}
+  }
+
+  const clearSession = () => {
+    try {
+      localStorage.removeItem(SESSION_KEY)
+    } catch {}
+  }
 
   const setup = () => {
     teardown?.()
@@ -89,39 +112,60 @@ const theme = import.meta.env.DEV
 
     const mount = document.querySelector<HTMLElement>("giscus-thread")
     if (!mount || mount.childElementCount > 0) return
+    const comments = mount.closest<HTMLElement>("post-comments")
+    if (!comments) return
 
     const { term, themeLight, themeDark, themeVersion } = mount.dataset
     const controller = new AbortController()
     const { signal } = controller
 
-    const themeUrl = (name: "light" | "dark") =>
-      (name === "dark" ? themeDark : themeLight) ??
-      `${location.origin}/giscus/${name}.css?v=${themeVersion}`
+    const themeUrl = (
+      name: "light" | "dark",
+      inlineTheme: string | undefined,
+    ) => {
+      if (!inlineTheme?.startsWith(THEME_PREFIX)) {
+        return `${location.origin}/giscus/${name}.css?v=${themeVersion}`
+      }
+
+      const css = atob(inlineTheme.slice(THEME_PREFIX.length)).replaceAll(
+        "https://enscribe.dev/",
+        `${location.origin}/`,
+      )
+      return `${THEME_PREFIX}${btoa(css)}`
+    }
+    const themes = {
+      light: themeUrl("light", themeLight),
+      dark: themeUrl("dark", themeDark),
+    }
 
     const currentTheme = () =>
-      themeUrl(
+      themes[
         root.dataset.theme === "dark" ||
-          (!root.dataset.theme &&
-            matchMedia("(prefers-color-scheme: dark)").matches)
+        (!root.dataset.theme &&
+          matchMedia("(prefers-color-scheme: dark)").matches)
           ? "dark"
-          : "light",
-      )
+          : "light"
+      ]
 
     const url = new URL(location.href)
     let session = url.searchParams.get("giscus") ?? ""
-    const savedSession = localStorage.getItem(SESSION_KEY)
+    const savedSession = readSession()
     url.searchParams.delete("giscus")
     url.hash = ""
     const cleanedLocation = url.toString()
+    url.hash = comments.id
+    const authOrigin = url.toString()
 
     if (session) {
-      localStorage.setItem(SESSION_KEY, JSON.stringify(session))
+      saveSession(session)
       history.replaceState(history.state, document.title, cleanedLocation)
     } else if (savedSession) {
       try {
-        session = JSON.parse(savedSession)
+        const parsedSession: unknown = JSON.parse(savedSession)
+        if (typeof parsedSession === "string") session = parsedSession
+        else clearSession()
       } catch {
-        localStorage.removeItem(SESSION_KEY)
+        clearSession()
       }
     }
 
@@ -132,7 +176,7 @@ const theme = import.meta.env.DEV
         ?.content ??
       ""
     const params = new URLSearchParams({
-      origin: cleanedLocation,
+      origin: authOrigin,
       session,
       theme: currentTheme(),
       reactionsEnabled: "0",
@@ -178,6 +222,7 @@ const theme = import.meta.env.DEV
     )
 
     const signOut = () => {
+      clearSession()
       params.delete("session")
       frame.src = `${ORIGIN}/en/widget?${params}`
     }
@@ -206,7 +251,6 @@ const theme = import.meta.env.DEV
         if (data.resizeHeight) frame.style.height = `${data.resizeHeight}px`
 
         if (data.signOut) {
-          localStorage.removeItem(SESSION_KEY)
           signOut()
           return
         }
@@ -218,8 +262,7 @@ const theme = import.meta.env.DEV
             "State has expired",
           ].some((message) => data.error.includes(message))
 
-          if (sessionExpired && localStorage.getItem(SESSION_KEY) !== null) {
-            localStorage.removeItem(SESSION_KEY)
+          if (sessionExpired && params.get("session")) {
             signOut()
           } else {
             console.warn(`[giscus] ${data.error}`)
@@ -229,9 +272,7 @@ const theme = import.meta.env.DEV
 
         const total = data.discussion?.totalCommentCount
         if (typeof total !== "number") return
-        const label = mount
-          .closest("post-comments")
-          ?.querySelector<HTMLElement>("[data-count]")
+        const label = comments.querySelector<HTMLElement>("[data-count]")
         if (label) label.textContent = total > 0 ? `(${total})` : ""
       },
       { signal },

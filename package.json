@@ -22,6 +22,7 @@
     "format": "biome format --write .",
     "format:check": "biome format .",
     "test": "bun test tests/lib tests/linebreak/unit",
+    "test:site": "bun run --cwd tests/site test",
     "linebreak:build": "bun run --cwd packages/linebreak build",
     "linebreak:check": "bun run --cwd packages/linebreak check && bun run --cwd tests/linebreak check",
     "favicons:check": "bun scripts/check-favicon-assets.ts",

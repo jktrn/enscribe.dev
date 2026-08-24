@@ -192,8 +192,10 @@
 
     const update = () => {
       const current = currentArticle()
+      const target = location.hash && hashTarget(location.hash)
       if (
         !current ||
+        (target && !target.closest("article[data-url]")) ||
         current.dataset.url === normalizePath(location.pathname)
       ) {
         return
