@@ -1,20 +1,26 @@
 ---
 import { readFileSync } from "node:fs"
+import { createHash } from "node:crypto"
+import { resolve } from "node:path"
 
 type Props = { term: string }
 
 const { term } = Astro.props
 
 const read = (name: string) =>
-  readFileSync(
-    new URL(`../../public/giscus/${name}.css`, import.meta.url),
-    "utf8",
-  )
+  readFileSync(resolve("public", "giscus", `${name}.css`), "utf8")
 
 const inline = (name: string) => {
   const css = read("base") + read(name).replace(/@import[^;]+;/, "")
   return `data:text/css;base64,${Buffer.from(css).toString("base64")}`
 }
+
+const themeVersion = createHash("sha256")
+  .update(read("base"))
+  .update(read("light"))
+  .update(read("dark"))
+  .digest("hex")
+  .slice(0, 12)
 
 const theme = import.meta.env.DEV
   ? { light: inline("light"), dark: inline("dark") }
@@ -28,6 +34,7 @@ const theme = import.meta.env.DEV
     data-term={term}
     data-theme-light={theme.light}
     data-theme-dark={theme.dark}
+    data-theme-version={themeVersion}
   ></div>
 </post-comments>
 
@@ -77,13 +84,13 @@ const theme = import.meta.env.DEV
     const mount = document.querySelector<HTMLElement>(".giscus")
     if (!mount || mount.childElementCount > 0) return
 
-    const { term, themeLight, themeDark } = mount.dataset
+    const { term, themeLight, themeDark, themeVersion } = mount.dataset
     const controller = new AbortController()
     const { signal } = controller
 
     const themeUrl = (name: "light" | "dark") =>
       (name === "dark" ? themeDark : themeLight) ??
-      `${location.origin}/giscus/${name}.css`
+      `${location.origin}/giscus/${name}.css?v=${themeVersion}`
 
     const currentTheme = () =>
       themeUrl(
