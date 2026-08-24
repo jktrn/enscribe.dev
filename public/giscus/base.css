@@ -38,9 +38,19 @@ main {
 }
 
 #__next .gsc-comment > div {
+  position: relative;
   background: transparent;
   border: none;
   border-radius: 0;
+}
+
+#__next .gsc-comment:has(.gsc-reply) > div::before {
+  content: "";
+  position: absolute;
+  inset-block: 36px 1rem;
+  inset-inline-start: 14px;
+  inline-size: 2px;
+  background: var(--color-border-default);
 }
 
 #__next .gsc-comment {
@@ -67,12 +77,10 @@ main {
 
 #__next .gsc-replies {
   margin-block-start: 0.75rem;
-  margin-inline-start: 15px;
-  padding-block: 0;
-  padding-inline: 23px 0;
+  margin-inline-start: 40px;
+  padding: 0;
   background: transparent;
-  border-top: none;
-  border-inline-start: 2px solid var(--color-border-default);
+  border: none;
   border-radius: 0;
 }
 
