@@ -21,6 +21,7 @@ const payload = JSON.stringify(points).replaceAll("<", "\\u003c")
 
 <div class="food-map" data-food-map>
   <div class="food-map-canvas" data-food-map-canvas></div>
+  <canvas class="food-map-places" data-food-map-places></canvas>
 
   <label class="food-map-city">
     <span class="sr-only">Show places in</span>
@@ -51,23 +52,20 @@ const payload = JSON.stringify(points).replaceAll("<", "\\u003c")
 
   const cityIndex = (id: string) => CITIES.findIndex((city) => city.id === id)
 
-  const toFeatureCollection = (rows: Row[]) => ({
-    type: "FeatureCollection" as const,
-    features: rows.map(([lon, lat, city, score]) => ({
-      type: "Feature" as const,
-      properties: { city, score },
-      geometry: { type: "Point" as const, coordinates: [lon, lat] },
-    })),
-  })
-
   let teardown: (() => void) | undefined
 
   const mount = async (root: HTMLElement) => {
     const canvas = root.querySelector<HTMLElement>("[data-food-map-canvas]")
+    const placesCanvas = root.querySelector<HTMLCanvasElement>(
+      "[data-food-map-places]",
+    )
     const dataNode = root.querySelector<HTMLElement>("[data-food-map-data]")
-    if (!canvas || !dataNode?.textContent) return
+    if (!canvas || !placesCanvas || !dataNode?.textContent) return
 
     const rows = JSON.parse(dataNode.textContent) as Row[]
+    const rowsByCity = CITIES.map((_, index) =>
+      rows.filter((row) => row[2] === index).sort((a, b) => a[3] - b[3]),
+    )
 
     // Destructure directly off the awaited import — routing the namespace
     // through Promise.all defeats tree-shaking of the maplibre chunk.
@@ -139,10 +137,9 @@ const payload = JSON.stringify(points).replaceAll("<", "\\u003c")
       map as unknown as { _handlers?: { destroy?: () => void } }
     )._handlers?.destroy?.()
 
-    // Every place renders; they simply overlap. The number is drawn INTO the
-    // dot image so each place is a single symbol — a symbol layer draws all its
-    // text above all its icons, so a separate text layer would float a buried
-    // place's number over the dot covering it.
+    // The basemap and place bubbles use separate canvases so the basemap can be
+    // composited at reduced opacity exactly once. Per-layer opacity makes
+    // overlapping roads, fills, and labels brighten at their intersections.
     const DOT_RADIUS = 8.5
     const RING_WIDTH = 1.25
     const LABEL_SIZE = 8 // "10.0" measures 14.1px here, inside a 17px dot
@@ -154,7 +151,7 @@ const payload = JSON.stringify(points).replaceAll("<", "\\u003c")
     const scoreLabel = (score: number) =>
       score < 0 ? "\u2014" : score.toFixed(1)
 
-    const dotImage = (score: number, scale: number) => {
+    const dotCanvas = (score: number, scale: number) => {
       const { fill, ink, ring } = bubbleColorsForScore(
         score < 0 ? null : score,
         color.resolve,
@@ -178,22 +175,57 @@ const payload = JSON.stringify(points).replaceAll("<", "\\u003c")
       ctx.textAlign = "center"
       ctx.textBaseline = "middle"
       ctx.fillText(scoreLabel(score), mid, mid + 0.5)
-      return ctx.getImageData(0, 0, canvas.width, canvas.height)
+      return canvas
     }
 
     const scores = [...new Set(rows.map((row) => row[3]))]
-    const syncDotImages = () => {
+    const dotCanvases = new Map<number, HTMLCanvasElement>()
+    let activeCityIndex = cityIndex(startCity.id)
+    const syncDotCanvases = () => {
+      dotCanvases.clear()
       const scale = imageScale()
       for (const score of scores) {
-        const image = dotImage(score, scale)
-        if (!image) continue
-        const id = `dot-${score}`
-        // Removed rather than updated: updateImage keeps the original
-        // pixelRatio, so a density change would leave the bitmap upscaled.
-        if (map.hasImage(id)) map.removeImage(id)
-        map.addImage(id, image, { pixelRatio: scale })
+        const image = dotCanvas(score, scale)
+        if (image) dotCanvases.set(score, image)
       }
     }
+    const drawPlaces = () => {
+      const context = placesCanvas.getContext("2d")
+      if (!context) return
+      const scale = window.devicePixelRatio
+      const width = placesCanvas.clientWidth
+      const height = placesCanvas.clientHeight
+      const pixelWidth = Math.round(width * scale)
+      const pixelHeight = Math.round(height * scale)
+      if (
+        placesCanvas.width !== pixelWidth ||
+        placesCanvas.height !== pixelHeight
+      ) {
+        placesCanvas.width = pixelWidth
+        placesCanvas.height = pixelHeight
+      }
+      context.setTransform(scale, 0, 0, scale, 0, 0)
+      context.clearRect(0, 0, width, height)
+
+      const imageScaleFactor = imageScale()
+      const box = Math.ceil((DOT_RADIUS + RING_WIDTH) * 2)
+      for (const [lon, lat, , score] of rowsByCity[activeCityIndex] ?? []) {
+        const point = map.project([lon, lat])
+        if (point.x < 0 || point.x > width || point.y < 0 || point.y > height) {
+          continue
+        }
+        const image = dotCanvases.get(score)
+        if (!image) continue
+        context.drawImage(
+          image,
+          point.x - box / 2,
+          point.y - box / 2,
+          image.width / imageScaleFactor,
+          image.height / imageScaleFactor,
+        )
+      }
+    }
+    syncDotCanvases()
 
     // devicePixelRatio changes on browser zoom and when a window moves between
     // displays. It does not change the container's CSS size, so MapLibre's
@@ -201,7 +233,8 @@ const payload = JSON.stringify(points).replaceAll("<", "\\u003c")
     let densityQuery: MediaQueryList | undefined
     const syncPixelRatio = () => {
       map.setPixelRatio(window.devicePixelRatio)
-      if (map.getLayer("places")) syncDotImages()
+      syncDotCanvases()
+      drawPlaces()
       densityQuery?.removeEventListener("change", syncPixelRatio)
       densityQuery = matchMedia(`(resolution: ${window.devicePixelRatio}dppx)`)
       densityQuery.addEventListener("change", syncPixelRatio)
@@ -210,40 +243,21 @@ const payload = JSON.stringify(points).replaceAll("<", "\\u003c")
 
     const theme = () => {
       applyMapTheme(map, color.resolve)
-      if (!map.getLayer("places")) return
-      syncDotImages()
+      syncDotCanvases()
+      drawPlaces()
     }
 
     map.on("style.load", () => {
       // Before theming, so its own label layer exists in time to be painted.
       collapseDuplicateWaterLabels(map)
       applyMapTheme(map, color.resolve)
-      map.addSource("places", {
-        type: "geojson",
-        data: toFeatureCollection(rows),
-      })
-      syncDotImages()
-      // No beforeId, so this appends last and sits above every basemap label —
-      // the z-order DOM markers used to get by living in the canvas container.
-      map.addLayer({
-        id: "places",
-        type: "symbol",
-        source: "places",
-        filter: ["==", ["get", "city"], cityIndex(startCity.id)],
-        layout: {
-          "icon-image": ["concat", "dot-", ["to-string", ["get", "score"]]],
-          // Draw every place, overlapping where they must.
-          "icon-allow-overlap": true,
-          "icon-ignore-placement": true,
-          // Ascending, so the best score is drawn last and lands on top.
-          "symbol-sort-key": ["get", "score"],
-        },
-      } as never)
     })
 
     map.on("load", () => {
+      drawPlaces()
       root.dataset.ready = "true"
     })
+    map.on("render", drawPlaces)
 
     const select = root.querySelector<HTMLSelectElement>("[data-food-map-city]")
     if (select) select.value = startCity.id
@@ -253,13 +267,8 @@ const payload = JSON.stringify(points).replaceAll("<", "\\u003c")
       // jumpTo, not flyTo: an animated camera re-runs tile coverage every frame
       // and would stream the whole path (NY->Tokyo measured 16 requests vs 2).
       map.jumpTo({ center: [...city.center], zoom: city.zoom })
-      // Frames overlap between neighbouring metros, so the camera alone cannot
-      // keep one city's pins out of another's view — the filter does.
-      map.setFilter("places", [
-        "==",
-        ["get", "city"],
-        cityIndex(city.id),
-      ] as never)
+      activeCityIndex = cityIndex(city.id)
+      drawPlaces()
       try {
         sessionStorage.setItem(STORAGE_KEY, city.id)
       } catch {}
@@ -338,6 +347,20 @@ const payload = JSON.stringify(points).replaceAll("<", "\\u003c")
   }
 
   .food-map[data-ready="true"] .food-map-canvas {
+    opacity: 0.85;
+  }
+
+  .food-map-places {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+
+  .food-map[data-ready="true"] .food-map-places {
     opacity: 1;
   }
 
@@ -393,6 +416,7 @@ const payload = JSON.stringify(points).replaceAll("<", "\\u003c")
 
   @media (prefers-reduced-motion: reduce) {
     .food-map-canvas,
+    .food-map-places,
     .food-map-city {
       transition: none;
     }

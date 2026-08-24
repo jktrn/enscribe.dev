@@ -93,6 +93,27 @@ describe("content layout safety", () => {
     expect(styles).toContain("a {")
   })
 
+  test("the homepage map fades its basemap without fading place bubbles", async () => {
+    const map = await readFile("src/components/FoodMapTile.astro", "utf8")
+    const basemapReady = cssBlock(
+      map,
+      '.food-map[data-ready="true"] .food-map-canvas',
+    )
+    const placesReady = cssBlock(
+      map,
+      '.food-map[data-ready="true"] .food-map-places',
+    )
+
+    expect(map).toContain(
+      '<canvas class="food-map-places" data-food-map-places></canvas>',
+    )
+    expect(basemapReady).toContain("opacity: 0.85;")
+    expect(placesReady).toContain("opacity: 1;")
+    expect(map).toContain("const point = map.project([lon, lat])")
+    expect(map).toContain('map.on("render", drawPlaces)')
+    expect(map).not.toContain('map.addLayer({\n        id: "places"')
+  })
+
   test("the comments iframe does not clip square Giscus corners", async () => {
     const comments = await readFile("src/components/Comments.astro", "utf8")
     const astroConfig = await readFile("astro.config.ts", "utf8")
