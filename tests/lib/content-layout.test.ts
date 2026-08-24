@@ -89,6 +89,21 @@ describe("content layout safety", () => {
       /\.gsc-comment-box-markdown-hint::after\s*\{\s*mask-image:\s*var\(--giscus-icon-markdown\)/,
     )
     expect(theme).toMatch(
+      /:is\(\.gsc-toolbar-item,\s*\.gsc-comment-box-markdown-hint\)\s*\{[^}]*display:\s*inline-flex;[^}]*align-items:\s*center;[^}]*justify-content:\s*center;[^}]*inline-size:\s*2rem;[^}]*block-size:\s*2rem;[^}]*padding:\s*0;[^}]*border-radius:\s*0\.375rem;[^}]*color:\s*var\(--color-fg-subtle\);[^}]*cursor:\s*pointer;[^}]*transition:\s*background-color 0\.2s ease;/,
+    )
+    expect(theme).toMatch(
+      /:is\(\.gsc-toolbar-item,\s*\.gsc-comment-box-markdown-hint\):hover\s*\{[^}]*background-color:\s*color-mix\(\s*in oklab,\s*var\(--color-canvas-subtle\) 50%,\s*transparent\s*\);/,
+    )
+    expect(theme).toMatch(
+      /button\.gsc-toolbar-item\s*\{[^}]*border-radius:\s*0\.375rem;/,
+    )
+    expect(theme.indexOf("#__next button.gsc-toolbar-item")).toBeGreaterThan(
+      theme.indexOf(".gsc-comment-box button"),
+    )
+    expect(theme).toMatch(
+      /\.gsc-comment-box:has\(\.gsc-is-fixed-width\) \.gsc-toolbar-item\s*\{[^}]*color:\s*var\(--color-fg-default\);[^}]*background-color:\s*color-mix\(\s*in oklab,\s*var\(--color-canvas-subtle\) 50%,\s*transparent\s*\);/,
+    )
+    expect(theme).toMatch(
       /button\.link-secondary:has\(\.octicon-sign-out\)::before\s*\{\s*mask-image:\s*var\(--giscus-icon-sign-out\)/,
     )
     expect(theme).toMatch(
