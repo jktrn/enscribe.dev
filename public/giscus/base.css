@@ -108,6 +108,11 @@
 }
 
 main {
+  --prose-foreground: color-mix(
+    in oklab,
+    var(--color-fg-default) 80%,
+    transparent
+  );
   font-family: var(--font-sans);
   font-size: var(--step--1);
   font-synthesis-weight: none;
@@ -171,7 +176,12 @@ main {
   font-size: var(--step--1);
 }
 
+#__next .markdown :is(p, li) {
+  color: var(--prose-foreground);
+}
+
 #__next .markdown :is(strong, b) {
+  color: var(--color-fg-default);
   font-style: italic;
 }
 

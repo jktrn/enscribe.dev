@@ -120,12 +120,17 @@ describe("content layout safety", () => {
 
     expect(theme).toMatch(/--font-family-default:\s*var\(--font-sans\);/)
     expect(theme).toMatch(/--font-family-monospace:\s*var\(--font-mono\);/)
-    expect(theme).toMatch(/main\s*\{[^}]*font-family:\s*var\(--font-sans\);/)
+    expect(theme).toMatch(
+      /main\s*\{[^}]*--prose-foreground:\s*color-mix\(\s*in oklab,\s*var\(--color-fg-default\) 80%,\s*transparent\s*\);[^}]*font-family:\s*var\(--font-sans\);/,
+    )
     expect(theme).toMatch(
       /:is\(\s*\.gsc-comment-content,\s*\.gsc-reply-content,\s*\.gsc-comment-box-textarea,\s*\.gsc-comment-box-preview\s*\)[^{]*\{[^}]*font-size:\s*var\(--step-0\);[^}]*line-height:\s*calc\(var\(--leading-offset\) \+ 1em\);/,
     )
     expect(theme).toMatch(
-      /\.markdown\s+:is\(strong,\s*b\)\s*\{[^}]*font-style:\s*italic;/,
+      /\.markdown\s+:is\(p,\s*li\)\s*\{[^}]*color:\s*var\(--prose-foreground\);/,
+    )
+    expect(theme).toMatch(
+      /\.markdown\s+:is\(strong,\s*b\)\s*\{[^}]*color:\s*var\(--color-fg-default\);[^}]*font-style:\s*italic;/,
     )
     expect(theme).toMatch(
       /\.markdown\s+:is\(h1,\s*h2,\s*h3,\s*h4,\s*h5,\s*h6\)\s*\{[^}]*line-height:\s*calc\(var\(--leading-offset\) \+ 1em\);[^}]*text-wrap:\s*balance;/,
