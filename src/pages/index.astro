@@ -715,14 +715,8 @@ const twitterHref =
     }
 
     &[data-over-map] {
-      box-shadow: 0 0 0 2px var(--background-l0);
-
-      &:hover,
-      &:focus-visible {
-        box-shadow:
-          0 0 0 2px var(--background-l0),
-          0 0 0 4px var(--ring);
-      }
+      border: 2px solid var(--border);
+      background-color: var(--background-l0);
     }
 
     :global(svg) {

@@ -113,12 +113,14 @@ describe("content layout safety", () => {
     expect(map).toContain("const point = map.project([lon, lat])")
     expect(map).toContain('map.on("render", drawPlaces)')
     expect(map).not.toContain('map.addLayer({\n        id: "places"')
-    expect(cssBlock(map, ".food-map-city select")).toContain(
-      "border: 2px solid var(--background-l0);",
-    )
-    expect(cssBlock(homepage, "&[data-over-map]")).toContain(
-      "box-shadow: 0 0 0 2px var(--background-l0);",
-    )
+
+    const citySelector = cssBlock(map, ".food-map-city select")
+    expect(citySelector).toContain("background: var(--background-l0);")
+    expect(citySelector).toContain("border: 2px solid var(--border);")
+
+    const browseAction = cssBlock(homepage, "&[data-over-map]")
+    expect(browseAction).toContain("background-color: var(--background-l0);")
+    expect(browseAction).toContain("border: 2px solid var(--border);")
   })
 
   test("the comments iframe does not clip square Giscus corners", async () => {
