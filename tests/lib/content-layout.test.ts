@@ -113,6 +113,16 @@ describe("content layout safety", () => {
     expect(visual).toContain("isolation: isolate;")
     expect(visualReady).toContain("opacity: 1;")
     expect(map).toContain('map.once("idle", reveal)')
+    const revealFallback = "revealTimer = window.setTimeout(reveal, 2000)"
+    expect(map.indexOf(revealFallback)).toBeLessThan(
+      map.indexOf('map.on("load"'),
+    )
+    expect(
+      map.slice(
+        map.indexOf('map.on("load"'),
+        map.indexOf('map.once("idle", reveal)'),
+      ),
+    ).not.toContain("setTimeout")
     expect(map).toContain("window.devicePixelRatio * 2")
     expect(map).toContain("map.setPixelRatio(renderScale())")
     expect(map).toContain("preserveDrawingBuffer: true")
@@ -121,6 +131,9 @@ describe("content layout safety", () => {
     expect(map).toContain("const point = map.project([lon, lat])")
     expect(map).toContain('map.on("render", drawPlaces)')
     expect(map).not.toContain('map.addLayer({\n        id: "places"')
+    expect(map).toContain(
+      'import("maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url")',
+    )
 
     const citySelector = cssBlock(map, ".food-map-city select")
     expect(citySelector).toContain("background: var(--background-l0);")
@@ -134,6 +147,9 @@ describe("content layout safety", () => {
   test("the food map keeps its attribution collapsed by default", async () => {
     const food = await readFile("src/pages/food.astro", "utf8")
 
+    expect(food).toContain(
+      'from "maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url"',
+    )
     expect(food).toContain("new AttributionControl({ compact: true })")
     expect(food).not.toContain("new AttributionControl({ compact: false })")
     expect(food).toContain(

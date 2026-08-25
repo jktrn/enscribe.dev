@@ -72,7 +72,7 @@ const payload = JSON.stringify(points).replaceAll("<", "\\u003c")
 
     const maplibrePromise = import("maplibre-gl")
     const [workerUrl, mapStyleModule] = await Promise.all([
-      import("maplibre-gl/dist/maplibre-gl-worker.mjs?url").then(
+      import("maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url").then(
         (module) => module.default,
       ),
       import("@/lib/map-style"),
@@ -244,10 +244,8 @@ const payload = JSON.stringify(points).replaceAll("<", "\\u003c")
       })
     }
 
-    map.on("load", () => {
-      drawPlaces()
-      revealTimer = window.setTimeout(reveal, 2000)
-    })
+    revealTimer = window.setTimeout(reveal, 2000)
+    map.on("load", drawPlaces)
     map.once("idle", reveal)
     map.on("render", drawPlaces)
 
