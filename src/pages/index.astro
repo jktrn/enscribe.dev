@@ -32,8 +32,7 @@ import GBackgroundDark from "@/assets/bento/g-background-dark.svg"
 import GBackgroundLight from "@/assets/bento/g-background-light.svg"
 import GForegroundDark from "@/assets/bento/g-foreground-dark.svg"
 import GForegroundLight from "@/assets/bento/g-foreground-light.svg"
-import HImageDark from "@/assets/bento/h-dark.svg"
-import HImageLight from "@/assets/bento/h-light.svg"
+import FoodMapTile from "@/components/FoodMapTile.astro"
 import IBackgroundDark from "@/assets/bento/i-background-dark.svg"
 import IBackgroundLight from "@/assets/bento/i-background-light.svg"
 import IForegroundDark from "@/assets/bento/i-foreground-dark.svg"
@@ -314,10 +313,20 @@ const twitterHref =
           <SpotifyPresence />
         </bento-layer>
       </bento-cell>
-      <bento-cell style="grid-area: h">
+      <bento-cell style="grid-area: h" data-trigger>
         <bento-layer>
-          <HImageDark data-theme-dark preserveAspectRatio="xMidYMid slice" />
-          <HImageLight data-theme-light preserveAspectRatio="xMidYMid slice" />
+          <FoodMapTile />
+        </bento-layer>
+        <bento-layer data-content>
+          <a
+            href="/food"
+            data-action
+            data-over-map
+            title="Browse every place I've ranked"
+            aria-label="Browse every place I've ranked"
+          >
+            <ArrowUpRight aria-hidden="true" />
+          </a>
         </bento-layer>
       </bento-cell>
       <bento-cell style="grid-area: i" data-trigger>
@@ -696,13 +705,18 @@ const twitterHref =
     margin: var(--space-2xs);
     padding: 0.75rem;
     border-radius: var(--radius-full);
-    background-color: color-mix(in oklab, var(--border) 50%, transparent);
+    background-color: var(--border);
     color: var(--primary);
     transition: box-shadow 0.3s ease;
 
     &:hover,
     &:focus-visible {
       box-shadow: 0 0 0 2px var(--ring);
+    }
+
+    &[data-over-map] {
+      border: 2px solid var(--border);
+      background-color: var(--background-l0);
     }
 
     :global(svg) {

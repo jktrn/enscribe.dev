@@ -1,0 +1,1143 @@
+---
+import "maplibre-gl/dist/maplibre-gl.css"
+
+import MetaPage from "@/components/MetaPage.astro"
+import Layout from "@/layouts/Layout.astro"
+import data from "@/data/beli-places.json"
+
+const singleCuisineTerms = [
+  "American",
+  "Asian",
+  "Asian Fusion",
+  "Australian",
+  "Bakery",
+  "Banh Mi",
+  "Bar",
+  "Bar Food",
+  "Barbecue",
+  "Beer",
+  "Breakfast",
+  "Brunch",
+  "Bubble Tea",
+  "Burgers",
+  "Cafe",
+  "Cajun",
+  "Californian",
+  "Cantonese",
+  "Chicken",
+  "Chinese",
+  "Coffee",
+  "Coffee Shop",
+  "Curry",
+  "Dessert",
+  "Dim Sum",
+  "Diner",
+  "Drinks",
+  "Dumplings",
+  "European",
+  "Fast Food",
+  "Fondue",
+  "Food Court",
+  "Food Stand",
+  "French",
+  "Fried Chicken",
+  "Fusion",
+  "Gastropub",
+  "German",
+  "Global",
+  "Greek",
+  "Grill",
+  "Hawaiian",
+  "Healthy",
+  "Hong Kong Style Cafe",
+  "Hot Pot",
+  "Hotpot",
+  "Hunan",
+  "Ice Cream",
+  "Indian",
+  "Indonesian",
+  "Iranian",
+  "Italian",
+  "Izakaya",
+  "Japanese",
+  "Kaiseki",
+  "Kebab",
+  "Korean",
+  "Lebanese",
+  "Maltese",
+  "Mandarin",
+  "Market",
+  "Matcha",
+  "Meat",
+  "Mediterranean",
+  "Mexican",
+  "Middle Eastern",
+  "National Chain",
+  "New Mexican",
+  "Noodles",
+  "Omakase",
+  "Persian",
+  "Peruvian",
+  "Pho",
+  "Pizza",
+  "Poke",
+  "Pub",
+  "Ramen",
+  "Sandwiches",
+  "Seafood",
+  "Shabu Shabu",
+  "Shanghainese",
+  "Sichuan",
+  "Soba",
+  "Soup",
+  "Soups",
+  "Southeast Asian",
+  "Spanish",
+  "Steakhouse",
+  "Street Food",
+  "Sushi",
+  "Swiss",
+  "Szechuan",
+  "Tacos",
+  "Taiwanese",
+  "Tapas",
+  "Taqueria",
+  "Tea",
+  "Tempura",
+  "Thai",
+  "Udon",
+  "Vietnamese",
+  "Wings",
+  "Yakitori",
+]
+
+const locationFor = (place: (typeof data.places)[number]) => {
+  const queryPrefix = `${place.name}, `
+  return place.geocode.query.startsWith(queryPrefix)
+    ? place.geocode.query.slice(queryPrefix.length)
+    : ""
+}
+
+const descriptionBeforeCity = (
+  place: (typeof data.places)[number],
+  location: string,
+) => {
+  const city = location.split(",")[0]?.trim() ?? ""
+  const cityIndex = city
+    ? place.description
+        .toLocaleLowerCase()
+        .lastIndexOf(city.toLocaleLowerCase())
+    : -1
+  return cityIndex > 0
+    ? place.description.slice(0, cityIndex).replace(/[\s,]+$/u, "")
+    : place.description
+}
+
+const cuisineTerms = new Set(singleCuisineTerms)
+for (const place of data.places) {
+  const beforeCity = descriptionBeforeCity(place, locationFor(place))
+  const segments = beforeCity.split(",")
+  segments.slice(0, -1).forEach((segment) => {
+    const term = segment.trim()
+    if (term) cuisineTerms.add(term)
+  })
+}
+const sortedCuisineTerms = [...cuisineTerms].sort(
+  (first, second) => second.length - first.length,
+)
+
+const clientPlaces = data.places.map((place) => {
+  const baseLocation = locationFor(place)
+  const isCuisinePrompt = place.description.startsWith("Suggest cuisines?")
+  const beforeCity = descriptionBeforeCity(place, baseLocation)
+  const cuisines: string[] = []
+  let neighborhood = beforeCity
+
+  if (!isCuisinePrompt) {
+    while (neighborhood) {
+      const cuisine = sortedCuisineTerms.find((term) => {
+        const remaining = neighborhood.slice(term.length)
+        return (
+          neighborhood
+            .toLocaleLowerCase()
+            .startsWith(term.toLocaleLowerCase()) &&
+          (!remaining || remaining.startsWith(",") || remaining.startsWith(" "))
+        )
+      })
+      if (!cuisine) break
+
+      cuisines.push(cuisine)
+      neighborhood = neighborhood.slice(cuisine.length).trimStart()
+      if (neighborhood.startsWith(",")) {
+        neighborhood = neighborhood.slice(1).trimStart()
+      } else {
+        break
+      }
+    }
+  } else {
+    neighborhood = ""
+  }
+
+  const cuisine = cuisines.length
+    ? cuisines.join(", ")
+    : isCuisinePrompt
+      ? ""
+      : beforeCity
+  const location = [neighborhood, baseLocation].filter(Boolean).join(", ")
+
+  return {
+    id: place.id,
+    category: place.category,
+    rank: place.rank,
+    name: place.name,
+    score: place.score,
+    price: place.price,
+    cuisine,
+    location,
+    latitude: place.latitude,
+    longitude: place.longitude,
+    geocode: {
+      display_name: place.geocode.display_name,
+      source_url: place.geocode.source_url,
+    },
+  }
+})
+const serializedPlaces = JSON.stringify(clientPlaces).replaceAll("<", "\\u003c")
+const categoryCounts = Object.entries(data.metadata.categories).filter(
+  ([, count]) => count > 0,
+)
+---
+
+<Layout wide crumbs={[{ label: "Food", href: "/food" }]}>
+  <MetaPage
+    slot="head"
+    title="Food"
+    description="An interactive map of 400 ranked restaurants, cafes, bakeries, and dessert spots."
+    noindex
+  />
+
+  <section class="map-app" aria-label="Interactive map">
+    <div class="map-shell">
+      <aside class="place-panel">
+        <div class="controls">
+          <label class="search-field">
+            <span class="sr-only">Search places</span>
+            <svg aria-hidden="true" viewBox="0 0 24 24">
+              <circle cx="11" cy="11" r="6.5"></circle>
+              <path d="m16 16 4 4"></path>
+            </svg>
+            <input
+              id="place-search"
+              type="search"
+              placeholder="Search places"
+              autocomplete="off"
+            >
+          </label>
+
+          <select id="category-filter" aria-label="Filter by category">
+            <option value="all">All ({data.places.length})</option>
+            {categoryCounts.map(([category, count]) => (
+              <option value={category}>{category} ({count})</option>
+            ))}
+          </select>
+        </div>
+
+        <ol id="place-list" class="place-list"></ol>
+        <p id="empty-state" class="empty-state" hidden>
+          No places match those filters.
+        </p>
+      </aside>
+
+      <div class="map-frame">
+        <div id="beli-map" aria-label="Map of saved Beli places"></div>
+      </div>
+    </div>
+  </section>
+
+  <script
+    is:inline
+    id="beli-data"
+    type="application/json"
+    set:html={serializedPlaces}
+  ></script>
+</Layout>
+
+<script>
+  import mapLibreWorkerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url"
+  import {
+    AttributionControl,
+    LngLatBounds,
+    Map as MapLibreMap,
+    Marker,
+    NavigationControl,
+    Popup,
+    setWorkerUrl,
+  } from "maplibre-gl"
+  import {
+    applyMapTheme,
+    collapseDuplicateWaterLabels,
+    createColorResolver,
+    loadMapStyle,
+    toneForScore,
+  } from "@/lib/map-style"
+
+  setWorkerUrl(mapLibreWorkerUrl)
+
+  type Geocode = {
+    display_name: string | null
+    source_url: string
+  }
+
+  type Place = {
+    id: string
+    category: string
+    rank: number
+    name: string
+    score: number | null
+    price: string | null
+    cuisine: string
+    location: string
+    latitude: number
+    longitude: number
+    geocode: Geocode
+  }
+
+  let cleanupMap: (() => void) | undefined
+
+  const setupMap = async () => {
+    cleanupMap?.()
+    const mapNode = document.querySelector<HTMLElement>("#beli-map")
+    const dataNode = document.querySelector<HTMLScriptElement>("#beli-data")
+    if (!mapNode || !dataNode) return
+
+    const places: Place[] = dataNode?.textContent
+      ? JSON.parse(dataNode.textContent)
+      : []
+
+    const styleForScore = (score: number | null) => ({
+      background: toneForScore(score),
+      foreground: "var(--background-l0)",
+    })
+
+    const mapColor = createColorResolver()
+    const mapStyle = await loadMapStyle()
+    const map = new MapLibreMap({
+      container: mapNode,
+      style: mapStyle,
+      center: [-25, 28],
+      zoom: 3,
+      minZoom: 2,
+      attributionControl: false,
+    })
+    map.addControl(
+      new NavigationControl({ showCompass: false }),
+      "bottom-right",
+    )
+
+    map.on("style.load", () => {
+      collapseDuplicateWaterLabels(map)
+      applyMapTheme(map, mapColor.resolve)
+    })
+    map.on("load", () => {
+      applyMapTheme(map, mapColor.resolve)
+      map.addControl(new AttributionControl({ compact: true }), "bottom-right")
+      const attributionNode = mapNode.querySelector<HTMLElement>(
+        ".maplibregl-ctrl-attrib",
+      )
+      attributionNode?.classList.remove("maplibregl-compact-show")
+      attributionNode?.setAttribute("open", "")
+    })
+    const preferredTheme = matchMedia("(prefers-color-scheme: dark)")
+    const refreshMapTheme = () => applyMapTheme(map, mapColor.resolve)
+    preferredTheme.addEventListener("change", refreshMapTheme)
+    const themeObserver = new MutationObserver(refreshMapTheme)
+    themeObserver.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["data-theme"],
+    })
+
+    const markers = new Map<string, Marker>()
+    const searchTextById = new Map(
+      places.map((place) => [
+        place.id,
+        [
+          place.name,
+          place.cuisine,
+          place.location,
+          place.geocode.display_name ?? "",
+        ]
+          .join("\n")
+          .toLocaleLowerCase(),
+      ]),
+    )
+    const list = document.querySelector<HTMLOListElement>("#place-list")
+    const search = document.querySelector<HTMLInputElement>("#place-search")
+    const categoryFilter =
+      document.querySelector<HTMLSelectElement>("#category-filter")
+    const emptyState = document.querySelector<HTMLElement>("#empty-state")
+    let activeCategory = "all"
+    let visiblePlaces = places
+
+    const appendText = (
+      parent: HTMLElement,
+      className: string,
+      value: string,
+    ) => {
+      const node = document.createElement("span")
+      node.className = className
+      node.textContent = value
+      parent.append(node)
+      return node
+    }
+
+    const popupFor = (place: Place) => {
+      const popup = document.createElement("article")
+      popup.className = "place-popup"
+      popup.style.setProperty(
+        "--rating-color",
+        styleForScore(place.score).background,
+      )
+
+      const meta = document.createElement("div")
+      meta.className = "popup-meta"
+      appendText(meta, "popup-rank", `${place.category} #${place.rank}`)
+      if (place.price) appendText(meta, "popup-price", place.price)
+      popup.append(meta)
+
+      const heading = document.createElement("h2")
+      heading.textContent = place.name
+      popup.append(heading)
+
+      if (place.cuisine) {
+        const cuisine = document.createElement("p")
+        cuisine.className = "popup-description"
+        cuisine.textContent = place.cuisine
+        popup.append(cuisine)
+      }
+
+      if (place.location) {
+        const location = document.createElement("p")
+        location.className = "popup-location"
+        location.textContent = place.location
+        popup.append(location)
+      }
+
+      const footer = document.createElement("div")
+      footer.className = "popup-footer"
+      const rating = document.createElement("div")
+      rating.className = "popup-rating"
+      appendText(rating, "popup-rating-label", "Rating")
+      const score = document.createElement("strong")
+      score.textContent =
+        place.score === null ? "Unscored" : place.score.toFixed(1)
+      rating.append(score)
+      if (place.score !== null) appendText(rating, "popup-scale", "/ 10")
+      footer.append(rating)
+      const source = document.createElement("a")
+      source.href = place.geocode.source_url
+      source.target = "_blank"
+      source.rel = "noreferrer"
+      source.textContent = "↗"
+      source.ariaLabel = `View ${place.name} in Maps`
+      source.title = "View in Maps"
+      footer.append(source)
+      popup.append(footer)
+      return popup
+    }
+
+    let activePopup: Popup | null = null
+
+    for (const place of places) {
+      const ratingStyle = styleForScore(place.score)
+      const markerElement = document.createElement("button")
+      markerElement.type = "button"
+      markerElement.className = "rating-marker"
+      markerElement.setAttribute(
+        "aria-label",
+        `${place.name}, ${place.score === null ? "unscored" : `${place.score.toFixed(1)} out of 10`}`,
+      )
+      const bubble = document.createElement("span")
+      bubble.className = "rating-marker-bubble"
+      bubble.style.setProperty("--marker-color", ratingStyle.background)
+      bubble.style.color = ratingStyle.foreground
+      bubble.textContent = place.score === null ? "—" : place.score.toFixed(1)
+      markerElement.title = place.name
+      markerElement.append(bubble)
+      const popup = new Popup({ offset: 20, maxWidth: "360px" }).setDOMContent(
+        popupFor(place),
+      )
+      popup.on("open", () => {
+        if (activePopup && activePopup !== popup) activePopup.remove()
+        activePopup = popup
+      })
+      popup.on("close", () => {
+        if (activePopup === popup) activePopup = null
+      })
+      const marker = new Marker({
+        element: markerElement,
+        anchor: "center",
+      })
+        .setLngLat([place.longitude, place.latitude])
+        .setPopup(popup)
+      markers.set(place.id, marker)
+    }
+
+    let scrollFadeFrame: number | null = null
+    const updateScrollFades = () => {
+      if (!list) return
+      list.dataset.canScrollUp = String(list.scrollTop > 1)
+      list.dataset.canScrollDown = String(
+        list.scrollTop + list.clientHeight < list.scrollHeight - 1,
+      )
+    }
+    const scheduleScrollFades = () => {
+      if (scrollFadeFrame !== null) return
+      scrollFadeFrame = requestAnimationFrame(() => {
+        scrollFadeFrame = null
+        updateScrollFades()
+      })
+    }
+    const listResizeObserver = new ResizeObserver(scheduleScrollFades)
+    if (list) {
+      list.addEventListener("scroll", scheduleScrollFades, { passive: true })
+      listResizeObserver.observe(list)
+    }
+
+    const renderList = () => {
+      if (!list || !emptyState) return
+      list.scrollTop = 0
+      list.replaceChildren()
+      const fragment = document.createDocumentFragment()
+
+      visiblePlaces.forEach((place) => {
+        const item = document.createElement("li")
+        const button = document.createElement("button")
+        button.type = "button"
+        button.dataset.placeId = place.id
+        button.className = "place-card"
+
+        const ratingStyle = styleForScore(place.score)
+        button.style.setProperty("--rating-color", ratingStyle.background)
+        const leading = document.createElement("span")
+        leading.className = "place-leading"
+        appendText(leading, "place-rank", `#${place.rank}`)
+        if (place.price) appendText(leading, "place-price", place.price)
+        button.append(leading)
+        const copy = document.createElement("span")
+        copy.className = "place-copy"
+        appendText(copy, "place-name", place.name)
+        if (place.cuisine) appendText(copy, "place-cuisine", place.cuisine)
+        if (place.location) appendText(copy, "place-location", place.location)
+        button.append(copy)
+
+        const trailing = document.createElement("span")
+        trailing.className = "place-trailing"
+        appendText(
+          trailing,
+          "place-score",
+          place.score === null ? "—" : place.score.toFixed(1),
+        )
+        button.append(trailing)
+
+        button.addEventListener("click", () => {
+          const marker = markers.get(place.id)
+          if (!marker) return
+          map.flyTo({ center: marker.getLngLat(), zoom: 16 })
+          if (!marker.getPopup()?.isOpen()) marker.togglePopup()
+        })
+        item.append(button)
+        fragment.append(item)
+      })
+
+      list.append(fragment)
+      emptyState.hidden = visiblePlaces.length > 0
+      scheduleScrollFades()
+    }
+
+    const fitVisible = () => {
+      if (!visiblePlaces.length) return
+      const first = visiblePlaces[0]!
+      const bounds = new LngLatBounds(
+        [first.longitude, first.latitude],
+        [first.longitude, first.latitude],
+      )
+      visiblePlaces.slice(1).forEach((place) => {
+        bounds.extend([place.longitude, place.latitude])
+      })
+      map.fitBounds(bounds, { padding: 42, maxZoom: 14 })
+    }
+
+    const applyFilters = () => {
+      const query = search?.value.trim().toLocaleLowerCase() ?? ""
+      visiblePlaces = places.filter((place) => {
+        if (activeCategory !== "all" && place.category !== activeCategory) {
+          return false
+        }
+        if (!query) return true
+        return searchTextById.get(place.id)?.includes(query) ?? false
+      })
+
+      const visibleIds = new Set(visiblePlaces.map((place) => place.id))
+      markers.forEach((marker, id) => {
+        if (!visibleIds.has(id)) marker.remove()
+      })
+      visiblePlaces
+        .toSorted((first, second) => (first.score ?? -1) - (second.score ?? -1))
+        .forEach((place) => {
+          markers.get(place.id)?.addTo(map)
+        })
+      renderList()
+    }
+
+    let pendingFilterFrame: number | null = null
+    const scheduleFilters = () => {
+      if (pendingFilterFrame !== null) return
+      pendingFilterFrame = requestAnimationFrame(() => {
+        pendingFilterFrame = null
+        applyFilters()
+      })
+    }
+
+    search?.addEventListener("input", scheduleFilters)
+    categoryFilter?.addEventListener("change", () => {
+      activeCategory = categoryFilter.value
+      applyFilters()
+    })
+    const focusSearch = (event: KeyboardEvent) => {
+      if (event.key === "/" && document.activeElement !== search) {
+        event.preventDefault()
+        search?.focus()
+      }
+    }
+    document.addEventListener("keydown", focusSearch)
+
+    applyFilters()
+    fitVisible()
+
+    cleanupMap = () => {
+      if (pendingFilterFrame !== null) cancelAnimationFrame(pendingFilterFrame)
+      if (scrollFadeFrame !== null) cancelAnimationFrame(scrollFadeFrame)
+      document.removeEventListener("keydown", focusSearch)
+      list?.removeEventListener("scroll", scheduleScrollFades)
+      listResizeObserver.disconnect()
+      preferredTheme.removeEventListener("change", refreshMapTheme)
+      themeObserver.disconnect()
+      mapColor.dispose()
+      markers.forEach((marker) => marker.remove())
+      map.remove()
+    }
+  }
+
+  document.addEventListener("astro:page-load", setupMap)
+  document.addEventListener("astro:before-swap", () => cleanupMap?.())
+</script>
+
+<style>
+  :global(page-content page-footer) {
+    display: none;
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .map-app {
+    height: calc(100svh - var(--page-offset-top) - var(--page-offset-bottom));
+    min-height: 32rem;
+  }
+
+  .map-shell {
+    display: grid;
+    grid-template-columns: minmax(20rem, 23rem) minmax(0, 1fr);
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+    border: 2px solid var(--border);
+    background: var(--background);
+  }
+
+  .place-panel {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    min-height: 0;
+    border-inline-end: 2px solid var(--border);
+    background: var(--background-l0);
+  }
+
+  .controls {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: var(--space-s);
+    padding: var(--space-xs);
+    background: var(--background-l1);
+  }
+
+  .search-field {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: var(--space-2xs);
+    min-width: 0;
+    padding: var(--space-3xs) 0;
+    background: transparent;
+  }
+
+  .search-field:focus-within {
+    color: var(--foreground);
+  }
+
+  .search-field svg {
+    width: 1.1rem;
+    fill: none;
+    stroke: var(--muted-foreground);
+    stroke-width: 1.8;
+  }
+
+  .search-field input {
+    width: 100%;
+    min-width: 0;
+    padding: 0;
+    border: 0;
+    outline: 0;
+    color: var(--foreground);
+    background: transparent;
+    font-size: var(--step-0);
+  }
+
+  .search-field input::placeholder {
+    color: var(--muted-foreground);
+  }
+
+  #category-filter {
+    width: auto;
+    max-width: 8.5rem;
+    min-width: 0;
+    padding: var(--space-3xs) var(--space-2xs);
+    border: 0;
+    outline: 0;
+    color: var(--foreground);
+    background: var(--background-l0);
+    font-family: inherit;
+    font-size: var(--step--1);
+    cursor: pointer;
+  }
+
+  #category-filter:hover,
+  #category-filter:focus-visible {
+    background: var(--background-l2);
+  }
+
+  .place-list {
+    --scroll-fade-start: #000;
+    --scroll-fade-end: #000;
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+    overflow-y: auto;
+    list-style: none;
+    mask-image: linear-gradient(
+      to bottom,
+      var(--scroll-fade-start) 0,
+      #000 2rem,
+      #000 calc(100% - 2rem),
+      var(--scroll-fade-end) 100%
+    );
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      var(--scroll-fade-start) 0,
+      #000 2rem,
+      #000 calc(100% - 2rem),
+      var(--scroll-fade-end) 100%
+    );
+    mask-repeat: no-repeat;
+    -webkit-mask-repeat: no-repeat;
+    scrollbar-color: var(--background-l4) transparent;
+  }
+
+  .place-list[data-can-scroll-up="true"] {
+    --scroll-fade-start: transparent;
+  }
+
+  .place-list[data-can-scroll-down="true"] {
+    --scroll-fade-end: transparent;
+  }
+
+  :global(.place-list li:nth-child(odd) .place-card) {
+    background: var(--background-l0);
+  }
+
+  :global(.place-list li:nth-child(even) .place-card) {
+    background: var(--background-l1);
+  }
+
+  :global(.place-card) {
+    display: grid;
+    grid-template-columns: 2.25rem minmax(0, 1fr) auto;
+    gap: var(--space-s);
+    width: 100%;
+    padding: var(--space-s);
+    border: 0;
+    color: inherit;
+    text-align: start;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  :global(.place-card:hover),
+  :global(.place-card:focus-visible) {
+    background: var(--background-l2) !important;
+  }
+
+  :global(.place-rank) {
+    color: var(--muted-foreground);
+    font-size: var(--step--1);
+    font-variant-numeric: tabular-nums;
+  }
+
+  :global(.place-leading),
+  :global(.place-copy),
+  :global(.place-trailing) {
+    display: grid;
+    gap: var(--space-3xs);
+    min-width: 0;
+  }
+
+  :global(.place-leading) {
+    align-content: start;
+  }
+
+  :global(.place-price) {
+    color: var(--foreground-l6);
+    font-size: var(--step--1);
+    line-height: 1.2;
+  }
+
+  :global(.place-name) {
+    color: var(--foreground);
+    font-size: var(--step-0);
+    line-height: 1.25;
+    overflow-wrap: anywhere;
+  }
+
+  :global(.place-cuisine),
+  :global(.place-location) {
+    color: var(--muted-foreground);
+    font-size: var(--step--1);
+    line-height: 1.3;
+    overflow-wrap: anywhere;
+  }
+
+  :global(.place-location) {
+    color: var(--foreground-l6);
+  }
+
+  :global(.place-trailing) {
+    justify-items: end;
+  }
+
+  :global(.place-score) {
+    color: var(--rating-color);
+    font-size: var(--step-0);
+    font-weight: var(--font-weight-normal);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .empty-state {
+    margin: 0;
+    padding: 2rem 1rem;
+    color: var(--muted-foreground);
+    text-align: center;
+    font-size: var(--step-0);
+  }
+
+  .map-frame {
+    position: relative;
+    min-width: 0;
+    min-height: 0;
+  }
+
+  #beli-map {
+    position: absolute;
+    inset: 0;
+    background: var(--background-l1);
+  }
+
+  :global(.maplibregl-map) {
+    font-family: var(--font-sans);
+  }
+
+  :global(.rating-marker) {
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  :global(.rating-marker-bubble) {
+    display: grid;
+    width: 2rem;
+    height: 2rem;
+    place-items: center;
+    border: 0;
+    border-radius: 50%;
+    background: var(--marker-color);
+    box-shadow: 0 0 0 2px light-dark(var(--foreground-l0), var(--background-l0));
+    font-family: var(--font-sans);
+    font-size: var(--step--1);
+    font-weight: var(--font-weight-normal);
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+    transition: transform 120ms ease;
+  }
+
+  :global(.rating-marker:hover .rating-marker-bubble),
+  :global(.rating-marker:focus .rating-marker-bubble) {
+    transform: scale(1.1);
+  }
+
+  :global(.maplibregl-ctrl.maplibregl-ctrl-attrib) {
+    color: var(--muted-foreground) !important;
+    background-color: color-mix(
+      in oklab,
+      var(--background) 92%,
+      transparent
+    ) !important;
+    font-size: 0.75rem;
+  }
+
+  :global(.maplibregl-ctrl-attrib .maplibregl-ctrl-attrib-inner),
+  :global(.maplibregl-ctrl-attrib a) {
+    color: var(--muted-foreground) !important;
+  }
+
+  :global(.maplibregl-ctrl-attrib-button) {
+    background-color: transparent !important;
+  }
+
+  :global(:root[data-theme="dark"] .maplibregl-ctrl-attrib-button) {
+    filter: invert(1);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :global(:root:not([data-theme]) .maplibregl-ctrl-attrib-button) {
+      filter: invert(1);
+    }
+  }
+
+  :global(.maplibregl-ctrl-group) {
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: var(--background) !important;
+    box-shadow: none !important;
+    overflow: hidden;
+  }
+
+  :global(.maplibregl-ctrl-group button) {
+    border: 0 !important;
+    color: var(--foreground) !important;
+    background: var(--background) !important;
+  }
+
+  :global(.maplibregl-ctrl-group button:nth-child(even)) {
+    background: var(--background-l1) !important;
+  }
+
+  :global(.maplibregl-popup) {
+    --popup-background: var(--background);
+    --popup-shadow: rgb(0 0 0 / 65%);
+    color: var(--foreground);
+    filter: drop-shadow(2px 0 var(--border)) drop-shadow(-2px 0 var(--border))
+      drop-shadow(0 2px var(--border)) drop-shadow(0 -2px var(--border))
+      drop-shadow(0 0.5rem 1rem var(--popup-shadow));
+  }
+
+  :global(.maplibregl-popup-content) {
+    padding: var(--space-s);
+    border: 0;
+    border-radius: 0;
+    color: var(--foreground);
+    background: var(--popup-background);
+    box-shadow: none;
+  }
+
+  :global(.maplibregl-popup-close-button) {
+    padding: 0.25rem 0.5rem;
+    color: var(--muted-foreground);
+    font-size: 1rem;
+  }
+
+  :global(
+    .maplibregl-popup[class*="maplibregl-popup-anchor-top"]
+      .maplibregl-popup-tip
+  ) {
+    border-bottom-color: var(--popup-background);
+  }
+
+  :global(
+    .maplibregl-popup[class*="maplibregl-popup-anchor-bottom"]
+      .maplibregl-popup-tip
+  ) {
+    border-top-color: var(--popup-background);
+  }
+
+  :global(
+    .maplibregl-popup[class*="maplibregl-popup-anchor-left"]
+      .maplibregl-popup-tip
+  ) {
+    border-right-color: var(--popup-background);
+  }
+
+  :global(
+    .maplibregl-popup[class*="maplibregl-popup-anchor-right"]
+      .maplibregl-popup-tip
+  ) {
+    border-left-color: var(--popup-background);
+  }
+
+  :global(:root[data-theme="dark"] .maplibregl-ctrl-icon) {
+    filter: invert(0.9);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :global(:root:not([data-theme]) .maplibregl-ctrl-icon) {
+      filter: invert(0.9);
+    }
+  }
+
+  :global(.place-popup .popup-meta) {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-xs);
+    margin: 0 0 var(--space-2xs);
+    padding-inline-end: var(--space-s);
+    color: var(--muted-foreground);
+    font-size: var(--step--1);
+    font-weight: var(--font-weight-normal);
+  }
+
+  :global(.place-popup .popup-price) {
+    flex: none;
+    color: var(--foreground-l6);
+    font-variant-numeric: tabular-nums;
+  }
+
+  :global(.place-popup h2) {
+    margin: 0;
+    font-size: var(--step-1);
+    font-weight: var(--font-weight-normal);
+    line-height: 1.2;
+  }
+
+  :global(.place-popup .popup-description),
+  :global(.place-popup .popup-location) {
+    margin: var(--space-xs) 0 0;
+    color: var(--muted-foreground);
+    font-size: var(--step--1);
+    line-height: 1.4;
+  }
+
+  :global(.place-popup .popup-location) {
+    margin-block-start: var(--space-3xs);
+    color: var(--foreground-l6);
+  }
+
+  :global(.place-popup .popup-footer) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-s);
+    margin-block-start: var(--space-s);
+    padding-block-start: var(--space-xs);
+    border-block-start: 1px solid var(--border);
+  }
+
+  :global(.place-popup .popup-rating) {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-3xs);
+  }
+
+  :global(.place-popup .popup-rating-label) {
+    color: var(--muted-foreground);
+    font-size: var(--step--1);
+  }
+
+  :global(.place-popup .popup-rating strong) {
+    color: var(--rating-color);
+    font-size: var(--step-1);
+    font-weight: var(--font-weight-normal);
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+  }
+
+  :global(.place-popup .popup-scale) {
+    color: var(--muted-foreground);
+    font-size: var(--step--1);
+    font-variant-numeric: tabular-nums;
+  }
+
+  :global(.place-popup .popup-footer a) {
+    color: var(--foreground);
+    font-size: var(--step-1);
+    line-height: 1;
+    text-decoration: none;
+  }
+
+  @media (width < 62rem) {
+    .map-shell {
+      grid-template-columns: minmax(17rem, 20rem) minmax(0, 1fr);
+    }
+  }
+
+  @media (width < 48rem) {
+    .map-app {
+      height: calc(100svh - var(--bar-nav-height));
+      min-height: 34rem;
+    }
+
+    .map-shell {
+      grid-template-columns: 1fr;
+      grid-template-rows: minmax(14rem, 54%) minmax(0, 46%);
+      border-radius: 0;
+      box-shadow: none;
+    }
+
+    .map-frame {
+      grid-row: 1;
+    }
+
+    .place-panel {
+      grid-row: 2;
+      border: 0;
+      border-block-start: 2px solid var(--border);
+    }
+
+    .controls {
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: var(--space-xs);
+      padding: var(--space-xs);
+    }
+    :global(.place-card) {
+      padding: 0.68rem 0.75rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      scroll-behavior: auto !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+</style>

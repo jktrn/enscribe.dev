@@ -50,6 +50,7 @@
     "hast-util-select": "^6.0.4",
     "hast-util-to-html": "^9.0.5",
     "hastscript": "^9.0.1",
+    "maplibre-gl": "^6.3.0",
     "satteri": "^0.10.5",
     "satteri-expressive-code": "^0.1.24",
     "sharp": "^0.34.5",
