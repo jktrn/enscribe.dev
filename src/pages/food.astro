@@ -333,13 +333,20 @@ const categoryCounts = Object.entries(data.metadata.categories).filter(
       new NavigationControl({ showCompass: false }),
       "bottom-right",
     )
-    map.addControl(new AttributionControl({ compact: false }), "bottom-right")
 
     map.on("style.load", () => {
       collapseDuplicateWaterLabels(map)
       applyMapTheme(map, mapColor.resolve)
     })
-    map.on("load", () => applyMapTheme(map, mapColor.resolve))
+    map.on("load", () => {
+      applyMapTheme(map, mapColor.resolve)
+      map.addControl(new AttributionControl({ compact: true }), "bottom-right")
+      const attributionNode = mapNode.querySelector<HTMLElement>(
+        ".maplibregl-ctrl-attrib",
+      )
+      attributionNode?.classList.remove("maplibregl-compact-show")
+      attributionNode?.setAttribute("open", "")
+    })
     const preferredTheme = matchMedia("(prefers-color-scheme: dark)")
     const refreshMapTheme = () => applyMapTheme(map, mapColor.resolve)
     preferredTheme.addEventListener("change", refreshMapTheme)
@@ -386,10 +393,15 @@ const categoryCounts = Object.entries(data.metadata.categories).filter(
     const popupFor = (place: Place) => {
       const popup = document.createElement("article")
       popup.className = "place-popup"
+      popup.style.setProperty(
+        "--rating-color",
+        styleForScore(place.score).background,
+      )
 
-      const meta = document.createElement("p")
+      const meta = document.createElement("div")
       meta.className = "popup-meta"
-      meta.textContent = `${place.category} #${place.rank}`
+      appendText(meta, "popup-rank", `${place.category} #${place.rank}`)
+      if (place.price) appendText(meta, "popup-price", place.price)
       popup.append(meta)
 
       const heading = document.createElement("h2")
@@ -412,15 +424,22 @@ const categoryCounts = Object.entries(data.metadata.categories).filter(
 
       const footer = document.createElement("div")
       footer.className = "popup-footer"
+      const rating = document.createElement("div")
+      rating.className = "popup-rating"
+      appendText(rating, "popup-rating-label", "Rating")
       const score = document.createElement("strong")
       score.textContent =
         place.score === null ? "Unscored" : place.score.toFixed(1)
-      footer.append(score)
+      rating.append(score)
+      if (place.score !== null) appendText(rating, "popup-scale", "/ 10")
+      footer.append(rating)
       const source = document.createElement("a")
       source.href = place.geocode.source_url
       source.target = "_blank"
       source.rel = "noreferrer"
-      source.textContent = "Open map"
+      source.textContent = "↗"
+      source.ariaLabel = `View ${place.name} in Maps`
+      source.title = "View in Maps"
       footer.append(source)
       popup.append(footer)
       return popup
@@ -444,7 +463,7 @@ const categoryCounts = Object.entries(data.metadata.categories).filter(
       bubble.textContent = place.score === null ? "—" : place.score.toFixed(1)
       markerElement.title = place.name
       markerElement.append(bubble)
-      const popup = new Popup({ offset: 20, maxWidth: "320px" }).setDOMContent(
+      const popup = new Popup({ offset: 20, maxWidth: "360px" }).setDOMContent(
         popupFor(place),
       )
       popup.on("open", () => {
@@ -649,6 +668,7 @@ const categoryCounts = Object.entries(data.metadata.categories).filter(
     display: grid;
     grid-template-rows: auto minmax(0, 1fr);
     min-height: 0;
+    border-inline-end: 2px solid var(--border);
     background: var(--background-l0);
   }
 
@@ -933,7 +953,11 @@ const categoryCounts = Object.entries(data.metadata.categories).filter(
 
   :global(.maplibregl-popup) {
     --popup-background: var(--background);
+    --popup-shadow: rgb(0 0 0 / 65%);
     color: var(--foreground);
+    filter: drop-shadow(2px 0 var(--border)) drop-shadow(-2px 0 var(--border))
+      drop-shadow(0 2px var(--border)) drop-shadow(0 -2px var(--border))
+      drop-shadow(0 0.5rem 1rem var(--popup-shadow));
   }
 
   :global(.maplibregl-popup-content) {
@@ -942,7 +966,7 @@ const categoryCounts = Object.entries(data.metadata.categories).filter(
     border-radius: 0;
     color: var(--foreground);
     background: var(--popup-background);
-    box-shadow: 0 0.5rem 1.5rem color-mix(in oklab, #000 12%, transparent);
+    box-shadow: none;
   }
 
   :global(.maplibregl-popup-close-button) {
@@ -990,10 +1014,21 @@ const categoryCounts = Object.entries(data.metadata.categories).filter(
   }
 
   :global(.place-popup .popup-meta) {
-    margin: 0 0 var(--space-3xs);
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-xs);
+    margin: 0 0 var(--space-2xs);
+    padding-inline-end: var(--space-s);
     color: var(--muted-foreground);
     font-size: var(--step--1);
     font-weight: var(--font-weight-normal);
+  }
+
+  :global(.place-popup .popup-price) {
+    flex: none;
+    color: var(--foreground-l6);
+    font-variant-numeric: tabular-nums;
   }
 
   :global(.place-popup h2) {
@@ -1005,31 +1040,57 @@ const categoryCounts = Object.entries(data.metadata.categories).filter(
 
   :global(.place-popup .popup-description),
   :global(.place-popup .popup-location) {
-    margin: var(--space-2xs) 0 0;
+    margin: var(--space-xs) 0 0;
     color: var(--muted-foreground);
     font-size: var(--step--1);
     line-height: 1.4;
   }
 
-  :global(.place-popup .popup-footer) {
-    display: flex;
-    align-items: end;
-    justify-content: space-between;
-    gap: 1rem;
-    margin-block-start: var(--space-xs);
-    padding-block-start: var(--space-3xs);
+  :global(.place-popup .popup-location) {
+    margin-block-start: var(--space-3xs);
+    color: var(--foreground-l6);
   }
 
-  :global(.place-popup .popup-footer strong) {
-    font-size: var(--step-0);
+  :global(.place-popup .popup-footer) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-s);
+    margin-block-start: var(--space-s);
+    padding-block-start: var(--space-xs);
+    border-block-start: 1px solid var(--border);
+  }
+
+  :global(.place-popup .popup-rating) {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-3xs);
+  }
+
+  :global(.place-popup .popup-rating-label) {
+    color: var(--muted-foreground);
+    font-size: var(--step--1);
+  }
+
+  :global(.place-popup .popup-rating strong) {
+    color: var(--rating-color);
+    font-size: var(--step-1);
+    font-weight: var(--font-weight-normal);
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+  }
+
+  :global(.place-popup .popup-scale) {
+    color: var(--muted-foreground);
+    font-size: var(--step--1);
     font-variant-numeric: tabular-nums;
   }
 
   :global(.place-popup .popup-footer a) {
     color: var(--foreground);
-    font-size: var(--step--1);
-    text-decoration: underline;
-    text-underline-offset: 0.18em;
+    font-size: var(--step-1);
+    line-height: 1;
+    text-decoration: none;
   }
 
   @media (width < 62rem) {
@@ -1058,6 +1119,7 @@ const categoryCounts = Object.entries(data.metadata.categories).filter(
     .place-panel {
       grid-row: 2;
       border: 0;
+      border-block-start: 2px solid var(--border);
     }
 
     .controls {

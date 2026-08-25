@@ -93,23 +93,31 @@ describe("content layout safety", () => {
     expect(styles).toContain("a {")
   })
 
-  test("the homepage map fades its basemap without fading place bubbles", async () => {
+  test("the homepage map reveals as one crisp layered surface", async () => {
     const map = await readFile("src/components/FoodMapTile.astro", "utf8")
     const homepage = await readFile("src/pages/index.astro", "utf8")
-    const basemapReady = cssBlock(
+    const basemap = cssBlock(map, ".food-map-canvas")
+    const visualReady = cssBlock(
       map,
-      '.food-map[data-ready="true"] .food-map-canvas',
+      '.food-map[data-ready="true"] .food-map-visual',
     )
-    const placesReady = cssBlock(
-      map,
-      '.food-map[data-ready="true"] .food-map-places',
-    )
+    const visual = cssBlock(map, ".food-map-visual")
 
     expect(map).toContain(
       '<canvas class="food-map-places" data-food-map-places></canvas>',
     )
-    expect(basemapReady).toContain("opacity: 0.85;")
-    expect(placesReady).toContain("opacity: 1;")
+    expect(map).toContain(
+      '<canvas class="food-map-transition" data-food-map-transition></canvas>',
+    )
+    expect(basemap).toContain("opacity: 0.85;")
+    expect(visual).toContain("isolation: isolate;")
+    expect(visualReady).toContain("opacity: 1;")
+    expect(map).toContain('map.once("idle", reveal)')
+    expect(map).toContain("window.devicePixelRatio * 2")
+    expect(map).toContain("map.setPixelRatio(renderScale())")
+    expect(map).toContain("preserveDrawingBuffer: true")
+    expect(map).toContain('map.once("idle", cityIdleListener)')
+    expect(map).toContain('transitionCanvas.dataset.active = "false"')
     expect(map).toContain("const point = map.project([lon, lat])")
     expect(map).toContain('map.on("render", drawPlaces)')
     expect(map).not.toContain('map.addLayer({\n        id: "places"')
@@ -121,6 +129,41 @@ describe("content layout safety", () => {
     const browseAction = cssBlock(homepage, "&[data-over-map]")
     expect(browseAction).toContain("background-color: var(--background-l0);")
     expect(browseAction).toContain("border: 2px solid var(--border);")
+  })
+
+  test("the food map keeps its attribution collapsed by default", async () => {
+    const food = await readFile("src/pages/food.astro", "utf8")
+
+    expect(food).toContain("new AttributionControl({ compact: true })")
+    expect(food).not.toContain("new AttributionControl({ compact: false })")
+    expect(food).toContain(
+      'attributionNode?.classList.remove("maplibregl-compact-show")',
+    )
+    expect(food).toContain('attributionNode?.setAttribute("open", "")')
+  })
+
+  test("the food map popup presents price and a colored rating", async () => {
+    const food = await readFile("src/pages/food.astro", "utf8")
+
+    expect(food).toContain(
+      'if (place.price) appendText(meta, "popup-price", place.price)',
+    )
+    expect(food).toContain('"--rating-color"')
+    expect(food).toContain("color: var(--rating-color);")
+    expect(food).toContain("--popup-shadow: rgb(0 0 0 / 65%);")
+    expect(food).toContain("drop-shadow(2px 0 var(--border))")
+    expect(food).toContain("drop-shadow(0 0.5rem 1rem var(--popup-shadow))")
+    expect(food).toContain('source.textContent = "↗"')
+    expect(food).toContain("source.ariaLabel = `View ${place.name} in Maps`")
+  })
+
+  test("the food list is separated from the map", async () => {
+    const food = await readFile("src/pages/food.astro", "utf8")
+
+    expect(cssBlock(food, ".place-panel")).toContain(
+      "border-inline-end: 2px solid var(--border);",
+    )
+    expect(food).toContain("border-block-start: 2px solid var(--border);")
   })
 
   test("the comments iframe does not clip square Giscus corners", async () => {

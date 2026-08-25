@@ -16,19 +16,22 @@ const payload = JSON.stringify(points).replaceAll("<", "\\u003c")
 ---
 
 <div class="food-map" data-food-map>
-  <div class="food-map-canvas" data-food-map-canvas></div>
-  <canvas class="food-map-places" data-food-map-places></canvas>
+  <div class="food-map-visual">
+    <div class="food-map-canvas" data-food-map-canvas></div>
+    <canvas class="food-map-places" data-food-map-places></canvas>
+    <canvas class="food-map-transition" data-food-map-transition></canvas>
 
-  <label class="food-map-city">
-    <span class="sr-only">Show places in</span>
-    <select data-food-map-city>
-      {CITIES.map((city) => (
-          <option value={city.id} selected={city.id === DEFAULT_CITY_ID}>
-            {city.label}
-          </option>
-        ))}
-    </select>
-  </label>
+    <label class="food-map-city">
+      <span class="sr-only">Show places in</span>
+      <select data-food-map-city>
+        {CITIES.map((city) => (
+            <option value={city.id} selected={city.id === DEFAULT_CITY_ID}>
+              {city.label}
+            </option>
+          ))}
+      </select>
+    </label>
+  </div>
 
   <script
     is:inline
@@ -55,8 +58,12 @@ const payload = JSON.stringify(points).replaceAll("<", "\\u003c")
     const placesCanvas = root.querySelector<HTMLCanvasElement>(
       "[data-food-map-places]",
     )
+    const transitionCanvas = root.querySelector<HTMLCanvasElement>(
+      "[data-food-map-transition]",
+    )
     const dataNode = root.querySelector<HTMLElement>("[data-food-map-data]")
-    if (!canvas || !placesCanvas || !dataNode?.textContent) return
+    if (!canvas || !placesCanvas || !transitionCanvas || !dataNode?.textContent)
+      return
 
     const rows = JSON.parse(dataNode.textContent) as Row[]
     const rowsByCity = CITIES.map((_, index) =>
@@ -104,6 +111,7 @@ const payload = JSON.stringify(points).replaceAll("<", "\\u003c")
       canvasContextAttributes: {
         antialias: true,
         powerPreference: "low-power",
+        preserveDrawingBuffer: true,
       },
       fadeDuration: 0,
       refreshExpiredTiles: false,
@@ -113,15 +121,11 @@ const payload = JSON.stringify(points).replaceAll("<", "\\u003c")
       validateStyle: import.meta.env.DEV,
     })
 
-    ;(
-      map as unknown as { _handlers?: { destroy?: () => void } }
-    )._handlers?.destroy?.()
-
     const DOT_RADIUS = 8.5
     const RING_WIDTH = 1.25
     const LABEL_SIZE = 8
-    const imageScale = () =>
-      Math.min(Math.max(Math.ceil(window.devicePixelRatio), 1), 4)
+    const renderScale = () =>
+      Math.min(Math.max(Math.ceil(window.devicePixelRatio * 2), 2), 4)
 
     const scoreLabel = (score: number) =>
       score < 0 ? "\u2014" : score.toFixed(1)
@@ -158,7 +162,7 @@ const payload = JSON.stringify(points).replaceAll("<", "\\u003c")
     let activeCityIndex = cityIndex(startCity.id)
     const syncDotCanvases = () => {
       dotCanvases.clear()
-      const scale = imageScale()
+      const scale = renderScale()
       for (const score of scores) {
         const image = dotCanvas(score, scale)
         if (image) dotCanvases.set(score, image)
@@ -167,7 +171,7 @@ const payload = JSON.stringify(points).replaceAll("<", "\\u003c")
     const drawPlaces = () => {
       const context = placesCanvas.getContext("2d")
       if (!context) return
-      const scale = window.devicePixelRatio
+      const scale = renderScale()
       const width = placesCanvas.clientWidth
       const height = placesCanvas.clientHeight
       const pixelWidth = Math.round(width * scale)
@@ -182,7 +186,7 @@ const payload = JSON.stringify(points).replaceAll("<", "\\u003c")
       context.setTransform(scale, 0, 0, scale, 0, 0)
       context.clearRect(0, 0, width, height)
 
-      const imageScaleFactor = imageScale()
+      const imageScaleFactor = renderScale()
       const box = Math.ceil((DOT_RADIUS + RING_WIDTH) * 2)
       for (const [lon, lat, , score] of rowsByCity[activeCityIndex] ?? []) {
         const point = map.project([lon, lat])
@@ -204,7 +208,7 @@ const payload = JSON.stringify(points).replaceAll("<", "\\u003c")
 
     let densityQuery: MediaQueryList | undefined
     const syncPixelRatio = () => {
-      map.setPixelRatio(window.devicePixelRatio)
+      map.setPixelRatio(renderScale())
       syncDotCanvases()
       drawPlaces()
       densityQuery?.removeEventListener("change", syncPixelRatio)
@@ -224,20 +228,118 @@ const payload = JSON.stringify(points).replaceAll("<", "\\u003c")
       applyMapTheme(map, color.resolve)
     })
 
+    let disposed = false
+    let revealFrame: number | undefined
+    let revealTimer: number | undefined
+    let revealed = false
+    const reveal = () => {
+      if (revealed || disposed) return
+      revealed = true
+      drawPlaces()
+      revealFrame = requestAnimationFrame(() => {
+        if (disposed) return
+        revealFrame = requestAnimationFrame(() => {
+          if (!disposed) root.dataset.ready = "true"
+        })
+      })
+    }
+
     map.on("load", () => {
       drawPlaces()
-      root.dataset.ready = "true"
+      revealTimer = window.setTimeout(reveal, 2000)
     })
+    map.once("idle", reveal)
     map.on("render", drawPlaces)
 
     const select = root.querySelector<HTMLSelectElement>("[data-food-map-city]")
     if (select) select.value = startCity.id
+    let cityTransitionFrame: number | undefined
+    let cityTransitionTimer: number | undefined
+    let cityTransitionToken = 0
+    let cityIdleListener: (() => void) | undefined
+    const captureCurrentCity = () => {
+      if (Number(getComputedStyle(transitionCanvas).opacity) > 0) {
+        transitionCanvas.dataset.active = "true"
+        return true
+      }
+      const context = transitionCanvas.getContext("2d")
+      if (!context) return false
+      const scale = renderScale()
+      const width = transitionCanvas.clientWidth
+      const height = transitionCanvas.clientHeight
+      transitionCanvas.width = Math.round(width * scale)
+      transitionCanvas.height = Math.round(height * scale)
+      context.setTransform(scale, 0, 0, scale, 0, 0)
+      context.fillStyle = getComputedStyle(root).backgroundColor
+      context.fillRect(0, 0, width, height)
+
+      const mapCanvas = map.getCanvas()
+      context.globalAlpha = 0.85
+      context.drawImage(
+        mapCanvas,
+        0,
+        0,
+        mapCanvas.width,
+        mapCanvas.height,
+        0,
+        0,
+        width,
+        height,
+      )
+      context.globalAlpha = 1
+      context.drawImage(
+        placesCanvas,
+        0,
+        0,
+        placesCanvas.width,
+        placesCanvas.height,
+        0,
+        0,
+        width,
+        height,
+      )
+      transitionCanvas.dataset.active = "true"
+      return true
+    }
+    const finishCityTransition = (token: number) => {
+      if (token !== cityTransitionToken || disposed) return
+      if (cityTransitionTimer !== undefined) clearTimeout(cityTransitionTimer)
+      if (cityIdleListener) map.off("idle", cityIdleListener)
+      cityIdleListener = undefined
+      cityTransitionFrame = requestAnimationFrame(() => {
+        if (token !== cityTransitionToken || disposed) return
+        cityTransitionFrame = requestAnimationFrame(() => {
+          if (token === cityTransitionToken && !disposed) {
+            transitionCanvas.dataset.active = "false"
+          }
+        })
+      })
+    }
     const showCity = () => {
       const city = cityById(select?.value)
       if (!city) return
-      map.jumpTo({ center: [...city.center], zoom: city.zoom })
-      activeCityIndex = cityIndex(city.id)
-      drawPlaces()
+      const nextCityIndex = cityIndex(city.id)
+      if (nextCityIndex === activeCityIndex) return
+
+      const token = ++cityTransitionToken
+      if (cityTransitionFrame !== undefined) {
+        cancelAnimationFrame(cityTransitionFrame)
+      }
+      if (cityTransitionTimer !== undefined) clearTimeout(cityTransitionTimer)
+      if (cityIdleListener) map.off("idle", cityIdleListener)
+      captureCurrentCity()
+      cityTransitionFrame = requestAnimationFrame(() => {
+        if (token !== cityTransitionToken || disposed) return
+        activeCityIndex = nextCityIndex
+        cityIdleListener = () => finishCityTransition(token)
+        map.once("idle", cityIdleListener)
+        map.jumpTo({ center: [...city.center], zoom: city.zoom })
+        drawPlaces()
+        cityTransitionTimer = window.setTimeout(
+          () => finishCityTransition(token),
+          2000,
+        )
+      })
       try {
         sessionStorage.setItem(STORAGE_KEY, city.id)
       } catch {}
@@ -253,6 +355,14 @@ const payload = JSON.stringify(points).replaceAll("<", "\\u003c")
     })
 
     teardown = () => {
+      disposed = true
+      if (revealFrame !== undefined) cancelAnimationFrame(revealFrame)
+      if (revealTimer !== undefined) clearTimeout(revealTimer)
+      if (cityTransitionFrame !== undefined) {
+        cancelAnimationFrame(cityTransitionFrame)
+      }
+      if (cityTransitionTimer !== undefined) clearTimeout(cityTransitionTimer)
+      if (cityIdleListener) map.off("idle", cityIdleListener)
       densityQuery?.removeEventListener("change", syncPixelRatio)
       select?.removeEventListener("change", showCity)
       scheme.removeEventListener("change", theme)
@@ -299,15 +409,26 @@ const payload = JSON.stringify(points).replaceAll("<", "\\u003c")
     background: var(--background-l0);
   }
 
+  .food-map-visual {
+    position: absolute;
+    inset: 0;
+    isolation: isolate;
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .food-map[data-ready="true"] .food-map-visual {
+    visibility: visible;
+    opacity: 1;
+    pointer-events: auto;
+  }
+
   .food-map-canvas {
     position: absolute;
     inset: 0;
     overflow: hidden;
-    opacity: 0;
-    transition: opacity 0.4s ease;
-  }
-
-  .food-map[data-ready="true"] .food-map-canvas {
     opacity: 0.85;
   }
 
@@ -317,12 +438,22 @@ const payload = JSON.stringify(points).replaceAll("<", "\\u003c")
     width: 100%;
     height: 100%;
     pointer-events: none;
-    opacity: 0;
-    transition: opacity 0.4s ease;
   }
 
-  .food-map[data-ready="true"] .food-map-places {
+  .food-map-transition {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .food-map-transition[data-active="true"] {
     opacity: 1;
+    transition: none;
   }
 
   :global(.food-map .maplibregl-canvas) {
@@ -335,13 +466,7 @@ const payload = JSON.stringify(points).replaceAll("<", "\\u003c")
     position: absolute;
     inset-block-start: 0.375rem;
     inset-inline-start: 0.375rem;
-    z-index: 1;
-    opacity: 0;
-    transition: opacity 0.4s ease;
-  }
-
-  .food-map[data-ready="true"] .food-map-city {
-    opacity: 1;
+    z-index: 2;
   }
 
   .food-map-city select {
@@ -368,9 +493,8 @@ const payload = JSON.stringify(points).replaceAll("<", "\\u003c")
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .food-map-canvas,
-    .food-map-places,
-    .food-map-city {
+    .food-map-visual,
+    .food-map-transition {
       transition: none;
     }
   }
