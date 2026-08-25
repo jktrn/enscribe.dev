@@ -53,7 +53,12 @@ const payload = JSON.stringify(points).replaceAll("<", "\\u003c")
 
   let teardown: (() => void) | undefined
 
-  const mount = async (root: HTMLElement) => {
+  type MountLifecycle = {
+    cancelled: () => boolean
+    initialized: (cleanup: () => void) => void
+  }
+
+  const mount = async (root: HTMLElement, lifecycle: MountLifecycle) => {
     const canvas = root.querySelector<HTMLElement>("[data-food-map-canvas]")
     const placesCanvas = root.querySelector<HTMLCanvasElement>(
       "[data-food-map-places]",
@@ -77,6 +82,7 @@ const payload = JSON.stringify(points).replaceAll("<", "\\u003c")
       ),
       import("@/lib/map-style"),
     ])
+    if (lifecycle.cancelled()) return
     const {
       applyMapTheme,
       collapseDuplicateWaterLabels,
@@ -85,6 +91,7 @@ const payload = JSON.stringify(points).replaceAll("<", "\\u003c")
       TILE_LAYER_IDS,
     } = mapStyleModule
     const { Map: MapLibreMap, setWorkerUrl } = await maplibrePromise
+    if (lifecycle.cancelled()) return
 
     setWorkerUrl(workerUrl)
 
@@ -94,13 +101,16 @@ const payload = JSON.stringify(points).replaceAll("<", "\\u003c")
     } catch {}
     const startCity = cityById(storedCity) ?? cityById(DEFAULT_CITY_ID)!
 
+    const style = await loadMapStyle({
+      keepLayerIds: TILE_LAYER_IDS,
+      instantTransitions: true,
+    })
+    if (lifecycle.cancelled()) return
+
     const color = createColorResolver()
     const map = new MapLibreMap({
       container: canvas,
-      style: await loadMapStyle({
-        keepLayerIds: TILE_LAYER_IDS,
-        instantTransitions: true,
-      }),
+      style,
       center: [...startCity.center],
       zoom: startCity.zoom,
       minZoom: TILE_ZOOM_RANGE.min,
@@ -120,6 +130,11 @@ const payload = JSON.stringify(points).replaceAll("<", "\\u003c")
       maxTileCacheZoomLevels: 12,
       validateStyle: import.meta.env.DEV,
     })
+    if (lifecycle.cancelled()) {
+      color.dispose()
+      map.remove()
+      return
+    }
 
     const DOT_RADIUS = 8.5
     const RING_WIDTH = 1.25
@@ -352,7 +367,7 @@ const payload = JSON.stringify(points).replaceAll("<", "\\u003c")
       attributeFilter: ["data-theme"],
     })
 
-    teardown = () => {
+    lifecycle.initialized(() => {
       disposed = true
       if (revealFrame !== undefined) cancelAnimationFrame(revealFrame)
       if (revealTimer !== undefined) clearTimeout(revealTimer)
@@ -368,25 +383,43 @@ const payload = JSON.stringify(points).replaceAll("<", "\\u003c")
       color.dispose()
       map.remove()
       delete root.dataset.ready
-    }
+    })
   }
 
   const setup = () => {
     teardown?.()
-    teardown = undefined
+    let cancelled = false
+    let watcher: IntersectionObserver | undefined
+    let resourceTeardown: (() => void) | undefined
+    const lifecycle: MountLifecycle = {
+      cancelled: () => cancelled,
+      initialized: (cleanup) => {
+        if (cancelled) cleanup()
+        else resourceTeardown = cleanup
+      },
+    }
+    teardown = () => {
+      cancelled = true
+      watcher?.disconnect()
+      watcher = undefined
+      resourceTeardown?.()
+      resourceTeardown = undefined
+    }
+
     const root = document.querySelector<HTMLElement>("[data-food-map]")
     if (!root) return
 
     if (!("IntersectionObserver" in window)) {
-      void mount(root)
+      void mount(root, lifecycle)
       return
     }
 
-    const watcher = new IntersectionObserver(
+    watcher = new IntersectionObserver(
       (entries) => {
         if (!entries.some((entry) => entry.isIntersecting)) return
-        watcher.disconnect()
-        void mount(root)
+        watcher?.disconnect()
+        watcher = undefined
+        if (!cancelled) void mount(root, lifecycle)
       },
       { rootMargin: "200px" },
     )

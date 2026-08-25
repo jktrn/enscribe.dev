@@ -144,6 +144,33 @@ describe("content layout safety", () => {
     expect(browseAction).toContain("border: 2px solid var(--border);")
   })
 
+  test("the homepage map cancels initialization during navigation", async () => {
+    const map = await readFile("src/components/FoodMapTile.astro", "utf8")
+    const mount = map.slice(
+      map.indexOf("const mount = async"),
+      map.indexOf("const setup ="),
+    )
+    const setup = map.slice(map.indexOf("const setup ="))
+
+    expect(mount).toContain("lifecycle: MountLifecycle")
+    expect(mount.match(/if \(lifecycle\.cancelled\(\)\) return/g)).toHaveLength(
+      3,
+    )
+    expect(mount).toContain(
+      "if (lifecycle.cancelled()) {\n      color.dispose()\n      map.remove()",
+    )
+    expect(mount.indexOf("if (lifecycle.cancelled()) {")).toBeLessThan(
+      mount.indexOf('map.on("style.load"'),
+    )
+    expect(mount).toContain("lifecycle.initialized(() => {")
+    expect(setup.indexOf("teardown = () => {")).toBeLessThan(
+      setup.indexOf('if (!("IntersectionObserver" in window))'),
+    )
+    expect(setup).toContain("watcher?.disconnect()")
+    expect(setup).toContain("resourceTeardown?.()")
+    expect(setup).toContain("if (!cancelled) void mount(root, lifecycle)")
+  })
+
   test("the food map keeps its attribution collapsed by default", async () => {
     const food = await readFile("src/pages/food.astro", "utf8")
 
