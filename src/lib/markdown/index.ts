@@ -16,6 +16,7 @@ import { normalizeTabPanels } from "./normalize-tab-panels"
 import { parentheticalTypography } from "./inline-typography"
 import { microTypography } from "./micro-typography"
 import { readingTime } from "./reading-time"
+import { sidenoteCount } from "./sidenote-count"
 import { temmlMath } from "./math"
 import { tableDirective, tableScroll } from "./tables"
 import { captureTocHeadings } from "./toc-headings"
@@ -36,6 +37,7 @@ export const mdastPlugins = [
 
 export const hastPlugins = [
   readingTime,
+  sidenoteCount,
   normalizeTabPanels,
   externalLinks,
   linkFavicons,

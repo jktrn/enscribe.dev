@@ -11,11 +11,13 @@ import FormattedDate from "@/components/FormattedDate.astro"
 import Layout from "@/layouts/Layout.astro"
 import { bannerRaster, themedBanner } from "@/lib/assets/banner"
 import {
+  chainSidenotes,
   entryInline,
   entryMinutes,
   getPosts,
   getSubposts,
   pageTitle,
+  TOC_RAIL_SIDENOTES,
   tocHeadings,
 } from "@/lib/content"
 import { isSubpost, subpostSlug } from "@/lib/utils"
@@ -62,6 +64,7 @@ const sections = rendered.map(({ entry, headings }, i) => ({
 }))
 const hasToc =
   sections.length > 1 || sections.some(({ headings }) => headings.length > 0)
+const rail = chainSidenotes(chain) > TOC_RAIL_SIDENOTES
 
 const crumbs = [
   { label: entryInline(parent, "title"), href: `/blog/${parent.id}` },
@@ -82,6 +85,7 @@ if (isSubpost(post.id)) {
         slot="toc"
         title={entryInline(parent, "title")}
         sections={sections}
+        rail={rail}
       />
     )}
   <PostActions

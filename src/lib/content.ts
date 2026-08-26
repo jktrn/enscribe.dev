@@ -20,7 +20,10 @@ type RenderedFrontmatter = {
   inline?: Partial<Record<"title" | "description", InlineRendered>>
   tocHtml?: Record<string, string>
   readingMinutes?: number
+  sidenoteCount?: number
 }
+
+export const TOC_RAIL_SIDENOTES = 5
 
 type RenderableEntry = {
   rendered?: { metadata?: Record<string, unknown> }
@@ -49,6 +52,17 @@ export function entryMinutes(entry: RenderableEntry): number {
 
 export function chainMinutes(entries: readonly RenderableEntry[]): number {
   return entries.reduce((total, entry) => total + entryMinutes(entry), 0)
+}
+
+export function entrySidenotes(entry: RenderableEntry): number {
+  const frontmatter = entry.rendered?.metadata?.frontmatter as
+    | RenderedFrontmatter
+    | undefined
+  return frontmatter?.sidenoteCount ?? 0
+}
+
+export function chainSidenotes(entries: readonly RenderableEntry[]): number {
+  return entries.reduce((total, entry) => total + entrySidenotes(entry), 0)
 }
 
 export type TocHeading = MarkdownHeading & { html?: string }

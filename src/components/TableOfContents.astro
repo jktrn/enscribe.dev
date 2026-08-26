@@ -9,13 +9,13 @@ type Section = {
   open?: boolean
   headings: TocHeading[]
 }
-type Props = { title: InlineLabel; sections: Section[] }
+type Props = { title: InlineLabel; sections: Section[]; rail?: boolean }
 
-const { title: titleLabel, sections } = Astro.props
+const { title: titleLabel, sections, rail } = Astro.props
 const title = asInline(titleLabel)
 ---
 
-<nav aria-label="Table of contents">
+<nav aria-label="Table of contents" data-rail={rail || undefined}>
   <toc-title aria-hidden="true"
     ><span><Fragment set:html={title.html} /></span></toc-title
   >
@@ -30,43 +30,37 @@ const title = asInline(titleLabel)
   </label>
   <toc-panel data-bar>
     <ul data-scroll-fade>
-      {sections.map(({ id, href, label, open, headings }) =>
-        id ? (
+      {sections.map(({ id, href, label, open, headings }) => {
+        const items = headings.map(({ depth, slug, text, html }) => (
+          <li data-depth={depth}>
+            <a href={`#${slug}`} data-article-url={href}>
+              <toc-label>{html ? <Fragment set:html={html} /> : text}</toc-label>
+            </a>
+          </li>
+        ))
+        if (!id) return items
+        const link = (
+          <a href={`#${id}`} data-article-url={href}>
+            <toc-label><Fragment set:html={asInline(label).html} /></toc-label>
+          </a>
+        )
+        if (rail) return [<li data-group>{link}</li>, ...items]
+        return (
           <li data-group>
             {headings.length > 0 ? (
               <details open={open || undefined}>
                 <summary>
-                  <a href={`#${id}`} data-article-url={href}>
-                    <Fragment set:html={asInline(label).html} />
-                  </a>
+                  {link}
                   <ChevronIcon aria-hidden="true" />
                 </summary>
-                <ul>
-                  {headings.map(({ depth, slug, text, html }) => (
-                    <li data-depth={depth}>
-                      <a href={`#${slug}`} data-article-url={href}>
-                        {html ? <Fragment set:html={html} /> : text}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
+                <ul>{items}</ul>
               </details>
             ) : (
-              <a href={`#${id}`} data-article-url={href}>
-                <Fragment set:html={asInline(label).html} />
-              </a>
+              link
             )}
           </li>
-        ) : (
-          headings.map(({ depth, slug, text, html }) => (
-            <li data-depth={depth}>
-              <a href={`#${slug}`} data-article-url={href}>
-                {html ? <Fragment set:html={html} /> : text}
-              </a>
-            </li>
-          ))
-        ),
-      )}
+        )
+      })}
     </ul>
   </toc-panel>
 </nav>
@@ -311,6 +305,149 @@ const title = asInline(titleLabel)
       --indent: 2;
     }
   }
+
+  @property --rail-clip {
+    syntax: "<length-percentage>";
+    inherits: false;
+    initial-value: 0px;
+  }
+
+  nav[data-rail] {
+    @media screen and (width >= 64rem) {
+      --tick-2: 0.625rem;
+      --tick-3: 0.9375rem;
+      --tick-4: 1.25rem;
+      --tick-column: var(--tick-4);
+      --tick-row: 0.6875rem;
+      --row-open: 1.75rem;
+      --rail-padding: var(--space-2xs);
+      --rail-bleed: 3rem;
+      --rail-ease: cubic-bezier(0.22, 1, 0.36, 1);
+
+      position: fixed;
+      inset-block-start: 50%;
+      inset-inline-start: calc(var(--grid-edge) - var(--rail-padding));
+      translate: 0 -50%;
+      z-index: 20;
+      width: max-content;
+      max-height: calc(100svh - 2 * var(--page-offset-top));
+      pointer-events: none;
+
+      toc-title {
+        display: none;
+      }
+
+      toc-panel > ul {
+        --rail-clip: calc(
+          100% -
+          var(--tick-column) -
+          2 *
+          var(--rail-padding) -
+          4px
+        );
+
+        gap: 0;
+        width: max-content;
+        padding: var(--rail-padding);
+        border: 2px solid transparent;
+        clip-path: inset(
+          calc(-1 * var(--rail-bleed)) var(--rail-clip)
+            calc(-1 * var(--rail-bleed)) calc(-1 * var(--rail-bleed))
+        );
+        pointer-events: auto;
+        transition:
+          --rail-clip 0.24s var(--rail-ease),
+          background-color 0.18s ease,
+          border-color 0.18s ease,
+          box-shadow 0.18s ease;
+      }
+
+      li[data-group] {
+        margin-block-start: 0;
+      }
+
+      li[data-depth] {
+        padding-inline-start: 0;
+      }
+
+      li[data-depth="3"] a {
+        --tick: var(--tick-3);
+      }
+
+      li[data-depth="4"] a {
+        --tick: var(--tick-4);
+      }
+
+      a {
+        display: grid;
+        grid-template-columns: var(--tick-column) auto;
+        grid-template-rows: 100%;
+        align-items: center;
+        column-gap: var(--space-2xs);
+        block-size: var(--tick-row);
+        overflow: hidden;
+        transition:
+          block-size 0.24s var(--rail-ease),
+          color 0.2s ease;
+
+        &::before {
+          content: "";
+          inline-size: var(--tick, var(--tick-2));
+          block-size: 2px;
+          border-radius: var(--radius-full);
+          background-color: currentColor;
+          opacity: 0.45;
+          transition: opacity 0.2s ease;
+        }
+
+        &:hover::before,
+        &[data-active]::before {
+          opacity: 1;
+        }
+      }
+
+      toc-label {
+        display: block;
+        padding-inline-start: calc(var(--indent, 0) * var(--space-xs));
+        white-space: nowrap;
+        opacity: 0;
+        transition: opacity 0.18s ease;
+      }
+    }
+  }
+
+  nav[data-rail]:focus-within toc-panel > ul,
+  nav[data-rail] toc-panel > ul:hover {
+    @media screen and (width >= 64rem) {
+      --rail-clip: calc(-1 * var(--rail-bleed));
+
+      border-color: var(--border);
+      background-color: var(--background);
+      box-shadow:
+        0 2px 4px light-dark(rgb(0 0 0 / 0.06), rgb(0 0 0 / 0.35)),
+        0 16px 32px light-dark(rgb(0 0 0 / 0.12), rgb(0 0 0 / 0.5));
+
+      a {
+        block-size: var(--row-open);
+      }
+
+      toc-label {
+        opacity: 1;
+      }
+    }
+  }
+
+  nav[data-rail][data-edge] {
+    @media screen and (width >= 64rem) {
+      inset-inline-start: calc(12px - var(--rail-padding) - 2px);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    nav[data-rail] :is(toc-panel > ul, a, toc-label) {
+      transition-duration: 0.01ms;
+    }
+  }
 </style>
 
 <script>
@@ -343,11 +480,13 @@ const title = asInline(titleLabel)
     progress()
 
     let observer: IntersectionObserver | undefined
+    let railLayoutObserver: ResizeObserver | undefined
     let resizeFrame: number | undefined
     teardown = () => {
       controller.abort()
       if (resizeFrame !== undefined) cancelAnimationFrame(resizeFrame)
       observer?.disconnect()
+      railLayoutObserver?.disconnect()
     }
 
     const articles = document.querySelectorAll<HTMLElement>(
@@ -379,6 +518,28 @@ const title = asInline(titleLabel)
     const toggle = nav.querySelector<HTMLInputElement>("input")
     const heading = document.querySelector("article > header h1")
     if (articles.length === 0 || !list || links.size === 0) return
+
+    const sidebarItems = document.querySelector("page-nav aside > nav > ul")
+    const sidebarActions = document.querySelector("page-nav sidebar-toggle")
+    const updateRailEdge = () => {
+      if (!nav.hasAttribute("data-rail") || mobile.matches) {
+        nav.removeAttribute("data-edge")
+        return
+      }
+      if (!sidebarItems || !sidebarActions) return
+
+      const rail = nav.getBoundingClientRect()
+      const items = sidebarItems.getBoundingClientRect()
+      const actions = sidebarActions.getBoundingClientRect()
+      const gap = pixels(getComputedStyle(list).paddingBlockStart)
+      nav.toggleAttribute(
+        "data-edge",
+        rail.top < items.bottom + gap || rail.bottom > actions.top - gap,
+      )
+    }
+    railLayoutObserver = new ResizeObserver(updateRailEdge)
+    if (sidebarItems) railLayoutObserver.observe(sidebarItems)
+    if (sidebarActions) railLayoutObserver.observe(sidebarActions)
 
     const fallback = currentLabel?.innerHTML ?? ""
 
@@ -519,11 +680,13 @@ const title = asInline(titleLabel)
         if (resizeFrame !== undefined) cancelAnimationFrame(resizeFrame)
         resizeFrame = requestAnimationFrame(() => {
           resizeFrame = undefined
+          updateRailEdge()
           observe()
         })
       },
       { passive: true, signal },
     )
+    updateRailEdge()
     observe()
   }
 

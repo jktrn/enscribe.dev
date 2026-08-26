@@ -168,6 +168,7 @@ const hasToc = Astro.slots.has("toc") && !wide
       position: fixed;
       inset-block: var(--page-offset-top) var(--page-offset-bottom);
       inset-inline-end: var(--grid-edge);
+      z-index: 10;
       width: calc(3 * var(--grid-column-width) + 2 * var(--grid-gutter));
     }
   }
