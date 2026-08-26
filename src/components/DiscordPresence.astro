@@ -461,11 +461,13 @@ import "@/styles/marquee.css"
       const { activity } = state
       this.stopTicker()
 
-      const details = activity
-        ? [activity.details, activity.state].filter((text): text is string =>
-            Boolean(text),
-          )
-        : ["I’m probably asleep...", "Enjoy your stay!"]
+      const details = !activity
+        ? ["I’m probably asleep...", "Enjoy your stay!"]
+        : state.is_active
+          ? [activity.details, activity.state].filter((text): text is string =>
+              Boolean(text),
+            )
+          : []
       const meta = document.createElement("discord-meta")
       if (activity && !state.is_active) {
         const lastPlayed = createMarqueeText("discord-line", "Last played...")
