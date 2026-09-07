@@ -1,14 +1,13 @@
-// Manual graphics tool: renders themed SVG sources into committed blog assets.
-// The site build does not read from graphics/.
 import { copyFileSync, existsSync, readdirSync, readFileSync } from "node:fs"
 import { homedir } from "node:os"
-import { basename, join } from "node:path"
+import { basename, join, resolve } from "node:path"
 import sharp from "sharp"
-import { ramp } from "../src/lib/assets/themed-svg"
+import { ramp } from "../../src/lib/assets/themed-svg"
+import { assetPaths, repoRoot } from "./lib/paths"
 
-const GRAPHICS_BLOG = "graphics/blog"
-const GRAPHICS_FONTS = "graphics/fonts"
-const CONTENT_BLOG = "src/content/blog"
+const GRAPHICS_BLOG = resolve(repoRoot, assetPaths.graphicsBlog)
+const GRAPHICS_FONTS = resolve(repoRoot, assetPaths.graphicsFonts)
+const CONTENT_BLOG = resolve(repoRoot, "src/content/blog")
 
 if (process.platform === "darwin") {
   for (const font of readdirSync(GRAPHICS_FONTS)) {

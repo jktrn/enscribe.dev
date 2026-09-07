@@ -2,686 +2,6 @@
   "version": 1,
   "assets": [
     {
-      "contentType": "image/svg+xml",
-      "group": "graphics",
-      "key": "graphics/blog/actf-2023-gcd-query/banner.svg",
-      "localPath": "graphics/blog/actf-2023-gcd-query/banner.svg",
-      "sha256": "39b1daf466f9495ba5c10596d64a99a52ea8e949fcb42cd2ac1d561eab653157",
-      "size": 1836856
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "graphics",
-      "key": "graphics/blog/actf-2023-gcd-query/carnival-visual.svg",
-      "localPath": "graphics/blog/actf-2023-gcd-query/carnival-visual.svg",
-      "sha256": "0a65dd8826f78913068576adbfc5e6df698b35b3cb14ddcf1b10acfbe219c386",
-      "size": 1873230
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "graphics",
-      "key": "graphics/blog/actf-2023-gcd-query/handing-papers.svg",
-      "localPath": "graphics/blog/actf-2023-gcd-query/handing-papers.svg",
-      "sha256": "d61364ab605aaa82dad873a1177a334b5345a7303b93da7d08c10e6d40ba7a31",
-      "size": 1793712
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "graphics",
-      "key": "graphics/blog/azusawas-gacha-world/banner-dark.svg",
-      "localPath": "graphics/blog/azusawas-gacha-world/banner-dark.svg",
-      "sha256": "664400cfdb1c7c6ce1d30f3c4634f78fc3391066a9836df7a1699613a11f68ab",
-      "size": 1883441
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "graphics",
-      "key": "graphics/blog/azusawas-gacha-world/banner-light.svg",
-      "localPath": "graphics/blog/azusawas-gacha-world/banner-light.svg",
-      "sha256": "ab98865e300c140d99eb0239591f903d617936ddaa6bcceada84ec9a13373e1f",
-      "size": 1895061
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "graphics",
-      "key": "graphics/blog/azusawas-gacha-world/brainstorming-1-dark.svg",
-      "localPath": "graphics/blog/azusawas-gacha-world/brainstorming-1-dark.svg",
-      "sha256": "098ea18ac2e0dabfccc960d6e32216a0c7ddae9f4c0b80408c67f8520753712d",
-      "size": 1994229
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "graphics",
-      "key": "graphics/blog/azusawas-gacha-world/brainstorming-1-light.svg",
-      "localPath": "graphics/blog/azusawas-gacha-world/brainstorming-1-light.svg",
-      "sha256": "355f6dd67b8cc08c251fcf58a2301376bd23f356668f583dabf4b8ebb08d4afe",
-      "size": 2006029
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "graphics",
-      "key": "graphics/blog/azusawas-gacha-world/brainstorming-2-dark.svg",
-      "localPath": "graphics/blog/azusawas-gacha-world/brainstorming-2-dark.svg",
-      "sha256": "54b100959b8eef1cdcba5b24d1579e03100288b49bb1927c8d70050dc8f828de",
-      "size": 237400
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "graphics",
-      "key": "graphics/blog/azusawas-gacha-world/brainstorming-2-light.svg",
-      "localPath": "graphics/blog/azusawas-gacha-world/brainstorming-2-light.svg",
-      "sha256": "4b45fe2c9ba898f19e0b2116260ee26c8d9db095521039cd3c6649a790a8918d",
-      "size": 236704
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "graphics",
-      "key": "graphics/blog/azusawas-gacha-world/project-sekai-gacha-dark.svg",
-      "localPath": "graphics/blog/azusawas-gacha-world/project-sekai-gacha-dark.svg",
-      "sha256": "817f1d8e70e8648ac4d6e3b7a3c39624ff7047daafe1842fa859fbb7f915f7da",
-      "size": 2010113
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "graphics",
-      "key": "graphics/blog/azusawas-gacha-world/project-sekai-gacha-light.svg",
-      "localPath": "graphics/blog/azusawas-gacha-world/project-sekai-gacha-light.svg",
-      "sha256": "817f1d8e70e8648ac4d6e3b7a3c39624ff7047daafe1842fa859fbb7f915f7da",
-      "size": 2010113
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "graphics",
-      "key": "graphics/blog/byuctf-2022/banner.svg",
-      "localPath": "graphics/blog/byuctf-2022/banner.svg",
-      "sha256": "b27b440807283a2e1621d756f4616abc014b1853567b4964d321db94601c4bbd",
-      "size": 1020681
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "graphics",
-      "key": "graphics/blog/dhhutc-2022-port-authority/banner-dark.svg",
-      "localPath": "graphics/blog/dhhutc-2022-port-authority/banner-dark.svg",
-      "sha256": "4ecdaf4db55ac697e990e63007ec93cfaddab8001dba77a22b1c778fd360fc1e",
-      "size": 1372197
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "graphics",
-      "key": "graphics/blog/dhhutc-2022-port-authority/banner-light.svg",
-      "localPath": "graphics/blog/dhhutc-2022-port-authority/banner-light.svg",
-      "sha256": "b7f55b63126c920639e7efb1014484d13cae965a57f59eed1e0e8fab97a9517d",
-      "size": 2356802
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "graphics",
-      "key": "graphics/blog/dhhutc-2022-port-authority/banner.svg",
-      "localPath": "graphics/blog/dhhutc-2022-port-authority/banner.svg",
-      "sha256": "0e4e5ad5d81d23bf06dd0c0a5b40bb55c6182cd3ce2c6882ba3ac1cc3683677c",
-      "size": 3674702
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "graphics",
-      "key": "graphics/blog/dhhutc-2022-port-authority/checkvisual.svg",
-      "localPath": "graphics/blog/dhhutc-2022-port-authority/checkvisual.svg",
-      "sha256": "f5a7a0101949fa067fe109ce09351198b1c86d413a4a50807423ca2f10c2da5e",
-      "size": 240312
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "graphics",
-      "key": "graphics/blog/dhhutc-2022-port-authority/obstacles2.svg",
-      "localPath": "graphics/blog/dhhutc-2022-port-authority/obstacles2.svg",
-      "sha256": "49ef96bcd34b648f5dd7ac1157a7a10949bbed0d5ed6db7791c9d85a9acb885f",
-      "size": 517644
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "graphics",
-      "key": "graphics/blog/idekctf-2023-nmpz/5-lettered.svg",
-      "localPath": "graphics/blog/idekctf-2023-nmpz/5-lettered.svg",
-      "sha256": "314027738e4a3aef55a133941be222f45d7e9c66d88cad0444a35c114fc339bb",
-      "size": 6376224
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "graphics",
-      "key": "graphics/blog/idekctf-2023-nmpz/banner-dark.svg",
-      "localPath": "graphics/blog/idekctf-2023-nmpz/banner-dark.svg",
-      "sha256": "151dd053489851a2acfb61147ce562a290779238b8b206a80750140f419895a0",
-      "size": 1356761
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "graphics",
-      "key": "graphics/blog/idekctf-2023-nmpz/banner-light.svg",
-      "localPath": "graphics/blog/idekctf-2023-nmpz/banner-light.svg",
-      "sha256": "be5be44cc7185c1e295b21bf47a0e09966d17708bf76f69fb20d6c2d77d7ef00",
-      "size": 1462365
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "graphics",
-      "key": "graphics/blog/idekctf-2023-nmpz/banner-nmpz.svg",
-      "localPath": "graphics/blog/idekctf-2023-nmpz/banner-nmpz.svg",
-      "sha256": "9adb04c39b80eba912c6d78183f59e62b3923884a54149f18f7b6a16fe74d037",
-      "size": 11454578
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "graphics",
-      "key": "graphics/blog/japan-retrospective/banner-dark.svg",
-      "localPath": "graphics/blog/japan-retrospective/banner-dark.svg",
-      "sha256": "43d0bf66c23b349a2d5c0e1b58888906517f8201356472c90e5b3f0b74fd473f",
-      "size": 2109306
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "graphics",
-      "key": "graphics/blog/japan-retrospective/banner-light.svg",
-      "localPath": "graphics/blog/japan-retrospective/banner-light.svg",
-      "sha256": "95eab1c9052b245145a533a1fdc32ddd54cedd9d9ba0e7e5ae806df430267b6b",
-      "size": 2397027
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "graphics",
-      "key": "graphics/blog/japan-retrospective/day-0-map-1-dark.svg",
-      "localPath": "graphics/blog/japan-retrospective/day-0-map-1-dark.svg",
-      "sha256": "a01874771cd48511f76ebe55cc8227918d84da49d98789600a217e13acacf82a",
-      "size": 232116
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "graphics",
-      "key": "graphics/blog/japan-retrospective/day-0-map-1-light.svg",
-      "localPath": "graphics/blog/japan-retrospective/day-0-map-1-light.svg",
-      "sha256": "609573c8fd397bd6428666281f7d4ab153fab2c91837ae09678690b5011cdeb8",
-      "size": 234372
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "graphics",
-      "key": "graphics/blog/japan-retrospective/day-0-map-1.svg",
-      "localPath": "graphics/blog/japan-retrospective/day-0-map-1.svg",
-      "sha256": "768caf568ebcff918b5f43b2819e5db27e0a5ed7bf877e7fea4d519d91da571f",
-      "size": 618585
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "graphics",
-      "key": "graphics/blog/japan-retrospective/day-0-map-2-dark.svg",
-      "localPath": "graphics/blog/japan-retrospective/day-0-map-2-dark.svg",
-      "sha256": "0e063450b038183d7f55e7fed3433fc9949dd640a410c1ae0603369d582d5652",
-      "size": 1984325
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "graphics",
-      "key": "graphics/blog/japan-retrospective/day-0-map-2-light.svg",
-      "localPath": "graphics/blog/japan-retrospective/day-0-map-2-light.svg",
-      "sha256": "ac1d23e561d150acc77f1e817fc496788017e1114c6ca549de073b1c908f0713",
-      "size": 1912853
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "graphics",
-      "key": "graphics/blog/japan-retrospective/day-0-map-2.svg",
-      "localPath": "graphics/blog/japan-retrospective/day-0-map-2.svg",
-      "sha256": "277dbb72a4f68e2eb83951d09fc5f579c9e18ce87fc15b144923b0a74175f680",
-      "size": 4528400
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "graphics",
-      "key": "graphics/blog/japan-retrospective/day-1-map-1-dark.svg",
-      "localPath": "graphics/blog/japan-retrospective/day-1-map-1-dark.svg",
-      "sha256": "eeb0dcea2b9846f110f4f1f5a7f0017b872bd38d5bb10fb73445cd7aa0c37a98",
-      "size": 1358156
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "graphics",
-      "key": "graphics/blog/japan-retrospective/day-1-map-1-light.svg",
-      "localPath": "graphics/blog/japan-retrospective/day-1-map-1-light.svg",
-      "sha256": "f0fdbe0de3c7cace2842d8507d4ae1069c1f74ad290d466784c5a6cd0a62b280",
-      "size": 1370082
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "graphics",
-      "key": "graphics/blog/japan-retrospective/day-10-map-1-dark.svg",
-      "localPath": "graphics/blog/japan-retrospective/day-10-map-1-dark.svg",
-      "sha256": "78d57ee36dde7861cf4982dadf0fecc90d1a18e1c956899c48a65e599953b5f3",
-      "size": 1779615
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "graphics",
-      "key": "graphics/blog/japan-retrospective/day-10-map-1-light.svg",
-      "localPath": "graphics/blog/japan-retrospective/day-10-map-1-light.svg",
-      "sha256": "ce00aca27c297071a7e702c50bd17ef52cbe8df7d62468a2a3cecd50102dd691",
-      "size": 1841113
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "graphics",
-      "key": "graphics/blog/japan-retrospective/day-11-map-1-dark.svg",
-      "localPath": "graphics/blog/japan-retrospective/day-11-map-1-dark.svg",
-      "sha256": "86e0a08cda718e35e86fbc5f2b354489dbe0f522fd7912517ad2c1f4fd18a852",
-      "size": 1799449
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "graphics",
-      "key": "graphics/blog/japan-retrospective/day-11-map-1-light.svg",
-      "localPath": "graphics/blog/japan-retrospective/day-11-map-1-light.svg",
-      "sha256": "252b27cab39d1c84f9cd0412cfe9b636491b75a2ce0e1d53d9923d6dcc3c598e",
-      "size": 1864683
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "graphics",
-      "key": "graphics/blog/japan-retrospective/day-12-map-1-dark.svg",
-      "localPath": "graphics/blog/japan-retrospective/day-12-map-1-dark.svg",
-      "sha256": "99a34d58e6262ff8babc799d694df54c86ae60dffeba2442d5e6c0f4c542936e",
-      "size": 4416080
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "graphics",
-      "key": "graphics/blog/japan-retrospective/day-12-map-1-light.svg",
-      "localPath": "graphics/blog/japan-retrospective/day-12-map-1-light.svg",
-      "sha256": "604c2653b3c6cf1ec39c59b92fb3f738317e4dc942041b144015676b451e0343",
-      "size": 4540226
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "graphics",
-      "key": "graphics/blog/japan-retrospective/day-13-map-1-dark.svg",
-      "localPath": "graphics/blog/japan-retrospective/day-13-map-1-dark.svg",
-      "sha256": "8f330ee888ff507d26f86c2698b0769d8f299cb257c9245813e627db19e68f9a",
-      "size": 1309731
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "graphics",
-      "key": "graphics/blog/japan-retrospective/day-13-map-1-light.svg",
-      "localPath": "graphics/blog/japan-retrospective/day-13-map-1-light.svg",
-      "sha256": "ffc160f147bb373f3fec5e9fda0bab1faa10ae049c8aee546ff11e6b8def7170",
-      "size": 1339873
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "graphics",
-      "key": "graphics/blog/japan-retrospective/day-14-map-1-dark.svg",
-      "localPath": "graphics/blog/japan-retrospective/day-14-map-1-dark.svg",
-      "sha256": "14bb8c1af94ee046cf06bcfb805b11e0a865fff3628b0cfd5928ae2977936b58",
-      "size": 2532313
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "graphics",
-      "key": "graphics/blog/japan-retrospective/day-14-map-1-light.svg",
-      "localPath": "graphics/blog/japan-retrospective/day-14-map-1-light.svg",
-      "sha256": "5c3cba17f3b3d78344ea3156aabcb3c396f5ae67e3ae8955e0a6052dd83b5aa1",
-      "size": 2586821
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "graphics",
-      "key": "graphics/blog/japan-retrospective/day-2-map-1-dark.svg",
-      "localPath": "graphics/blog/japan-retrospective/day-2-map-1-dark.svg",
-      "sha256": "91eb62bc5b115f61959cacbc974cf91fa0f138d2c2486ea637cfa8092397ca02",
-      "size": 485897
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "graphics",
-      "key": "graphics/blog/japan-retrospective/day-2-map-1-light.svg",
-      "localPath": "graphics/blog/japan-retrospective/day-2-map-1-light.svg",
-      "sha256": "5a0b1e7cdeb40e440dc714ee24419ceb1b2e89ff114d9f018880b9bee12d01ab",
-      "size": 497793
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "graphics",
-      "key": "graphics/blog/japan-retrospective/day-3-map-1-dark.svg",
-      "localPath": "graphics/blog/japan-retrospective/day-3-map-1-dark.svg",
-      "sha256": "670badc15e389e550454eebaca7fbf59411def5ea274390ec1f6e9012feeab34",
-      "size": 1990202
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "graphics",
-      "key": "graphics/blog/japan-retrospective/day-3-map-1-light.svg",
-      "localPath": "graphics/blog/japan-retrospective/day-3-map-1-light.svg",
-      "sha256": "ec8264ffbbef80e42ca3cf3c8c6a376eac4b61f4e685ab7f467d525001e78ea3",
-      "size": 2058574
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "graphics",
-      "key": "graphics/blog/japan-retrospective/day-4-map-1-dark.svg",
-      "localPath": "graphics/blog/japan-retrospective/day-4-map-1-dark.svg",
-      "sha256": "9cff6d18166116f239edad2887b702e7a6f147c52498ba3b172222871a072af4",
-      "size": 2230383
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "graphics",
-      "key": "graphics/blog/japan-retrospective/day-4-map-1-light.svg",
-      "localPath": "graphics/blog/japan-retrospective/day-4-map-1-light.svg",
-      "sha256": "437471d7507a00fd8e4fc96a5dbe4c0daf7c007373711c65354a39523ed08e71",
-      "size": 2296289
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "graphics",
-      "key": "graphics/blog/japan-retrospective/day-5-map-1-dark.svg",
-      "localPath": "graphics/blog/japan-retrospective/day-5-map-1-dark.svg",
-      "sha256": "22380c560c4c27d660832e7619c451fa4a76a4ba874d12aff9bce4f181f47016",
-      "size": 2921743
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "graphics",
-      "key": "graphics/blog/japan-retrospective/day-5-map-1-light.svg",
-      "localPath": "graphics/blog/japan-retrospective/day-5-map-1-light.svg",
-      "sha256": "d6f2da156bb98ef081495623b0b756e29e03e71fd7426ae0c96e4a71719a2ce7",
-      "size": 3002921
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "graphics",
-      "key": "graphics/blog/japan-retrospective/day-5-map-2-dark.svg",
-      "localPath": "graphics/blog/japan-retrospective/day-5-map-2-dark.svg",
-      "sha256": "e7eb2abcbc5b8e01886aefd582c7157b1f2247d798b5ac8cbd0bd91090cb9a48",
-      "size": 290085
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "graphics",
-      "key": "graphics/blog/japan-retrospective/day-5-map-2-light.svg",
-      "localPath": "graphics/blog/japan-retrospective/day-5-map-2-light.svg",
-      "sha256": "ae0f74fa397a0bba066e63521883ca9949f33ddade1700f38ef743e998bcf98f",
-      "size": 300125
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "graphics",
-      "key": "graphics/blog/japan-retrospective/day-6-map-1-dark.svg",
-      "localPath": "graphics/blog/japan-retrospective/day-6-map-1-dark.svg",
-      "sha256": "05c8068ec069cbc1cbdd801501383d9ae425878e24675ca496c6c171d7225911",
-      "size": 1101404
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "graphics",
-      "key": "graphics/blog/japan-retrospective/day-6-map-1-light.svg",
-      "localPath": "graphics/blog/japan-retrospective/day-6-map-1-light.svg",
-      "sha256": "295874ac162e595b79397e055933827917090190d43932259a086ba8bd94bf62",
-      "size": 1130554
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "graphics",
-      "key": "graphics/blog/japan-retrospective/day-7-map-1-dark.svg",
-      "localPath": "graphics/blog/japan-retrospective/day-7-map-1-dark.svg",
-      "sha256": "791c323dc9904093fe3f8db5c037f4d8a377fc3652ea86129c095bf0ad12a877",
-      "size": 1000930
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "graphics",
-      "key": "graphics/blog/japan-retrospective/day-7-map-1-light.svg",
-      "localPath": "graphics/blog/japan-retrospective/day-7-map-1-light.svg",
-      "sha256": "1db88268289c9d99b1f4271d976272ebacd20608cc58c2b02a284726ab7b0888",
-      "size": 1030872
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "graphics",
-      "key": "graphics/blog/japan-retrospective/day-8-map-1-dark.svg",
-      "localPath": "graphics/blog/japan-retrospective/day-8-map-1-dark.svg",
-      "sha256": "89a358a6c2180baf92d19a06425930737a9d3ff430613f12a6839d722bf4416a",
-      "size": 2315228
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "graphics",
-      "key": "graphics/blog/japan-retrospective/day-8-map-1-light.svg",
-      "localPath": "graphics/blog/japan-retrospective/day-8-map-1-light.svg",
-      "sha256": "eb9d703623967f0b583433c5c175e24b7ef2105749c074ba6e65375336e1f221",
-      "size": 2368482
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "graphics",
-      "key": "graphics/blog/japan-retrospective/day-9-map-1-dark.svg",
-      "localPath": "graphics/blog/japan-retrospective/day-9-map-1-dark.svg",
-      "sha256": "a5e22e72ffcf9472b062cc5bbc9db31d09bc07abaa75d2f603abcc3031260e7e",
-      "size": 1430918
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "graphics",
-      "key": "graphics/blog/japan-retrospective/day-9-map-1-light.svg",
-      "localPath": "graphics/blog/japan-retrospective/day-9-map-1-light.svg",
-      "sha256": "89443c2f84546c099ed60dfd8ac86f19d0365aadaca564d0becdaa2215d8ce4e",
-      "size": 1463098
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "graphics",
-      "key": "graphics/blog/japan-retrospective/intro-banner-dark.svg",
-      "localPath": "graphics/blog/japan-retrospective/intro-banner-dark.svg",
-      "sha256": "e66415e64d04c22ef58396b324beb554b1b82f734cf5417b560ddda83d7e8724",
-      "size": 1261337
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "graphics",
-      "key": "graphics/blog/japan-retrospective/intro-banner-light.svg",
-      "localPath": "graphics/blog/japan-retrospective/intro-banner-light.svg",
-      "sha256": "f9b8e5df5159b0770c5e6403c6acdcffa7c0923e309de7c24e27bcc63fd5a708",
-      "size": 1275945
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "graphics",
-      "key": "graphics/blog/japan-retrospective/intro-banner.svg",
-      "localPath": "graphics/blog/japan-retrospective/intro-banner.svg",
-      "sha256": "ac8ef80aef0376ca4099efc9fdd27595ff5663158c5881b1cd0b75dc1f32ffe9",
-      "size": 2676041
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "graphics",
-      "key": "graphics/blog/japan-retrospective/main-map-dark.svg",
-      "localPath": "graphics/blog/japan-retrospective/main-map-dark.svg",
-      "sha256": "fac7465b93999681108d6784f27e5ab91d3f91dfd9da9f3a65bba4d968137a0f",
-      "size": 960190
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "graphics",
-      "key": "graphics/blog/japan-retrospective/main-map-light.svg",
-      "localPath": "graphics/blog/japan-retrospective/main-map-light.svg",
-      "sha256": "97b0e1ca06d95d550a4a8ae93c2d38a0e636e59dbb0ddaec8e7cca59a057c003",
-      "size": 931058
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "graphics",
-      "key": "graphics/blog/japan-retrospective/main-map.svg",
-      "localPath": "graphics/blog/japan-retrospective/main-map.svg",
-      "sha256": "7bd84e0157af8af601abb3e491b8ab969152760bac70e11b75fbb71fdc6f2ed6",
-      "size": 2097289
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "graphics",
-      "key": "graphics/blog/mhsctf-2023-matchmaker/augmented-blossom.svg",
-      "localPath": "graphics/blog/mhsctf-2023-matchmaker/augmented-blossom.svg",
-      "sha256": "c24276c3fa7306785e4c56600b4c7278987463a05e4c1cedce0fe783008902b6",
-      "size": 17921
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "graphics",
-      "key": "graphics/blog/mhsctf-2023-matchmaker/augmented-path.svg",
-      "localPath": "graphics/blog/mhsctf-2023-matchmaker/augmented-path.svg",
-      "sha256": "033d0fd2a61c9bba978d201b79ba79e7d2a7091d709fad888dd957b90e80977d",
-      "size": 22316
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "graphics",
-      "key": "graphics/blog/mhsctf-2023-matchmaker/augmenting-paths.svg",
-      "localPath": "graphics/blog/mhsctf-2023-matchmaker/augmenting-paths.svg",
-      "sha256": "c95c09234463be3deda4177ca3e8261ea61a92f394785e1afa9711963f9f6267",
-      "size": 24516
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "graphics",
-      "key": "graphics/blog/mhsctf-2023-matchmaker/banner.svg",
-      "localPath": "graphics/blog/mhsctf-2023-matchmaker/banner.svg",
-      "sha256": "027816891e4fe8ae9bd5869e6f70e8b73a399c8866134f7afd1cff454a92a579",
-      "size": 210763
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "graphics",
-      "key": "graphics/blog/mhsctf-2023-matchmaker/biweight.svg",
-      "localPath": "graphics/blog/mhsctf-2023-matchmaker/biweight.svg",
-      "sha256": "62b53244dbfa5089ae3b045f0d6ca2fddcec0e7eb9816138cd98a6144ffd4949",
-      "size": 13365
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "graphics",
-      "key": "graphics/blog/mhsctf-2023-matchmaker/blossom-contraction.svg",
-      "localPath": "graphics/blog/mhsctf-2023-matchmaker/blossom-contraction.svg",
-      "sha256": "ff208ccf795ce02df3e693032cf36adaeb33fed47561db1b1c2824ed3cffefff",
-      "size": 15377
-    },
-    {
-      "contentType": "image/png",
-      "group": "graphics",
-      "key": "graphics/blog/mhsctf-2023-matchmaker/blossom-transparent.png",
-      "localPath": "graphics/blog/mhsctf-2023-matchmaker/blossom-transparent.png",
-      "sha256": "a3bc873382793ce59fa427bc9e858dd2f6c56f13eeeae1c20e78b6afbbfdb689",
-      "size": 121229
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "graphics",
-      "key": "graphics/blog/mhsctf-2023-matchmaker/blossom-transparent.svg",
-      "localPath": "graphics/blog/mhsctf-2023-matchmaker/blossom-transparent.svg",
-      "sha256": "efc05dd2ecb0bb0987326571ba29906fc63018f7622ccae44f814389f4ebb471",
-      "size": 6362
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "graphics",
-      "key": "graphics/blog/mhsctf-2023-matchmaker/blossom.svg",
-      "localPath": "graphics/blog/mhsctf-2023-matchmaker/blossom.svg",
-      "sha256": "9fc585009d46bce267d02ddbd5ca1b4a390b37f58ddb11b99a6748aa7ac82a66",
-      "size": 20506
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "graphics",
-      "key": "graphics/blog/mhsctf-2023-matchmaker/expanded-blossom.svg",
-      "localPath": "graphics/blog/mhsctf-2023-matchmaker/expanded-blossom.svg",
-      "sha256": "aa1dd42ba81c2880f74d292e688ffffd822cabe49b5f74aa3e43b013662eff9f",
-      "size": 20417
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "graphics",
-      "key": "graphics/blog/mhsctf-2023-matchmaker/graph.svg",
-      "localPath": "graphics/blog/mhsctf-2023-matchmaker/graph.svg",
-      "sha256": "79b1bdeb1d644b17a5821e5fd0a9022c64a26a8f87948c0b0c0a399b11f5ad50",
-      "size": 17345
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "graphics",
-      "key": "graphics/blog/mhsctf-2023-matchmaker/matching.svg",
-      "localPath": "graphics/blog/mhsctf-2023-matchmaker/matching.svg",
-      "sha256": "8f3e054a3e5bca22c541a4b908cd8028f3e0acfbfa65340e3be1e56f4173c96a",
-      "size": 17430
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "graphics",
-      "key": "graphics/blog/mhsctf-2023-matchmaker/weights.svg",
-      "localPath": "graphics/blog/mhsctf-2023-matchmaker/weights.svg",
-      "sha256": "06c1b24c862985b64b3b22694bf8b9800426e862a1c6e11d5a28076f8338aada",
-      "size": 24417
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "graphics",
-      "key": "graphics/blog/picoctf-2022-beginners-compilation/banner.svg",
-      "localPath": "graphics/blog/picoctf-2022-beginners-compilation/banner.svg",
-      "sha256": "4aef1c8a98d5741aa2441007702c4b9d1f22ead1462022ebeeb3aea50f6d377d",
-      "size": 224643
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "graphics",
-      "key": "graphics/blog/picoctf-2022-buffer-overflow/banner.svg",
-      "localPath": "graphics/blog/picoctf-2022-buffer-overflow/banner.svg",
-      "sha256": "91a8b6e12c5a65464fdb61123c3d8a4f65c5a5aaa7c79a8875a25dd9d3775b1c",
-      "size": 272808
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "graphics",
-      "key": "graphics/blog/sekaictf-2022-forensics-compilation/banner.svg",
-      "localPath": "graphics/blog/sekaictf-2022-forensics-compilation/banner.svg",
-      "sha256": "d521170aa4778dbe2926ac015c4b8bcec72edff2f7de856d6bfec4023659304d",
-      "size": 1604647
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "graphics",
-      "key": "graphics/blog/shctf-2022-compilation/banner.svg",
-      "localPath": "graphics/blog/shctf-2022-compilation/banner.svg",
-      "sha256": "0cd2b073bc5a74232656df3b1f5f95d9a16c4186cd0dad41c5fb8364938a905a",
-      "size": 1136953
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "graphics",
-      "key": "graphics/blog/smart-eyes-stupid-hands/banner-dark.svg",
-      "localPath": "graphics/blog/smart-eyes-stupid-hands/banner-dark.svg",
-      "sha256": "f39a4174faf0385388f0b8a142eb9f3025543da5fce43e7ea19ff666d6dba156",
-      "size": 316585
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "graphics",
-      "key": "graphics/blog/smart-eyes-stupid-hands/banner-light.svg",
-      "localPath": "graphics/blog/smart-eyes-stupid-hands/banner-light.svg",
-      "sha256": "5547e1220564006625e6d360078a751b9485081aa7c37c563c5530798fccbe17",
-      "size": 319153
-    },
-    {
-      "contentType": "image/svg+xml",
-      "group": "graphics",
-      "key": "graphics/blog/wolvctf-2023-wannaflag/banner.svg",
-      "localPath": "graphics/blog/wolvctf-2023-wannaflag/banner.svg",
-      "sha256": "41bb6d46378b6756620948625f8a8c1222b6efd9931c1f9659dfc12b14f98533",
-      "size": 5599656
-    },
-    {
       "contentType": "video/mp4",
       "group": "build",
       "key": "public/blog/azusawas-gacha-world/preview.mp4",
@@ -712,6 +32,686 @@
       "localPath": "public/blog/dhhutc-2022-port-authority/solve-cut.mp4",
       "sha256": "de380d84f5f748ef796ef37f4698b0960217b502853d4a441ca52efbf810a909",
       "size": 1140405
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "graphics",
+      "key": "graphics/blog/actf-2023-gcd-query/banner.svg",
+      "localPath": "scripts/assets/sources/blog/actf-2023-gcd-query/banner.svg",
+      "sha256": "39b1daf466f9495ba5c10596d64a99a52ea8e949fcb42cd2ac1d561eab653157",
+      "size": 1836856
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "graphics",
+      "key": "graphics/blog/actf-2023-gcd-query/carnival-visual.svg",
+      "localPath": "scripts/assets/sources/blog/actf-2023-gcd-query/carnival-visual.svg",
+      "sha256": "0a65dd8826f78913068576adbfc5e6df698b35b3cb14ddcf1b10acfbe219c386",
+      "size": 1873230
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "graphics",
+      "key": "graphics/blog/actf-2023-gcd-query/handing-papers.svg",
+      "localPath": "scripts/assets/sources/blog/actf-2023-gcd-query/handing-papers.svg",
+      "sha256": "d61364ab605aaa82dad873a1177a334b5345a7303b93da7d08c10e6d40ba7a31",
+      "size": 1793712
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "graphics",
+      "key": "graphics/blog/azusawas-gacha-world/banner-dark.svg",
+      "localPath": "scripts/assets/sources/blog/azusawas-gacha-world/banner-dark.svg",
+      "sha256": "664400cfdb1c7c6ce1d30f3c4634f78fc3391066a9836df7a1699613a11f68ab",
+      "size": 1883441
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "graphics",
+      "key": "graphics/blog/azusawas-gacha-world/banner-light.svg",
+      "localPath": "scripts/assets/sources/blog/azusawas-gacha-world/banner-light.svg",
+      "sha256": "ab98865e300c140d99eb0239591f903d617936ddaa6bcceada84ec9a13373e1f",
+      "size": 1895061
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "graphics",
+      "key": "graphics/blog/azusawas-gacha-world/brainstorming-1-dark.svg",
+      "localPath": "scripts/assets/sources/blog/azusawas-gacha-world/brainstorming-1-dark.svg",
+      "sha256": "098ea18ac2e0dabfccc960d6e32216a0c7ddae9f4c0b80408c67f8520753712d",
+      "size": 1994229
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "graphics",
+      "key": "graphics/blog/azusawas-gacha-world/brainstorming-1-light.svg",
+      "localPath": "scripts/assets/sources/blog/azusawas-gacha-world/brainstorming-1-light.svg",
+      "sha256": "355f6dd67b8cc08c251fcf58a2301376bd23f356668f583dabf4b8ebb08d4afe",
+      "size": 2006029
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "graphics",
+      "key": "graphics/blog/azusawas-gacha-world/brainstorming-2-dark.svg",
+      "localPath": "scripts/assets/sources/blog/azusawas-gacha-world/brainstorming-2-dark.svg",
+      "sha256": "54b100959b8eef1cdcba5b24d1579e03100288b49bb1927c8d70050dc8f828de",
+      "size": 237400
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "graphics",
+      "key": "graphics/blog/azusawas-gacha-world/brainstorming-2-light.svg",
+      "localPath": "scripts/assets/sources/blog/azusawas-gacha-world/brainstorming-2-light.svg",
+      "sha256": "4b45fe2c9ba898f19e0b2116260ee26c8d9db095521039cd3c6649a790a8918d",
+      "size": 236704
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "graphics",
+      "key": "graphics/blog/azusawas-gacha-world/project-sekai-gacha-dark.svg",
+      "localPath": "scripts/assets/sources/blog/azusawas-gacha-world/project-sekai-gacha-dark.svg",
+      "sha256": "817f1d8e70e8648ac4d6e3b7a3c39624ff7047daafe1842fa859fbb7f915f7da",
+      "size": 2010113
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "graphics",
+      "key": "graphics/blog/azusawas-gacha-world/project-sekai-gacha-light.svg",
+      "localPath": "scripts/assets/sources/blog/azusawas-gacha-world/project-sekai-gacha-light.svg",
+      "sha256": "817f1d8e70e8648ac4d6e3b7a3c39624ff7047daafe1842fa859fbb7f915f7da",
+      "size": 2010113
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "graphics",
+      "key": "graphics/blog/byuctf-2022/banner.svg",
+      "localPath": "scripts/assets/sources/blog/byuctf-2022/banner.svg",
+      "sha256": "b27b440807283a2e1621d756f4616abc014b1853567b4964d321db94601c4bbd",
+      "size": 1020681
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "graphics",
+      "key": "graphics/blog/dhhutc-2022-port-authority/banner-dark.svg",
+      "localPath": "scripts/assets/sources/blog/dhhutc-2022-port-authority/banner-dark.svg",
+      "sha256": "4ecdaf4db55ac697e990e63007ec93cfaddab8001dba77a22b1c778fd360fc1e",
+      "size": 1372197
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "graphics",
+      "key": "graphics/blog/dhhutc-2022-port-authority/banner-light.svg",
+      "localPath": "scripts/assets/sources/blog/dhhutc-2022-port-authority/banner-light.svg",
+      "sha256": "b7f55b63126c920639e7efb1014484d13cae965a57f59eed1e0e8fab97a9517d",
+      "size": 2356802
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "graphics",
+      "key": "graphics/blog/dhhutc-2022-port-authority/banner.svg",
+      "localPath": "scripts/assets/sources/blog/dhhutc-2022-port-authority/banner.svg",
+      "sha256": "0e4e5ad5d81d23bf06dd0c0a5b40bb55c6182cd3ce2c6882ba3ac1cc3683677c",
+      "size": 3674702
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "graphics",
+      "key": "graphics/blog/dhhutc-2022-port-authority/checkvisual.svg",
+      "localPath": "scripts/assets/sources/blog/dhhutc-2022-port-authority/checkvisual.svg",
+      "sha256": "f5a7a0101949fa067fe109ce09351198b1c86d413a4a50807423ca2f10c2da5e",
+      "size": 240312
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "graphics",
+      "key": "graphics/blog/dhhutc-2022-port-authority/obstacles2.svg",
+      "localPath": "scripts/assets/sources/blog/dhhutc-2022-port-authority/obstacles2.svg",
+      "sha256": "49ef96bcd34b648f5dd7ac1157a7a10949bbed0d5ed6db7791c9d85a9acb885f",
+      "size": 517644
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "graphics",
+      "key": "graphics/blog/idekctf-2023-nmpz/5-lettered.svg",
+      "localPath": "scripts/assets/sources/blog/idekctf-2023-nmpz/5-lettered.svg",
+      "sha256": "314027738e4a3aef55a133941be222f45d7e9c66d88cad0444a35c114fc339bb",
+      "size": 6376224
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "graphics",
+      "key": "graphics/blog/idekctf-2023-nmpz/banner-dark.svg",
+      "localPath": "scripts/assets/sources/blog/idekctf-2023-nmpz/banner-dark.svg",
+      "sha256": "151dd053489851a2acfb61147ce562a290779238b8b206a80750140f419895a0",
+      "size": 1356761
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "graphics",
+      "key": "graphics/blog/idekctf-2023-nmpz/banner-light.svg",
+      "localPath": "scripts/assets/sources/blog/idekctf-2023-nmpz/banner-light.svg",
+      "sha256": "be5be44cc7185c1e295b21bf47a0e09966d17708bf76f69fb20d6c2d77d7ef00",
+      "size": 1462365
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "graphics",
+      "key": "graphics/blog/idekctf-2023-nmpz/banner-nmpz.svg",
+      "localPath": "scripts/assets/sources/blog/idekctf-2023-nmpz/banner-nmpz.svg",
+      "sha256": "9adb04c39b80eba912c6d78183f59e62b3923884a54149f18f7b6a16fe74d037",
+      "size": 11454578
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "graphics",
+      "key": "graphics/blog/japan-retrospective/banner-dark.svg",
+      "localPath": "scripts/assets/sources/blog/japan-retrospective/banner-dark.svg",
+      "sha256": "43d0bf66c23b349a2d5c0e1b58888906517f8201356472c90e5b3f0b74fd473f",
+      "size": 2109306
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "graphics",
+      "key": "graphics/blog/japan-retrospective/banner-light.svg",
+      "localPath": "scripts/assets/sources/blog/japan-retrospective/banner-light.svg",
+      "sha256": "95eab1c9052b245145a533a1fdc32ddd54cedd9d9ba0e7e5ae806df430267b6b",
+      "size": 2397027
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "graphics",
+      "key": "graphics/blog/japan-retrospective/day-0-map-1-dark.svg",
+      "localPath": "scripts/assets/sources/blog/japan-retrospective/day-0-map-1-dark.svg",
+      "sha256": "a01874771cd48511f76ebe55cc8227918d84da49d98789600a217e13acacf82a",
+      "size": 232116
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "graphics",
+      "key": "graphics/blog/japan-retrospective/day-0-map-1-light.svg",
+      "localPath": "scripts/assets/sources/blog/japan-retrospective/day-0-map-1-light.svg",
+      "sha256": "609573c8fd397bd6428666281f7d4ab153fab2c91837ae09678690b5011cdeb8",
+      "size": 234372
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "graphics",
+      "key": "graphics/blog/japan-retrospective/day-0-map-1.svg",
+      "localPath": "scripts/assets/sources/blog/japan-retrospective/day-0-map-1.svg",
+      "sha256": "768caf568ebcff918b5f43b2819e5db27e0a5ed7bf877e7fea4d519d91da571f",
+      "size": 618585
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "graphics",
+      "key": "graphics/blog/japan-retrospective/day-0-map-2-dark.svg",
+      "localPath": "scripts/assets/sources/blog/japan-retrospective/day-0-map-2-dark.svg",
+      "sha256": "0e063450b038183d7f55e7fed3433fc9949dd640a410c1ae0603369d582d5652",
+      "size": 1984325
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "graphics",
+      "key": "graphics/blog/japan-retrospective/day-0-map-2-light.svg",
+      "localPath": "scripts/assets/sources/blog/japan-retrospective/day-0-map-2-light.svg",
+      "sha256": "ac1d23e561d150acc77f1e817fc496788017e1114c6ca549de073b1c908f0713",
+      "size": 1912853
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "graphics",
+      "key": "graphics/blog/japan-retrospective/day-0-map-2.svg",
+      "localPath": "scripts/assets/sources/blog/japan-retrospective/day-0-map-2.svg",
+      "sha256": "277dbb72a4f68e2eb83951d09fc5f579c9e18ce87fc15b144923b0a74175f680",
+      "size": 4528400
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "graphics",
+      "key": "graphics/blog/japan-retrospective/day-1-map-1-dark.svg",
+      "localPath": "scripts/assets/sources/blog/japan-retrospective/day-1-map-1-dark.svg",
+      "sha256": "eeb0dcea2b9846f110f4f1f5a7f0017b872bd38d5bb10fb73445cd7aa0c37a98",
+      "size": 1358156
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "graphics",
+      "key": "graphics/blog/japan-retrospective/day-1-map-1-light.svg",
+      "localPath": "scripts/assets/sources/blog/japan-retrospective/day-1-map-1-light.svg",
+      "sha256": "f0fdbe0de3c7cace2842d8507d4ae1069c1f74ad290d466784c5a6cd0a62b280",
+      "size": 1370082
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "graphics",
+      "key": "graphics/blog/japan-retrospective/day-10-map-1-dark.svg",
+      "localPath": "scripts/assets/sources/blog/japan-retrospective/day-10-map-1-dark.svg",
+      "sha256": "78d57ee36dde7861cf4982dadf0fecc90d1a18e1c956899c48a65e599953b5f3",
+      "size": 1779615
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "graphics",
+      "key": "graphics/blog/japan-retrospective/day-10-map-1-light.svg",
+      "localPath": "scripts/assets/sources/blog/japan-retrospective/day-10-map-1-light.svg",
+      "sha256": "ce00aca27c297071a7e702c50bd17ef52cbe8df7d62468a2a3cecd50102dd691",
+      "size": 1841113
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "graphics",
+      "key": "graphics/blog/japan-retrospective/day-11-map-1-dark.svg",
+      "localPath": "scripts/assets/sources/blog/japan-retrospective/day-11-map-1-dark.svg",
+      "sha256": "86e0a08cda718e35e86fbc5f2b354489dbe0f522fd7912517ad2c1f4fd18a852",
+      "size": 1799449
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "graphics",
+      "key": "graphics/blog/japan-retrospective/day-11-map-1-light.svg",
+      "localPath": "scripts/assets/sources/blog/japan-retrospective/day-11-map-1-light.svg",
+      "sha256": "252b27cab39d1c84f9cd0412cfe9b636491b75a2ce0e1d53d9923d6dcc3c598e",
+      "size": 1864683
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "graphics",
+      "key": "graphics/blog/japan-retrospective/day-12-map-1-dark.svg",
+      "localPath": "scripts/assets/sources/blog/japan-retrospective/day-12-map-1-dark.svg",
+      "sha256": "99a34d58e6262ff8babc799d694df54c86ae60dffeba2442d5e6c0f4c542936e",
+      "size": 4416080
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "graphics",
+      "key": "graphics/blog/japan-retrospective/day-12-map-1-light.svg",
+      "localPath": "scripts/assets/sources/blog/japan-retrospective/day-12-map-1-light.svg",
+      "sha256": "604c2653b3c6cf1ec39c59b92fb3f738317e4dc942041b144015676b451e0343",
+      "size": 4540226
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "graphics",
+      "key": "graphics/blog/japan-retrospective/day-13-map-1-dark.svg",
+      "localPath": "scripts/assets/sources/blog/japan-retrospective/day-13-map-1-dark.svg",
+      "sha256": "8f330ee888ff507d26f86c2698b0769d8f299cb257c9245813e627db19e68f9a",
+      "size": 1309731
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "graphics",
+      "key": "graphics/blog/japan-retrospective/day-13-map-1-light.svg",
+      "localPath": "scripts/assets/sources/blog/japan-retrospective/day-13-map-1-light.svg",
+      "sha256": "ffc160f147bb373f3fec5e9fda0bab1faa10ae049c8aee546ff11e6b8def7170",
+      "size": 1339873
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "graphics",
+      "key": "graphics/blog/japan-retrospective/day-14-map-1-dark.svg",
+      "localPath": "scripts/assets/sources/blog/japan-retrospective/day-14-map-1-dark.svg",
+      "sha256": "14bb8c1af94ee046cf06bcfb805b11e0a865fff3628b0cfd5928ae2977936b58",
+      "size": 2532313
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "graphics",
+      "key": "graphics/blog/japan-retrospective/day-14-map-1-light.svg",
+      "localPath": "scripts/assets/sources/blog/japan-retrospective/day-14-map-1-light.svg",
+      "sha256": "5c3cba17f3b3d78344ea3156aabcb3c396f5ae67e3ae8955e0a6052dd83b5aa1",
+      "size": 2586821
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "graphics",
+      "key": "graphics/blog/japan-retrospective/day-2-map-1-dark.svg",
+      "localPath": "scripts/assets/sources/blog/japan-retrospective/day-2-map-1-dark.svg",
+      "sha256": "91eb62bc5b115f61959cacbc974cf91fa0f138d2c2486ea637cfa8092397ca02",
+      "size": 485897
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "graphics",
+      "key": "graphics/blog/japan-retrospective/day-2-map-1-light.svg",
+      "localPath": "scripts/assets/sources/blog/japan-retrospective/day-2-map-1-light.svg",
+      "sha256": "5a0b1e7cdeb40e440dc714ee24419ceb1b2e89ff114d9f018880b9bee12d01ab",
+      "size": 497793
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "graphics",
+      "key": "graphics/blog/japan-retrospective/day-3-map-1-dark.svg",
+      "localPath": "scripts/assets/sources/blog/japan-retrospective/day-3-map-1-dark.svg",
+      "sha256": "670badc15e389e550454eebaca7fbf59411def5ea274390ec1f6e9012feeab34",
+      "size": 1990202
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "graphics",
+      "key": "graphics/blog/japan-retrospective/day-3-map-1-light.svg",
+      "localPath": "scripts/assets/sources/blog/japan-retrospective/day-3-map-1-light.svg",
+      "sha256": "ec8264ffbbef80e42ca3cf3c8c6a376eac4b61f4e685ab7f467d525001e78ea3",
+      "size": 2058574
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "graphics",
+      "key": "graphics/blog/japan-retrospective/day-4-map-1-dark.svg",
+      "localPath": "scripts/assets/sources/blog/japan-retrospective/day-4-map-1-dark.svg",
+      "sha256": "9cff6d18166116f239edad2887b702e7a6f147c52498ba3b172222871a072af4",
+      "size": 2230383
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "graphics",
+      "key": "graphics/blog/japan-retrospective/day-4-map-1-light.svg",
+      "localPath": "scripts/assets/sources/blog/japan-retrospective/day-4-map-1-light.svg",
+      "sha256": "437471d7507a00fd8e4fc96a5dbe4c0daf7c007373711c65354a39523ed08e71",
+      "size": 2296289
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "graphics",
+      "key": "graphics/blog/japan-retrospective/day-5-map-1-dark.svg",
+      "localPath": "scripts/assets/sources/blog/japan-retrospective/day-5-map-1-dark.svg",
+      "sha256": "22380c560c4c27d660832e7619c451fa4a76a4ba874d12aff9bce4f181f47016",
+      "size": 2921743
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "graphics",
+      "key": "graphics/blog/japan-retrospective/day-5-map-1-light.svg",
+      "localPath": "scripts/assets/sources/blog/japan-retrospective/day-5-map-1-light.svg",
+      "sha256": "d6f2da156bb98ef081495623b0b756e29e03e71fd7426ae0c96e4a71719a2ce7",
+      "size": 3002921
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "graphics",
+      "key": "graphics/blog/japan-retrospective/day-5-map-2-dark.svg",
+      "localPath": "scripts/assets/sources/blog/japan-retrospective/day-5-map-2-dark.svg",
+      "sha256": "e7eb2abcbc5b8e01886aefd582c7157b1f2247d798b5ac8cbd0bd91090cb9a48",
+      "size": 290085
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "graphics",
+      "key": "graphics/blog/japan-retrospective/day-5-map-2-light.svg",
+      "localPath": "scripts/assets/sources/blog/japan-retrospective/day-5-map-2-light.svg",
+      "sha256": "ae0f74fa397a0bba066e63521883ca9949f33ddade1700f38ef743e998bcf98f",
+      "size": 300125
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "graphics",
+      "key": "graphics/blog/japan-retrospective/day-6-map-1-dark.svg",
+      "localPath": "scripts/assets/sources/blog/japan-retrospective/day-6-map-1-dark.svg",
+      "sha256": "05c8068ec069cbc1cbdd801501383d9ae425878e24675ca496c6c171d7225911",
+      "size": 1101404
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "graphics",
+      "key": "graphics/blog/japan-retrospective/day-6-map-1-light.svg",
+      "localPath": "scripts/assets/sources/blog/japan-retrospective/day-6-map-1-light.svg",
+      "sha256": "295874ac162e595b79397e055933827917090190d43932259a086ba8bd94bf62",
+      "size": 1130554
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "graphics",
+      "key": "graphics/blog/japan-retrospective/day-7-map-1-dark.svg",
+      "localPath": "scripts/assets/sources/blog/japan-retrospective/day-7-map-1-dark.svg",
+      "sha256": "791c323dc9904093fe3f8db5c037f4d8a377fc3652ea86129c095bf0ad12a877",
+      "size": 1000930
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "graphics",
+      "key": "graphics/blog/japan-retrospective/day-7-map-1-light.svg",
+      "localPath": "scripts/assets/sources/blog/japan-retrospective/day-7-map-1-light.svg",
+      "sha256": "1db88268289c9d99b1f4271d976272ebacd20608cc58c2b02a284726ab7b0888",
+      "size": 1030872
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "graphics",
+      "key": "graphics/blog/japan-retrospective/day-8-map-1-dark.svg",
+      "localPath": "scripts/assets/sources/blog/japan-retrospective/day-8-map-1-dark.svg",
+      "sha256": "89a358a6c2180baf92d19a06425930737a9d3ff430613f12a6839d722bf4416a",
+      "size": 2315228
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "graphics",
+      "key": "graphics/blog/japan-retrospective/day-8-map-1-light.svg",
+      "localPath": "scripts/assets/sources/blog/japan-retrospective/day-8-map-1-light.svg",
+      "sha256": "eb9d703623967f0b583433c5c175e24b7ef2105749c074ba6e65375336e1f221",
+      "size": 2368482
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "graphics",
+      "key": "graphics/blog/japan-retrospective/day-9-map-1-dark.svg",
+      "localPath": "scripts/assets/sources/blog/japan-retrospective/day-9-map-1-dark.svg",
+      "sha256": "a5e22e72ffcf9472b062cc5bbc9db31d09bc07abaa75d2f603abcc3031260e7e",
+      "size": 1430918
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "graphics",
+      "key": "graphics/blog/japan-retrospective/day-9-map-1-light.svg",
+      "localPath": "scripts/assets/sources/blog/japan-retrospective/day-9-map-1-light.svg",
+      "sha256": "89443c2f84546c099ed60dfd8ac86f19d0365aadaca564d0becdaa2215d8ce4e",
+      "size": 1463098
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "graphics",
+      "key": "graphics/blog/japan-retrospective/intro-banner-dark.svg",
+      "localPath": "scripts/assets/sources/blog/japan-retrospective/intro-banner-dark.svg",
+      "sha256": "e66415e64d04c22ef58396b324beb554b1b82f734cf5417b560ddda83d7e8724",
+      "size": 1261337
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "graphics",
+      "key": "graphics/blog/japan-retrospective/intro-banner-light.svg",
+      "localPath": "scripts/assets/sources/blog/japan-retrospective/intro-banner-light.svg",
+      "sha256": "f9b8e5df5159b0770c5e6403c6acdcffa7c0923e309de7c24e27bcc63fd5a708",
+      "size": 1275945
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "graphics",
+      "key": "graphics/blog/japan-retrospective/intro-banner.svg",
+      "localPath": "scripts/assets/sources/blog/japan-retrospective/intro-banner.svg",
+      "sha256": "ac8ef80aef0376ca4099efc9fdd27595ff5663158c5881b1cd0b75dc1f32ffe9",
+      "size": 2676041
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "graphics",
+      "key": "graphics/blog/japan-retrospective/main-map-dark.svg",
+      "localPath": "scripts/assets/sources/blog/japan-retrospective/main-map-dark.svg",
+      "sha256": "fac7465b93999681108d6784f27e5ab91d3f91dfd9da9f3a65bba4d968137a0f",
+      "size": 960190
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "graphics",
+      "key": "graphics/blog/japan-retrospective/main-map-light.svg",
+      "localPath": "scripts/assets/sources/blog/japan-retrospective/main-map-light.svg",
+      "sha256": "97b0e1ca06d95d550a4a8ae93c2d38a0e636e59dbb0ddaec8e7cca59a057c003",
+      "size": 931058
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "graphics",
+      "key": "graphics/blog/japan-retrospective/main-map.svg",
+      "localPath": "scripts/assets/sources/blog/japan-retrospective/main-map.svg",
+      "sha256": "7bd84e0157af8af601abb3e491b8ab969152760bac70e11b75fbb71fdc6f2ed6",
+      "size": 2097289
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "graphics",
+      "key": "graphics/blog/mhsctf-2023-matchmaker/augmented-blossom.svg",
+      "localPath": "scripts/assets/sources/blog/mhsctf-2023-matchmaker/augmented-blossom.svg",
+      "sha256": "c24276c3fa7306785e4c56600b4c7278987463a05e4c1cedce0fe783008902b6",
+      "size": 17921
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "graphics",
+      "key": "graphics/blog/mhsctf-2023-matchmaker/augmented-path.svg",
+      "localPath": "scripts/assets/sources/blog/mhsctf-2023-matchmaker/augmented-path.svg",
+      "sha256": "033d0fd2a61c9bba978d201b79ba79e7d2a7091d709fad888dd957b90e80977d",
+      "size": 22316
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "graphics",
+      "key": "graphics/blog/mhsctf-2023-matchmaker/augmenting-paths.svg",
+      "localPath": "scripts/assets/sources/blog/mhsctf-2023-matchmaker/augmenting-paths.svg",
+      "sha256": "c95c09234463be3deda4177ca3e8261ea61a92f394785e1afa9711963f9f6267",
+      "size": 24516
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "graphics",
+      "key": "graphics/blog/mhsctf-2023-matchmaker/banner.svg",
+      "localPath": "scripts/assets/sources/blog/mhsctf-2023-matchmaker/banner.svg",
+      "sha256": "027816891e4fe8ae9bd5869e6f70e8b73a399c8866134f7afd1cff454a92a579",
+      "size": 210763
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "graphics",
+      "key": "graphics/blog/mhsctf-2023-matchmaker/biweight.svg",
+      "localPath": "scripts/assets/sources/blog/mhsctf-2023-matchmaker/biweight.svg",
+      "sha256": "62b53244dbfa5089ae3b045f0d6ca2fddcec0e7eb9816138cd98a6144ffd4949",
+      "size": 13365
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "graphics",
+      "key": "graphics/blog/mhsctf-2023-matchmaker/blossom-contraction.svg",
+      "localPath": "scripts/assets/sources/blog/mhsctf-2023-matchmaker/blossom-contraction.svg",
+      "sha256": "ff208ccf795ce02df3e693032cf36adaeb33fed47561db1b1c2824ed3cffefff",
+      "size": 15377
+    },
+    {
+      "contentType": "image/png",
+      "group": "graphics",
+      "key": "graphics/blog/mhsctf-2023-matchmaker/blossom-transparent.png",
+      "localPath": "scripts/assets/sources/blog/mhsctf-2023-matchmaker/blossom-transparent.png",
+      "sha256": "a3bc873382793ce59fa427bc9e858dd2f6c56f13eeeae1c20e78b6afbbfdb689",
+      "size": 121229
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "graphics",
+      "key": "graphics/blog/mhsctf-2023-matchmaker/blossom-transparent.svg",
+      "localPath": "scripts/assets/sources/blog/mhsctf-2023-matchmaker/blossom-transparent.svg",
+      "sha256": "efc05dd2ecb0bb0987326571ba29906fc63018f7622ccae44f814389f4ebb471",
+      "size": 6362
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "graphics",
+      "key": "graphics/blog/mhsctf-2023-matchmaker/blossom.svg",
+      "localPath": "scripts/assets/sources/blog/mhsctf-2023-matchmaker/blossom.svg",
+      "sha256": "9fc585009d46bce267d02ddbd5ca1b4a390b37f58ddb11b99a6748aa7ac82a66",
+      "size": 20506
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "graphics",
+      "key": "graphics/blog/mhsctf-2023-matchmaker/expanded-blossom.svg",
+      "localPath": "scripts/assets/sources/blog/mhsctf-2023-matchmaker/expanded-blossom.svg",
+      "sha256": "aa1dd42ba81c2880f74d292e688ffffd822cabe49b5f74aa3e43b013662eff9f",
+      "size": 20417
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "graphics",
+      "key": "graphics/blog/mhsctf-2023-matchmaker/graph.svg",
+      "localPath": "scripts/assets/sources/blog/mhsctf-2023-matchmaker/graph.svg",
+      "sha256": "79b1bdeb1d644b17a5821e5fd0a9022c64a26a8f87948c0b0c0a399b11f5ad50",
+      "size": 17345
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "graphics",
+      "key": "graphics/blog/mhsctf-2023-matchmaker/matching.svg",
+      "localPath": "scripts/assets/sources/blog/mhsctf-2023-matchmaker/matching.svg",
+      "sha256": "8f3e054a3e5bca22c541a4b908cd8028f3e0acfbfa65340e3be1e56f4173c96a",
+      "size": 17430
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "graphics",
+      "key": "graphics/blog/mhsctf-2023-matchmaker/weights.svg",
+      "localPath": "scripts/assets/sources/blog/mhsctf-2023-matchmaker/weights.svg",
+      "sha256": "06c1b24c862985b64b3b22694bf8b9800426e862a1c6e11d5a28076f8338aada",
+      "size": 24417
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "graphics",
+      "key": "graphics/blog/picoctf-2022-beginners-compilation/banner.svg",
+      "localPath": "scripts/assets/sources/blog/picoctf-2022-beginners-compilation/banner.svg",
+      "sha256": "4aef1c8a98d5741aa2441007702c4b9d1f22ead1462022ebeeb3aea50f6d377d",
+      "size": 224643
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "graphics",
+      "key": "graphics/blog/picoctf-2022-buffer-overflow/banner.svg",
+      "localPath": "scripts/assets/sources/blog/picoctf-2022-buffer-overflow/banner.svg",
+      "sha256": "91a8b6e12c5a65464fdb61123c3d8a4f65c5a5aaa7c79a8875a25dd9d3775b1c",
+      "size": 272808
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "graphics",
+      "key": "graphics/blog/sekaictf-2022-forensics-compilation/banner.svg",
+      "localPath": "scripts/assets/sources/blog/sekaictf-2022-forensics-compilation/banner.svg",
+      "sha256": "d521170aa4778dbe2926ac015c4b8bcec72edff2f7de856d6bfec4023659304d",
+      "size": 1604647
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "graphics",
+      "key": "graphics/blog/shctf-2022-compilation/banner.svg",
+      "localPath": "scripts/assets/sources/blog/shctf-2022-compilation/banner.svg",
+      "sha256": "0cd2b073bc5a74232656df3b1f5f95d9a16c4186cd0dad41c5fb8364938a905a",
+      "size": 1136953
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "graphics",
+      "key": "graphics/blog/smart-eyes-stupid-hands/banner-dark.svg",
+      "localPath": "scripts/assets/sources/blog/smart-eyes-stupid-hands/banner-dark.svg",
+      "sha256": "f39a4174faf0385388f0b8a142eb9f3025543da5fce43e7ea19ff666d6dba156",
+      "size": 316585
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "graphics",
+      "key": "graphics/blog/smart-eyes-stupid-hands/banner-light.svg",
+      "localPath": "scripts/assets/sources/blog/smart-eyes-stupid-hands/banner-light.svg",
+      "sha256": "5547e1220564006625e6d360078a751b9485081aa7c37c563c5530798fccbe17",
+      "size": 319153
+    },
+    {
+      "contentType": "image/svg+xml",
+      "group": "graphics",
+      "key": "graphics/blog/wolvctf-2023-wannaflag/banner.svg",
+      "localPath": "scripts/assets/sources/blog/wolvctf-2023-wannaflag/banner.svg",
+      "sha256": "41bb6d46378b6756620948625f8a8c1222b6efd9931c1f9659dfc12b14f98533",
+      "size": 5599656
     },
     {
       "contentType": "image/svg+xml",

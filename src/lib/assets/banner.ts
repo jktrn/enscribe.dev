@@ -18,9 +18,8 @@ export function themedBanner(
   if (light.includes("<image") || dark.includes("<image")) {
     throw new Error(
       `${entry.id}: banner SVG pair contains <image> — raster-bearing ` +
-        `banners belong in graphics/blog/<post>/; move them there ` +
-        `and point frontmatter at the rendered webp pair ` +
-        `(see graphics/README.md)`,
+        `banners belong in scripts/assets/sources/blog/<post>/; move them there ` +
+        `and point frontmatter at the rendered webp pair`,
     )
   }
 
@@ -65,8 +64,8 @@ export function bannerRaster(
     throw new Error(
       `${entry.id}: banner frontmatter without a rendered WebP pair at ` +
         `src/content/blog/${post}/assets/banner-{light,dark}.webp. Copy the ` +
-        `SVG masters to graphics/blog/${post}/ and run ` +
-        `\`bun run content:render\` (see graphics/README.md)`,
+        `SVG masters to scripts/assets/sources/blog/${post}/ and run ` +
+        `\`bun run content:render\``,
     )
   }
   return { light, dark }
