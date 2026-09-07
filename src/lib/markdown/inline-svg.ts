@@ -58,8 +58,8 @@ export const inlineSvg = defineMdastPlugin({
       if (lightSource.includes("<image") || darkSource.includes("<image")) {
         throw new Error(
           `${node.url}: raster-bearing SVG pairs belong in ` +
-            `graphics/blog/<post>/; move them there and reference the ` +
-            `rendered webp pair instead (see graphics/README.md)`,
+            `scripts/assets/sources/blog/<post>/; move them there and reference the ` +
+            `rendered webp pair instead`,
         )
       }
       const prefix = `themed-${createHash("sha256").update(resolve(dir, base)).digest("hex").slice(0, 8)}`

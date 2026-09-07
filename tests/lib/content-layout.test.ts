@@ -306,10 +306,7 @@ describe("content layout safety", () => {
       root,
       ":is(.gsc-comment-content, .gsc-reply-content)",
     )
-    const fontStager = await readFile(
-      "scripts/manage-licensed-fonts.ts",
-      "utf8",
-    )
+    const fontStager = await readFile("scripts/assets/fonts.ts", "utf8")
     const monoFonts = [
       "IBMPlexMono-Regular.woff2",
       "IBMPlexMono-Italic.woff2",

@@ -133,7 +133,7 @@ async function readVerified(
   return Buffer.isBuffer(state) ? state : null
 }
 
-async function downloadAsset(
+export async function downloadAsset(
   client: S3Client,
   bucket: string,
   repoRoot: string,
@@ -167,7 +167,7 @@ async function downloadAsset(
   }
 }
 
-async function uploadAsset(
+export async function uploadAsset(
   client: S3Client,
   bucket: string,
   repoRoot: string,
@@ -291,7 +291,7 @@ export async function prepareAssets(
     const paths = stale.map((asset) => `  ${asset.localPath}`).join("\n")
     if (onStale === "fail") {
       throw new Error(
-        `${stale.length} private asset(s) differ from private-assets/media-manifest.json:\n${paths}\n` +
+        `${stale.length} private asset(s) differ from their recorded checksums:\n${paths}\n` +
           "Refusing to overwrite local edits. Publish them with " +
           "`bun run content:render && bun run media:manifest && bun run media:upload`, " +
           "or delete the file(s) to restore the manifest version.",
