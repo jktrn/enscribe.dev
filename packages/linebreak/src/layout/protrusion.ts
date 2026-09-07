@@ -3,32 +3,21 @@ import { type Item, lineEndWidth } from "./items"
 
 export type Advance = (character: string) => number
 
-const firstCharacter = (text: string) => {
-  for (const character of text) return character
-  return ""
-}
-
-const lastCharacter = (text: string) => {
-  let last = ""
-  for (const character of text) last = character
-  return last
-}
-
 const hangOf = (character: string, side: "l" | "r", advance: Advance) => {
   const code = protrusionCode(latinProtrusion, character, side)
   return code === 0 ? 0 : (code / 1000) * advance(character)
 }
 
+// This Latin table contains only single UTF-16 code units. Empty strings and
+// surrogate halves have no entry, so both receive zero credit without probing.
 export const startHang = (text: string, advance: Advance) =>
-  text.length === 0 ? 0 : hangOf(firstCharacter(text), "l", advance)
+  hangOf(text.charAt(0), "l", advance)
 
 export const endHang = (text: string, advance: Advance) =>
-  text.length === 0 ? 0 : hangOf(lastCharacter(text), "r", advance)
+  hangOf(text.slice(-1), "r", advance)
 
 export const hyphenHang = (drawnWidth: number) =>
-  drawnWidth === 0
-    ? 0
-    : (protrusionCode(latinProtrusion, "-", "r") / 1000) * drawnWidth
+  (protrusionCode(latinProtrusion, "-", "r") / 1000) * drawnWidth
 
 export type Hangs = {
   readonly start: Float64Array

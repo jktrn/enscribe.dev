@@ -1,6 +1,6 @@
 import { expect, test } from "bun:test"
 import { readFileSync } from "node:fs"
-import type { Item, ItemSource } from "@linebreak/layout/items"
+import { breakPenalty, type Item, type ItemSource } from "@linebreak/layout/items"
 import {
   type CompileResult,
   compileRuns,
@@ -34,6 +34,10 @@ const itemsOf = (result: CompileResult) => {
 }
 
 const sourceOf = (item: Item) => item.source as ItemSource
+
+const breakableSpaces = (items: readonly Item[]) => items.filter((item, index) =>
+  item.kind === "glue" && item.width > 0 && breakPenalty(items, index) !== null,
+)
 
 const keyOf = (item: Item) => {
   const at = `${sourceOf(item).start}-${sourceOf(item).end}`
@@ -132,6 +136,30 @@ test("inline extras fold into the boxes at each end of their own run", () => {
   expect(boxAt(items, 6)?.width).toBeCloseTo(measure("ef"), 9)
 })
 
+test("one-sided inline extras survive independently", () => {
+  for (const extras of [{ leading: 7 }, { trailing: 5 }]) {
+    const items = itemsOf(compileRuns([{ text: "ab", ...extras }], metrics))
+    expect(boxAt(items, 0)?.width).toBeCloseTo(
+      measure("ab") + (extras.leading ?? 0) + (extras.trailing ?? 0),
+      9,
+    )
+  }
+})
+
+test("a call-wide code policy applies unless a run explicitly overrides it", () => {
+  const source = "parseHTTPResponse"
+  const implicit = itemsOf(
+    compileRuns([{ text: source }], metrics, { code: true }),
+  )
+  const explicit = itemsOf(compileRuns([{ text: source, code: true }], metrics))
+  const prose = itemsOf(
+    compileRuns([{ text: source, code: false }], metrics, { code: true }),
+  )
+  expect(implicit).toEqual(explicit)
+  expect(implicit.some((item) => item.kind === "discretionary")).toBe(true)
+  expect(prose.some((item) => item.kind === "discretionary")).toBe(false)
+})
+
 test("a zero-length run reaches backwards or waits, as it is told", () => {
   const back = itemsOf(
     compileRuns(
@@ -212,13 +240,8 @@ test("a nowrap range spanning two runs closes the break between them", () => {
     compileRuns(runs, metrics, { nowrap: [{ start: 0, end: 9 }] }),
   )
 
-  expect(
-    open.filter((item) => item.kind === "glue" && item.width > 0),
-  ).toHaveLength(1)
-  expect(shut.filter((item) => item.kind === "glue" && item.width > 0)).toEqual(
-    [],
-  )
-  expect(boxAt(shut, 4)?.width).toBeCloseTo(measure(" "), 9)
+  expect(breakableSpaces(open)).toHaveLength(1)
+  expect(breakableSpaces(shut)).toEqual([])
   expect(widthOf(shut)).toBeCloseTo(widthOf(open), 9)
 })
 
@@ -232,6 +255,20 @@ test("nowrap ranges need not arrive sorted or disjoint", () => {
     ],
   })
 
-  expect(itemsOf(tidy).filter((item) => item.kind === "glue")).toHaveLength(1)
+  expect(breakableSpaces(itemsOf(tidy))).toHaveLength(0)
   expect(streamOf(messy)).toBe(streamOf(tidy))
+})
+
+test("disjoint nowrap spans preserve break opportunities between them", () => {
+  const items = itemsOf(
+    compileRuns([{ text: "a b c d e" }], metrics, {
+      nowrap: [
+        { start: 6, end: 9 },
+        { start: 0, end: 3 },
+      ],
+    }),
+  )
+  expect(
+    breakableSpaces(items).map((item) => item.source?.start),
+  ).toEqual([3, 5])
 })

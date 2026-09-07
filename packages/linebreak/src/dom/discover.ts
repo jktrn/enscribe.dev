@@ -1,5 +1,7 @@
+import { ATTRIBUTES } from "../attributes"
+
 export const DEFAULT_SKIP = [
-  "[data-linebreak-skip]",
+  `[${ATTRIBUTES.skip}]`,
   "pre",
   "table",
   "svg",
@@ -52,7 +54,7 @@ const carriesProse = (
   discovery: Discovery,
 ): element is HTMLElement => {
   if (!(element instanceof HTMLElement)) return false
-  if (!(element.textContent ?? "").trim()) return false
+  if (!element.textContent!.trim()) return false
   return !discovery.filter || discovery.filter(element)
 }
 

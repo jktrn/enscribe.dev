@@ -97,7 +97,6 @@ const compile = (
     block,
     metricsFor: runtime.metricsFor,
     baseFont: base.font,
-    atomWidth: () => 0,
     locale: options.locale ?? "en",
     isCode: runtime.isCode,
     policy: resolvePolicy(options.policy),
@@ -137,7 +136,7 @@ const edgesOf = (run: CompileRun): RunEdges => {
 
 const runAt = (run: CompileRun, start: number): CompiledRun =>
   isAnchor(run)
-    ? { kind: "anchor", text: "", start, end: start, affinity: run.attach }
+    ? { kind: "anchor", start, end: start, affinity: run.attach }
     : {
         kind: "text",
         text: run.text,
@@ -166,20 +165,14 @@ type Plan = {
   readonly runtime: Runtime
 }
 
-const textSpec = (run: CompileRun | undefined): CompileTextRun | undefined =>
-  run && !isAnchor(run) ? run : undefined
-
 const runtimeFor = (
   specs: ReadonlyMap<CompiledRun, CompileRun>,
   base: FontMetrics,
   code: boolean,
 ): Runtime => ({
-  metricsFor: (run) => textSpec(specs.get(run))?.metrics ?? base,
-  isCode: (run) => textSpec(specs.get(run))?.code ?? code,
-  edgesFor: (run) => {
-    const spec = specs.get(run)
-    return spec ? edgesOf(spec) : NO_EDGES
-  },
+  metricsFor: (run) => (specs.get(run) as CompileTextRun).metrics ?? base,
+  isCode: (run) => (specs.get(run) as CompileTextRun).code ?? code,
+  edgesFor: (run) => edgesOf(specs.get(run) as CompileRun),
 })
 
 const planRuns = (
@@ -195,7 +188,7 @@ const planRuns = (
     const made = runAt(run, text.length)
     compiled.push(made)
     specs.set(made, run)
-    text += made.text
+    if (made.kind === "text") text += made.text
   }
 
   return {

@@ -12,5 +12,5 @@
       "@linebreak/*": ["../../packages/linebreak/src/*"]
     }
   },
-  "include": ["unit/**/*.ts", "package/**/*.ts", "e2e/**/*.ts"]
+  "include": ["unit/**/*.ts", "browser/**/*.ts", "package/**/*.ts", "e2e/**/*.ts"]
 }

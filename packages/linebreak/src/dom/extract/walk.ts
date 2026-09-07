@@ -1,11 +1,13 @@
 import type { ComposeReason } from "../../types"
+import { ATTRIBUTES } from "../../attributes"
 import type { StyleReader } from "../style"
 import { DECORATION, OBJECT_REPLACEMENT } from "./runs"
 
-type RawBase = { wrappers: HTMLElement[]; noWrapOwner?: Element }
+type RawBase = { wrappers: HTMLElement[] }
 
 export type RawText = RawBase & {
   kind: "text"
+  noWrapOwner?: Element
   text: string
   sourceElement: HTMLElement
 }
@@ -23,6 +25,8 @@ export type RawBreak = RawBase & {
 }
 
 export type Raw = RawText | RawAtom | RawBreak
+
+const HTML_NAMESPACE = "http://www.w3.org/1999/xhtml"
 
 type Layout =
   | "hidden"
@@ -46,7 +50,7 @@ const displayLayout = (element: Element, display: string): Layout => {
   ) {
     return "atom"
   }
-  if (!(element instanceof HTMLElement)) {
+  if (element.namespaceURI !== HTML_NAMESPACE) {
     return display === "inline" ? "atom" : "unsupported"
   }
   if (display === "contents") return "contents"
@@ -57,33 +61,34 @@ const displayLayout = (element: Element, display: string): Layout => {
 const elementLayout = (element: Element, display: string): Layout => {
   if (display === "none") return "hidden"
 
-  if (element.matches("br, wbr")) return "break"
-  if (element.hasAttribute("data-linebreak-atom")) return "atom"
+  if (element.namespaceURI === HTML_NAMESPACE && element.matches("br, wbr"))
+    return "break"
+  if (element.hasAttribute(ATTRIBUTES.atom)) return "atom"
 
-  if (element instanceof HTMLInputElement) {
-    return element.disabled ? "atom" : "unsupported"
+  if (
+    element.namespaceURI === HTML_NAMESPACE &&
+    element.localName === "input"
+  ) {
+    return (element as HTMLInputElement).disabled ? "atom" : "unsupported"
   }
-  if (element instanceof HTMLImageElement) return "atom"
+  if (element.namespaceURI === HTML_NAMESPACE && element.localName === "img")
+    return "atom"
   return displayLayout(element, display)
 }
 
 const childDescent = (
-  element: Element,
+  element: HTMLElement,
   descent: Descent,
   style: CSSStyleDeclaration,
   noWrapOwner: Element | undefined,
 ): Descent => ({
-  wrappers:
-    element instanceof HTMLElement
-      ? [...descent.wrappers, element]
-      : descent.wrappers,
+  wrappers: [...descent.wrappers, element],
   noWrapOwner,
   collapses: style.whiteSpaceCollapse === "collapse",
 })
 
 export class RawCollector {
   readonly raws: Raw[] = []
-  private rejected: ComposeReason | undefined
 
   constructor(
     private readonly block: HTMLElement,
@@ -100,55 +105,37 @@ export class RawCollector {
 
     for (const child of this.block.childNodes) {
       if (!this.visit(child, descent)) {
-        return this.rejected ?? "unsupported-content"
+        return "unsupported-content"
       }
     }
     return null
   }
 
-  private reject(_node: Element, _detail: string) {
-    this.rejected ??= "unsupported-content"
-    return false
-  }
-
-  private pushAtom(
-    element: Element,
-    wrappers: HTMLElement[],
-    noWrapOwner: Element | undefined,
-  ) {
+  private pushAtom(element: Element, wrappers: HTMLElement[]) {
     this.raws.push({
       kind: "atom",
       text: OBJECT_REPLACEMENT,
       wrappers,
       sourceElement: element,
-      noWrapOwner,
     })
   }
 
   private visitText(node: Node, descent: Descent) {
     if (!node.textContent) return true
     if (!descent.collapses) {
-      return this.reject(
-        node.parentElement ?? this.block,
-        "white-space-collapse other than collapse",
-      )
+      return false
     }
     this.raws.push({
       kind: "text",
       text: node.textContent,
       wrappers: descent.wrappers,
-      sourceElement: node.parentElement ?? this.block,
+      sourceElement: node.parentElement!,
       noWrapOwner: descent.noWrapOwner,
     })
     return true
   }
 
-  private emitLeaf(
-    element: Element,
-    layout: Layout,
-    descent: Descent,
-    atomOwner: Element | undefined,
-  ) {
+  private emitLeaf(element: Element, layout: Layout, descent: Descent) {
     if (layout === "break") {
       this.raws.push({
         kind: "break",
@@ -159,7 +146,7 @@ export class RawCollector {
       return true
     }
     if (layout === "atom") {
-      this.pushAtom(element, descent.wrappers, atomOwner)
+      this.pushAtom(element, descent.wrappers)
       return true
     }
     return false
@@ -173,16 +160,12 @@ export class RawCollector {
   ): boolean {
     const before = this.raws.length
     for (const child of element.childNodes) {
-      if (!this.visit(child, inner)) {
-        this.raws.length = before
-        return false
-      }
+      if (!this.visit(child, inner)) return false
     }
 
     if (!inline || this.raws.length !== before) return true
     if (element.getBoundingClientRect().width > 0) {
-      const owner = descent.noWrapOwner ?? inner.noWrapOwner
-      this.pushAtom(element, descent.wrappers, owner)
+      this.pushAtom(element, descent.wrappers)
     }
     return true
   }
@@ -194,23 +177,19 @@ export class RawCollector {
     const layout = elementLayout(element, style.display)
     if (layout === "hidden") return true
     if (layout === "unsupported") {
-      return this.reject(element, `display: ${style.display}`)
+      return false
     }
+
+    if (this.emitLeaf(element, layout, descent)) return true
 
     const nowrap = style.textWrapMode === "nowrap"
     const noWrapOwner = nowrap ? (descent.noWrapOwner ?? element) : undefined
-    if (
-      this.emitLeaf(
-        element,
-        layout,
-        descent,
-        descent.noWrapOwner ?? noWrapOwner,
-      )
-    ) {
-      return true
-    }
-
-    const inner = childDescent(element, descent, style, noWrapOwner)
+    const inner = childDescent(
+      element as HTMLElement,
+      descent,
+      style,
+      noWrapOwner,
+    )
     return this.descend(element, descent, inner, layout === "inline")
   }
 

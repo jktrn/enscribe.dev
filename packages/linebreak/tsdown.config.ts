@@ -15,8 +15,8 @@ export default defineConfig({
   clean: true,
   dts: true,
   deps: {
-    neverBundle: ["@chenglou/pretext", "hyphen"],
-    onlyImport: ["@chenglou/pretext", "hyphen"],
+    neverBundle: ["@chenglou/pretext"],
+    onlyImport: ["@chenglou/pretext"],
   },
   copy: [
     { from: "src/styles.css", to: "dist", flatten: true },

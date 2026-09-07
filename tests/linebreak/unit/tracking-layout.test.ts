@@ -73,6 +73,14 @@ describe("what the letterfit is worth to a line", () => {
     expect(trackOne(210).gain).toBe(0)
   })
 
+  test("a direction with no elasticity cannot spend a glyph budget", () => {
+    expect(trackOne(215, { stretch: 0 }).gain).toBe(0)
+    expect(trackOne(205, { shrink: 0 }).gain).toBe(0)
+    const immovable = [{ pct: 100, gain: 0, stretch: 0, shrink: 0 }]
+    expect(trackOne(215, {}, immovable).gain).toBe(0)
+    expect(trackOne(205, {}, immovable).gain).toBe(0)
+  })
+
   test("the spaces keep their own shrink and are charged no more", () => {
     expect(trackOne(205).shrink).toBeCloseTo(SPACE_SHRINK, 9)
   })

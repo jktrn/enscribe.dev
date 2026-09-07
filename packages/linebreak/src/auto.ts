@@ -1,3 +1,5 @@
+import { queuedSlice, captureBatch } from "./browser/scheduling"
+import { ATTRIBUTES } from "./attributes"
 import { handleCopy } from "./dom/clipboard"
 import { proseBlocks } from "./dom/discover"
 import { createLinebreaker } from "./linebreaker"
@@ -52,7 +54,7 @@ export interface Typesetter {
   dispose(): void
 }
 
-const DEFAULT_ROOTS = "[data-linebreak-root]"
+const DEFAULT_ROOTS = `[${ATTRIBUTES.root}]`
 const DEFAULT_MARGIN = "200% 0px"
 const DEFAULT_BLOCKS_PER_SLICE = 12
 const DEFAULT_SLICE_MS = 6
@@ -79,31 +81,48 @@ class BrowserTypesetter<Token> implements Typesetter {
   private sliceCount = 0
   private generation = 0
   private disposed = false
+  private writing = false
+  private readonly lifecycle = new AbortController()
 
   private settledPromise = Promise.resolve()
   private resolveSettled: (() => void) | undefined
 
   constructor(options: TypesetterOptions<Token>) {
     this.options = options
-    this.linebreaker = createLinebreaker(options)
+    this.linebreaker = createLinebreaker({
+      ...options,
+      onOutcome: undefined,
+    })
     this.blocksPerSlice =
       options.budget?.blocksPerSlice ?? DEFAULT_BLOCKS_PER_SLICE
     this.sliceMs = options.budget?.sliceMs ?? DEFAULT_SLICE_MS
 
+    if (!Number.isInteger(this.blocksPerSlice) || this.blocksPerSlice <= 0) {
+      throw new RangeError(
+        "linebreak: blocksPerSlice must be a positive integer",
+      )
+    }
+    if (!Number.isFinite(this.sliceMs) || this.sliceMs <= 0) {
+      throw new RangeError(
+        "linebreak: sliceMs must be a finite positive number",
+      )
+    }
+
     if (options.copy !== false) {
-      document.addEventListener("copy", handleCopy, { signal: options.signal })
+      document.addEventListener("copy", this.onCopy, {
+        signal: this.lifecycle.signal,
+      })
     }
     if (options.print !== false) {
       addEventListener("beforeprint", this.onBeforePrint, {
-        signal: options.signal,
+        signal: this.lifecycle.signal,
       })
       addEventListener("afterprint", this.onAfterPrint, {
-        signal: options.signal,
+        signal: this.lifecycle.signal,
       })
     }
-    options.signal?.addEventListener("abort", () => this.dispose(), {
-      once: true,
-    })
+    options.signal?.addEventListener("abort", this.onAbort)
+    if (options.signal?.aborted) this.dispose()
   }
 
   get settled() {
@@ -119,7 +138,7 @@ class BrowserTypesetter<Token> implements Typesetter {
       await document.fonts.ready
       if (generation !== this.generation || this.disposed) return
       document.fonts.addEventListener("loadingdone", this.onFontsChanged, {
-        signal: this.options.signal,
+        signal: this.lifecycle.signal,
       })
     }
 
@@ -132,24 +151,28 @@ class BrowserTypesetter<Token> implements Typesetter {
 
     this.paused.delete("stopped")
     this.rescan()
-    this.observeResize()
   }
 
   stop() {
     this.paused.add("stopped")
     this.generation += 1
     clearTimeout(this.settleTimer)
-    if (this.frame) cancelAnimationFrame(this.frame)
+    this.settleTimer = undefined
+    this.paused.delete("resize")
+    cancelAnimationFrame(this.frame)
     this.frame = 0
     this.viewport?.disconnect()
     this.viewport = undefined
     this.measure?.disconnect()
     this.measure = undefined
-    this.restoreAll()
-    this.queued.clear()
-    this.known.clear()
-    this.visible.clear()
-    this.markSettled()
+    try {
+      this.restoreAll()
+    } finally {
+      this.queued.clear()
+      this.known.clear()
+      this.visible.clear()
+      this.markSettled()
+    }
   }
 
   refresh() {
@@ -181,6 +204,8 @@ class BrowserTypesetter<Token> implements Typesetter {
       this.known.delete(block)
       this.queued.delete(block)
       this.visible.delete(block)
+      this.viewport?.unobserve(block)
+      this.measure?.unobserve(block)
     }
   }
 
@@ -210,15 +235,14 @@ class BrowserTypesetter<Token> implements Typesetter {
 
   dispose() {
     if (this.disposed) return
-    this.stop()
-    this.linebreaker.dispose()
-    if (this.options.copy !== false) {
-      document.removeEventListener("copy", handleCopy)
-    }
-    removeEventListener("beforeprint", this.onBeforePrint)
-    removeEventListener("afterprint", this.onAfterPrint)
-    document.fonts?.removeEventListener("loadingdone", this.onFontsChanged)
     this.disposed = true
+    this.lifecycle.abort()
+    this.options.signal?.removeEventListener("abort", this.onAbort)
+    try {
+      this.stop()
+    } finally {
+      this.linebreaker.dispose()
+    }
   }
 
   private get lazy() {
@@ -284,9 +308,8 @@ class BrowserTypesetter<Token> implements Typesetter {
     for (const entry of entries) {
       const width =
         entry.contentBoxSize?.[0]?.inlineSize ?? entry.contentRect.width
-      const previous = this.widths.get(entry.target)
+      const previous = this.widths.get(entry.target) ?? width
       this.widths.set(entry.target, width)
-      if (previous === undefined) continue
       if (Math.abs(previous - width) > engineDefaults.widthEpsilon) moved = true
     }
     return moved
@@ -316,12 +339,6 @@ class BrowserTypesetter<Token> implements Typesetter {
     return this.measure
   }
 
-  private observeResize() {
-    const observer = this.resizeObserver()
-    if (!observer) return
-    for (const block of this.known) observer.observe(block)
-  }
-
   private schedule() {
     if (this.paused.size > 0 || this.frame || this.queued.size === 0) return
     this.arm()
@@ -331,51 +348,63 @@ class BrowserTypesetter<Token> implements Typesetter {
     })
   }
 
-  private nextSlice() {
-    const started = performance.now()
-    const slice: HTMLElement[] = []
-
-    for (const block of this.queued) {
-      if (
-        slice.length >= this.blocksPerSlice ||
-        (slice.length > 0 && performance.now() - started >= this.sliceMs)
-      ) {
-        break
-      }
-      this.queued.delete(block)
-      slice.push(block)
-    }
-    return slice
-  }
-
-  private writeSlice(slice: readonly HTMLElement[]) {
+  private writeSlice() {
     this.sliceCount += 1
-    try {
-      this.write(slice)
-    } catch (cause) {
-      this.options.onOutcome?.({
-        element: slice[0] as HTMLElement,
-        status: "failed",
-        reason: "render-failed",
-        cause,
-      })
-    }
+    this.write(
+      queuedSlice(this.queued, this.blocksPerSlice, this.sliceMs),
+      true,
+    )
   }
 
   private flush() {
     if (this.paused.size > 0) return
 
-    const slice = this.nextSlice()
-    if (slice.length > 0) this.writeSlice(slice)
-
-    if (this.queued.size > 0) this.schedule()
-    else this.markSettled()
+    try {
+      if (this.queued.size > 0) this.writeSlice()
+    } finally {
+      if (this.queued.size > 0) this.schedule()
+      else this.markSettled()
+    }
   }
 
-  private write(elements: readonly HTMLElement[]): readonly Outcome[] {
+  private write(
+    elements: Iterable<HTMLElement>,
+    recover = false,
+  ): readonly Outcome[] {
+    if (this.writing)
+      throw new TypeError("linebreak: automatic typesetting re-entered")
+    const batch = captureBatch(elements)
+    this.writing = true
+    try {
+      let outcomes: readonly Outcome[]
+      try {
+        outcomes = this.layout(batch.elements)
+      } catch (cause) {
+        if (!recover) throw cause
+        outcomes = [
+          {
+            element: batch.first,
+            status: "failed",
+            reason: "render-failed",
+            cause:
+              cause instanceof Error
+                ? cause
+                : new Error("Automatic layout threw a non-Error value"),
+          },
+        ]
+      }
+      // User callbacks run outside recovery: each outcome is delivered once.
+      for (const outcome of outcomes) this.options.onOutcome?.(outcome)
+      return outcomes
+    } finally {
+      this.writing = false
+    }
+  }
+
+  private layout(elements: Iterable<HTMLElement>): readonly Outcome[] {
     const token = this.options.beforeWrite?.() as Token
     try {
-      return this.linebreaker.typeset(elements)
+      return this.linebreaker.apply(this.linebreaker.compose(elements))
     } finally {
       this.options.afterWrite?.(token)
     }
@@ -428,6 +457,11 @@ class BrowserTypesetter<Token> implements Typesetter {
     }
     this.requeue()
     this.schedule()
+  }
+
+  private readonly onAbort = () => this.dispose()
+  private readonly onCopy = (event: ClipboardEvent) => {
+    if (!event.defaultPrevented) handleCopy(event)
   }
 }
 

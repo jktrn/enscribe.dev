@@ -20,7 +20,7 @@ const NARROW_ONLY: StretchScale = {
 
 const budgetOf = (
   texts: readonly string[],
-  scaleFor: (run: InlineRun) => StretchScale | null,
+  scaleFor: (run: Extract<InlineRun, { kind: "text" }> ) => StretchScale | null,
   shape: { trailingEdge?: number; hyphenates?: boolean } = {},
 ) => {
   const compiled = compileShape(
@@ -92,7 +92,6 @@ describe("width that is not glyph width", () => {
     const runs: InlineRun[] = [
       {
         kind: "atom",
-        text: "￼",
         start: 0,
         end: 1,
         wrappers: [],

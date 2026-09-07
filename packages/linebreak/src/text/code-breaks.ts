@@ -1,11 +1,4 @@
-let graphemeSegmenter: Intl.Segmenter | undefined
-
-const segmentGraphemes = (text: string) => {
-  graphemeSegmenter ??= new Intl.Segmenter(undefined, {
-    granularity: "grapheme",
-  })
-  return [...graphemeSegmenter.segment(text)]
-}
+import { graphemes as segmentGraphemes } from "./graphemes"
 
 const separatorPattern = /[./\\,;:]/u
 const operatorPattern = /[-=+*%<>!&|?~^]/u
@@ -13,14 +6,19 @@ const closingDelimiterPattern = /[)\]}]/u
 const repeatableSeparatorPattern = /[./\\]/u
 const whitespacePattern = /\s/u
 
-const identifierPattern = /[\p{L}\p{N}$]/u
-const letterPattern = /\p{L}/u
-const digitPattern = /\p{N}/u
-const lowercaseOrDigitPattern = /[\p{Ll}\p{N}]/u
-const uppercasePattern = /\p{Lu}/u
-const lowercasePattern = /\p{Ll}/u
+// Avoid initializing Unicode property tables for ordinary ASCII code.
+const category = (ascii: RegExp, unicode: RegExp) => ({
+  test: (text: string) => ascii.test(text) ||
+    (/[^\x00-\x7f]/u.test(text) && unicode.test(text)),
+})
+const identifierPattern = category(/[A-Za-z0-9$]/u, /[\p{L}\p{N}$]/u)
+const letterPattern = category(/[A-Za-z]/u, /\p{L}/u)
+const digitPattern = category(/[0-9]/u, /\p{N}/u)
+const lowercaseOrDigitPattern = category(/[a-z0-9]/u, /[\p{Ll}\p{N}]/u)
+const uppercasePattern = category(/[A-Z]/u, /\p{Lu}/u)
+const lowercasePattern = category(/[a-z]/u, /\p{Ll}/u)
 
-export const codeBreakPenalties = Object.freeze({
+const codeBreakPenalty = Object.freeze({
   separator: 3_000,
   closingDelimiter: 4_500,
   operator: 5_500,
@@ -29,8 +27,6 @@ export const codeBreakPenalties = Object.freeze({
   letterNumberBoundary: 9_000,
   emergency: 9_500,
 })
-
-const codeBreakPenalty = codeBreakPenalties
 
 type Boundary = {
   readonly previous: string
@@ -69,15 +65,14 @@ const isSeparatorBreak = ({ previous, before, after }: Boundary) => {
 const isOperatorBreak = ({ before, after }: Boundary) =>
   operatorPattern.test(before) && !operatorPattern.test(after)
 
-const isWordSeparator = ({ before, after }: Boundary) =>
-  before === "_" || (before === "-" && !operatorPattern.test(after))
+const isWordSeparator = ({ before }: Boundary) => before === "_"
 
-const isIdentifierBoundary = ({ previous, before, after, next }: Boundary) => {
+const isIdentifierBoundary = ({ before, after, next }: Boundary) => {
   const camelCase =
     lowercaseOrDigitPattern.test(before) && uppercasePattern.test(after)
   const acronym =
-    uppercasePattern.test(previous) &&
     uppercasePattern.test(before) &&
+    uppercasePattern.test(after) &&
     lowercasePattern.test(next)
   return camelCase || acronym
 }
@@ -124,7 +119,7 @@ const addInteriorBreaks = (
     start + Math.ceil((length * 2) / 3),
   ])
   for (const index of interiorBreaks) {
-    if (index < start + 2 || index > end - 2) continue
+    if (index > end - 2) continue
     add(graphemes[index].index, codeBreakPenalty.emergency)
   }
 }
@@ -138,34 +133,27 @@ const addEmergencyBreaks = (graphemes: Graphemes, add: AddBreak) => {
   }
 }
 
-const addBoundaryBreaks = (
-  graphemes: Graphemes,
-  textLength: number,
-  add: AddBreak,
-) => {
-  for (let index = 1; index <= graphemes.length; index += 1) {
+const addBoundaryBreaks = (graphemes: Graphemes, add: AddBreak) => {
+  for (let index = 1; index < graphemes.length; index += 1) {
     const boundary = boundaryAt(graphemes, index)
     if (touchesWhitespace(boundary)) continue
 
     const penalty = boundaryPenalty(boundary)
     if (penalty === undefined) continue
 
-    add(graphemes[index]?.index ?? textLength, penalty)
+    add(graphemes[index].index, penalty)
   }
 }
 
 export const codeBreakOffsets = (text: string) => {
-  const graphemes = segmentGraphemes(text)
+  const graphemes = [...segmentGraphemes(text)]
   const penalties = new Map<number, number>()
   const add: AddBreak = (offset, penalty) => {
-    if (offset <= 0 || offset >= text.length) return
-    const current = penalties.get(offset)
-    if (current === undefined || penalty < current) {
-      penalties.set(offset, penalty)
-    }
+    // Boundaries are unique; later emergency breaks never have a lower cost.
+    if (!penalties.has(offset)) penalties.set(offset, penalty)
   }
 
-  addBoundaryBreaks(graphemes, text.length, add)
+  addBoundaryBreaks(graphemes, add)
   addEmergencyBreaks(graphemes, add)
 
   return penalties

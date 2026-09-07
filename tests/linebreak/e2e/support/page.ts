@@ -52,12 +52,13 @@ export const waitForQuiet = async (page: Page, settleMs = 500) => {
         const lines = document.querySelectorAll(
           "[data-linebreak-typeset] > [data-linebreak-line]",
         ).length
-        const state = (
-          window as { __lbQuiet?: { lines: number; since: number } }
-        ).__lbQuiet
+        const view = window as Window & {
+          __lbQuiet?: { lines: number; since: number }
+        }
+        const state = view.__lbQuiet
         const now = performance.now()
         if (!state || state.lines !== lines) {
-          ;(window as { __lbQuiet?: unknown }).__lbQuiet = { lines, since: now }
+          view.__lbQuiet = { lines, since: now }
           return false
         }
         return lines > 0 && now - state.since >= quietMs

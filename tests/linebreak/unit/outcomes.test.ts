@@ -3,7 +3,6 @@ import manifest from "@linebreak/../package.json" with { type: "json" }
 import {
   DECLINE_REASONS,
   type DeclineReason,
-  FAILURE_REASONS,
   type FailureReason,
   isExpected,
   type Outcome,
@@ -11,6 +10,8 @@ import {
   type SkipReason,
 } from "@linebreak/types"
 import { consoleReporter } from "@linebreak/report"
+
+const FAILURE_REASONS = ["layout-mismatch", "unstable-width", "line-height-unresolved", "render-failed"] as const satisfies readonly FailureReason[]
 
 const element = () => ({}) as HTMLElement
 

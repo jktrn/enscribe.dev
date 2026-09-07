@@ -5,16 +5,14 @@ export { ATTRIBUTES } from "./attributes"
 
 export { LINE_SELECTOR, TYPESET_SELECTOR }
 
-export type ReporterOptions = {
+type ReporterOptions = {
   level?: "failed" | "declined" | "all"
   prefix?: string
 }
 
-type ReportLevel = NonNullable<ReporterOptions["level"]>
-
 const reportOutcome = (
   outcome: Outcome,
-  level: ReportLevel,
+  level: ReporterOptions["level"],
   prefix: string,
 ) => {
   if (level !== "all" && isExpected(outcome)) return
@@ -28,7 +26,7 @@ const reportOutcome = (
 }
 
 export const consoleReporter = (options: ReporterOptions = {}) => {
-  const level = options.level ?? "declined"
+  const level = options.level
   const prefix = options.prefix ?? "linebreak"
   return (outcome: Outcome) => reportOutcome(outcome, level, prefix)
 }
