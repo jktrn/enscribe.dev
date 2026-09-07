@@ -10,7 +10,8 @@ export const createStyleReader = (
   return (element) => {
     let style = styles.get(element)
     if (!style) {
-      style = getComputedStyle(element)
+      const view = element.ownerDocument.defaultView
+      style = view ? view.getComputedStyle(element) : getComputedStyle(element)
       styles.set(element, style)
     }
     return style
@@ -33,6 +34,8 @@ const VARIANT_PROPERTIES = [
   "fontVariantNumeric",
   "fontVariantPosition",
   "fontFeatureSettings",
+  "fontKerning",
+  "textRendering",
 ] as const
 
 const PROBE_PROPERTIES = [
@@ -46,8 +49,13 @@ export type ProbeStyle = readonly (readonly [
   string,
 ])[]
 
+const neutral = (property: ProbeStyle[number][0], value: string) =>
+  property === "fontKerning" || property === "textRendering"
+    ? value === "" || value === "auto"
+    : NEUTRAL_VALUE.has(value)
+
 export const usesVariant = (style: CSSStyleDeclaration) =>
-  VARIANT_PROPERTIES.some((property) => !NEUTRAL_VALUE.has(style[property]))
+  VARIANT_PROPERTIES.some((property) => !neutral(property, style[property]))
 
 export const probeStyle = (style: CSSStyleDeclaration): ProbeStyle =>
   PROBE_PROPERTIES.map((property) => [property, style[property]] as const)
@@ -56,7 +64,7 @@ export const variantKey = (style: CSSStyleDeclaration) => {
   let key = ""
   for (const property of PROBE_PROPERTIES) {
     const value = style[property]
-    if (!NEUTRAL_VALUE.has(value)) key += `${property}:${value};`
+    if (!neutral(property, value)) key += `${property}:${value};`
   }
   return key
 }

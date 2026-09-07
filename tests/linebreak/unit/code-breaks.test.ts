@@ -18,6 +18,50 @@ const discretionaryAt = (penalty: number): Item[] => [
 ]
 
 describe("break offsets", () => {
+  test.each([
+    ["a.b", [[2, 3000]]],
+    ["a/4", [[2, 3000]]],
+    ["a.4", [[2, 3000]]],
+    ["4.a", [[2, 3000]]],
+    ["3,4", [[2, 3000]]],
+    ["ns:item", [[3, 3000]]],
+    ["ns::item", [[4, 3000]]],
+    ["a.:b", [[2, 3000], [3, 3000]]],
+    ["a)b", [[2, 4500]]],
+    ["a]b", [[2, 4500]]],
+    ["a}b", [[2, 4500]]],
+    ["a&&b", [[3, 5500]]],
+    ["a_b", [[2, 7500]]],
+    ["aB", [[1, 8500]]],
+    ["AB", []],
+    ["ABcd", [[1, 8500]]],
+    ["a2", [[1, 9000]]],
+    ["2a", [[1, 9000]]],
+    ["abcde", [[2, 9500]]],
+    [
+      "abcdef",
+      [
+        [3, 9500],
+        [4, 9500],
+      ],
+    ],
+    [
+      "abcDef",
+      [
+        [3, 8500],
+        [4, 9500],
+      ],
+    ],
+    ["e\u0301abcd", [[3, 9500]]],
+  ] as [
+    string,
+    [number, number][],
+  ][])("lexical penalties preserve priority and graphemes in %s", (text, expected) => {
+    expect([...codeBreakOffsets(text)].sort(([a], [b]) => a - b)).toEqual(
+      expected,
+    )
+  })
+
   test("every offset lands inside the text", () => {
     const text = "GachaManager.cs"
     for (const offset of codeBreakOffsets(text).keys()) {

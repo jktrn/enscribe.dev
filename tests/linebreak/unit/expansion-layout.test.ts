@@ -1,6 +1,10 @@
 import { describe, expect, test } from "bun:test"
 import type { Line } from "@linebreak/layout/breaker"
-import { buildExpansion, fitLines } from "@linebreak/layout/expansion"
+import {
+  buildExpansion,
+  fitLines,
+  type LineFit,
+} from "@linebreak/layout/expansion"
 import { box, glue, type Item } from "@linebreak/layout/items"
 import { AFFINE } from "./support/measure"
 
@@ -39,11 +43,7 @@ const lineOf = (overrides: Partial<Line> = {}): Line => ({
 })
 
 const fitOne = (target: number, overrides: Partial<Line> = {}) =>
-  fitLines([lineOf(overrides)], target, expansion, AFFINE)[0] as {
-    pct: number
-    gain: number
-    shrink: number
-  }
+  fitLines([lineOf(overrides)], target, expansion, AFFINE)[0] as LineFit
 
 describe("a line the breaker left short", () => {
   test("the pool the DP handed the line is the endpoint of its own glyphs", () => {
@@ -72,6 +72,12 @@ describe("a line the breaker left short", () => {
     expect(fitOne(210.5).pct).toBe(100)
   })
 
+  test("a saturated width budget includes its widest exact endpoint", () => {
+    const fit = fitOne(260)
+    expect(fit.pct).toBe(102)
+    expect(fit.gain).toBe(POOL)
+  })
+
   test("a paragraph ending spends nothing, its slack being free", () => {
     const fit = fitOne(300, { stretch: 100_000 + POOL, breakKind: "end" })
 
@@ -88,6 +94,53 @@ describe("a line the breaker left short", () => {
 })
 
 describe("a line the breaker left long", () => {
+  test("an exact line does not use either side of the width axis", () => {
+    expect(fitOne(210)).toEqual({
+      pct: 100,
+      gain: 0,
+      stretch: SPACE_STRETCH,
+      shrink: SPACE_SHRINK,
+    })
+  })
+
+  test("uncredited glyphs and a widening-only axis cannot condense", () => {
+    const barren = buildExpansion(ITEMS, AFFINE, new Set([0, 2]))
+    expect(fitLines([lineOf()], 200, barren, AFFINE)[0]?.gain).toBe(0)
+    const widening = {
+      steps: [
+        { pct: 100, ratio: 1 },
+        { pct: 102, ratio: 1.02 },
+      ],
+    }
+    const pool = buildExpansion(ITEMS, widening, NO_MARKS)
+    expect(fitLines([lineOf()], 200, pool, widening)[0]?.gain).toBe(0)
+  })
+
+  test("a stationary font axis cannot spend an independently supplied pool", () => {
+    const stationary = { steps: [{ pct: 100, ratio: 1 }] }
+    expect(fitLines([lineOf()], 215, expansion, stationary)[0]?.pct).toBe(100)
+    expect(fitLines([lineOf()], 205, expansion, stationary)[0]?.pct).toBe(100)
+    expect(fitLines([lineOf()], 215, expansion, stationary)[0]?.gain).toBe(0)
+    expect(fitLines([lineOf()], 205, expansion, stationary)[0]?.gain).toBe(0)
+  })
+
+  test("an exact or inelastic line cannot spend an external width-axis pool", () => {
+    for (const target of [205, 210, 215]) {
+      const fit = fitOne(target, { stretch: 0, shrink: 0 })
+      expect(fit.pct).toBe(100)
+      expect(fit.gain).toBe(0)
+    }
+  })
+
+  test("a tiny excess still chooses a nonzero rung when its normalized share underflows", () => {
+    const tiny = buildExpansion([box(1e-200)], AFFINE, NO_MARKS)
+    const line = lineOf({ end: 1, naturalWidth: 1e-200, shrink: 1e200 })
+    const fit = fitLines([line], 9e-201, tiny, AFFINE)[0]
+    expect(fit?.pct).toBe(99)
+    expect(fit?.gain).toBeLessThan(0)
+    expect(fit?.gain).toBeGreaterThan(-(tiny.shrink[1] as number))
+  })
+
   test("condensation rounds up, never down", () => {
     const fit = fitOne(205)
 

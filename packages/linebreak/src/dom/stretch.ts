@@ -44,7 +44,7 @@ export const stretchScaleFor = (
     scales.set(document, byFont)
   }
 
-  const key = `${letterSpacing}|${font}`
+  const key = `${budget}|${letterSpacing}|${font}`
   const cached = byFont.get(key)
   if (cached !== undefined) return cached
 

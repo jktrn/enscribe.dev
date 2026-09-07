@@ -24,8 +24,9 @@ export const widestRatio = (scale: StretchScale) =>
   (scale.steps.at(-1) as StretchStep).ratio
 
 const misbehaves = (sign: 1 | -1, ratio: number, previous: number) => {
-  if (!Number.isFinite(ratio) || ratio <= 0) return true
+  if (!Number.isFinite(ratio)) return true
   if (sign * (ratio - previous) < 0) return true
+  // At most six 0.02 steps from 1 also exclude zero or negative ratios.
   return Math.abs(ratio - previous) > MAX_RATIO_JUMP_PER_PCT
 }
 

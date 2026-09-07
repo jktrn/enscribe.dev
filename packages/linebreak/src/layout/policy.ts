@@ -1,4 +1,6 @@
 export type LayoutPolicy = {
+  /** Continuous cubic scoring by default; integer selects TeX-style badness and fitness. */
+  readonly scoring?: "continuous" | "integer"
   readonly pretolerance: number
   readonly tolerance: number
   readonly linePenalty: number
@@ -43,10 +45,4 @@ export type GlueElasticity = {
 export const defaultGlue: GlueElasticity = Object.freeze({
   stretch: 1 / 2,
   shrink: 1 / 3,
-})
-
-export const hyphenationLimits = Object.freeze({
-  minimumWordLength: 5,
-  left: 2,
-  right: 3,
 })

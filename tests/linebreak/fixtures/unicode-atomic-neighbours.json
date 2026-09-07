@@ -1,0 +1,169 @@
+{
+  "source": "https://www.unicode.org/Public/17.0.0/ucd/LineBreak.txt",
+  "version": "17.0.0",
+  "sha256": "e6a18fa91f8f6a6f8e534b1d3f128c21ada45bfe152eb6b1bcc5e15fd8ac92e6",
+  "rows": [
+    {
+      "start": 160,
+      "end": 160,
+      "class": "GL",
+      "line": 97
+    },
+    {
+      "start": 860,
+      "end": 866,
+      "class": "GL",
+      "line": 161
+    },
+    {
+      "start": 3848,
+      "end": 3848,
+      "class": "GL",
+      "line": 551
+    },
+    {
+      "start": 3852,
+      "end": 3852,
+      "class": "GL",
+      "line": 554
+    },
+    {
+      "start": 3858,
+      "end": 3858,
+      "class": "GL",
+      "line": 556
+    },
+    {
+      "start": 4057,
+      "end": 4058,
+      "class": "GL",
+      "line": 595
+    },
+    {
+      "start": 6158,
+      "end": 6158,
+      "class": "GL",
+      "line": 720
+    },
+    {
+      "start": 6891,
+      "end": 6891,
+      "class": "GL",
+      "line": 779
+    },
+    {
+      "start": 7629,
+      "end": 7629,
+      "class": "GL",
+      "line": 861
+    },
+    {
+      "start": 7676,
+      "end": 7676,
+      "class": "GL",
+      "line": 863
+    },
+    {
+      "start": 8199,
+      "end": 8199,
+      "class": "GL",
+      "line": 893
+    },
+    {
+      "start": 8205,
+      "end": 8205,
+      "class": "ZWJ",
+      "line": 897
+    },
+    {
+      "start": 8209,
+      "end": 8209,
+      "class": "GL",
+      "line": 900
+    },
+    {
+      "start": 8239,
+      "end": 8239,
+      "class": "GL",
+      "line": 920
+    },
+    {
+      "start": 8288,
+      "end": 8288,
+      "class": "WJ",
+      "line": 945
+    },
+    {
+      "start": 65056,
+      "end": 65056,
+      "class": "GL",
+      "line": 2557
+    },
+    {
+      "start": 65058,
+      "end": 65058,
+      "class": "GL",
+      "line": 2559
+    },
+    {
+      "start": 65060,
+      "end": 65060,
+      "class": "GL",
+      "line": 2561
+    },
+    {
+      "start": 65062,
+      "end": 65063,
+      "class": "GL",
+      "line": 2563
+    },
+    {
+      "start": 65065,
+      "end": 65065,
+      "class": "GL",
+      "line": 2565
+    },
+    {
+      "start": 65067,
+      "end": 65067,
+      "class": "GL",
+      "line": 2567
+    },
+    {
+      "start": 65069,
+      "end": 65070,
+      "class": "GL",
+      "line": 2569
+    },
+    {
+      "start": 65279,
+      "end": 65279,
+      "class": "WJ",
+      "line": 2617
+    },
+    {
+      "start": 69759,
+      "end": 69759,
+      "class": "GL",
+      "line": 2857
+    },
+    {
+      "start": 78896,
+      "end": 78902,
+      "class": "GL",
+      "line": 3225
+    },
+    {
+      "start": 78905,
+      "end": 78907,
+      "class": "GL",
+      "line": 3228
+    },
+    {
+      "start": 94180,
+      "end": 94180,
+      "class": "GL",
+      "line": 3288
+    }
+  ]
+}

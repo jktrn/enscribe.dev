@@ -1,0 +1,208 @@
+{
+  "source": "https://mirrors.ctan.org/macros/latex/contrib/microtype/microtype.dtx",
+  "version": "3.2d",
+  "date": "2026-03-01",
+  "sha256": "b3daebb28aa8620660067ae037adbb1c1f8c75c59c1118891e7297d281ea0219",
+  "notice": "Excerpts from microtype.dtx, copyright (c) 2004–2026 R Schlicht. Distributed under the LaTeX Project Public License 1.3c or later. This independent reference fixture is not microtype.dtx or a microtype configuration file.",
+  "rows": [
+    {
+      "line": 17265,
+      "source": "%<m-t|cmr|pmn|ppl|ptm|ugm>     . = { ,700},",
+      "characters": [
+        "."
+      ]
+    },
+    {
+      "line": 17268,
+      "source": "%<!blg>    {,}= { ,500},",
+      "characters": [
+        ","
+      ]
+    },
+    {
+      "line": 17270,
+      "source": "%<m-t|cmr|pmn|ppl|ptm|ugm>     : = { ,500},",
+      "characters": [
+        ":"
+      ]
+    },
+    {
+      "line": 17273,
+      "source": "%<m-t|bch|ebg|pmn|ptm>     ; = { ,300},",
+      "characters": [
+        ";"
+      ]
+    },
+    {
+      "line": 17277,
+      "source": "%<!blg>     ! = { ,100},",
+      "characters": [
+        "!"
+      ]
+    },
+    {
+      "line": 17279,
+      "source": "%<m-t|ebg|pmn|ptm>     ? = { ,100},",
+      "characters": [
+        "?"
+      ]
+    },
+    {
+      "line": 17283,
+      "source": "%<m-t|bch|cmr|ebg|pmn|ppl>     @ = {50,50},",
+      "characters": [
+        "@"
+      ]
+    },
+    {
+      "line": 17285,
+      "source": "%<m-t|bch|blg|cmr|ebg|pmn|ppl|ptm>     ~ = {200,250},",
+      "characters": [
+        "~"
+      ]
+    },
+    {
+      "line": 17289,
+      "source": "%<m-t|cmr|ebg|pmn>    \\% = {50,50},",
+      "characters": [
+        "%"
+      ]
+    },
+    {
+      "line": 17294,
+      "source": "%<m-t|ppl|ptm|ugm>     * = {200,200},",
+      "characters": [
+        "*"
+      ]
+    },
+    {
+      "line": 17298,
+      "source": "%<m-t|cmr|ebg|ppl|ptm>     + = {250,250},",
+      "characters": [
+        "+"
+      ]
+    },
+    {
+      "line": 17303,
+      "source": "%<m-t|ebg|pmn|ptm>     ( = {100,   },    ) = {   ,200},",
+      "characters": [
+        "(",
+        ")"
+      ]
+    },
+    {
+      "line": 17313,
+      "source": "%<m-t|ebg|pmn|ptm>     / = {100,200},",
+      "characters": [
+        "/"
+      ]
+    },
+    {
+      "line": 17318,
+      "source": "%<m-t|ptm>     - = {500,500},",
+      "characters": [
+        "-"
+      ]
+    },
+    {
+      "line": 17327,
+      "source": "%<m-t|pmn>     \\textendash       = {200,200},   \\textemdash        = {150,150},",
+      "characters": [
+        "–",
+        "—"
+      ]
+    },
+    {
+      "line": 17336,
+      "source": "%<m-t|bch|pmn>     \\textquoteleft    = {300,400},   \\textquoteright    = {300,400},",
+      "characters": [
+        "‘",
+        "’"
+      ]
+    },
+    {
+      "line": 17343,
+      "source": "%<m-t|ebg|bch|pmn>     \\textquotedblleft = {300,300},   \\textquotedblright = {300,300}",
+      "characters": [
+        "“",
+        "”"
+      ]
+    },
+    {
+      "line": 17506,
+      "source": "%<m-t|bch|ebg|pmn|ppl|ptm>       _ = {100,100},",
+      "characters": [
+        "_"
+      ]
+    },
+    {
+      "line": 17509,
+      "source": "%<m-t|ebg|pmn|ptm>     \\textbackslash    = {100,200},",
+      "characters": [
+        "\\"
+      ]
+    },
+    {
+      "line": 17524,
+      "source": "%<m-t|cmr|ebg|ppl|ptm|ugm>     \\quotesinglbase   = {400,400},   \\quotedblbase      = {400,400},",
+      "characters": [
+        "‚",
+        "„"
+      ]
+    },
+    {
+      "line": 17527,
+      "source": "%<m-t|bch|pmn>     \\guilsinglleft    = {400,300},   \\guilsinglright    = {300,400},",
+      "characters": [
+        "‹",
+        "›"
+      ]
+    },
+    {
+      "line": 17531,
+      "source": "%<m-t>     \\guillemotleft    = {200,200},   \\guillemotright    = {200,200},",
+      "characters": [
+        "«",
+        "»"
+      ]
+    },
+    {
+      "line": 17537,
+      "source": "%<m-t|bch|cmr|ebg|pmn|ppl|ugm>     \\textexclamdown   = {100,   },   \\textquestiondown  = {100,   },",
+      "characters": [
+        "¡",
+        "¿"
+      ]
+    },
+    {
+      "line": 17540,
+      "source": "%<m-t|cmr|ebg|ppl|ptm|ugm>     \\textbraceleft    = {400,200},   \\textbraceright    = {200,400},",
+      "characters": [
+        "{",
+        "}"
+      ]
+    },
+    {
+      "line": 17542,
+      "source": "%<m-t|bch|cmr|ebg|ppl|ptm|ugm>     \\textless         = {200,100},   \\textgreater       = {100,200}",
+      "characters": [
+        "<",
+        ">"
+      ]
+    }
+  ],
+  "aliases": [
+    [
+      "‐",
+      "-"
+    ],
+    [
+      "'",
+      "’"
+    ],
+    [
+      "\"",
+      "”"
+    ]
+  ]
+}

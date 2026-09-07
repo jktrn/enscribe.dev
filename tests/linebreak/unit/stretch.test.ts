@@ -77,6 +77,16 @@ describe("a design axis", () => {
     expect(narrowestRatio(scale as never)).toBeCloseTo(0.984305, 12)
   })
 
+  test("a width axis with an inert narrow side retains its wider steps", () => {
+    const scale = calibrateStretch(0.02, (pct) =>
+      pct < 100 ? BASE : (BASE * pct) / 100,
+    )
+    expect(pctsOf(scale)).toEqual([100, 101, 102])
+    if (!scale) throw new Error("Expected a wider-only scale")
+    expect(narrowestRatio(scale)).toBe(1)
+    expect(widestRatio(scale)).toBeCloseTo(1.02, 12)
+  })
+
   test("a rung that lands past the budget is left off the table", () => {
     const scale = calibrateStretch(0.02, tableProbe(PLEX_COARSE))
 

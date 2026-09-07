@@ -22,8 +22,11 @@ class StubOffscreenCanvas {
   }
 }
 
-;(globalThis as unknown as { OffscreenCanvas: unknown }).OffscreenCanvas =
-  StubOffscreenCanvas
+Object.defineProperty(globalThis, "OffscreenCanvas", {
+  value: StubOffscreenCanvas,
+  configurable: true,
+  writable: true,
+})
 
 const { createFontMetrics } = await import("@linebreak/text/measure")
 
@@ -111,16 +114,21 @@ test("a soft hyphen is a segment of its own", () => {
   expect(kindsOf("co­operate")).toEqual(["text", "soft-hyphen", "text"])
 })
 
-test("a zero-width character is a break opportunity", () => {
+test("zero-width space permits breaks while word joiners stay in text", () => {
   expect(kindsOf("a​b")).toEqual(["text", "break-opportunity", "text"])
-  expect(kindsOf("a﻿b")).toEqual(["text", "break-opportunity", "text"])
-  expect(kindsOf("a⁠b")).toEqual(["text", "break-opportunity", "text"])
+  expect(kindsOf("a﻿b")).toEqual(["text"])
+  expect(kindsOf("a⁠b")).toEqual(["text"])
 })
 
 test("a stray newline, tab or carriage return classifies as space", () => {
   expect(textsOf("one\ntwo")).toEqual(["one", "\n", "two"])
   expect(kindsOf("one\ttwo")).toEqual(["text", "space", "text"])
   expect(textsOf("one \r\n two")).toEqual(["one", " \r\n ", "two"])
+})
+
+test("Unicode GL figure spaces keep adjacent text indivisible", () => {
+  expect(textsOf("a\u2007b")).toEqual(["a\u2007b"])
+  expect(kindsOf("a\u2007b")).toEqual(["text"])
 })
 
 test("an em dash breaks the word on both sides", () => {
@@ -147,8 +155,15 @@ test("createMetrics gives a soft hyphen no width until it ends a line", () => {
   const measured = metrics.measureParagraph("co­operate")
 
   expect(measured?.segments[1]?.width).toBe(0)
-  expect(measured?.segments[1]?.lineEndWidth).toBe(ADVANCE + 0.5)
+  expect(measured?.segments[1]?.lineEndWidth).toBe(ADVANCE)
   expect(metrics.hyphenWidth).toBe(ADVANCE)
+})
+
+test("zero-width break markers do not gain a provider's isolated character width", () => {
+  const metrics = createMetrics({ measure: (text) => text.length * ADVANCE })
+  const measured = metrics.measureParagraph("x\u200by")
+  expect(measured?.segments.map(({ width }) => width)).toEqual([ADVANCE, 0, ADVANCE])
+  expect(measured?.segments.map(({ start, end }) => [start, end])).toEqual([[0, 1], [1, 2], [2, 3]])
 })
 
 test("createMetrics measures the segments a custom segmenter returns", () => {
@@ -183,4 +198,39 @@ test("a custom segmenter that mislays text is declined, not measured", () => {
   expect(
     createMetrics({ measure: () => 3, segment: lying }).measureParagraph("abc"),
   ).toBeNull()
+})
+
+test("a custom segmenter cannot substitute equal-length source content", () => {
+  const measured: string[] = []
+  const metrics = createMetrics({
+    measure: (text) => {
+      measured.push(text)
+      return text.length
+    },
+    segment: () => [{ text: "beta", start: 0, end: 4, kind: "text" }],
+  })
+  expect(metrics.measureParagraph("atom")).toBeNull()
+  expect(measured).toEqual(["-"])
+})
+
+test("custom segment starts cannot wrap backward through string slicing", () => {
+  const metrics = createMetrics({
+    measure: (text) => text.length,
+    segment: () => [
+      { text: "aa", start: 0, end: 2, kind: "text" },
+      { text: "aa", start: -2, end: 4, kind: "text" },
+    ],
+  })
+  expect(metrics.measureParagraph("aaaa")).toBeNull()
+})
+
+test("custom segment ends cannot use fractional string-slice boundaries", () => {
+  const metrics = createMetrics({
+    measure: (text) => text.length,
+    segment: () => [
+      { text: "a", start: 0, end: 1.5, kind: "text" },
+      { text: "bc", start: 1.5, end: 3, kind: "text" },
+    ],
+  })
+  expect(metrics.measureParagraph("abc")).toBeNull()
 })

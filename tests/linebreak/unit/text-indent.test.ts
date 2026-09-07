@@ -2,7 +2,6 @@ import { describe, expect, test } from "bun:test"
 import { breakParagraph, type Line } from "@linebreak/layout/breaker"
 import { type Item, paragraphEnd } from "@linebreak/layout/items"
 import { defaultGlue } from "@linebreak/layout/policy"
-import { firstLineIndent, indentsSomeOtherLine } from "@linebreak/dom/style"
 
 const SPACE = 10
 const WORD = 25
@@ -37,9 +36,6 @@ const solve = (count: number, indent: number) => {
   if (!result.ok) throw new Error(`no layout: ${result.reason}`)
   return result
 }
-
-const styleOf = (textIndent: string) =>
-  ({ textIndent }) as unknown as CSSStyleDeclaration
 
 describe("an indent narrows the first line and nothing else", () => {
   test("the first line's natural width carries the indent", () => {
@@ -92,39 +88,5 @@ describe("an indent narrows the first line and nothing else", () => {
     if (!forced.ok) return
     expect(forced.pass).toBe("forced")
     expect(forced.lines[0]?.naturalWidth).toBeGreaterThan(MEASURE)
-  })
-})
-
-describe("reading text-indent off a computed style", () => {
-  test("a length is taken as written", () => {
-    expect(firstLineIndent(styleOf("48px"), 520)).toBe(48)
-    expect(firstLineIndent(styleOf("-32px"), 520)).toBe(-32)
-    expect(firstLineIndent(styleOf("0px"), 520)).toBe(0)
-  })
-
-  test("a percentage resolves against the content width", () => {
-    expect(firstLineIndent(styleOf("10%"), 520)).toBeCloseTo(52, 9)
-    expect(firstLineIndent(styleOf("10%"), 400)).toBeCloseTo(40, 9)
-    expect(firstLineIndent(styleOf("-5%"), 520)).toBeCloseTo(-26, 9)
-  })
-
-  test("an unreadable value indents nothing", () => {
-    expect(firstLineIndent(styleOf(""), 520)).toBe(0)
-    expect(firstLineIndent(styleOf("auto"), 520)).toBe(0)
-  })
-})
-
-describe("indents that move a line other than the first", () => {
-  test("the hanging and each-line keywords are recognised", () => {
-    expect(indentsSomeOtherLine(styleOf("48px hanging"))).toBe(true)
-    expect(indentsSomeOtherLine(styleOf("48px each-line"))).toBe(true)
-    expect(indentsSomeOtherLine(styleOf("48px hanging each-line"))).toBe(true)
-  })
-
-  test("a plain indent is not one of them", () => {
-    expect(indentsSomeOtherLine(styleOf("48px"))).toBe(false)
-    expect(indentsSomeOtherLine(styleOf("10%"))).toBe(false)
-    expect(indentsSomeOtherLine(styleOf("0px"))).toBe(false)
-    expect(indentsSomeOtherLine(styleOf(""))).toBe(false)
   })
 })

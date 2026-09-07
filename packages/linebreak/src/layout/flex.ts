@@ -1,6 +1,15 @@
 import type { Item } from "./items"
+import { PrefixSum } from "./numeric/prefix"
+import {
+  capacityBetween,
+  correctedCapacity,
+  pooledCapacity,
+} from "./numeric/flex"
 
 export type Flex = {
+  // Builder arrays retain exact sums at untouched endpoints. Writing a changed
+  // endpoint gives that cell its current binary64 value; other cells retain
+  // their precision. Prepared paragraphs snapshot both values and corrections.
   readonly stretch: Float64Array
   readonly shrink: Float64Array
 }
@@ -12,35 +21,39 @@ export const budgetFlex = (
   uncredited: ReadonlySet<number>,
 ): Flex => {
   const count = items.length
-  const stretch = new Float64Array(count + 1)
-  const shrink = new Float64Array(count + 1)
-
-  for (let index = 0; index < count; index += 1) {
+  const stretch = new PrefixSum(count)
+  const shrink = new PrefixSum(count)
+  const widthAt = (index: number) => {
     const item = items[index] as Item
-    const width = item.kind === "box" && !uncredited.has(index) ? item.width : 0
-    stretch[index + 1] = (stretch[index] as number) + width * up
-    shrink[index + 1] = (shrink[index] as number) + width * down
+    return item.kind === "box" && !uncredited.has(index) ? item.width : 0
   }
-
-  return { stretch, shrink }
-}
-
-export const pooledFlex = (first: Flex, second: Flex): Flex => {
-  const count = first.stretch.length
-  const stretch = new Float64Array(count)
-  const shrink = new Float64Array(count)
 
   for (let index = 0; index < count; index += 1) {
-    stretch[index] =
-      (first.stretch[index] as number) + (second.stretch[index] as number)
-    shrink[index] =
-      (first.shrink[index] as number) + (second.shrink[index] as number)
+    const width = widthAt(index)
+    stretch.add(width * up)
+    shrink.add(width * down)
+    stretch.save(index + 1)
+    shrink.save(index + 1)
   }
 
-  return { stretch, shrink }
+  return {
+    stretch: correctedCapacity(
+      Float64Array.from(stretch.values),
+      stretch.correction((index) => [widthAt(index) * up]),
+    ),
+    shrink: correctedCapacity(
+      Float64Array.from(shrink.values),
+      shrink.correction((index) => [widthAt(index) * down]),
+    ),
+  }
 }
+
+export const pooledFlex = (first: Flex, second: Flex): Flex => ({
+  stretch: pooledCapacity(first.stretch, second.stretch),
+  shrink: pooledCapacity(first.shrink, second.shrink),
+})
 
 export const flexBetween = (flex: Flex, start: number, end: number) => ({
-  stretch: (flex.stretch[end] as number) - (flex.stretch[start] as number),
-  shrink: (flex.shrink[end] as number) - (flex.shrink[start] as number),
+  stretch: capacityBetween(flex.stretch, start, end),
+  shrink: capacityBetween(flex.shrink, start, end),
 })

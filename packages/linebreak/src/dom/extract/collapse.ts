@@ -5,11 +5,12 @@ import {
 } from "../../text/source"
 import { type AnchorRun, type InlineRun, LINE_SEPARATOR } from "./runs"
 import type { Raw, RawAtom, RawBreak, RawText } from "./walk"
+import { appendRestriction } from "./restrictions"
 
 type PendingSpace = {
-  first: RawText
-  anchors: Map<HTMLElement[], RawText>
-  hasWrappingContributor: boolean
+  readonly first: RawText
+  readonly markers: Map<HTMLElement[] | RawBreak, RawText | RawBreak>
+  owner: Element | undefined
 }
 
 type ActiveNoWrap = SourceRange & { owner: Element }
@@ -49,20 +50,24 @@ export class Collapser {
   }
 
   private takeBreak(raw: RawBreak) {
-    if (raw.forced && this.pending) {
-      for (const from of this.pending.anchors.values()) {
-        this.appendAnchor(from, this.text.length, "previous")
-      }
+    if (!raw.forced && this.pending) {
+      this.pending.markers.set(raw, raw)
+      return
+    }
+    if (this.pending) {
+      this.appendMarkers(this.pending, "previous")
       this.pending = undefined
     }
-    this.flushSpace()
+    this.appendBreak(raw)
+  }
+
+  private appendBreak(raw: RawBreak) {
     this.closeNoWrap()
 
     const start = this.text.length
     if (raw.forced) this.text += LINE_SEPARATOR
     this.runs.push({
       kind: "break",
-      text: raw.forced ? LINE_SEPARATOR : "",
       start,
       end: this.text.length,
       wrappers: raw.wrappers,
@@ -75,10 +80,9 @@ export class Collapser {
     this.flushSpace()
     const start = this.text.length
     this.text += raw.text
-    this.noteNoWrap(raw.noWrapOwner, start, this.text.length, false)
+    // restrictAtoms handles the boundaries; the next text run resumes ownership.
     this.runs.push({
       kind: "atom",
-      text: raw.text,
       start,
       end: this.text.length,
       wrappers: raw.wrappers,
@@ -105,26 +109,14 @@ export class Collapser {
 
   private finish() {
     if (this.pending) {
-      for (const from of this.pending.anchors.values()) {
-        this.appendAnchor(from, this.text.length, "previous")
-      }
+      this.appendMarkers(this.pending, "previous")
     }
     this.closeNoWrap()
   }
 
-  private addRestriction(start: number, end: number) {
-    if (start >= end) return
-    const previous = this.restrictions.at(-1)
-    if (previous && start <= previous.end) {
-      previous.end = Math.max(previous.end, end)
-    } else {
-      this.restrictions.push({ start, end })
-    }
-  }
-
   private closeNoWrap() {
     if (!this.noWrap) return
-    this.addRestriction(this.noWrap.start, this.noWrap.end)
+    appendRestriction(this.restrictions, this.noWrap.start, this.noWrap.end)
     this.noWrap = undefined
   }
 
@@ -138,7 +130,7 @@ export class Collapser {
     if (this.noWrap?.owner !== owner) {
       this.closeNoWrap()
       if (owner) {
-        this.noWrap = { owner, start: start + 1, end: restrictionEnd }
+        this.noWrap = { owner, start, end: restrictionEnd }
       }
       return
     }
@@ -151,18 +143,18 @@ export class Collapser {
     owner: Element | undefined,
     includeBoundary = false,
   ) {
-    if (!value) return
     const start = this.text.length
     this.text += value
-    this.noteNoWrap(owner, start, this.text.length, includeBoundary)
+    // SHY and ZWSP own their soft opportunity even at the run's first offset.
+    const firstBreak = /^[\u00ad\u200b]/u.test(value) ? start : start + 1
+    this.noteNoWrap(owner, firstBreak, this.text.length, includeBoundary)
 
     const hyphenates = from.noWrapOwner === undefined
     const previous = this.runs.at(-1)
+    // Within one extraction, an element fixes its ancestry and whitespace policy.
     if (
       previous?.kind === "text" &&
-      previous.sourceElement === from.sourceElement &&
-      previous.wrappers === from.wrappers &&
-      previous.hyphenates === hyphenates
+      previous.sourceElement === from.sourceElement
     ) {
       previous.text += value
       previous.end = this.text.length
@@ -186,7 +178,6 @@ export class Collapser {
   ) {
     this.runs.push({
       kind: "anchor",
-      text: "",
       start: offset,
       end: offset,
       wrappers: from.wrappers,
@@ -202,22 +193,21 @@ export class Collapser {
   private contributeSpace(from: RawText) {
     const anchor = this.needsAnchor(from)
     if (this.pending) {
-      this.pending.hasWrappingContributor ||= from.noWrapOwner === undefined
-      if (anchor && !this.pending.anchors.has(from.wrappers)) {
-        this.pending.anchors.set(from.wrappers, from)
-      }
+      if (from.noWrapOwner === undefined) this.pending.owner = undefined
+      if (anchor) this.pending.markers.set(from.wrappers, from)
       return
     }
     this.pending = {
       first: from,
-      anchors: new Map(anchor ? [[from.wrappers, from]] : []),
-      hasWrappingContributor: from.noWrapOwner === undefined,
+      markers: new Map(anchor ? [[from.wrappers, from]] : []),
+      owner: from.noWrapOwner,
     }
   }
 
-  private anchorAll(space: PendingSpace, at: number) {
-    for (const from of space.anchors.values()) {
-      this.appendAnchor(from, at, "next")
+  private appendMarkers(space: PendingSpace, affinity: AnchorRun["affinity"]) {
+    for (const marker of space.markers.values()) {
+      if (marker.kind === "break") this.appendBreak(marker)
+      else this.appendAnchor(marker, this.text.length, affinity)
     }
   }
 
@@ -227,27 +217,28 @@ export class Collapser {
     this.pending = undefined
 
     if (this.text.length === 0 || this.text.endsWith(LINE_SEPARATOR)) {
-      this.anchorAll(space, this.text.length)
+      this.appendMarkers(space, "next")
       return
     }
 
-    const start = this.text.length
-    const firstAnchor = space.anchors.get(space.first.wrappers)
-    if (firstAnchor) this.appendAnchor(firstAnchor, start, "next")
-    this.appendText(
-      " ",
-      space.first,
-      space.hasWrappingContributor ? undefined : space.first.noWrapOwner,
-      !space.hasWrappingContributor,
-    )
-    this.closeAnchors(space, firstAnchor)
+    let written = false
+    for (const marker of space.markers.values()) {
+      if (marker.kind === "break") {
+        if (!written) this.appendSpace(space)
+        written = true
+        this.appendBreak(marker)
+      } else {
+        this.appendAnchor(
+          marker,
+          this.text.length,
+          written ? "next" : "previous",
+        )
+      }
+    }
+    if (!written) this.appendSpace(space)
   }
 
-  private closeAnchors(space: PendingSpace, firstAnchor: RawText | undefined) {
-    const end = this.text.length
-    if (firstAnchor) this.appendAnchor(firstAnchor, end, "previous")
-    for (const from of space.anchors.values()) {
-      if (from !== firstAnchor) this.appendAnchor(from, end, "previous")
-    }
+  private appendSpace(space: PendingSpace) {
+    this.appendText(" ", space.first, space.owner, true)
   }
 }

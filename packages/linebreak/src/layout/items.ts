@@ -18,6 +18,8 @@ export type Glue = {
 
 export type Penalty = {
   readonly kind: "penalty"
+  /** Fixed advance on the next line, after ordinary leading discard. */
+  readonly continuationWidth?: number
   readonly width: number
   readonly penalty: number
   readonly flagged: boolean
@@ -55,15 +57,20 @@ export const penalty = (
   options: {
     width?: number
     flagged?: boolean
+    continuationWidth?: number
     source?: ItemSource
   } = {},
-): Penalty => ({
-  kind: "penalty",
-  width: options.width ?? 0,
-  penalty: value,
-  flagged: options.flagged ?? false,
-  source: options.source,
-})
+): Penalty => {
+  const continuationWidth = options.continuationWidth
+  return {
+    kind: "penalty",
+    width: options.width ?? 0,
+    penalty: value,
+    flagged: options.flagged ?? false,
+    source: options.source,
+    ...(continuationWidth === undefined ? null : { continuationWidth }),
+  }
+}
 
 export const discretionary = (options: {
   preWidth?: number
@@ -90,14 +97,12 @@ export const isForced = (value: number) => value <= EJECT_PENALTY
 
 export const passThroughWidth = (item: Item): number => {
   switch (item.kind) {
-    case "box":
-      return item.width
-    case "glue":
-      return item.width
     case "penalty":
       return 0
     case "discretionary":
       return item.noBreakWidth
+    default:
+      return item.width
   }
 }
 
@@ -112,8 +117,10 @@ export const lineEndWidth = (item: Item): number => {
   }
 }
 
-export const lineStartWidth = (item: Item): number =>
-  item.kind === "discretionary" ? item.postWidth : 0
+export const lineStartWidth = (item: Item): number => {
+  if (item.kind === "discretionary") return item.postWidth
+  return item.kind === "penalty" ? (item.continuationWidth ?? 0) : 0
+}
 
 const glueBreakPenalty = (items: readonly Item[], index: number) => {
   const previous = items[index - 1]
@@ -151,14 +158,7 @@ export const lineBreak = (offset = 0, end = offset): Item[] => {
   ]
 }
 
-export const paragraphEnd = (offset = 0): Item[] => {
-  const source = { start: offset, end: offset }
-  return [
-    penalty(INFINITE_PENALTY, { source }),
-    glue(0, INFINITE_STRETCH, 0, source),
-    penalty(EJECT_PENALTY, { source, flagged: false }),
-  ]
-}
+export const paragraphEnd = (offset = 0): Item[] => lineBreak(offset)
 
 export const isParagraphEnd = (items: readonly Item[], index: number) =>
   index === items.length - 1 &&

@@ -1,3 +1,5 @@
+import { combiningSizeAt } from "./source"
+
 export type Advance = (text: string) => number
 
 export type SegmentKind =
@@ -32,22 +34,14 @@ export type FontMetrics = {
   measureParagraph(text: string): MeasuredParagraph | null
 
   measureRun(text: string): number
+  warmRuns?(texts: readonly string[]): void
 }
 
 const SOFT_HYPHEN = "\u00AD"
 
-const SPACES = new Set([
-  " ",
-  "\t",
-  "\n",
-  "\f",
-  "\r",
-  "\u2002",
-  "\u2007",
-  "\u2009",
-])
+const SPACES = new Set([" ", "\t", "\n", "\f", "\r", "\u2002", "\u2009"])
 
-const ZERO_WIDTHS = new Set(["\u200B", "\u2060", "\uFEFF"])
+const ZERO_WIDTH_BREAK = "\u200B"
 
 const DASHES = new Set(["-", "–", "—", "―"])
 
@@ -56,7 +50,7 @@ const CLOSING = /[”’»)\]},.;:!?]/u
 const startsSegment = (character: string) =>
   SPACES.has(character) ||
   character === SOFT_HYPHEN ||
-  ZERO_WIDTHS.has(character)
+  character === ZERO_WIDTH_BREAK
 
 const spaceEnd = (text: string, from: number) => {
   let end = from + 1
@@ -74,7 +68,14 @@ const wordEnd = (text: string, from: number) => {
     const character = text[end] as string
     if (startsSegment(character)) break
     const dash = DASHES.has(character)
-    if (dash !== dashing && splitsWord(character, dash)) break
+    if (dash !== dashing && splitsWord(character, dash)) {
+      const combining = combiningSizeAt(text, end)
+      if (combining !== 0) {
+        end += combining
+        continue
+      }
+      if (text[end - 1] !== "\u200D") break
+    }
     dashing = dash
     end += 1
   }
@@ -89,7 +90,7 @@ const scanFrom = (text: string, from: number) => {
   if (character === SOFT_HYPHEN) {
     return { end: from + 1, kind: "soft-hyphen" as SegmentKind }
   }
-  if (ZERO_WIDTHS.has(character)) {
+  if (character === ZERO_WIDTH_BREAK) {
     return { end: from + 1, kind: "break-opportunity" as SegmentKind }
   }
   return { end: wordEnd(text, from), kind: "text" as SegmentKind }
@@ -109,7 +110,7 @@ export const segmentText = (text: string): TextSegment[] => {
 const measuredSegment = (
   segment: TextSegment,
   measure: Advance,
-  softHyphenWidth: number,
+  hyphenWidth: number,
 ): MeasuredSegment => {
   const soft = segment.kind === "soft-hyphen"
   return {
@@ -117,25 +118,27 @@ const measuredSegment = (
     start: segment.start,
     end: segment.end,
     kind: segment.kind,
-    width: soft ? 0 : measure(segment.text),
-    lineEndWidth: soft ? softHyphenWidth : 0,
+    width: soft || segment.kind === "break-opportunity" ? 0 : measure(segment.text),
+    lineEndWidth: soft ? hyphenWidth : 0,
   }
 }
 
-const tiles = (segment: TextSegment, offset: number) =>
-  segment.start === offset && segment.end === offset + segment.text.length
+const tiles = (segment: TextSegment, offset: number, text: string) =>
+  segment.start === offset &&
+  segment.end === offset + segment.text.length &&
+  segment.text === text.slice(segment.start, segment.end)
 
 const measureAll = (
   segments: readonly TextSegment[],
   text: string,
   measure: Advance,
-  softHyphenWidth: number,
+  hyphenWidth: number,
 ) => {
   const measured: MeasuredSegment[] = []
   let offset = 0
   for (const segment of segments) {
-    if (!tiles(segment, offset)) return null
-    measured.push(measuredSegment(segment, measure, softHyphenWidth))
+    if (!tiles(segment, offset, text)) return null
+    measured.push(measuredSegment(segment, measure, hyphenWidth))
     offset = segment.end
   }
   return offset === text.length ? measured : null
@@ -150,7 +153,6 @@ export const createMetrics = (options: {
   const { measure } = options
   const letterSpacing = options.letterSpacing ?? 0
   const hyphenWidth = measure("-")
-  const softHyphenWidth = hyphenWidth + 2 * letterSpacing
   const segment = options.segment ?? segmentText
 
   return {
@@ -159,7 +161,7 @@ export const createMetrics = (options: {
     hyphenWidth,
     measureRun: measure,
     measureParagraph(text) {
-      const segments = measureAll(segment(text), text, measure, softHyphenWidth)
+      const segments = measureAll(segment(text), text, measure, hyphenWidth)
       return segments ? { segments, hyphenWidth } : null
     },
   }

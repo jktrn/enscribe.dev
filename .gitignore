@@ -38,10 +38,4 @@ graphics/fonts/MDLorien-Regular.ttf
 graphics/fonts/MDLorien-Italic.ttf
 graphics/blog/
 
-# Licensed faces staged into the linebreak playground by its vite config.
-packages/linebreak/playground/public/fonts/MDLorien-*.woff2
-packages/linebreak/playground/public/fonts/IBMPlexSans-Variable.woff2
-packages/linebreak/playground/public/fonts/IBMPlexMono-Regular.woff2
-packages/linebreak/playground/vendor/
-
 public/fonts/

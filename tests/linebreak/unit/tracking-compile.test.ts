@@ -65,7 +65,6 @@ describe("what earns a letterfit budget", () => {
     const runs: InlineRun[] = [
       {
         kind: "atom",
-        text: "￼",
         start: 0,
         end: 1,
         wrappers: [],

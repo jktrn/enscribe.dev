@@ -145,7 +145,7 @@ export const compileShape = (
     policy?: LayoutPolicy
     protrude?: boolean
     hyphenate?: boolean
-    scaleFor?: (run: InlineRun) => StretchScale | null
+    scaleFor?: (run: Extract<InlineRun, { kind: "text" }> ) => StretchScale | null
     track?: number
   } = {},
 ) => {
