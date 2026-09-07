@@ -151,7 +151,6 @@ describe("media manifest generation", () => {
       await writeFile(manifestPath, JSON.stringify(first))
       expect(await generateMediaManifest(directory)).toEqual(first)
 
-      // A new path's default key must not collide with a preserved key.
       await writeFile(
         manifestPath,
         JSON.stringify({

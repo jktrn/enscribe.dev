@@ -30,7 +30,6 @@ const roots: MediaRoot[] = [
     path: "public/blog",
     keyPrefix: "public/blog",
   },
-  // Keep the existing R2 namespace even when local source directories move.
   {
     group: "graphics",
     include: () => true,

@@ -1,5 +1,3 @@
-// Manual graphics tool: renders themed SVG sources into blog assets.
-// The site build uses the rendered files, not these editable sources.
 import { copyFileSync, existsSync, readdirSync, readFileSync } from "node:fs"
 import { homedir } from "node:os"
 import { basename, join, resolve } from "node:path"

@@ -2,7 +2,6 @@ import { resolve } from "node:path"
 
 export const repoRoot = resolve(import.meta.dir, "../../..")
 
-// Local destinations only. R2 object keys are independent of this layout.
 export const assetPaths = {
   manifest: "scripts/assets/media-manifest.json",
   graphicsBlog: "scripts/assets/sources/blog",
