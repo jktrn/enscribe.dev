@@ -1,13 +1,12 @@
 import type { SourceRange } from "../text/source"
 
 type RunBase = {
-  readonly text: string
   readonly start: number
   readonly end: number
 }
 
 export type CompiledRun =
-  | (RunBase & { readonly kind: "text"; readonly hyphenates: boolean })
+  | (RunBase & { readonly kind: "text"; readonly text: string; readonly hyphenates: boolean })
   | (RunBase & { readonly kind: "atom" })
   | (RunBase & {
       readonly kind: "anchor"

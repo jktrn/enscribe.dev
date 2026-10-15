@@ -21,11 +21,8 @@ export type DeclineReason = (typeof DECLINE_REASONS)[number]
 
 export type ComposeReason = SkipReason | DeclineReason
 
-export const FAILURE_REASONS = [
-  "layout-mismatch",
-  "unstable-width",
-  "line-height-unresolved",
-  "render-failed",
-] as const
-
-export type FailureReason = (typeof FAILURE_REASONS)[number]
+export type FailureReason =
+  | "layout-mismatch"
+  | "unstable-width"
+  | "line-height-unresolved"
+  | "render-failed"

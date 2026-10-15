@@ -4,7 +4,6 @@ import type { Hyphenator } from "./text/source"
 
 export {
   DECLINE_REASONS,
-  FAILURE_REASONS,
   SKIP_REASONS,
 } from "./reasons"
 export type {
@@ -36,7 +35,7 @@ export type Outcome =
       readonly element: HTMLElement
       readonly status: "failed"
       readonly reason: FailureReason
-      readonly cause?: unknown
+      readonly cause?: Error
     }
 
 export const isExpected = (outcome: Outcome) =>

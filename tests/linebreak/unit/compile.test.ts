@@ -41,7 +41,7 @@ test("a break at an authored soft hyphen keeps the character on the line", () =>
 
   const hyphenated = solved.lines.filter((line) => line.breakKind === "hyphen")
   expect(hyphenated.length).toBe(1)
-  expect(text.slice(0, hyphenated[0]?.sourceEnd)).toEndWith(SHY)
+  expect(text.slice(0, hyphenated[0]?.sourceEnd).endsWith(SHY)).toBe(true)
 })
 
 test("the lines of a soft-hyphenated paragraph still cover every character", () => {

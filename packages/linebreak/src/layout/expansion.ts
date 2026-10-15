@@ -33,12 +33,11 @@ const widen = (
   slack: number,
 ): Choice => {
   const span = widestRatio(scale) - 1
-  if (pool <= 0 || span <= 0) return NEUTRAL
+  if (pool <= 0 || span <= 0 || flex <= 0) return NEUTRAL
   const want = Math.min(slack / flex, 1) * pool
 
   let chosen = NEUTRAL
   for (const step of scale.steps) {
-    if (step.pct <= 100) continue
     const gain = pool * ((step.ratio - 1) / span)
     if (gain > want) break
     chosen = { pct: step.pct, gain }
@@ -53,14 +52,16 @@ const narrow = (
   excess: number,
 ): Choice => {
   const span = 1 - narrowestRatio(scale)
-  if (pool <= 0 || span <= 0) return NEUTRAL
+  if (span <= 0 || flex <= 0) return NEUTRAL
   const want = Math.min(excess / flex, 1) * pool
 
   let chosen = NEUTRAL
   for (const step of scale.steps) {
-    if (step.pct >= 100) break
     const loss = pool * ((1 - step.ratio) / span)
-    if (loss >= want) chosen = { pct: step.pct, gain: -loss }
+    // A positive request can underflow during normalization. It still needs
+    // the gentlest nonzero condensation, not the identity step.
+    if (loss <= 0 || loss < want) break
+    chosen = { pct: step.pct, gain: -loss }
   }
   return chosen
 }
@@ -75,11 +76,9 @@ export const fitLines = (
     const pool = flexBetween(expansion, line.start, line.end)
     const slack = target - line.naturalWidth
     const choice =
-      slack > 0
-        ? widen(scale, pool.stretch, line.stretch, slack)
-        : slack < 0
-          ? narrow(scale, pool.shrink, line.shrink, -slack)
-          : NEUTRAL
+      slack < 0
+        ? narrow(scale, pool.shrink, line.shrink, -slack)
+        : widen(scale, pool.stretch, line.stretch, slack)
     return {
       ...choice,
       stretch: line.stretch - pool.stretch,

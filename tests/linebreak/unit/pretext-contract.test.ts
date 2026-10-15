@@ -15,38 +15,23 @@ class StubOffscreenCanvas {
   }
 }
 
-;(globalThis as unknown as { OffscreenCanvas: unknown }).OffscreenCanvas =
-  StubOffscreenCanvas
+Object.defineProperty(globalThis, "OffscreenCanvas", {
+  configurable: true,
+  writable: true,
+  value: StubOffscreenCanvas,
+})
 
-const pretext = new URL(
-  "../../../packages/linebreak/node_modules/@chenglou/pretext/dist/layout.js",
-  import.meta.url,
-).href
-
-const { prepareWithSegments } = (await import(pretext)) as {
-  prepareWithSegments: (
-    text: string,
-    font: string,
-    options: { letterSpacing: number; whiteSpace: string },
-  ) => unknown
-}
+const { prepareWithSegments } = await import("@chenglou/pretext")
 const { createFontMetrics } = await import("@linebreak/text/measure")
 
 const FONT = "16px serif"
 const TEXT = "co­oper­ate exam­ple 3.14 x"
 
-type RawPrepared = {
-  readonly segments: readonly string[]
-  readonly widths: readonly number[]
-  readonly kinds: readonly string[]
-  readonly lineEndFitAdvances: readonly number[]
-}
-
 const prepare = (letterSpacing: number) =>
   prepareWithSegments(TEXT, FONT, {
     letterSpacing,
     whiteSpace: "pre-wrap",
-  }) as RawPrepared
+  })
 
 const SPACINGS = [0, 1.5, -0.4]
 
@@ -61,7 +46,7 @@ describe("pretext contract", () => {
   })
 
   for (const letterSpacing of SPACINGS) {
-    test(`soft-hyphen advances are the hyphen identity at ${letterSpacing}`, () => {
+    test(`raw pretext exposes its extra soft-hyphen spacing at ${letterSpacing}`, () => {
       const raw = prepare(letterSpacing)
       const metrics = createFontMetrics(FONT, letterSpacing)
       const expected = metrics.hyphenWidth + 2 * letterSpacing
@@ -75,7 +60,7 @@ describe("pretext contract", () => {
       for (const advance of advances) expect(advance).toBe(expected)
     })
 
-    test(`measured soft hyphens carry that width at ${letterSpacing}`, () => {
+    test(`measured soft hyphens use the visible hyphen width at ${letterSpacing}`, () => {
       const metrics = createFontMetrics(FONT, letterSpacing)
       const paragraph = metrics.measureParagraph(TEXT)
 
@@ -86,9 +71,7 @@ describe("pretext contract", () => {
 
       expect(softHyphens.length).toBe(3)
       for (const segment of softHyphens) {
-        expect(segment.lineEndWidth).toBe(
-          metrics.hyphenWidth + 2 * letterSpacing,
-        )
+        expect(segment.lineEndWidth).toBe(metrics.hyphenWidth)
       }
     })
   }

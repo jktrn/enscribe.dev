@@ -94,6 +94,12 @@ describe("entry point import graphs", () => {
     const graph = runtimeGraph("hyphenation.ts")
 
     expect(graph.files).toContain("text/hyphenate.ts")
-    expect(graph.packages).toContain("hyphen/en-us")
+    expect(graph.files).toContain("text/english-patterns.ts")
+    expect(graph.files).toContain("text/pattern-hyphenator.ts")
+    expect(graph.files).not.toContain("layout/policy.ts")
+    expect(graph.packages).toEqual([])
+    for (const entry of ["index.ts", "layout.ts", "text.ts"]) {
+      expect(runtimeGraph(entry).files).not.toContain("text/english-patterns.ts")
+    }
   })
 })

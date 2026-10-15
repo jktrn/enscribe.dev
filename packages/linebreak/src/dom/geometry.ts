@@ -1,7 +1,7 @@
 import { LINE_SELECTOR } from "./render"
 import { cssPixels } from "./style"
 
-export const viewOf = (element: HTMLElement) =>
+const viewOf = (element: HTMLElement) =>
   element.ownerDocument.defaultView ?? globalThis
 
 export const styleOf = (element: HTMLElement) =>
@@ -10,10 +10,20 @@ export const styleOf = (element: HTMLElement) =>
 export const contentWidth = (
   element: HTMLElement,
   style: CSSStyleDeclaration,
-) =>
-  element.clientWidth -
-  cssPixels(style.paddingInlineStart) -
-  cssPixels(style.paddingInlineEnd)
+) => {
+  const client = element.clientWidth
+  if (client > 0 && style.boxSizing === "content-box") {
+    // The used content-box width excludes padding and reserved gutters without
+    // clientWidth's integer rounding. Zero client widths remain unmeasurable.
+    const resolved = Number.parseFloat(style.width)
+    if (Number.isFinite(resolved)) return resolved
+  }
+  return (
+    client -
+    cssPixels(style.paddingInlineStart) -
+    cssPixels(style.paddingInlineEnd)
+  )
+}
 
 export const resolvedLineHeight = (style: CSSStyleDeclaration) => {
   const value = Number.parseFloat(style.lineHeight)

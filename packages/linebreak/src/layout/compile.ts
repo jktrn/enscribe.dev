@@ -1,96 +1,55 @@
 import type { ComposeReason } from "../reasons"
-import type { CompiledBlock, CompiledRun } from "./block"
-import {
-  breakAllowedAt,
-  hasVisibleText,
-  type Hyphenator,
-  type SourceRange,
-} from "../text/source"
-import { codeBreakOffsets } from "../text/code-breaks"
-import type {
-  FontMetrics,
-  MeasuredSegment,
-  SegmentKind,
-} from "../text/segments"
-import { type Item, lineBreak, paragraphEnd } from "./items"
-import {
-  defaultGlue,
-  type GlueElasticity,
-  type LayoutPolicy,
-  webDefaults,
-} from "./policy"
+import type { CompiledRun } from "./block"
+import { hasLineContent } from "../text/source"
+import { type Item, isForced, lineBreak, paragraphEnd } from "./items"
+import { appendSequenceDecoration, BreakSequences } from "./compile-breaks"
+import { defaultGlue, webDefaults } from "./policy"
 import { buildExpansion } from "./expansion"
 import { type Flex, pooledFlex } from "./flex"
 import { buildTracking } from "./tracking"
-import {
-  buildHangs,
-  endHang,
-  type Hangs,
-  hyphenHang,
-  startHang,
-} from "./protrusion"
+import { buildHangs, type Hangs } from "./protrusion"
 import type { StretchScale } from "../text/stretch"
-
-export type RunEdges = { leading: number; trailing: number }
-
-export type CompileContext = {
-  block: CompiledBlock
-  metricsFor(run: CompiledRun): FontMetrics | null
-  baseFont: string
-
-  atomWidth(run: CompiledRun): number
-  locale: string
-
-  isCode?(run: CompiledRun): boolean
-  edgesFor?(run: CompiledRun): RunEdges
-
-  hyphenate?: Hyphenator
-  protrude?: boolean
-  scaleFor?(run: CompiledRun): StretchScale | null
-  track?: number
-  policy?: LayoutPolicy
-  glue?: GlueElasticity
-}
-
-export type CompileResult =
-  | {
-      ok: true
-      items: Item[]
-      hangs: Hangs | null
-      expansion: Flex | null
-      tracking: Flex | null
-      flex: Flex | null
-      scale: StretchScale | null
-    }
-  | { ok: false; reason: ComposeReason }
-
-type Credits = {
-  readonly startOf: Map<number, number>
-  readonly endOf: Map<number, number>
-}
+import { compileText, edgesOf } from "./compile-text"
+import { appendAtomBoundary } from "./compile-atomic"
+import {
+  PendingEdge,
+  type CompileContext,
+  type CompiledExpansion,
+  type CompileResult,
+  type Credits,
+  type Emit,
+  type Settings,
+} from "./compile-context"
+export type {
+  CompileContext,
+  CompileResult,
+  RunEdges,
+} from "./compile-context"
+type TextRun = Extract<CompiledRun, { kind: "text" }>
 
 const emptyCredits = (): Credits => ({ startOf: new Map(), endOf: new Map() })
-
-const setCredit = (into: Map<number, number>, index: number, value: number) => {
-  if (value !== 0) into.set(index, value)
-}
 
 const hangsFrom = (
   items: readonly Item[],
   credits: Credits,
   folded: ReadonlySet<number>,
+  sequences: BreakSequences | undefined,
 ): Hangs => {
   for (const index of folded) {
     credits.startOf.delete(index)
     credits.endOf.delete(index)
   }
-  return buildHangs(items, credits.startOf, credits.endOf)
+  const hangs = buildHangs(items, credits.startOf, credits.endOf)
+  sequences?.applyHangs(hangs)
+  return hangs
 }
 
 const NO_MARKS: ReadonlySet<number> = new Set()
+const NO_EXPANSION: CompiledExpansion = { expansion: null, scale: null }
 
 type Expandable = {
   readonly uncredited: Set<number>
+  readonly scaleFor: NonNullable<CompileContext["scaleFor"]>
   scale: StretchScale | null
   mixed: boolean
 }
@@ -114,364 +73,28 @@ const expansionFrom = (
   items: readonly Item[],
   state: Expandable,
   folded: ReadonlySet<number>,
-) => {
-  if (state.mixed || !state.scale) return null
+): CompiledExpansion => {
+  if (state.mixed || !state.scale) return NO_EXPANSION
   for (const index of folded) state.uncredited.add(index)
-  return buildExpansion(items, state.scale, state.uncredited)
-}
-
-type WordBreak = { at: number; penalty: number; flagged: boolean }
-
-type Word = {
-  readonly text: string
-  readonly offset: number
-  readonly width: number
-  readonly breaks: readonly WordBreak[]
-}
-
-const glueFor = (
-  width: number,
-  start: number,
-  end: number,
-  elasticity: GlueElasticity,
-): Item => ({
-  kind: "glue",
-  width,
-  stretch: width * elasticity.stretch,
-  shrink: width * elasticity.shrink,
-  source: { start, end },
-})
-
-const softHyphenFor = (
-  hyphenWidth: number,
-  start: number,
-  end: number,
-  policy: LayoutPolicy,
-): Item => ({
-  kind: "discretionary",
-  preWidth: hyphenWidth,
-  postWidth: 0,
-  noBreakWidth: 0,
-  penalty: policy.hyphenPenalty,
-  hyphen: true,
-  source: { start, end },
-  breakOffset: end,
-})
-
-const emitWord = (items: Item[], word: Word, metrics: FontMetrics) => {
-  const { text, offset, width: wholeWidth, breaks } = word
-  if (breaks.length === 0) {
-    items.push({
-      kind: "box",
-      width: wholeWidth,
-      source: { start: offset, end: offset + text.length },
-    })
-    return
-  }
-
-  let previousCut = 0
-  let previousWidth = 0
-  for (const { at, penalty, flagged } of breaks) {
-    const prefixWidth = metrics.measureRun(text.slice(0, at))
-    items.push({
-      kind: "box",
-      width: prefixWidth - previousWidth,
-      source: { start: offset + previousCut, end: offset + at },
-    })
-    items.push({
-      kind: "discretionary",
-      preWidth: flagged ? metrics.hyphenWidth : 0,
-      postWidth: 0,
-      noBreakWidth: 0,
-      penalty,
-      hyphen: flagged,
-      source: { start: offset + at, end: offset + at },
-      breakOffset: offset + at,
-    })
-    previousCut = at
-    previousWidth = prefixWidth
-  }
-  items.push({
-    kind: "box",
-    width: wholeWidth - previousWidth,
-    source: { start: offset + previousCut, end: offset + text.length },
-  })
+  const expansion = buildExpansion(items, state.scale, state.uncredited)
+  return { expansion, scale: state.scale }
 }
 
 const carriesContent = (run: CompiledRun) =>
-  run.kind === "atom" || (run.kind === "text" && hasVisibleText(run.text))
+  run.kind === "atom" ||
+  (run.kind === "text" && hasLineContent(run.text))
 
-const forgetBreaksAfterContent = (
-  runs: readonly CompiledRun[],
-  separates: boolean[],
-) => {
-  let contentAfter = false
+const lastContentIndex = (runs: readonly CompiledRun[]) => {
   for (let index = runs.length - 1; index >= 0; index -= 1) {
-    separates[index] &&= contentAfter
-    if (carriesContent(runs[index] as CompiledRun)) contentAfter = true
+    if (carriesContent(runs[index]!)) return index
   }
+  return -1
 }
 
 const breaksSomething = (runs: readonly CompiledRun[]) => {
-  const separates = runs.map(() => false)
-  let contentBefore = false
-  for (const [index, run] of runs.entries()) {
-    separates[index] = contentBefore
-    if (carriesContent(run)) contentBefore = true
-    else if (run.kind === "break" && separates[index]) contentBefore = false
-  }
-  forgetBreaksAfterContent(runs, separates)
-  return separates
-}
-
-const byOffset = (left: WordBreak, right: WordBreak) => left.at - right.at
-
-const allowedCodeBreaks = (
-  restrictions: readonly SourceRange[],
-  text: string,
-  start: number,
-): WordBreak[] => {
-  const breaks: WordBreak[] = []
-  for (const [at, penalty] of codeBreakOffsets(text)) {
-    if (breakAllowedAt(restrictions, start + at)) {
-      breaks.push({ at, penalty, flagged: false })
-    }
-  }
-  return breaks
-}
-
-const allowedHyphenBreaks = (
-  context: CompileContext,
-  hyphenate: Hyphenator,
-  text: string,
-  start: number,
-  penalty: number,
-): WordBreak[] => {
-  const restrictions = context.block.breakRestrictions
-  const breaks: WordBreak[] = []
-  for (const at of hyphenate(text, context.locale)) {
-    if (breakAllowedAt(restrictions, start + at)) {
-      breaks.push({ at, penalty, flagged: true })
-    }
-  }
-  return breaks
-}
-
-const breaksInside = (
-  context: CompileContext,
-  text: string,
-  start: number,
-  options: { inCode: boolean; hyphenates: boolean; policy: LayoutPolicy },
-): WordBreak[] => {
-  const { breakRestrictions } = context.block
-
-  if (options.inCode) {
-    return allowedCodeBreaks(breakRestrictions, text, start).sort(byOffset)
-  }
-  const { hyphenate } = context
-  if (options.hyphenates && hyphenate) {
-    const penalty = options.policy.hyphenPenalty
-    return allowedHyphenBreaks(context, hyphenate, text, start, penalty).sort(
-      byOffset,
-    )
-  }
-  return []
-}
-
-class PendingEdge {
-  private owed = 0
-  private readonly folded: Set<number> | null
-
-  constructor(folded: Set<number> | null) {
-    this.folded = folded
-  }
-
-  onto(items: Item[], width: number) {
-    if (width === 0) return
-    const last = items.at(-1)
-    if (last?.kind === "box") {
-      items[items.length - 1] = { ...last, width: last.width + width }
-      this.folded?.add(items.length - 1)
-      return
-    }
-    this.owed += width
-  }
-
-  defer(width: number) {
-    this.owed += width
-  }
-
-  take() {
-    const owed = this.owed
-    this.owed = 0
-    return owed
-  }
-}
-
-const EXISTING_HYPHEN = /[-‐‒–—]/u
-
-type TextRun = Extract<CompiledRun, { kind: "text" }>
-
-export type Emit = {
-  readonly items: Item[]
-  readonly pending: PendingEdge
-  readonly folded: Set<number> | null
-}
-
-export type Settings = {
-  readonly policy: LayoutPolicy
-  readonly elasticity: GlueElasticity
-  readonly hyphenates: boolean
-}
-
-type TextScope = {
-  readonly context: CompileContext
-  readonly run: TextRun
-  readonly metrics: FontMetrics
-  readonly emit: Emit
-  readonly settings: Settings
-  readonly edges: RunEdges
-  readonly inCode: boolean
-  readonly protrudes: boolean
-  readonly hyphenates: boolean
-  readonly credits: Credits | null
-  previousKind: SegmentKind | null
-  leadingApplied: boolean
-}
-
-const pushBoundaryPenalty = (
-  scope: TextScope,
-  segment: MeasuredSegment,
-  start: number,
-) => {
-  const atBoundary =
-    (scope.previousKind === "text" && segment.kind === "text") ||
-    segment.kind === "break-opportunity" ||
-    scope.previousKind === "break-opportunity"
-  if (!atBoundary) return
-  if (!breakAllowedAt(scope.context.block.breakRestrictions, start)) return
-
-  const afterHyphen = EXISTING_HYPHEN.test(
-    scope.context.block.text[start - 1] ?? "",
-  )
-  scope.emit.items.push({
-    kind: "penalty",
-    width: 0,
-    penalty: afterHyphen ? scope.settings.policy.exHyphenPenalty : 0,
-    flagged: afterHyphen,
-    source: { start, end: start },
-  })
-}
-
-const emitSoftHyphen = (
-  scope: TextScope,
-  segment: MeasuredSegment,
-  start: number,
-  end: number,
-  trailing: number,
-) => {
-  const { items, pending } = scope.emit
-  pending.onto(items, trailing)
-  if (breakAllowedAt(scope.context.block.breakRestrictions, start)) {
-    items.push(
-      softHyphenFor(segment.lineEndWidth, start, end, scope.settings.policy),
-    )
-  }
-}
-
-const emitSpace = (
-  scope: TextScope,
-  segment: MeasuredSegment,
-  start: number,
-  end: number,
-  trailing: number,
-) => {
-  const { items, pending } = scope.emit
-  items.push(
-    breakAllowedAt(scope.context.block.breakRestrictions, start)
-      ? glueFor(segment.width, start, end, scope.settings.elasticity)
-      : { kind: "box", width: segment.width, source: { start, end } },
-  )
-  pending.defer(trailing)
-}
-
-const emitTextSegment = (
-  scope: TextScope,
-  segment: MeasuredSegment,
-  start: number,
-  trailing: number,
-) => {
-  const { items, pending } = scope.emit
-  const { policy } = scope.settings
-  const leading =
-    pending.take() + (scope.leadingApplied ? 0 : scope.edges.leading)
-  scope.leadingApplied = true
-
-  const before = items.length
-  emitWord(
-    items,
-    {
-      text: segment.text,
-      offset: start,
-      width: segment.width,
-      breaks: breaksInside(scope.context, segment.text, start, {
-        inCode: scope.inCode,
-        hyphenates: scope.hyphenates,
-        policy,
-      }),
-    },
-    scope.metrics,
-  )
-
-  const first = items[before]
-  if (leading !== 0 && first?.kind === "box") {
-    items[before] = { ...first, width: first.width + leading }
-    scope.emit.folded?.add(before)
-  } else if (leading !== 0) {
-    pending.defer(leading)
-  }
-
-  pending.onto(items, trailing)
-}
-
-const creditSegment = (scope: TextScope, from: number) => {
-  const { credits, metrics } = scope
-  if (!credits || !scope.protrudes) return
-  const { items } = scope.emit
-  const { text } = scope.context.block
-  const advance = (character: string) => metrics.measureRun(character)
-
-  for (let index = from; index < items.length; index += 1) {
-    const item = items[index] as Item
-    if (item.kind === "discretionary") {
-      setCredit(credits.endOf, index, hyphenHang(item.preWidth))
-      continue
-    }
-    if (item.kind !== "box" || !item.source) continue
-    const slice = text.slice(item.source.start, item.source.end)
-    setCredit(credits.startOf, index, startHang(slice, advance))
-    setCredit(credits.endOf, index, endHang(slice, advance))
-  }
-}
-
-const emitSegment = (scope: TextScope, segment: MeasuredSegment) => {
-  const start = scope.run.start + segment.start
-  const end = scope.run.start + segment.end
-
-  pushBoundaryPenalty(scope, segment, start)
-  scope.previousKind = segment.kind
-  const trailing = end === scope.run.end ? scope.edges.trailing : 0
-  const before = scope.emit.items.length
-
-  if (segment.kind === "soft-hyphen") {
-    emitSoftHyphen(scope, segment, start, end, trailing)
-  } else if (segment.kind === "space") {
-    emitSpace(scope, segment, start, end, trailing)
-  } else {
-    emitTextSegment(scope, segment, start, trailing)
-  }
-
-  creditSegment(scope, before)
+  const first = runs.findIndex(carriesContent)
+  const last = lastContentIndex(runs)
+  return (index: number) => first < index && index < last
 }
 
 type BlockScope = {
@@ -479,50 +102,26 @@ type BlockScope = {
   readonly settings: Settings
   readonly credits: Credits | null
   readonly expandable: Expandable | null
-  readonly unglyphed: Set<number> | null
+  readonly tracking: { budget: number; unglyphed: Set<number> } | null
   readonly emit: Emit
+  breakRuns?: Map<Item, number>
+  sequences?: BreakSequences
 }
 
-const NO_EDGES: RunEdges = { leading: 0, trailing: 0 }
+const markFixed = (scope: BlockScope, index: number) => {
+  scope.expandable?.uncredited.add(index)
+  scope.tracking?.unglyphed.add(index)
+}
 
-const edgesOf = (context: CompileContext, run: CompiledRun) =>
-  context.edgesFor?.(run) ?? NO_EDGES
-
-const MONO_TOLERANCE = 0.01
-
-const insetMonospace = (context: CompileContext, metrics: FontMetrics) =>
-  metrics.font !== context.baseFont &&
-  Math.abs(metrics.measureRun("i") - metrics.measureRun("M")) < MONO_TOLERANCE
-
-const compileText = (
-  block: BlockScope,
-  run: TextRun,
-  metrics: FontMetrics,
-): ComposeReason | null => {
-  const measured = metrics.measureParagraph(run.text)
-  if (!measured) return "segmentation-mismatch"
-
-  const inCode = block.context.isCode?.(run) ?? false
-  const scope: TextScope = {
-    context: block.context,
-    run,
-    metrics,
-    emit: block.emit,
-    settings: block.settings,
-    edges: edgesOf(block.context, run),
-    inCode,
-    protrudes: !inCode && !insetMonospace(block.context, metrics),
-    hyphenates: block.settings.hyphenates && run.hyphenates,
-    credits: block.credits,
-    previousKind: null,
-    leadingApplied: false,
-  }
-
-  for (const segment of measured.segments) {
-    emitSegment(scope, segment)
-  }
-
-  return null
+const fixedBox = (
+  scope: BlockScope,
+  width: number,
+  start: number,
+  end: number,
+) => {
+  const { items } = scope.emit
+  items.push({ kind: "box", width, source: { start, end } })
+  markFixed(scope, items.length - 1)
 }
 
 const compileAnchorRun = (
@@ -532,6 +131,7 @@ const compileAnchorRun = (
   const { items, pending } = scope.emit
   const edges = edgesOf(scope.context, run)
   const width = edges.leading + edges.trailing
+  if (appendSequenceDecoration(scope.emit, width, run.start)) return
   if (run.affinity === "previous") pending.onto(items, width)
   else pending.defer(width)
 }
@@ -539,37 +139,46 @@ const compileAnchorRun = (
 const compileBreakRun = (
   scope: BlockScope,
   run: Extract<CompiledRun, { kind: "break" }>,
-) => {
-  if (run.forced) {
-    scope.emit.items.push(...lineBreak(run.start, run.end))
-    return
+  separates: boolean,
+): Item | null => {
+  const edges = edgesOf(scope.context, run)
+  const width =
+    edges.leading +
+    edges.trailing +
+    (run.forced ? scope.emit.pending.take() : 0)
+  if (!run.forced && separates) {
+    scope.sequences ??= new BreakSequences()
+    return scope.sequences.append(scope.emit, width, run.start)
   }
-  scope.emit.items.push({
-    kind: "penalty",
-    width: 0,
-    penalty: 0,
-    flagged: false,
-    source: { start: run.start, end: run.end },
-  })
+  if (width !== 0) fixedBox(scope, width, run.start, run.start)
+  if (run.forced) {
+    scope.emit.space = undefined
+    scope.emit.sequence = undefined
+    scope.emit.items.push(...lineBreak(run.start, run.end))
+    return scope.emit.items.at(-1)!
+  }
+  return null
 }
 
 const compileAtomRun = (
   scope: BlockScope,
   run: Extract<CompiledRun, { kind: "atom" }>,
-) => {
-  const { items, pending } = scope.emit
+): ComposeReason | null => {
+  const { atomWidth } = scope.context
+  if (!atomWidth) return "unmeasurable"
+  const { pending } = scope.emit
+  scope.emit.space = undefined
+  scope.emit.sequence = undefined
   const edges = edgesOf(scope.context, run)
-  items.push({
-    kind: "box",
-    width:
-      scope.context.atomWidth(run) +
-      edges.leading +
-      edges.trailing +
-      pending.take(),
-    source: { start: run.start, end: run.end },
-  })
-  scope.expandable?.uncredited.add(items.length - 1)
-  scope.unglyphed?.add(items.length - 1)
+  appendAtomBoundary(scope.emit, scope.context.block, run.start)
+  fixedBox(
+    scope,
+    atomWidth(run) + edges.leading + edges.trailing + pending.take(),
+    run.start,
+    run.end,
+  )
+  scope.emit.atomEnd = run.end
+  return null
 }
 
 const compileTextRun = (
@@ -586,7 +195,7 @@ const compileTextRun = (
   const { expandable } = scope
   if (!expandable) return null
 
-  const scale = scope.context.scaleFor?.(run) ?? null
+  const scale = expandable.scaleFor(run)
   if (scale) noteScale(expandable, scale)
   else markUncredited(scope.emit.items, before, expandable.uncredited)
   return null
@@ -594,19 +203,14 @@ const compileTextRun = (
 
 const compileRun = (
   scope: BlockScope,
-  run: CompiledRun,
+  run: Exclude<CompiledRun, { kind: "break" }>,
 ): ComposeReason | null => {
   if (run.kind === "anchor") {
     compileAnchorRun(scope, run)
     return null
   }
-  if (run.kind === "break") {
-    compileBreakRun(scope, run)
-    return null
-  }
   if (run.kind === "atom") {
-    compileAtomRun(scope, run)
-    return null
+    return compileAtomRun(scope, run)
   }
   return compileTextRun(scope, run)
 }
@@ -614,31 +218,33 @@ const compileRun = (
 const blockSettings = (context: CompileContext): Settings => ({
   policy: context.policy ?? webDefaults,
   elasticity: context.glue ?? defaultGlue,
-  hyphenates: typeof context.hyphenate === "function",
 })
 
 const blockScope = (context: CompileContext): BlockScope => {
   const credits = context.protrude === true ? emptyCredits() : null
-  const expandable: Expandable | null = context.scaleFor
-    ? { uncredited: new Set(), scale: null, mixed: false }
+  const { scaleFor } = context
+  const expandable: Expandable | null = scaleFor
+    ? { uncredited: new Set(), scaleFor, scale: null, mixed: false }
     : null
-  const unglyphed = context.track ? new Set<number>() : null
-  const folded = credits || expandable || unglyphed ? new Set<number>() : null
+  const tracking = context.track
+    ? { budget: context.track, unglyphed: new Set<number>() }
+    : null
+  const folded = credits || expandable || tracking ? new Set<number>() : null
   return {
     context,
     settings: blockSettings(context),
     credits,
     expandable,
-    unglyphed,
+    tracking,
     emit: { items: [], pending: new PendingEdge(folded), folded },
   }
 }
 
 const trackingFrom = (scope: BlockScope, folded: ReadonlySet<number>) => {
-  const { context, unglyphed } = scope
-  if (!unglyphed || !context.track) return null
-  for (const index of folded) unglyphed.add(index)
-  return buildTracking(scope.emit.items, context.track, unglyphed)
+  const { tracking } = scope
+  if (!tracking) return null
+  for (const index of folded) tracking.unglyphed.add(index)
+  return buildTracking(scope.emit.items, tracking.budget, tracking.unglyphed)
 }
 
 const pooled = (expansion: Flex | null, tracking: Flex | null) =>
@@ -646,21 +252,36 @@ const pooled = (expansion: Flex | null, tracking: Flex | null) =>
     ? pooledFlex(expansion, tracking)
     : (expansion ?? tracking)
 
+const indexedBreakRuns = (scope: BlockScope) => {
+  if (!scope.breakRuns) return undefined
+  const indexed = new Map<number, number>()
+  // Compilation can replace endpoints and move glue. Resolve final indices only
+  // after those edits; discarded endpoint identities no longer receive a row.
+  for (const [index, item] of scope.emit.items.entries()) {
+    const runIndex = scope.breakRuns.get(item)
+    if (runIndex !== undefined) indexed.set(index, runIndex)
+  }
+  return indexed
+}
+
 const compiled = (scope: BlockScope): CompileResult => {
+  scope.sequences?.finish(scope.emit.items, scope.breakRuns!)
   const { credits, expandable, emit } = scope
   const marks = emit.folded ?? NO_MARKS
-  const expansion = expandable
+  const expanded = expandable
     ? expansionFrom(emit.items, expandable, marks)
-    : null
+    : NO_EXPANSION
   const tracking = trackingFrom(scope, marks)
   return {
     ok: true,
     items: emit.items,
-    hangs: credits ? hangsFrom(emit.items, credits, marks) : null,
-    expansion,
+    breakRuns: indexedBreakRuns(scope),
+    hangs: credits
+      ? hangsFrom(emit.items, credits, marks, scope.sequences)
+      : null,
+    ...expanded,
     tracking,
-    flex: pooled(expansion, tracking),
-    scale: expansion && expandable ? expandable.scale : null,
+    flex: pooled(expanded.expansion, tracking),
   }
 }
 
@@ -671,7 +292,14 @@ export const compileBlock = (context: CompileContext): CompileResult => {
   const { items } = scope.emit
 
   for (const [runIndex, run] of block.runs.entries()) {
-    if (run.kind === "break" && !separates[runIndex]) continue
+    if (run.kind === "break") {
+      const endpoint = compileBreakRun(scope, run, separates(runIndex))
+      if (endpoint) {
+        scope.breakRuns ??= new Map()
+        scope.breakRuns.set(endpoint, runIndex)
+      }
+      continue
+    }
 
     const failure = compileRun(scope, run)
     if (failure) return { ok: false, reason: failure }
@@ -679,6 +307,9 @@ export const compileBlock = (context: CompileContext): CompileResult => {
 
   if (items.length === 0) return { ok: false, reason: "empty" }
 
-  items.push(...paragraphEnd(block.text.length))
+  const last = items.at(-1) as Item
+  if (last.kind !== "penalty" || !isForced(last.penalty)) {
+    items.push(...paragraphEnd(block.text.length))
+  }
   return compiled(scope)
 }

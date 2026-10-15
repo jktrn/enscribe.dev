@@ -50,11 +50,9 @@ export const trackLines = (
     const pool = flexBetween(tracking, line.start, line.end)
     const fit = fits?.[index]
     const slack = target - line.naturalWidth - (fit?.gain ?? 0)
-    const gain =
-      slack > 0
-        ? opening(line, slack, pool, fit)
-        : slack < 0
-          ? closing(line, -slack, pool, fit)
-          : 0
+    // Only one directional contribution can be nonzero. At exact fit both
+    // naturally vanish, without a separate zero-slack case.
+    const gain = opening(line, Math.max(slack, 0), pool, fit) +
+      closing(line, Math.max(-slack, 0), pool, fit)
     return { gain, shrink: (fit ? fit.shrink : line.shrink) - pool.shrink }
   })

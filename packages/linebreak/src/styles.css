@@ -2,12 +2,34 @@
 
 @layer linebreak.core {
   [data-linebreak-typeset] {
+    text-wrap-mode: wrap !important;
+
     & > [data-linebreak-line] {
       display: inline;
       white-space: nowrap;
+      hyphens: none;
+    }
+
+    & [data-linebreak-opportunity] {
+      display: none;
+    }
+
+    & [data-linebreak-letter-fit] [data-linebreak-fragment] {
+      letter-spacing: inherit !important;
+    }
+
+    & [data-linebreak-word-fit] [data-linebreak-fragment] {
+      word-spacing: inherit !important;
     }
 
     & [data-linebreak-fragment] {
+      &:is(:empty, [data-linebreak-fragment="empty"]:not(:has(br)))::after {
+        /* Keep empty or hidden-WBR-only wrappers on their planned row.
+           Auto width preserves any authored pseudo-element content. */
+        content: "";
+        display: inline-block;
+      }
+
       &:not([data-linebreak-fragment-start]) {
         padding-inline-start: 0 !important;
         margin-inline-start: 0 !important;

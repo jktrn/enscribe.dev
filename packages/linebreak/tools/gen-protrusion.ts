@@ -144,7 +144,7 @@ const format = (table: Table) => {
     if (codes.r !== undefined) parts.push(`r: ${codes.r}`)
     lines.push(`  ${JSON.stringify(character)}: { ${parts.join(", ")} },`)
   }
-  return `export type ProtrusionCodes = {
+  return `type ProtrusionCodes = {
   readonly l?: number
   readonly r?: number
 }

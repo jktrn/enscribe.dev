@@ -1,4 +1,5 @@
 import { cssPixels, type StyleReader } from "../style"
+import { ATTRIBUTES } from "../../attributes"
 import {
   DECORATION,
   type ExtractedBlock,
@@ -53,7 +54,7 @@ const decorationEdges = (element: HTMLElement, styleOf: StyleReader) => {
     `:scope > ${DECORATION}`,
   )) {
     const width = outerWidth(decoration, styleOf)
-    if (decoration.dataset.linebreakDecorationPosition === "after") {
+    if (decoration.getAttribute(ATTRIBUTES.decorationPosition) === "after") {
       trailing.push(decoration)
       edges.trailing += width
     } else {

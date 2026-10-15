@@ -124,7 +124,6 @@ describe("suppression", () => {
     const runs: InlineRun[] = [
       {
         kind: "atom",
-        text: "￼",
         start: 0,
         end: 1,
         wrappers: [],
@@ -251,7 +250,7 @@ describe("a monospace cell is wider than the ink in it", () => {
     }
     const compiled = compileBlock({
       block,
-      metricsFor: (run: InlineRun) =>
+      metricsFor: (run: Extract<InlineRun, { kind: "text" }>) =>
         run.sourceElement === inset ? trailing : proportional(PROSE_FONT),
       baseFont,
       atomWidth: () => 0,

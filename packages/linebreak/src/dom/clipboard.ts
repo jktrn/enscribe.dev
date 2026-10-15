@@ -1,8 +1,8 @@
 import { LINE_SELECTOR, TYPESET_SELECTOR } from "./render"
+import { ATTRIBUTES } from "../attributes"
 
 const generatesBlockBox = (element: Element, display: string) =>
   display !== "contents" &&
-  display !== "none" &&
   !display.startsWith("inline") &&
   !element.closest("math, ruby")
 
@@ -14,7 +14,7 @@ const clippedText = (node: Text, range: Range) => {
 
 type Copy = { readonly range: Range; text: string }
 
-const endsBlock = (node: Element, display: string, text: string) =>
+const needsBlockBoundary = (node: Element, display: string, text: string) =>
   generatesBlockBox(node, display) && text !== "" && !text.endsWith("\n")
 
 const walkNode = (node: Node, copy: Copy) => {
@@ -22,17 +22,20 @@ const walkNode = (node: Node, copy: Copy) => {
     copy.text += clippedText(node as Text, copy.range)
     return
   }
-  if (!(node instanceof Element)) return
-
-  const { display } = getComputedStyle(node)
+  if (node.nodeType !== Node.ELEMENT_NODE) return
+  const element = node as Element
+  // A document selection belongs to a live window.
+  const view = element.ownerDocument.defaultView!
+  const { display } = view.getComputedStyle(element)
   if (display === "none") return
-  if (node.tagName === "BR") {
+  if (element.tagName === "BR") {
     copy.text += "\n"
     return
   }
 
+  if (needsBlockBoundary(element, display, copy.text)) copy.text += "\n"
   walkChildren(node, copy)
-  if (endsBlock(node, display, copy.text)) copy.text += "\n"
+  if (needsBlockBoundary(element, display, copy.text)) copy.text += "\n"
 }
 
 const walkChildren = (node: Node, copy: Copy) => {
@@ -43,42 +46,44 @@ const walkChildren = (node: Node, copy: Copy) => {
 
 const plainText = (range: Range) => {
   const root = range.commonAncestorContainer
-  if (root.nodeType === Node.TEXT_NODE) return clippedText(root as Text, range)
-
   const copy: Copy = { range, text: "" }
   walkChildren(root, copy)
   return copy.text
 }
 
-const scopeOf = (range: Range) => {
-  const container = range.commonAncestorContainer
-  if (container.nodeType === Node.ELEMENT_NODE) return container as Element
-  return container.parentElement
-}
-
-const touchesTypeset = (scope: Element | null) =>
-  Boolean(scope?.closest(TYPESET_SELECTOR)) ||
-  Boolean(scope?.querySelector(LINE_SELECTOR))
+const touchesTypeset = (scope: Element) =>
+  scope.closest(TYPESET_SELECTOR) || scope.querySelector(LINE_SELECTOR)
 
 const stripLinebreakMarkup = (holder: HTMLElement) => {
   for (const line of holder.querySelectorAll<HTMLElement>(LINE_SELECTOR)) {
     line.replaceWith(...line.childNodes)
   }
   for (const element of holder.querySelectorAll<HTMLElement>("*")) {
-    for (const key of Object.keys(element.dataset)) {
-      if (key.startsWith("linebreak")) delete element.dataset[key]
+    const authored = element.getAttribute(ATTRIBUTES.authoredStyle)
+    if (authored !== null) element.setAttribute("style", authored)
+    for (const name of element.getAttributeNames()) {
+      if (name.startsWith("data-linebreak")) element.removeAttribute(name)
     }
   }
 }
 
+const documentFor = (event: ClipboardEvent) => {
+  const target = event.target as Node | null
+  if (target?.nodeType === Node.DOCUMENT_NODE) return target as Document
+  return target?.ownerDocument ?? document
+}
+
 export const handleCopy = (event: ClipboardEvent) => {
-  const selection = getSelection()
+  const doc = documentFor(event)
+  const selection = doc.getSelection()
   if (!selection || selection.rangeCount !== 1 || !event.clipboardData) return
 
   const range = selection.getRangeAt(0)
-  if (!touchesTypeset(scopeOf(range))) return
+  const scope = range.commonAncestorContainer
+  if (scope.nodeType !== Node.ELEMENT_NODE || !touchesTypeset(scope as Element))
+    return
 
-  const holder = document.createElement("div")
+  const holder = doc.createElement("div")
   holder.appendChild(range.cloneContents())
   if (!holder.querySelector(LINE_SELECTOR)) return
 

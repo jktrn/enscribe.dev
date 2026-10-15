@@ -301,20 +301,25 @@ type MirrorPair = {
 }
 
 type MirrorResult =
-  | {
+  | ({
       ok: true
       items: MirrorItem[]
+      breakRuns?: ReadonlyMap<number, number>
       hangs: { readonly start: Float64Array; readonly end: Float64Array } | null
-      expansion: MirrorPair | null
       tracking: MirrorPair | null
       flex: MirrorPair | null
-      scale: {
-        readonly steps: readonly {
-          readonly pct: number
-          readonly ratio: number
-        }[]
-      } | null
-    }
+    } & (
+      | { expansion: null; scale: null }
+      | {
+          expansion: MirrorPair
+          scale: {
+            readonly steps: readonly {
+              readonly pct: number
+              readonly ratio: number
+            }[]
+          }
+        }
+    ))
   | { ok: false; reason: ComposeReason }
 
 type Assignable<A, B> = [A] extends [B] ? true : false
@@ -330,7 +335,14 @@ const missesNothing: Assignable<MirrorResult, CompileResult> = true
 const reasonIsAString: Assignable<ComposeReason, string> = true
 const sameFields: SameKeys<
   keyof Extract<CompileResult, { ok: true }>,
-  "ok" | "items" | "hangs" | "expansion" | "tracking" | "flex" | "scale"
+  | "ok"
+  | "items"
+  | "breakRuns"
+  | "hangs"
+  | "expansion"
+  | "tracking"
+  | "flex"
+  | "scale"
 > = true
 
 test("CompileResult is structurally free of the DOM", () => {

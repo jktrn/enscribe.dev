@@ -52,7 +52,7 @@ const GOLDEN: readonly Golden[] = [
         measure: 480,
         pass: "pretolerance",
         lines: [
-          [0, 19, 490, -0.3333333333333334, "space"],
+          [0, 19, 490, -0.33333333333333337, "space"],
           [20, 35, 360, 0.0011996401079676098, "end"],
         ],
       },
@@ -88,7 +88,7 @@ const GOLDEN: readonly Golden[] = [
         measure: 480,
         pass: "pretolerance",
         lines: [
-          [0, 17, 490, -0.3750000000000001, "space"],
+          [0, 17, 490, -0.37500000000000006, "space"],
           [18, 35, 390, 0.000899685110211426, "end"],
         ],
       },

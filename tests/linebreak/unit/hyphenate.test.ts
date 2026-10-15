@@ -1,8 +1,6 @@
 import { describe, expect, test } from "bun:test"
 import {
   englishHyphenator,
-  hyphenationCacheLimit,
-  usesEnglishHyphenation,
 } from "@linebreak/text/hyphenate"
 
 describe("hyphenation offsets", () => {
@@ -38,14 +36,14 @@ describe("hyphenation offsets", () => {
 
 describe("locale gating", () => {
   test("accepts English tags and rejects others", () => {
-    expect(usesEnglishHyphenation("en")).toBe(true)
-    expect(usesEnglishHyphenation("en-US")).toBe(true)
-    expect(usesEnglishHyphenation("fr")).toBe(false)
-    expect(usesEnglishHyphenation("th")).toBe(false)
+    expect(englishHyphenator("beautiful", "en").length).toBeGreaterThan(0)
+    expect(englishHyphenator("beautiful", "en-US").length).toBeGreaterThan(0)
+    expect(englishHyphenator("beautiful", "fr")).toEqual([])
+    expect(englishHyphenator("beautiful", "th")).toEqual([])
   })
 
   test("a malformed tag is rejected rather than throwing", () => {
-    expect(usesEnglishHyphenation("not a locale")).toBe(false)
+    expect(englishHyphenator("beautiful", "not a locale")).toEqual([])
   })
 
   test("the hyphenator declines a word under a non-English locale", () => {
@@ -87,7 +85,7 @@ describe("hyphenation cache", () => {
     expect(before.length).toBeGreaterThan(0)
     expect(englishHyphenator("hyphenation", "en-US")).toBe(before)
 
-    for (let index = 0; index <= hyphenationCacheLimit; index += 1) {
+    for (let index = 0; index <= 16_384; index += 1) {
       englishHyphenator(`zzzz${index.toString(36)}`, "en-US")
     }
 

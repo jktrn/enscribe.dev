@@ -1,4 +1,4 @@
-export type ProtrusionCodes = {
+type ProtrusionCodes = {
   readonly l?: number
   readonly r?: number
 }

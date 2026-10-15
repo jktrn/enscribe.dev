@@ -4,6 +4,7 @@ import { Collapser } from "./collapse"
 import type { ExtractResult } from "./runs"
 import { RawCollector } from "./walk"
 import { buildWrapperInfo } from "./wrappers"
+import { restrictAtoms } from "./restrictions"
 
 export const extractBlock = (
   block: HTMLElement,
@@ -25,7 +26,7 @@ export const extractBlock = (
     block: {
       text,
       runs,
-      breakRestrictions,
+      breakRestrictions: restrictAtoms(runs, breakRestrictions, styleOf),
       wrappers: buildWrapperInfo(runs, styleOf),
     },
   }
@@ -36,6 +37,5 @@ export type {
   ExtractedBlock,
   ExtractResult,
   InlineRun,
-  WrapperInfo,
 } from "./runs"
 export { outerWidth, runEdgeWidths } from "./wrappers"

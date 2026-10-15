@@ -108,7 +108,7 @@ editable content, scripts, styles, SVG, and MathML. Add another selector with
 | `filter` | none | Accept or reject each discovered block |
 | `blocks` | `proseBlocks` | Replace block discovery |
 | `lazy` | `true` | Typeset near the viewport first; pass `{ margin }` to tune the range |
-| `budget` | 12 blocks or 6 ms | Limit work in each animation frame |
+| `budget` | 12 blocks or 6 ms | Limit paragraph composition work in each animation frame |
 
 ### Page lifecycle
 
@@ -210,9 +210,12 @@ word spacing. A paragraph with an authored `font-stretch` or `wdth` value is
 left under native layout.
 
 Tracking shares adjustment with `letter-spacing`. It is only used when the
-paragraph has uniform authored letter spacing. Expansion and tracking can be
-enabled together, and the optimizer treats them as one limited adjustment
-pool.
+paragraph has uniform authored letter spacing and no text-run boundary divides
+a grapheme, such as a combining mark or an emoji sequence. Browsers disagree
+about letter spacing across those divided graphemes, so optional tracking stays
+off for that paragraph; ordinary line breaking and word spacing remain available.
+Expansion and tracking can be enabled together, and the optimizer treats them
+as one limited adjustment pool.
 
 ```ts
 createTypesetter({
@@ -277,6 +280,13 @@ Every method accepts an iterable. `restore()` removes generated lines,
 font measurements but clears width-dependent state, and `dispose()` restores
 everything before making the instance unusable.
 
+Call `reset(elements)` after changing stylesheet rules, font features, or other
+computed styles that can change glyph widths; `refresh()` is for width changes
+with the same font measurements. Direct changes to a paragraph’s authored DOM
+invalidate its cached content. Compositions belong to the instance that created
+them and become stale after another composition, reset, restore, or source edit.
+Apply a newly composed result after any such change.
+
 ### Outcomes and fallback
 
 Content problems do not throw. Every element returns one outcome:
@@ -286,7 +296,7 @@ type Outcome =
   | { element: HTMLElement; status: "typeset"; lines: number; retries: number }
   | { element: HTMLElement; status: "skipped"; reason: SkipReason }
   | { element: HTMLElement; status: "declined"; reason: DeclineReason }
-  | { element: HTMLElement; status: "failed"; reason: FailureReason; cause?: unknown }
+  | { element: HTMLElement; status: "failed"; reason: FailureReason; cause?: Error }
 ```
 
 | Status | Meaning | Reasons |
@@ -404,6 +414,28 @@ final containment pass. It reports the pass that succeeded.
 custom policies. `fitLines()` and `trackLines()` turn expansion and tracking
 budgets into per-line adjustments.
 
+For repeated layout at different widths, prepare the geometry once:
+
+```ts
+const prepared = prepareParagraph(items, { flex, hangs })
+const narrow = prepared.breakParagraph(320)
+const wide = prepared.breakParagraphOnce(640, { tolerance: 200 })
+```
+
+`prepareParagraph()` owns a snapshot of items, source offsets, flexibility,
+and margin credits. Later changes to the input cannot change that snapshot.
+Each solve can change width, indentation, scoring, penalties, tolerances and ending
+preferences. Geometry options (`flex` and `hangs`) belong to preparation;
+passing either to a prepared solve throws a `TypeError`. Prepare again after
+font measurements or content change. `itemCount` reports the snapshot size.
+
+One-pass calls accept a `diagnostics` object with `evaluatedLines` and
+`peakActiveNodes` numeric fields. The solver resets and populates them,
+`processedBreakpoints`, and `evaluatedBadness` for each call, including rejected inputs.
+`evaluatedBadness` counts badness evaluations after cheap feasibility checks.
+Diagnostics are optional and
+are collected outside benchmark timing.
+
 ### TeX compatibility
 
 `texDefaults` contains the `plain.tex` values:
@@ -424,6 +456,23 @@ a negative `tolerance` admits no line. Positive penalties add their square to
 line demerits, matching TeX82 rather than the earlier formula in the 1981
 paper.
 
+The default `policy.scoring: "continuous"` uses `100 * abs(ratio) ** 3`
+and ratio-based fitness classes. Select `policy.scoring: "integer"` to use
+TeX's quantized cubic badness and badness-based fitness classes for both
+tolerance admission and demerits:
+
+```ts
+const result = prepared.breakParagraph(640, {
+  policy: { scoring: "integer" },
+})
+```
+
+Both modes optimize their chosen objective; they can prefer different breaks.
+The numeric values in `texDefaults` do not change the scoring mode. Integer
+scoring applies TeX's formula to CSS dimensions, with overflow-safe floating-point
+arithmetic. It does not reproduce TeX's scaled-point representation, infinite
+glue orders, or complete typesetting behavior.
+
 ## Generated markup and CSS
 
 A typeset paragraph remains one inline formatting context:
@@ -437,7 +486,8 @@ A typeset paragraph remains one inline formatting context:
 ```
 
 Each line span is inline and cannot wrap internally. The boundary between
-spans contains the space, `<wbr>`, or authored `<br>` that belongs there.
+spans contains a space or generated `<wbr>`. An authored `<br>` stays inside
+its preceding span so empty forced lines remain measurable.
 `data-linebreak-line` records whether the line ended with `space`, `hyphen`,
 `forced`, `none`, or `end`.
 
@@ -450,6 +500,16 @@ The stylesheet has two cascade layers. `linebreak.core` contains required
 layout rules. `linebreak.theme` contains the default justification and the
 drawn hyphen, which can be changed with `--linebreak-hyphen`. Unlayered project
 CSS overrides both layers without `!important`.
+
+Generated lines suppress native hyphenation because their chosen hyphens are
+already explicit. Empty inline fragments use an auto-width inline-block
+`::after` to keep their decorations on the planned row in Chromium and Firefox.
+The same repair covers fragments containing only hidden authored `<wbr>`
+descendants; fragments containing a real `<br>` retain its native line behavior.
+Core rules allow wrapping between generated lines even when the authored host
+uses ordinary `white-space: nowrap`; each generated line remains unbroken.
+An authored `::after { content: ''; display: inline }` overrides that repair;
+changing core layout declarations can therefore change the rendered geometry.
 
 The replacement hyphen should have the same advance as the measured U+002D
 hyphen. A visibly different width can move the rendered line away from the
@@ -469,7 +529,9 @@ code and runtime code need the same contract.
 | `data-linebreak-decoration-position="after"` | Places that decoration on the trailing edge |
 
 `text-wrap-mode: nowrap` blocks automatic breaks inside its range. Authored
-`<br>` and `<wbr>` elements still apply.
+`<br>` and `<wbr>` elements still apply. The library applies authored WBR
+consistently across browsers; native Chromium, Firefox, and WebKit differ on WBR inside
+nowrap. Authored WBR identifiers and classes survive rendering and HTML copy.
 
 ### Copying generated text
 
@@ -511,66 +573,44 @@ punctuation. Set `protrude: false` for that subtree. Content-sized boxes are
 checked after writing; if their width moves, the paragraph is restored with an
 `unstable-width` outcome.
 
-## Compare the rendered result
+The frame budget is checked between paragraph compositions, including measurement
+and solving time. At least one paragraph is processed so large paragraphs still
+make progress. Each completed batch is rendered together; a single paragraph,
+the rendering batch, and user hooks cannot be interrupted mid-operation.
 
-The checked-in playground places native browser wrapping,
-`@enscribe/linebreak`, and [Justif](https://github.com/lyallcooper/justif) in
-the same font and measure. Its report uses rendered word rectangles rather
-than either library's internal score. It counts lines, hyphens, overfull lines,
-short endings, space-width deviation, and TeX badness.
+Statistics count every applied outcome, including remembered skips, declines, and
+failures. Counts for the complete batch update before `onOutcome` runs. A throwing
+callback stops further delivery and propagates to the caller; every composition
+in that applied batch is still consumed.
 
-![Native browser wrapping, @enscribe/linebreak, and Justif beside their rendered metrics](./playground/screenshot.png)
-
-Reproduce the comparison from the repository root:
-
-```sh
-git clone --depth 1 --branch v0.7.0 \
-  https://github.com/lyallcooper/justif.git \
-  ~/.linebreak-bench/justif
-
-bun run --cwd packages/linebreak playground
-```
-
-Set `JUSTIF_PATH` to use another checkout. The playground reads its version
-from that checkout and stores settings in the URL for sharing.
-
-### Sweep a range
-
-A sweep plots line count, hyphens, spacing, and badness across a range of
-column widths or font sizes. Drag a chart to apply that value to the live
-comparison.
-
-![Six charts comparing line count, hyphens, spacing, and badness across column widths](./playground/sweep.png)
-
-### Run the benchmark
-
-The benchmark compares the two libraries across combinations of feature flags,
-measures, font sizes, and samples. The browser is an unranked baseline, and
-ties do not count.
-
-![Benchmark wins by metric, feature flag, and measure](./playground/benchmark.png)
-
-Both projects apply Knuth–Plass ideas to browser text. This package focuses on
-measured Latin prose, TeX-compatible policy, explicit outcomes and fallback,
-separate browser and headless layers, and a rendered-output comparison harness.
-Justif currently covers more languages and writing systems, including CJK and
-right-to-left text. The playground makes the trade concrete for the content
-you intend to ship.
-
-## Development
+## Tests and coverage
 
 From the repository root:
 
 ```sh
 bun run --cwd packages/linebreak check
-bun test tests/linebreak/unit
-bun run --cwd packages/linebreak playground:typecheck
+bun run --cwd packages/linebreak test
+bun run --cwd packages/linebreak coverage
 ```
 
-`@chenglou/pretext` is pre-1.0 and intentionally pinned. The DOM adapter reads
-three fields from its prepared paragraphs through a structural type, so an
-upstream contract change fails typechecking instead of becoming a silent
-measurement error.
+Tests cover the solver, compiler, DOM adapters and independent scoring checks.
+The DOM unit suite uses happy-dom. Real-browser integration tests remain under
+`tests/linebreak/e2e` and run with `bun run --cwd tests/linebreak test:e2e`.
+Coverage includes all production TypeScript and writes HTML and LCOV reports to
+`tests/linebreak/coverage/`. Generated reports are ignored by Git.
+
+## Benchmark
+
+```sh
+bun run --cwd packages/linebreak benchmark --quick --case=0
+```
+
+The benchmark compares continuous and integer scoring with pinned justif v0.9.1
+in isolated processes. Omit `--quick --case=0` for a full capture; use
+`--lane=layout-prepare-solve` to measure preparation plus first solve. Run without
+other CPU-heavy jobs. Raw observations, source hashes, independent scores and
+per-case confidence intervals go in ignored `benchmarks/results/`. Quick runs are
+smoke checks. Results do not establish browser performance or feature parity.
 
 ## References
 
