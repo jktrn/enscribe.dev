@@ -1,5 +1,66 @@
 [
   {
+    "date": "2026-09-18",
+    "genres": ["shoegaze", "dream pop", "noise pop"],
+    "artists": [
+      {
+        "name": "Whirr",
+        "url": "https://whirrband.bandcamp.com/"
+      },
+      {
+        "name": "Luster",
+        "url": "https://lusterla.bandcamp.com/"
+      }
+    ],
+    "venue": {
+      "name": "The Wiltern",
+      "city": "Los Angeles",
+      "url": "https://www.google.com/maps/search/?api=1&query=The+Wiltern+Los+Angeles"
+    },
+    "source": {
+      "label": "setlist",
+      "url": "https://www.setlist.fm/setlist/whirr/2026/wiltern-theatre-los-angeles-ca-7b7e42e4.html"
+    }
+  },
+  {
+    "date": "2026-09-12",
+    "genres": ["jazz fusion", "city pop", "smooth jazz"],
+    "artists": [
+      {
+        "name": "Casiopea",
+        "url": "https://www.casiopea.co.jp/"
+      }
+    ],
+    "venue": {
+      "name": "The Wiltern",
+      "city": "Los Angeles",
+      "url": "https://www.google.com/maps/search/?api=1&query=The+Wiltern+Los+Angeles"
+    },
+    "source": {
+      "label": "setlist",
+      "url": "https://www.setlist.fm/setlist/casiopea/2026/wiltern-theatre-los-angeles-ca-6b772a4e.html"
+    }
+  },
+  {
+    "date": "2026-08-12",
+    "genres": ["film score", "orchestral", "minimalism"],
+    "artists": [
+      {
+        "name": "Joe Hisaishi",
+        "url": "https://joehisaishi.com/"
+      }
+    ],
+    "venue": {
+      "name": "Radio City Music Hall",
+      "city": "New York",
+      "url": "https://www.google.com/maps/search/?api=1&query=Radio+City+Music+Hall+New+York"
+    },
+    "source": {
+      "label": "setlist",
+      "url": "https://www.setlist.fm/setlist/joe-hisaishi/2026/radio-city-music-hall-new-york-ny-2b71987e.html"
+    }
+  },
+  {
     "date": "2026-07-19",
     "genres": ["post-hardcore", "metalcore", "screamo"],
     "artists": [

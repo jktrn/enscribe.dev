@@ -4,8 +4,8 @@ import { renderConcertEntry } from "@/lib/music-render"
 
 describe("structured concert data", () => {
   test("keeps the complete concert history in reverse chronological order", () => {
-    expect(concerts).toHaveLength(24)
-    expect(concerts[0]?.date).toBe("2026-07-19")
+    expect(concerts).toHaveLength(27)
+    expect(concerts[0]?.date).toBe("2026-09-18")
     expect(concerts.at(-1)?.date).toBe("2023-10-20")
 
     const timestamps = concerts.map(({ date }) => concertDate(date).getTime())
@@ -68,13 +68,13 @@ describe("structured concert data", () => {
 
   test("derives statistics without parsing rendered prose", () => {
     expect(summarizeConcerts(concerts)).toMatchObject({
-      shows: 24,
-      artistAppearances: 79,
-      artists: 65,
-      venues: 18,
-      cities: 6,
-      genres: 43,
-      showsByYear: { "2023": 2, "2024": 6, "2025": 12, "2026": 4 },
+      shows: 27,
+      artistAppearances: 83,
+      artists: 67,
+      venues: 20,
+      cities: 7,
+      genres: 49,
+      showsByYear: { "2023": 2, "2024": 6, "2025": 12, "2026": 7 },
     })
   })
 })
