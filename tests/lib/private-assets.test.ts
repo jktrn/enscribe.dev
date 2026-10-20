@@ -115,7 +115,12 @@ describe("media manifest generation", () => {
         localPath,
         key: "original-object-name/banner.svg",
       }
-      for (const path of ["src/content", "public/blog", dirname(localPath)]) {
+      for (const path of [
+        "src/content",
+        "src/assets/gallery",
+        "public/blog",
+        dirname(localPath),
+      ]) {
         await mkdir(join(directory, path), { recursive: true })
       }
       const manifestPath = join(directory, assetPaths.manifest)

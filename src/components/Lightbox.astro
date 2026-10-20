@@ -1,0 +1,401 @@
+---
+import ArrowLeft from "@/assets/icons/arrow-left.svg"
+import ArrowRight from "@/assets/icons/arrow-right.svg"
+---
+
+<dialog data-lightbox aria-label="Image viewer">
+  <div data-lightbox-stage></div>
+  <div data-lightbox-caption data-linebreak-root></div>
+  <button
+    type="button"
+    data-icon-button
+    data-lightbox-close
+    autofocus
+    title="Close"
+    aria-label="Close"
+  >
+    <svg viewBox="0 0 16 16" aria-hidden="true">
+      <path
+        d="m4 4 8 8m0-8-8 8"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.5"
+        stroke-linecap="round"
+      ></path>
+    </svg>
+  </button>
+  <button
+    type="button"
+    data-icon-button
+    data-lightbox-step="-1"
+    title="Previous"
+    aria-label="Previous"
+  >
+    <ArrowLeft aria-hidden="true" />
+  </button>
+  <button
+    type="button"
+    data-icon-button
+    data-lightbox-step="1"
+    title="Next"
+    aria-label="Next"
+  >
+    <ArrowRight aria-hidden="true" />
+  </button>
+</dialog>
+
+<style>
+  dialog[data-lightbox] {
+    position: fixed;
+    inset: 0;
+    inline-size: 100%;
+    block-size: 100%;
+    max-inline-size: none;
+    max-block-size: none;
+    margin: 0;
+    padding: var(--space-l) var(--space-xl) var(--space-s);
+    border: 0;
+    background-color: var(--background);
+    color: var(--foreground);
+
+    &[open] {
+      display: grid;
+      grid-template-rows: minmax(0, 1fr) auto;
+      gap: var(--space-xs);
+    }
+
+    &::backdrop {
+      background: transparent;
+    }
+
+    @media (width < 48rem) {
+      padding-inline: var(--space-xs);
+      padding-block-start: var(--space-xl);
+    }
+  }
+
+  [data-lightbox-stage] {
+    display: grid;
+    grid-template: minmax(0, 1fr) / minmax(0, 1fr);
+    place-items: center;
+    block-size: 100%;
+    min-block-size: 0;
+    container-type: size;
+
+    > :global(:is(img, video, svg)) {
+      inline-size: min(100cqi, 100cqb * var(--ratio), var(--width));
+      block-size: auto;
+      max-inline-size: 100%;
+      max-block-size: 100%;
+      object-fit: contain;
+      outline: 2px solid var(--border);
+    }
+  }
+
+  [data-lightbox-caption] {
+    justify-self: center;
+    inline-size: min(100%, 40rem);
+    font-size: 0.8125rem;
+    line-height: 1.4;
+
+    &:empty {
+      display: none;
+    }
+
+    :global(gallery-caption) {
+      display: block;
+      color: var(--prose-foreground);
+    }
+
+    :global(gallery-meta) {
+      display: flex;
+      justify-content: space-between;
+      gap: var(--space-2xs);
+      margin-block-start: var(--space-3xs);
+      color: var(--muted-foreground);
+    }
+  }
+
+  [data-lightbox-close],
+  [data-lightbox-step] {
+    position: absolute;
+    background-color: var(--background);
+
+    &:disabled {
+      opacity: 0.3;
+      cursor: default;
+    }
+  }
+
+  [data-lightbox-close] {
+    inset-block-start: var(--space-xs);
+    inset-inline-end: var(--space-xs);
+  }
+
+  [data-lightbox-step] {
+    inset-block-start: 50%;
+    translate: 0 -50%;
+  }
+
+  [data-lightbox-step="-1"] {
+    inset-inline-start: var(--space-xs);
+  }
+
+  [data-lightbox-step="1"] {
+    inset-inline-end: var(--space-xs);
+  }
+
+  @media (width < 48rem) {
+    [data-lightbox-step] {
+      inset-block-start: var(--space-xs);
+      translate: none;
+    }
+
+    [data-lightbox-step="-1"] {
+      inset-inline-start: var(--space-xs);
+    }
+
+    [data-lightbox-step="1"] {
+      inset-inline-start: calc(var(--space-xs) + 2.5rem);
+      inset-inline-end: auto;
+    }
+  }
+
+  :global(:root:has(dialog[data-lightbox][open])) {
+    overflow: hidden;
+  }
+
+  :global(
+    :root[data-js] prose-content :is(img:not([data-favicon]), svg[role="img"])
+  ) {
+    cursor: zoom-in;
+  }
+</style>
+
+<script>
+  import { typesetNow } from "@/lib/typography/prose-justification"
+
+  type Group = { items: Element[]; index: number }
+
+  const PROSE_MEDIA = 'img:not([data-favicon]), svg[role="img"]'
+  const CARD = "[data-gallery] > li"
+
+  const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)")
+  const pausedWhileHidden = new WeakSet<HTMLVideoElement>()
+  const pausedBehindLightbox = new Set<HTMLVideoElement>()
+  let group: Group | null = null
+
+  const dialog = () =>
+    document.querySelector<HTMLDialogElement>("dialog[data-lightbox]")
+  const shown = (element: Element) => element.checkVisibility()
+
+  function zoomable(media: Element): boolean {
+    return (
+      media.matches(PROSE_MEDIA) &&
+      !media.closest("a") &&
+      media.getBoundingClientRect().width >= 120
+    )
+  }
+
+  function proseGroup(media: Element): Group {
+    const article = media.closest("prose-content") ?? document
+    const items = [...article.querySelectorAll(PROSE_MEDIA)].filter(
+      (candidate) => shown(candidate) && zoomable(candidate),
+    )
+    return { items, index: items.indexOf(media) }
+  }
+
+  function galleryGroup(card: Element): Group {
+    const items = [...document.querySelectorAll(CARD)]
+    return { items, index: items.indexOf(card) }
+  }
+
+  function themePair(media: Element): Element[] {
+    const twin = media.hasAttribute("data-theme-light")
+      ? media.nextElementSibling
+      : media.hasAttribute("data-theme-dark")
+        ? media.previousElementSibling
+        : null
+    return twin?.tagName === media.tagName ? [media, twin] : [media]
+  }
+
+  function copyImage(image: HTMLImageElement): Node {
+    const copy = image.cloneNode() as HTMLImageElement
+    copy.loading = "lazy"
+    copy.removeAttribute("data-loaded")
+    return copy
+  }
+
+  function copySvg(svg: Element): Node {
+    const template = document.createElement("template")
+    template.innerHTML = svg.outerHTML.replace(
+      /(?<=\s)id="|url\(#|href="#/g,
+      (reference) => `${reference}lightbox-`,
+    )
+    return template.content
+  }
+
+  function proseMedia(media: Element): Node[] {
+    return themePair(media).map((source) =>
+      source instanceof HTMLImageElement ? copyImage(source) : copySvg(source),
+    )
+  }
+
+  function fromTemplate(card: Element, name: string): Node[] {
+    const template = card.querySelector<HTMLTemplateElement>(
+      `template[data-lightbox-${name}]`,
+    )
+    return template ? [template.content.cloneNode(true)] : []
+  }
+
+  const topLevel = (node: Node): Element[] =>
+    node instanceof DocumentFragment
+      ? [...node.children]
+      : node instanceof Element
+        ? [node]
+        : []
+
+  function fit(media: Node[], stage: Element) {
+    const { width, height } = stage.getBoundingClientRect()
+    for (const element of media.flatMap(topLevel)) {
+      if (!(element instanceof HTMLElement || element instanceof SVGElement))
+        continue
+      const naturalWidth = Number(element.getAttribute("width"))
+      const ratio = naturalWidth / Number(element.getAttribute("height"))
+      if (!(ratio > 0)) continue
+      element.style.setProperty("--width", `${naturalWidth}px`)
+      element.style.setProperty("--ratio", `${ratio}`)
+      if (element instanceof HTMLImageElement) {
+        const shown = Math.min(width, height * ratio, naturalWidth)
+        element.sizes = `${Math.ceil(shown)}px`
+      }
+    }
+  }
+
+  function playVisibleVideos(stage: Element) {
+    for (const video of stage.querySelectorAll("video")) {
+      if (!shown(video)) {
+        if (!video.paused) pausedWhileHidden.add(video)
+        video.pause()
+      } else if (reducedMotion.matches) {
+        video.pause()
+      } else if (video.readyState === HTMLMediaElement.HAVE_NOTHING) {
+        video.load()
+        video.play().catch(() => {})
+      } else if (pausedWhileHidden.delete(video)) {
+        video.play().catch(() => {})
+      }
+    }
+  }
+
+  function syncVideosWithTheme() {
+    const stage = dialog()?.querySelector("[data-lightbox-stage]")
+    if (dialog()?.open && stage) playVisibleVideos(stage)
+  }
+
+  function pausePageVideos(lightbox: HTMLDialogElement) {
+    for (const video of document.querySelectorAll("video")) {
+      if (lightbox.contains(video) || video.paused) continue
+      video.pause()
+      pausedBehindLightbox.add(video)
+    }
+  }
+
+  function resumePageVideos() {
+    for (const video of pausedBehindLightbox) video.play().catch(() => {})
+    pausedBehindLightbox.clear()
+  }
+
+  function render() {
+    const lightbox = dialog()
+    const item = group?.items[group.index]
+    if (!lightbox || !group || !item) return
+    const stage = lightbox.querySelector("[data-lightbox-stage]")
+    const caption = lightbox.querySelector("[data-lightbox-caption]")
+    if (!stage || !caption) return
+    const isCard = item.matches(CARD)
+    caption.replaceChildren(...(isCard ? fromTemplate(item, "caption") : []))
+    const media = isCard ? fromTemplate(item, "media") : proseMedia(item)
+    fit(media, stage)
+    stage.replaceChildren(...media)
+    for (const button of lightbox.querySelectorAll<HTMLButtonElement>(
+      "[data-lightbox-step]",
+    )) {
+      const target = group.index + Number(button.dataset.lightboxStep)
+      button.disabled = target < 0 || target >= group.items.length
+      button.hidden = group.items.length < 2
+    }
+    playVisibleVideos(stage)
+    typesetNow(caption)
+  }
+
+  function open(next: Group) {
+    const lightbox = dialog()
+    if (!lightbox || next.index < 0) return
+    group = next
+    if (!lightbox.open) {
+      pausePageVideos(lightbox)
+      lightbox.showModal()
+    }
+    render()
+  }
+
+  function step(offset: number) {
+    if (!group) return
+    const index = group.index + offset
+    if (index < 0 || index >= group.items.length) return
+    group.index = index
+    render()
+  }
+
+  function clear() {
+    const lightbox = dialog()
+    lightbox?.querySelector("[data-lightbox-stage]")?.replaceChildren()
+    lightbox?.querySelector("[data-lightbox-caption]")?.replaceChildren()
+    group = null
+    resumePageVideos()
+  }
+
+  function handleLightboxClick(lightbox: HTMLDialogElement, target: Element) {
+    const stepButton = target.closest<HTMLElement>("[data-lightbox-step]")
+    if (stepButton) return step(Number(stepButton.dataset.lightboxStep))
+    const background =
+      target === lightbox || target.hasAttribute("data-lightbox-stage")
+    if (background || target.closest("[data-lightbox-close]")) lightbox.close()
+  }
+
+  document.addEventListener("click", (event) => {
+    const target = event.target as Element
+    const lightbox = target.closest<HTMLDialogElement>("dialog[data-lightbox]")
+    if (lightbox) return handleLightboxClick(lightbox, target)
+
+    const card = target.closest(CARD)
+    if (card && !target.closest("a")) return open(galleryGroup(card))
+
+    const media = target.closest(`prose-content :is(${PROSE_MEDIA})`)
+    if (media && zoomable(media)) open(proseGroup(media))
+  })
+
+  new MutationObserver(syncVideosWithTheme).observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ["data-theme"],
+  })
+  matchMedia("(prefers-color-scheme: dark)").addEventListener(
+    "change",
+    syncVideosWithTheme,
+  )
+
+  document.addEventListener("keydown", (event) => {
+    if (!dialog()?.open) return
+    if (event.key === "ArrowLeft") step(-1)
+    if (event.key === "ArrowRight") step(1)
+  })
+
+  document.addEventListener(
+    "close",
+    (event) => {
+      if ((event.target as Element).matches?.("dialog[data-lightbox]")) clear()
+    },
+    true,
+  )
+</script>

@@ -1,0 +1,233 @@
+---
+import {
+  type GalleryItem,
+  galleryCardVideo,
+  galleryImage,
+  galleryVideo,
+} from "@/lib/gallery"
+import {
+  plainInline,
+  renderInline,
+  renderInlineProse,
+} from "@/lib/markdown/inline-markdown"
+import type { ImageMetadata } from "astro"
+import { getImage, Image } from "astro:assets"
+
+type Props = { item: GalleryItem }
+
+const { item } = Astro.props
+const image = galleryImage(item.image)
+const imageDark = item.imageDark ? galleryImage(item.imageDark) : null
+const lightVideo = item.video?.length ? item.video : null
+const darkVideo = lightVideo && item.videoDark?.length ? item.videoDark : null
+const videoVariants = lightVideo
+  ? [
+      { files: lightVideo, still: image, theme: darkVideo ? "light" : null },
+      ...(darkVideo
+        ? [{ files: darkVideo, still: imageDark ?? image, theme: "dark" }]
+        : []),
+    ]
+  : []
+
+const poster = async (still: ImageMetadata, width: number) =>
+  (await getImage({ src: still, width: Math.min(width, still.width) })).src
+
+const videos = await Promise.all(
+  videoVariants.map(async ({ files, still, theme }) => ({
+    card: galleryCardVideo(files[0] as string),
+    full: files.map(galleryVideo),
+    poster: await poster(still, 960),
+    fullPoster: await poster(still, 1920),
+    width: still.width,
+    height: still.height,
+    theme,
+  })),
+)
+
+const fullImages =
+  videos.length > 0
+    ? []
+    : await Promise.all(
+        [image, imageDark]
+          .filter((source): source is ImageMetadata => source !== null)
+          .map(async (source, index) => ({
+            image: await getImage({
+              src: source,
+              widths: [960, 1440, 1920],
+              sizes: "100vw",
+            }),
+            theme: imageDark ? (index === 0 ? "light" : "dark") : null,
+          })),
+      )
+
+const [captionHtml, projectHtml] = await Promise.all([
+  renderInlineProse(item.caption),
+  renderInline(item.project),
+])
+const label = `View larger: ${plainInline(item.project)}`
+
+const link = item.link
+  ? { href: item.link, target: "_blank", rel: "noopener noreferrer" }
+  : null
+---
+
+<li>
+  <button type="button" data-lightbox-open aria-label={label}>
+    {videos.length > 0 ? (
+      videos.map((video) => (
+        <video
+          muted
+          loop
+          playsinline
+          preload="none"
+          poster={video.poster}
+          width={video.width}
+          height={video.height}
+          data-theme-light={video.theme === "light" ? "" : undefined}
+          data-theme-dark={video.theme === "dark" ? "" : undefined}
+        >
+          <source src={video.card.src} type={video.card.type} />
+        </video>
+      ))
+    ) : (
+      <>
+        <Image
+          src={image}
+          width={480}
+          densities={[1, 2]}
+          alt=""
+          data-theme-light={imageDark ? "" : undefined}
+        />
+        {imageDark && (
+          <Image
+            src={imageDark}
+            width={480}
+            densities={[1, 2]}
+            alt=""
+            data-theme-dark
+          />
+        )}
+      </>
+    )}
+  </button>
+  <template data-lightbox-media>
+    {videos.map((video) => (
+      <video
+        muted
+        loop
+        playsinline
+        controls
+        preload="none"
+        poster={video.fullPoster}
+        width={video.width}
+        height={video.height}
+        data-theme-light={video.theme === "light" ? "" : undefined}
+        data-theme-dark={video.theme === "dark" ? "" : undefined}
+      >
+        {video.full.map((source) => (
+          <source src={source.src} type={source.type} />
+        ))}
+      </video>
+    ))}
+    {fullImages.map(({ image: full, theme }) => (
+      <img
+        src={full.src}
+        srcset={full.srcSet.attribute}
+        sizes="100vw"
+        width={full.attributes.width}
+        height={full.attributes.height}
+        alt=""
+        loading="lazy"
+        decoding="async"
+        data-theme-light={theme === "light" ? "" : undefined}
+        data-theme-dark={theme === "dark" ? "" : undefined}
+      />
+    ))}
+  </template>
+  <template data-lightbox-caption>
+    <gallery-caption><Fragment set:html={captionHtml} /></gallery-caption>
+    <gallery-meta data-linebreak-skip>
+      <gallery-project>
+        {link ? (
+          <a {...link}><Fragment set:html={projectHtml} /></a>
+        ) : (
+          <Fragment set:html={projectHtml} />
+        )}
+      </gallery-project>
+      <gallery-year>{item.year}</gallery-year>
+    </gallery-meta>
+  </template>
+  <gallery-placard data-linebreak-root>
+    <gallery-caption><Fragment set:html={captionHtml} /></gallery-caption>
+    <gallery-meta data-linebreak-skip>
+      <gallery-project>
+        {link ? (
+          <a {...link}><Fragment set:html={projectHtml} /></a>
+        ) : (
+          <Fragment set:html={projectHtml} />
+        )}
+      </gallery-project>
+      <gallery-year>{item.year}</gallery-year>
+    </gallery-meta>
+  </gallery-placard>
+</li>
+
+<style>
+  li {
+    background-color: var(--muted);
+    cursor: zoom-in;
+    transition: background-color 0.2s ease;
+
+    &:hover {
+      background-color: var(--background-l2);
+    }
+
+    > button {
+      display: block;
+      inline-size: 100%;
+      padding: 0;
+      border: 0;
+      background: none;
+      cursor: inherit;
+    }
+
+    :global(img),
+    video {
+      inline-size: 100%;
+      block-size: auto;
+    }
+  }
+
+  gallery-placard {
+    display: block;
+    padding: var(--space-xs);
+
+    gallery-caption {
+      display: block;
+      font-size: 0.8125rem;
+      line-height: 1.4;
+      color: var(--prose-foreground);
+      text-box: trim-start cap alphabetic;
+    }
+
+    gallery-meta {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: var(--space-2xs);
+      margin-block-start: var(--space-2xs);
+      font-size: 0.8125rem;
+      line-height: 1.25;
+      color: var(--muted-foreground);
+
+      gallery-project,
+      gallery-year {
+        text-box: trim-end cap alphabetic;
+      }
+
+      gallery-year {
+        flex-shrink: 0;
+      }
+    }
+  }
+</style>

@@ -7,6 +7,7 @@ export default defineConfig({
   site: "https://enscribe.dev",
   server: { port: 4321 },
   compressHTML: true,
+  redirects: { "/work": "/gallery" },
   prefetch: { prefetchAll: true },
   vite: {
     resolve: { tsconfigPaths: true },

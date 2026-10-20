@@ -1,0 +1,73 @@
+---
+import GalleryCard from "@/components/GalleryCard.astro"
+import MetaPage from "@/components/MetaPage.astro"
+import Layout from "@/layouts/Layout.astro"
+import { galleryItems } from "@/lib/gallery"
+---
+
+<Layout wide>
+  <MetaPage slot="head" title="Gallery" />
+  <ul data-gallery>
+    {galleryItems.map((item) => <GalleryCard item={item} />)}
+  </ul>
+</Layout>
+
+<style>
+  ul {
+    --tile-min: min(100%, calc(15rem + 2 * var(--space-xs)));
+    --tile-third: calc((100% - 2 * var(--space-xs)) / 3);
+
+    display: grid;
+    grid-template-columns: repeat(
+        auto-fill,
+        minmax(max(var(--tile-min), var(--tile-third)), 1fr)
+      );
+    align-items: start;
+    gap: var(--space-xs);
+
+    &[data-masonry] {
+      grid-auto-rows: 1px;
+      row-gap: 0;
+    }
+  }
+</style>
+
+<script>
+  const setSpans = (tiles: HTMLElement[]) => {
+    const gallery = tiles[0]?.parentElement
+    if (!gallery) return
+    const gap = Number.parseFloat(getComputedStyle(gallery).columnGap)
+    const heights = tiles.map((tile) => tile.getBoundingClientRect().height)
+    tiles.forEach((tile, i) => {
+      tile.style.gridRowEnd = `span ${Math.ceil(heights[i] + gap)}`
+    })
+  }
+
+  const observer = new ResizeObserver((entries) => {
+    setSpans(entries.map((entry) => entry.target as HTMLElement))
+  })
+
+  const playback = new IntersectionObserver((entries) => {
+    for (const { target, isIntersecting } of entries) {
+      const video = target as HTMLVideoElement
+      if (isIntersecting) video.play().catch(() => {})
+      else video.pause()
+    }
+  })
+
+  document.addEventListener("astro:page-load", () => {
+    observer.disconnect()
+    playback.disconnect()
+    const gallery = document.querySelector<HTMLElement>("[data-gallery]")
+    if (!gallery) return
+    const tiles = [...gallery.children] as HTMLElement[]
+    setSpans(tiles)
+    gallery.toggleAttribute("data-masonry", true)
+    for (const tile of tiles) observer.observe(tile)
+
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches) return
+    for (const video of gallery.querySelectorAll("video")) {
+      playback.observe(video)
+    }
+  })
+</script>

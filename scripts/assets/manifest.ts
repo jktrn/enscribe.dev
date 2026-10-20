@@ -27,6 +27,12 @@ const roots: MediaRoot[] = [
   {
     group: "build",
     include: () => true,
+    path: "src/assets/gallery",
+    keyPrefix: "src/assets/gallery",
+  },
+  {
+    group: "build",
+    include: () => true,
     path: "public/blog",
     keyPrefix: "public/blog",
   },

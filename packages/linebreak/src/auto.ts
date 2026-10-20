@@ -282,8 +282,13 @@ class BrowserTypesetter<Token> implements Typesetter {
   private widthsMoved(entries: readonly ResizeObserverEntry[]) {
     let moved = false
     for (const entry of entries) {
+      if (!entry.target.isConnected) {
+        this.measure?.unobserve(entry.target)
+        continue
+      }
       const width =
         entry.contentBoxSize?.[0]?.inlineSize ?? entry.contentRect.width
+      if (width === 0) continue
       const previous = this.widths.get(entry.target)
       this.widths.set(entry.target, width)
       if (previous === undefined) continue

@@ -16,6 +16,7 @@ import { normalizeTabPanels } from "./normalize-tab-panels"
 import { parentheticalTypography } from "./inline-typography"
 import { microTypography } from "./micro-typography"
 import { readingTime } from "./reading-time"
+import { responsiveImages } from "./responsive-images"
 import { sidenoteCount } from "./sidenote-count"
 import { temmlMath } from "./math"
 import { tableDirective, tableScroll } from "./tables"
@@ -41,6 +42,7 @@ export const hastPlugins = [
   normalizeTabPanels,
   externalLinks,
   linkFavicons,
+  responsiveImages,
   parentheticalTypography,
   inlineAcronyms,
   blockExpressiveCode,

@@ -28,8 +28,13 @@ scripts/assets/sources/fonts/MDLorien-Italic.ttf
 
 # Private build assets are hydrated from Cloudflare R2, not Git history.
 src/content/**/assets/
+src/assets/gallery/
 public/blog/
 scripts/assets/sources/blog/
+
+scripts/gallery-editor/
+scripts/assets/sources/gallery/
+.claude/
 
 graphics/fonts/MDLorien-Regular.otf
 graphics/fonts/MDLorien-Italic.otf
