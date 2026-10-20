@@ -181,6 +181,8 @@ import ArrowRight from "@/assets/icons/arrow-right.svg"
   const CARD = "[data-gallery] > li"
 
   const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)")
+  const pausedWhileHidden = new WeakSet<HTMLVideoElement>()
+  const pausedBehindLightbox = new Set<HTMLVideoElement>()
   let group: Group | null = null
 
   const dialog = () =>
@@ -272,13 +274,36 @@ import ArrowRight from "@/assets/icons/arrow-right.svg"
 
   function playVisibleVideos(stage: Element) {
     for (const video of stage.querySelectorAll("video")) {
-      if (shown(video) && !reducedMotion.matches) {
+      if (!shown(video)) {
+        if (!video.paused) pausedWhileHidden.add(video)
+        video.pause()
+      } else if (reducedMotion.matches) {
+        video.pause()
+      } else if (video.readyState === HTMLMediaElement.HAVE_NOTHING) {
         video.load()
         video.play().catch(() => {})
-      } else {
-        video.pause()
+      } else if (pausedWhileHidden.delete(video)) {
+        video.play().catch(() => {})
       }
     }
+  }
+
+  function syncVideosWithTheme() {
+    const stage = dialog()?.querySelector("[data-lightbox-stage]")
+    if (dialog()?.open && stage) playVisibleVideos(stage)
+  }
+
+  function pausePageVideos(lightbox: HTMLDialogElement) {
+    for (const video of document.querySelectorAll("video")) {
+      if (lightbox.contains(video) || video.paused) continue
+      video.pause()
+      pausedBehindLightbox.add(video)
+    }
+  }
+
+  function resumePageVideos() {
+    for (const video of pausedBehindLightbox) video.play().catch(() => {})
+    pausedBehindLightbox.clear()
   }
 
   function render() {
@@ -308,7 +333,10 @@ import ArrowRight from "@/assets/icons/arrow-right.svg"
     const lightbox = dialog()
     if (!lightbox || next.index < 0) return
     group = next
-    if (!lightbox.open) lightbox.showModal()
+    if (!lightbox.open) {
+      pausePageVideos(lightbox)
+      lightbox.showModal()
+    }
     render()
   }
 
@@ -325,6 +353,7 @@ import ArrowRight from "@/assets/icons/arrow-right.svg"
     lightbox?.querySelector("[data-lightbox-stage]")?.replaceChildren()
     lightbox?.querySelector("[data-lightbox-caption]")?.replaceChildren()
     group = null
+    resumePageVideos()
   }
 
   function handleLightboxClick(lightbox: HTMLDialogElement, target: Element) {
@@ -346,6 +375,15 @@ import ArrowRight from "@/assets/icons/arrow-right.svg"
     const media = target.closest(`prose-content :is(${PROSE_MEDIA})`)
     if (media && zoomable(media)) open(proseGroup(media))
   })
+
+  new MutationObserver(syncVideosWithTheme).observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ["data-theme"],
+  })
+  matchMedia("(prefers-color-scheme: dark)").addEventListener(
+    "change",
+    syncVideosWithTheme,
+  )
 
   document.addEventListener("keydown", (event) => {
     if (!dialog()?.open) return
