@@ -222,16 +222,16 @@
       "group": "graphics",
       "key": "graphics/blog/japan-retrospective/day-0-map-1-dark.svg",
       "localPath": "scripts/assets/sources/blog/japan-retrospective/day-0-map-1-dark.svg",
-      "sha256": "a01874771cd48511f76ebe55cc8227918d84da49d98789600a217e13acacf82a",
-      "size": 232116
+      "sha256": "ecdb6b3fcb7e727d82d4fc37f882e7142bf2d72ba7bf258fc75f1df9c7019133",
+      "size": 224936
     },
     {
       "contentType": "image/svg+xml",
       "group": "graphics",
       "key": "graphics/blog/japan-retrospective/day-0-map-1-light.svg",
       "localPath": "scripts/assets/sources/blog/japan-retrospective/day-0-map-1-light.svg",
-      "sha256": "609573c8fd397bd6428666281f7d4ab153fab2c91837ae09678690b5011cdeb8",
-      "size": 234372
+      "sha256": "ce9cf97ba23325d4a057816c9483854f13f00e5a737ad039b4fbbfe335e86a70",
+      "size": 227732
     },
     {
       "contentType": "image/svg+xml",
@@ -246,16 +246,16 @@
       "group": "graphics",
       "key": "graphics/blog/japan-retrospective/day-0-map-2-dark.svg",
       "localPath": "scripts/assets/sources/blog/japan-retrospective/day-0-map-2-dark.svg",
-      "sha256": "0e063450b038183d7f55e7fed3433fc9949dd640a410c1ae0603369d582d5652",
-      "size": 1984325
+      "sha256": "297f1f7bd569763bf56e24bff4f516eea2db8b277827429540a1023495ff0724",
+      "size": 1972521
     },
     {
       "contentType": "image/svg+xml",
       "group": "graphics",
       "key": "graphics/blog/japan-retrospective/day-0-map-2-light.svg",
       "localPath": "scripts/assets/sources/blog/japan-retrospective/day-0-map-2-light.svg",
-      "sha256": "ac1d23e561d150acc77f1e817fc496788017e1114c6ca549de073b1c908f0713",
-      "size": 1912853
+      "sha256": "8b3b847c562c9431324857d844ba39575ad43ecc23834f3ff0d0eb9bc762e11b",
+      "size": 1885425
     },
     {
       "contentType": "image/svg+xml",
@@ -2222,32 +2222,32 @@
       "group": "build",
       "key": "src/content/blog/japan-retrospective/assets/day-0-map-1-dark.webp",
       "localPath": "src/content/blog/japan-retrospective/assets/day-0-map-1-dark.webp",
-      "sha256": "de43fe6a738f97bf6663b2f8c9c4eb38a05be2f937281f5f909d270c35d95c91",
-      "size": 27646
+      "sha256": "10be3395b13dadd2e0a9179315ddcf2b27ef4f475a9ce57fd24814908f8eb991",
+      "size": 31810
     },
     {
       "contentType": "image/webp",
       "group": "build",
       "key": "src/content/blog/japan-retrospective/assets/day-0-map-1-light.webp",
       "localPath": "src/content/blog/japan-retrospective/assets/day-0-map-1-light.webp",
-      "sha256": "e4d8b3f93a765366cbdf7018545dd6508f7c790671e91c838f9c58ae97ff5599",
-      "size": 30908
+      "sha256": "2e7e7397773052b31205959481386f7ee07df23c1b143d5a0304eb7a87c3d63a",
+      "size": 34574
     },
     {
       "contentType": "image/webp",
       "group": "build",
       "key": "src/content/blog/japan-retrospective/assets/day-0-map-2-dark.webp",
       "localPath": "src/content/blog/japan-retrospective/assets/day-0-map-2-dark.webp",
-      "sha256": "87583a9bcab2069f435faecdd148491f58bf772df12a5950501573a88dfcbbad",
-      "size": 307288
+      "sha256": "e4191ca124df4637c71831da6f2662a78ac458ed7cf6def5925d4f68f52d85c4",
+      "size": 400820
     },
     {
       "contentType": "image/webp",
       "group": "build",
       "key": "src/content/blog/japan-retrospective/assets/day-0-map-2-light.webp",
       "localPath": "src/content/blog/japan-retrospective/assets/day-0-map-2-light.webp",
-      "sha256": "50bdcc23ffe3831c1e199d9707259f7b61398b07f6b69696ad773865866f4540",
-      "size": 365358
+      "sha256": "755fefeba93bc7d59af2c18ec7d4e046c8c0b5166a93a81dc986964d670adac7",
+      "size": 468098
     },
     {
       "contentType": "image/webp",
