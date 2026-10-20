@@ -7,6 +7,8 @@ const SPACING = 1
 
 const ROUNDING = 1
 
+const TRACKING_BUDGET = 0.03
+
 const LIGATURES = '"liga" 1, "clig" 1'
 
 const LIGATED = "The affluent office staff filed a final waffle briefing."
@@ -46,20 +48,31 @@ const bodyFamily = (page: import("@playwright/test").Page) =>
   })
 
 const letterspacedLines = (page: import("@playwright/test").Page) =>
-  page.evaluate(() => {
+  page.evaluate((budget) => {
     const lines = [
       ...document.querySelectorAll<HTMLElement>(
         "[data-linebreak-typeset] > [data-linebreak-line]",
       ),
     ]
+    const letterspaced = lines.filter((line) => line.style.letterSpacing !== "")
+    const overspent = letterspaced.filter((line) => {
+      const block = line.parentElement as HTMLElement
+      const inherited =
+        Number.parseFloat(getComputedStyle(block).letterSpacing) || 0
+      const perLetter = Number.parseFloat(line.style.letterSpacing) - inherited
+      const letters = [...(line.textContent ?? "")].filter(
+        (character) => character.trim() !== "",
+      ).length
+      return Math.abs(perLetter) * letters > budget * block.clientWidth + 1
+    })
     return {
       lines: lines.length,
-      letterspaced: lines.filter((line) => line.style.letterSpacing !== "")
-        .length,
+      letterspaced: letterspaced.length,
+      overspent: overspent.length,
       featured: lines.filter((line) => line.style.fontFeatureSettings !== "")
         .length,
     }
-  })
+  }, TRACKING_BUDGET)
 
 const units = (text: string) => [...text].length
 
@@ -141,15 +154,14 @@ test.describe("letterfit tracking in a real browser", () => {
     }
   })
 
-  test("tracking is off, so no line asks for either declaration", async ({
-    page,
-  }) => {
+  test("tracking stays inside its letter-spacing budget", async ({ page }) => {
     await settleTypeset(page)
 
     const rendered = await letterspacedLines(page)
 
     expect(rendered.lines).toBeGreaterThan(50)
-    expect(rendered.letterspaced).toBe(0)
+    expect(rendered.letterspaced).toBeGreaterThan(0)
+    expect(rendered.overspent).toBe(0)
     expect(rendered.featured).toBe(0)
   })
 })
