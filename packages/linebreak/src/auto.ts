@@ -1,5 +1,6 @@
 import { handleCopy } from "./dom/clipboard"
 import { proseBlocks } from "./dom/discover"
+import { TYPESET_ATTRIBUTE } from "./dom/render"
 import { createLinebreaker } from "./linebreaker"
 import { engineDefaults } from "./policy"
 import type {
@@ -256,7 +257,7 @@ class BrowserTypesetter<Token> implements Typesetter {
       const block = entry.target as HTMLElement
       if (entry.isIntersecting) {
         this.visible.add(block)
-        this.queued.add(block)
+        if (!block.hasAttribute(TYPESET_ATTRIBUTE)) this.queued.add(block)
       } else {
         this.visible.delete(block)
       }
@@ -282,8 +283,13 @@ class BrowserTypesetter<Token> implements Typesetter {
   private widthsMoved(entries: readonly ResizeObserverEntry[]) {
     let moved = false
     for (const entry of entries) {
+      if (!entry.target.isConnected) {
+        this.measure?.unobserve(entry.target)
+        continue
+      }
       const width =
         entry.contentBoxSize?.[0]?.inlineSize ?? entry.contentRect.width
+      if (width === 0) continue
       const previous = this.widths.get(entry.target)
       this.widths.set(entry.target, width)
       if (previous === undefined) continue

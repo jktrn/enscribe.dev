@@ -169,3 +169,95 @@ test("nothing narrower than the minimum measure is typeset", async ({
 
   expect(narrow).toBe(0)
 })
+
+test("removing a typeset block leaves the others typeset", async ({ page }) => {
+  await settleTypeset(page)
+
+  const restores = await page.evaluate(async () => {
+    let count = 0
+    new MutationObserver((records) => {
+      for (const { target } of records) {
+        if (!(target as Element).hasAttribute("data-linebreak-typeset")) {
+          count += 1
+        }
+      }
+    }).observe(document.body, {
+      attributes: true,
+      attributeFilter: ["data-linebreak-typeset"],
+      subtree: true,
+    })
+    document.querySelector("[data-linebreak-typeset]")?.remove()
+    await new Promise((resolve) => setTimeout(resolve, 500))
+    return count
+  })
+
+  expect(restores).toBe(0)
+})
+
+test("scrolling back to a typeset block does not rewrite it", async ({
+  page,
+}) => {
+  await settleTypeset(page)
+
+  await page.evaluate(() => {
+    const watched = [
+      ...document.querySelectorAll("[data-linebreak-typeset]"),
+    ].filter((block) => block.getBoundingClientRect().top < innerHeight)
+    const state = { watched: watched.length, mutations: 0 }
+    ;(window as { __rewrites?: typeof state }).__rewrites = state
+    const observer = new MutationObserver((records) => {
+      state.mutations += records.length
+    })
+    for (const block of watched) {
+      observer.observe(block, {
+        attributes: true,
+        childList: true,
+        subtree: true,
+      })
+    }
+  })
+  await sweepViewport(page)
+
+  const rewrites = await page.evaluate(
+    () =>
+      (window as { __rewrites?: { watched: number; mutations: number } })
+        .__rewrites,
+  )
+  expect(rewrites?.watched).toBeGreaterThan(0)
+  expect(rewrites?.mutations).toBe(0)
+})
+
+test("hiding and showing a block keeps every block typeset", async ({
+  page,
+}) => {
+  await settleTypeset(page)
+
+  const result = await page.evaluate(async () => {
+    let count = 0
+    new MutationObserver((records) => {
+      for (const { target } of records) {
+        if (!(target as Element).hasAttribute("data-linebreak-typeset")) {
+          count += 1
+        }
+      }
+    }).observe(document.body, {
+      attributes: true,
+      attributeFilter: ["data-linebreak-typeset"],
+      subtree: true,
+    })
+    const block = document.querySelector<HTMLElement>(
+      "[data-linebreak-typeset]",
+    )
+    if (!block) return null
+    block.style.display = "none"
+    await new Promise((resolve) => setTimeout(resolve, 300))
+    block.style.display = ""
+    await new Promise((resolve) => setTimeout(resolve, 500))
+    return {
+      restores: count,
+      stillTypeset: block.hasAttribute("data-linebreak-typeset"),
+    }
+  })
+
+  expect(result).toEqual({ restores: 0, stillTypeset: true })
+})
