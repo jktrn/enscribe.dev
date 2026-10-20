@@ -1,0 +1,172 @@
+[
+  {
+    "image": "rctf-scoreboard-light.webp",
+    "imageDark": "rctf-scoreboard-dark.webp",
+    "video": ["rctf-scoreboard-light.webm"],
+    "videoDark": ["rctf-scoreboard-dark.webm"],
+    "caption": "[@es3n1n](https://x.com/es3n1n) and I developed rCTF v2, an open-source platform for hosting cybersecurity capture-the-flag competitions. It is, objectively, the best work I have ever done, and is state-of-the-art in its capabilities.",
+    "project": "rCTF",
+    "year": 2026,
+    "link": "https://demo.rctf.osec.io"
+  },
+  {
+    "image": "maltactf-landing-theme-cycle.webp",
+    "video": ["maltactf-landing-theme-cycle.webm"],
+    "caption": "In collaboration with pixel artist [@uarfun](https://twitter.com/uarfun), I designed the MaltaCTF landing page. The artwork itself is split into foreground/background to create a parallax effect, and is available in three variations: day, evening, and night. The variant you see on first load is based on your system time.",
+    "project": "MaltaCTF",
+    "year": 2025,
+    "link": "https://2025.ctf.mt"
+  },
+  {
+    "image": "maltactf-pcb-badges.webp",
+    "caption": "PCB badges I designed for MaltaCTF. The shiny logo is exposed copper with an ENIG (electroless nickel immersion gold) finish. The namebox is left as smooth white soldermask for easy writing with a marker.",
+    "project": "MaltaCTF",
+    "year": 2025,
+    "link": "https://2025.ctf.mt"
+  },
+  {
+    "image": "home-office.webp",
+    "caption": "A picture of my home office. To emphasize function, I use a [Skådis](https://www.ikea.com/us/en/p/skadis-pegboard-white-10321618/) pegboard to hang high-use items, and have desk-mounted my monitor for more real estate. To emphasize personality, I use corkboard to showcase memorabilia, and the color complements the rubberwood finish I chose for my sit-stand desk. My MFF PC case has bamboo slits on its front panel to also support the natural warm palette.",
+    "project": "(misc.)",
+    "year": 2026
+  },
+  {
+    "image": "v12-landing-light.webp",
+    "imageDark": "v12-landing-dark.webp",
+    "video": ["v12-landing-light.webm"],
+    "videoDark": ["v12-landing-dark.webm"],
+    "caption": "The landing I built for V12, an autonomous hacker/security review engine developed by the founders of [Zellic](https://zellic.io). I placed heavy emphasis on showcasing product functionality and took great care in its microanimations.",
+    "project": "V12",
+    "year": 2026,
+    "link": "https://v12.sh"
+  },
+  {
+    "image": "ottersec-player-cards.webp",
+    "caption": "As part of OtterSec’s CTF sponsorship program, I worked with [@uarfun](https://twitter.com/uarfun) to design collectible player cards for the teams we support. Players received bespoke pixel art based on their avatars, then chose two special abilities and their social links, plus a card color matching their main CTF category.",
+    "project": "(misc.)",
+    "year": 2026
+  },
+  {
+    "image": "maltactf-venue-print.webp",
+    "caption": "Unfortunately, hanging up posters is hard, so we chained lanyards together against a mezzanine railing at our venue to hang up this print of the event artwork.",
+    "project": "MaltaCTF",
+    "year": 2025,
+    "link": "https://2025.ctf.mt"
+  },
+  {
+    "image": "v12-logo-construction-light.webp",
+    "imageDark": "v12-logo-construction-dark.webp",
+    "caption": "A construction sheet and digital render of the logo I created for V12. The logo itself is inspired by the chrome embleming you see on the tail of a car. The entire logo can be neatly constructed with one unit ($x = 12$, with $y = 4x$) and three angles ($96^\\circ, 72^\\circ, 36^\\circ$).",
+    "project": "V12",
+    "year": 2026,
+    "link": "https://v12.sh"
+  },
+  {
+    "image": "evmbench-reentrancy-light.webp",
+    "imageDark": "evmbench-reentrancy-dark.webp",
+    "caption": "I worked with OpenAI and Paradigm on \"EVM&#8203;bench\", their state-of-the-art smart contract benchmark.",
+    "project": "evmbench",
+    "year": 2026,
+    "link": "https://openai.com/index/introducing-evmbench/"
+  },
+  {
+    "image": "osec-landing-light.webp",
+    "imageDark": "osec-landing-dark.webp",
+    "video": ["osec-landing-light.webm"],
+    "videoDark": ["osec-landing-dark.webm"],
+    "caption": "The landing I built for OtterSec, a leading blockchain security auditing firm. The hero section uses a no-dependency, vanilla JS shader.",
+    "project": "osec.io",
+    "year": 2026,
+    "link": "https://osec.io"
+  },
+  {
+    "image": "sekaictf-2026-rctf-luna.webp",
+    "video": ["sekaictf-2026-rctf-luna.webm"],
+    "caption": "For SekaiCTF 2026 I developed rCTF-luna, a custom theme attempting to faithfully recreate the aesthetic of \"Project Sekai: Colorful Stage!\".",
+    "project": "SekaiCTF",
+    "year": 2026,
+    "link": "https://2026.ctf.sekai.team"
+  },
+  {
+    "image": "zellic-validators-landing.webp",
+    "caption": "The landing I designed for Zellic's (sunset) validators program. The artwork itself is true 1-bit (2-color), but a dimming layer was placed on top to emphasize light within the composition. Yes, I know it looks exactly like [Return of the Obra Dinn](https://obradinn.com/); this was a happy coincidence!",
+    "project": "Zellic",
+    "year": 2026
+  },
+  {
+    "image": "hacktron-landing-light.webp",
+    "imageDark": "hacktron-landing-dark.webp",
+    "caption": "The landing I built for Hacktron, an AI-native security platform for code reviews and penetration tests.",
+    "project": "Hacktron",
+    "year": 2025
+  },
+  {
+    "image": "maltactf-shirt.webp",
+    "caption": "The shirt I designed for MaltaCTF, which was printed on 280gsm heavy cotton with an acid wash. The backside was inspired by Maltese Cross gold coins.",
+    "project": "MaltaCTF",
+    "year": 2025,
+    "link": "https://2025.ctf.mt"
+  },
+  {
+    "image": "astro-erudite-light.webp",
+    "imageDark": "astro-erudite-dark.webp",
+    "caption": "I created \"astro-erudite,\" a highly opinionated, unstyled static blogging template out of frustration with existing templates and obsession with perfection.",
+    "project": "astro-erudite",
+    "year": 2024,
+    "link": "https://astro-erudite.vercel.app"
+  },
+  {
+    "image": "sekaictf-teasers.webp",
+    "caption": "A collection of various teasers and promotional graphics I've made for SekaiCTF's social presence.",
+    "project": "SekaiCTF",
+    "year": 2026
+  },
+  {
+    "image": "bountybench-light.webp",
+    "imageDark": "bountybench-dark.webp",
+    "caption": "I contributed to BountyBench (accepted NeurIPS 2025), a cybersecurity benchmark that evaluates AI agents’ offensive-defensive capabilities with bug bounties.",
+    "project": "BountyBench",
+    "year": 2025,
+    "link": "https://arxiv.org/abs/2505.15216"
+  },
+  {
+    "image": "sekaictf-2023-gacha.webp",
+    "video": ["sekaictf-2023-gacha.webm"],
+    "caption": "For SekaiCTF 2023, I replicated the gacha system from \"Project Sekai: Colorful Stage!\" using exclusively Unity.",
+    "project": "SekaiCTF",
+    "year": 2023
+  },
+  {
+    "image": "ottersec-business-cards.webp",
+    "caption": "Mockups of duplexed, luxury business cards I designed for OtterSec. The card is printed on a soft, matte paper with a silver foil logo. On the content side, an oversized emblem is blind-debossed into the stock, and its silhouette can be emphasized with lights and shadows. The contact details carry shallow debossing.",
+    "project": "(misc.)",
+    "year": 2026
+  },
+  {
+    "image": "ottersec-kawauso-sticker.webp",
+    "caption": "A ridiculously cute VTuber-style sticker I made for OtterSec. The text reads \"かわうそ / セキュリティ\" (otter security).",
+    "project": "(misc.)",
+    "year": 2026
+  },
+  {
+    "image": "japan-retrospective-graphics-light.webp",
+    "imageDark": "japan-retrospective-graphics-dark.webp",
+    "caption": "Graphics and maps I made for \"[A Retrospective on 14 Nights in Japan](/blog/japan-retrospective)\". The maps represent transit routes and were hand-drawn over screenshots of [Catenary Maps](https://maps.catenarymaps.org).",
+    "project": "(misc.)",
+    "year": 2024
+  },
+  {
+    "image": "merch-showcase.webp",
+    "caption": "An assortment of merchandise I've made. In clockwise order, we have:<br>\n(1) An \"ACCC\" parody tee (for more context, see [\"Smart Eyes, Stupid Hands\"](https://enscribe.dev/blog/smart-eyes-stupid-hands/)).<br>\n(2) A \"CTF Iceberg\" tee I made for LakeCTF, containing many cultural references and inside jokes.<br>\n(3) An \"Otter University\" collegiate hoodie, a gift for the end of our summer internship program. It has a custom embroidered emblem/crest.<br>\n(4) A gag tee parodying Abbey Road for Breakpoint London 2026.",
+    "project": "(misc.)",
+    "year": 2026
+  },
+  {
+    "image": "anchor-v2-logo-docs-light.webp",
+    "imageDark": "anchor-v2-logo-docs-dark.webp",
+    "caption": "I made the logo and docs site for Anchor v2, the leading Rust-based development framework for building secure smart contracts.",
+    "project": "Anchor",
+    "year": 2026,
+    "link": "https://v2.anchor-lang.com"
+  }
+]

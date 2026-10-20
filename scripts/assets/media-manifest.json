@@ -714,6 +714,414 @@
       "size": 5599656
     },
     {
+      "contentType": "image/webp",
+      "group": "build",
+      "key": "src/assets/gallery/anchor-v2-logo-docs-dark.webp",
+      "localPath": "src/assets/gallery/anchor-v2-logo-docs-dark.webp",
+      "sha256": "6a5f45b875590f9a2327716944766ff38e7d5dd544c0c22f00eed49bd9f53710",
+      "size": 370824
+    },
+    {
+      "contentType": "image/webp",
+      "group": "build",
+      "key": "src/assets/gallery/anchor-v2-logo-docs-light.webp",
+      "localPath": "src/assets/gallery/anchor-v2-logo-docs-light.webp",
+      "sha256": "9419dd55ba75b29dd557f580a7a45d9c117afdafe8780dabe5dc3b1b00c3c5ed",
+      "size": 381422
+    },
+    {
+      "contentType": "image/webp",
+      "group": "build",
+      "key": "src/assets/gallery/astro-erudite-dark.webp",
+      "localPath": "src/assets/gallery/astro-erudite-dark.webp",
+      "sha256": "5dcc78d986e8a23411cfe4eb967453640f4a244df5f21821ab43d454e646027d",
+      "size": 104338
+    },
+    {
+      "contentType": "image/webp",
+      "group": "build",
+      "key": "src/assets/gallery/astro-erudite-light.webp",
+      "localPath": "src/assets/gallery/astro-erudite-light.webp",
+      "sha256": "5fcb7cd6cf65bd4000ad9a85ab87ec13e48231cfe04dbaa6a49e46d30390d2b0",
+      "size": 100422
+    },
+    {
+      "contentType": "image/webp",
+      "group": "build",
+      "key": "src/assets/gallery/bountybench-dark.webp",
+      "localPath": "src/assets/gallery/bountybench-dark.webp",
+      "sha256": "c51bf1fbc721d504f9029e59a52bbf210b42066acbb3860152dc787619d0a914",
+      "size": 53252
+    },
+    {
+      "contentType": "image/webp",
+      "group": "build",
+      "key": "src/assets/gallery/bountybench-light.webp",
+      "localPath": "src/assets/gallery/bountybench-light.webp",
+      "sha256": "66a11690a0a7fffdae5e65e98cab82babeb8fce8fb9c8a61687e6aa4914b3720",
+      "size": 52546
+    },
+    {
+      "contentType": "video/webm",
+      "group": "build",
+      "key": "src/assets/gallery/card/maltactf-landing-theme-cycle.webm",
+      "localPath": "src/assets/gallery/card/maltactf-landing-theme-cycle.webm",
+      "sha256": "a724cae5904772adc8e5d7a1de50c879eac64bc8b7f36bec6414fe66febc5fdb",
+      "size": 973731
+    },
+    {
+      "contentType": "video/webm",
+      "group": "build",
+      "key": "src/assets/gallery/card/osec-landing-dark.webm",
+      "localPath": "src/assets/gallery/card/osec-landing-dark.webm",
+      "sha256": "cc75b790a910d113a8ccc34fd2821aa0a2f38e6bdfda317d8acf3d19e92b7e14",
+      "size": 753938
+    },
+    {
+      "contentType": "video/webm",
+      "group": "build",
+      "key": "src/assets/gallery/card/osec-landing-light.webm",
+      "localPath": "src/assets/gallery/card/osec-landing-light.webm",
+      "sha256": "1886027adbfc7687dcb10a60bd206c279d8c4da100b71a312c99ca172c7a6c66",
+      "size": 513731
+    },
+    {
+      "contentType": "video/webm",
+      "group": "build",
+      "key": "src/assets/gallery/card/rctf-scoreboard-dark.webm",
+      "localPath": "src/assets/gallery/card/rctf-scoreboard-dark.webm",
+      "sha256": "f1feeb1c23cf97145a0f93483fd0e8fc948ac7989b922aa57158eaf8a38edbb6",
+      "size": 1024959
+    },
+    {
+      "contentType": "video/webm",
+      "group": "build",
+      "key": "src/assets/gallery/card/rctf-scoreboard-light.webm",
+      "localPath": "src/assets/gallery/card/rctf-scoreboard-light.webm",
+      "sha256": "4b3a6624f946878f07bd133f6a56a989ee34a6212714c8b73e5f24fde3b2afde",
+      "size": 1022166
+    },
+    {
+      "contentType": "video/webm",
+      "group": "build",
+      "key": "src/assets/gallery/card/sekaictf-2023-gacha.webm",
+      "localPath": "src/assets/gallery/card/sekaictf-2023-gacha.webm",
+      "sha256": "262eb3b7730f77c020306a407d3deb82e11f7f61881399a96886ae2176191cbe",
+      "size": 1841619
+    },
+    {
+      "contentType": "video/webm",
+      "group": "build",
+      "key": "src/assets/gallery/card/sekaictf-2026-rctf-luna.webm",
+      "localPath": "src/assets/gallery/card/sekaictf-2026-rctf-luna.webm",
+      "sha256": "67ef8de19c2efa0752e6e9592e8a1a5be62aeb8297bd478dd5425e01a10d155f",
+      "size": 1496488
+    },
+    {
+      "contentType": "video/webm",
+      "group": "build",
+      "key": "src/assets/gallery/card/v12-landing-dark.webm",
+      "localPath": "src/assets/gallery/card/v12-landing-dark.webm",
+      "sha256": "46cd0404f57f96c371a18ba579fc01f6ae5d2d7d45b9be325f1e7ba127fb5a34",
+      "size": 849458
+    },
+    {
+      "contentType": "video/webm",
+      "group": "build",
+      "key": "src/assets/gallery/card/v12-landing-light.webm",
+      "localPath": "src/assets/gallery/card/v12-landing-light.webm",
+      "sha256": "e2896a9aac98c0dad73ee020be4a1aba9eced9e78cc5c70b66e1cc531f798d93",
+      "size": 967283
+    },
+    {
+      "contentType": "image/webp",
+      "group": "build",
+      "key": "src/assets/gallery/evmbench-reentrancy-dark.webp",
+      "localPath": "src/assets/gallery/evmbench-reentrancy-dark.webp",
+      "sha256": "14b2184ad013eaa488f2b666c30f6fb17bb59b69ad1113091947ae355a064788",
+      "size": 204382
+    },
+    {
+      "contentType": "image/webp",
+      "group": "build",
+      "key": "src/assets/gallery/evmbench-reentrancy-light.webp",
+      "localPath": "src/assets/gallery/evmbench-reentrancy-light.webp",
+      "sha256": "1362115a669ac017a3b98b977a7af719e67a0840cc0b7025134f389355ae2833",
+      "size": 204910
+    },
+    {
+      "contentType": "image/webp",
+      "group": "build",
+      "key": "src/assets/gallery/hacktron-landing-dark.webp",
+      "localPath": "src/assets/gallery/hacktron-landing-dark.webp",
+      "sha256": "dd18aa6238fbd1678f65448113e17b5c597f201046c09426eca12e25fe73cdd0",
+      "size": 221404
+    },
+    {
+      "contentType": "image/webp",
+      "group": "build",
+      "key": "src/assets/gallery/hacktron-landing-light.webp",
+      "localPath": "src/assets/gallery/hacktron-landing-light.webp",
+      "sha256": "51be27e8dddd5444162007d4e8b9da40dedf179c335b470dc296997c89f7139d",
+      "size": 251998
+    },
+    {
+      "contentType": "image/webp",
+      "group": "build",
+      "key": "src/assets/gallery/home-office.webp",
+      "localPath": "src/assets/gallery/home-office.webp",
+      "sha256": "60d1096a2b605b88c8bfaa9d9de5bce6b1ff4062c41eeb601c29095ccc1bd6f1",
+      "size": 266922
+    },
+    {
+      "contentType": "image/webp",
+      "group": "build",
+      "key": "src/assets/gallery/japan-retrospective-graphics-dark.webp",
+      "localPath": "src/assets/gallery/japan-retrospective-graphics-dark.webp",
+      "sha256": "21386ad31d87783f1523f17a61835e0e7aee2bc5cf9f3fcb220373387ccd9117",
+      "size": 1139562
+    },
+    {
+      "contentType": "image/webp",
+      "group": "build",
+      "key": "src/assets/gallery/japan-retrospective-graphics-light.webp",
+      "localPath": "src/assets/gallery/japan-retrospective-graphics-light.webp",
+      "sha256": "6f3c437855260c7c2e3846dc60554339b024f31035db432fa8d49d1b65e03b8a",
+      "size": 1269346
+    },
+    {
+      "contentType": "video/webm",
+      "group": "build",
+      "key": "src/assets/gallery/maltactf-landing-theme-cycle.webm",
+      "localPath": "src/assets/gallery/maltactf-landing-theme-cycle.webm",
+      "sha256": "eed7469a78b03547761e68f0092ccbb81e2b4cd379c9b36c9437067e46f30b55",
+      "size": 2589311
+    },
+    {
+      "contentType": "image/webp",
+      "group": "build",
+      "key": "src/assets/gallery/maltactf-landing-theme-cycle.webp",
+      "localPath": "src/assets/gallery/maltactf-landing-theme-cycle.webp",
+      "sha256": "b7a81c297bf0707e8eb794cd3c31e48337fde0c773a942a146cc81c722dee353",
+      "size": 233142
+    },
+    {
+      "contentType": "image/webp",
+      "group": "build",
+      "key": "src/assets/gallery/maltactf-pcb-badges.webp",
+      "localPath": "src/assets/gallery/maltactf-pcb-badges.webp",
+      "sha256": "578c396f3be2950c0ed505d39837e17c62c085a1c240f4376be1859e864ee900",
+      "size": 1275690
+    },
+    {
+      "contentType": "image/webp",
+      "group": "build",
+      "key": "src/assets/gallery/maltactf-shirt.webp",
+      "localPath": "src/assets/gallery/maltactf-shirt.webp",
+      "sha256": "4ce7a123a624a8023d9e2606504bb16eaf0f5550501f2ae5367cf230dce4d747",
+      "size": 1859512
+    },
+    {
+      "contentType": "image/webp",
+      "group": "build",
+      "key": "src/assets/gallery/maltactf-venue-print.webp",
+      "localPath": "src/assets/gallery/maltactf-venue-print.webp",
+      "sha256": "b070d8a021d6db1fa3423618a8582162ba50b2a67472665a08d41a0cda10833c",
+      "size": 423014
+    },
+    {
+      "contentType": "image/webp",
+      "group": "build",
+      "key": "src/assets/gallery/merch-showcase.webp",
+      "localPath": "src/assets/gallery/merch-showcase.webp",
+      "sha256": "90651e7353d648c9887265605c71212fb7e0b591978175f6566ceae4e34722bb",
+      "size": 518986
+    },
+    {
+      "contentType": "video/webm",
+      "group": "build",
+      "key": "src/assets/gallery/osec-landing-dark.webm",
+      "localPath": "src/assets/gallery/osec-landing-dark.webm",
+      "sha256": "3f1437131b9c6a42136993d6676bc9026979b5a30fbfe3fd0607c154bab96e0a",
+      "size": 3306170
+    },
+    {
+      "contentType": "image/webp",
+      "group": "build",
+      "key": "src/assets/gallery/osec-landing-dark.webp",
+      "localPath": "src/assets/gallery/osec-landing-dark.webp",
+      "sha256": "63323c46e97cee6fe4a08298913b4ef5683c76f8b789b97113c9460a8b4349fb",
+      "size": 163432
+    },
+    {
+      "contentType": "video/webm",
+      "group": "build",
+      "key": "src/assets/gallery/osec-landing-light.webm",
+      "localPath": "src/assets/gallery/osec-landing-light.webm",
+      "sha256": "f3a938585bb10a167a09f4d711e59cbedadcd7fde54f7cfffe82adc6bc3b2039",
+      "size": 2218247
+    },
+    {
+      "contentType": "image/webp",
+      "group": "build",
+      "key": "src/assets/gallery/osec-landing-light.webp",
+      "localPath": "src/assets/gallery/osec-landing-light.webp",
+      "sha256": "0c08b94332633109e0e78aa880cb0ad36fe7de4d169aad8b1739f49522ec3f4b",
+      "size": 108136
+    },
+    {
+      "contentType": "image/webp",
+      "group": "build",
+      "key": "src/assets/gallery/ottersec-business-cards.webp",
+      "localPath": "src/assets/gallery/ottersec-business-cards.webp",
+      "sha256": "03f61e339aa9a36d33b4df8351c9e91205fe7c3fa27dc78e131da5f6c8457d77",
+      "size": 257086
+    },
+    {
+      "contentType": "image/webp",
+      "group": "build",
+      "key": "src/assets/gallery/ottersec-kawauso-sticker.webp",
+      "localPath": "src/assets/gallery/ottersec-kawauso-sticker.webp",
+      "sha256": "8175bd98ad4e3a48d725206486d29ea6dc6a7d5bed98c9f3b7f2b8cd5da7e187",
+      "size": 745098
+    },
+    {
+      "contentType": "image/webp",
+      "group": "build",
+      "key": "src/assets/gallery/ottersec-player-cards.webp",
+      "localPath": "src/assets/gallery/ottersec-player-cards.webp",
+      "sha256": "fc1556bfea02bbd5a9366260bb21476768c625c1626e6c2c8641a4730e7274f3",
+      "size": 726546
+    },
+    {
+      "contentType": "video/webm",
+      "group": "build",
+      "key": "src/assets/gallery/rctf-scoreboard-dark.webm",
+      "localPath": "src/assets/gallery/rctf-scoreboard-dark.webm",
+      "sha256": "26d800f8757c334fb7e2ef4167b0897b6bfc6df36f431c74e087a5f75837c9c1",
+      "size": 2731072
+    },
+    {
+      "contentType": "image/webp",
+      "group": "build",
+      "key": "src/assets/gallery/rctf-scoreboard-dark.webp",
+      "localPath": "src/assets/gallery/rctf-scoreboard-dark.webp",
+      "sha256": "d674bccd9ad8d2725415f8a95420ccfd4f1864e46b4a11e9fc39dc364951094c",
+      "size": 124662
+    },
+    {
+      "contentType": "video/webm",
+      "group": "build",
+      "key": "src/assets/gallery/rctf-scoreboard-light.webm",
+      "localPath": "src/assets/gallery/rctf-scoreboard-light.webm",
+      "sha256": "0203ce11408b7ace9d569ac4ae65d664dd5f3929a59778b022d4f05c34c2b22e",
+      "size": 2751676
+    },
+    {
+      "contentType": "image/webp",
+      "group": "build",
+      "key": "src/assets/gallery/rctf-scoreboard-light.webp",
+      "localPath": "src/assets/gallery/rctf-scoreboard-light.webp",
+      "sha256": "0c4d659fc34c8454526682a3e9438829de466d23091d2313410098e5701264cc",
+      "size": 126064
+    },
+    {
+      "contentType": "video/webm",
+      "group": "build",
+      "key": "src/assets/gallery/sekaictf-2023-gacha.webm",
+      "localPath": "src/assets/gallery/sekaictf-2023-gacha.webm",
+      "sha256": "262eb3b7730f77c020306a407d3deb82e11f7f61881399a96886ae2176191cbe",
+      "size": 1841619
+    },
+    {
+      "contentType": "image/webp",
+      "group": "build",
+      "key": "src/assets/gallery/sekaictf-2023-gacha.webp",
+      "localPath": "src/assets/gallery/sekaictf-2023-gacha.webp",
+      "sha256": "9a1d7f3eb06b48181b905cd431325aee37ddce2141974cd53c313329d9b29b0f",
+      "size": 169750
+    },
+    {
+      "contentType": "video/webm",
+      "group": "build",
+      "key": "src/assets/gallery/sekaictf-2026-rctf-luna.webm",
+      "localPath": "src/assets/gallery/sekaictf-2026-rctf-luna.webm",
+      "sha256": "da6654e74a0ad5f29a3fb47da96132a61d4b3881a388ce0fc3331ba30cebbcc9",
+      "size": 5796903
+    },
+    {
+      "contentType": "image/webp",
+      "group": "build",
+      "key": "src/assets/gallery/sekaictf-2026-rctf-luna.webp",
+      "localPath": "src/assets/gallery/sekaictf-2026-rctf-luna.webp",
+      "sha256": "b7ad22c8bd5bb3bfd0b66a385bdb0056eeb22a46d0175bd181467413b05baec9",
+      "size": 425100
+    },
+    {
+      "contentType": "image/webp",
+      "group": "build",
+      "key": "src/assets/gallery/sekaictf-teasers.webp",
+      "localPath": "src/assets/gallery/sekaictf-teasers.webp",
+      "sha256": "96d54f45695e4bf660881216ccb7e2a4bc36989c0a607bcbf111072f723c95ba",
+      "size": 552026
+    },
+    {
+      "contentType": "video/webm",
+      "group": "build",
+      "key": "src/assets/gallery/v12-landing-dark.webm",
+      "localPath": "src/assets/gallery/v12-landing-dark.webm",
+      "sha256": "c372f91df2cc531eb772dbe70286c91f73d8edbecbf2c94bb340c0de85171a58",
+      "size": 2305888
+    },
+    {
+      "contentType": "image/webp",
+      "group": "build",
+      "key": "src/assets/gallery/v12-landing-dark.webp",
+      "localPath": "src/assets/gallery/v12-landing-dark.webp",
+      "sha256": "aa551eeb67094e32ce315e9d94563c87eacd6600c271e695860e97897f731347",
+      "size": 37594
+    },
+    {
+      "contentType": "video/webm",
+      "group": "build",
+      "key": "src/assets/gallery/v12-landing-light.webm",
+      "localPath": "src/assets/gallery/v12-landing-light.webm",
+      "sha256": "b274f2da04b160d3217e45a34ccf9b081be0578eec44878fa27dc40c92594111",
+      "size": 2665913
+    },
+    {
+      "contentType": "image/webp",
+      "group": "build",
+      "key": "src/assets/gallery/v12-landing-light.webp",
+      "localPath": "src/assets/gallery/v12-landing-light.webp",
+      "sha256": "212bafc42b10563d77d2c3e5dba052f38034de55bedfc7f949b48ee1fdd7dfcc",
+      "size": 38300
+    },
+    {
+      "contentType": "image/webp",
+      "group": "build",
+      "key": "src/assets/gallery/v12-logo-construction-dark.webp",
+      "localPath": "src/assets/gallery/v12-logo-construction-dark.webp",
+      "sha256": "e6d38de6eb07af2592b3fdbc7d7f316fb7c25f0d7052fa105ed65d5eb36ae15a",
+      "size": 106894
+    },
+    {
+      "contentType": "image/webp",
+      "group": "build",
+      "key": "src/assets/gallery/v12-logo-construction-light.webp",
+      "localPath": "src/assets/gallery/v12-logo-construction-light.webp",
+      "sha256": "d70a90d7a77bc263f5676f4d163c8d1f653a37210ccb9cd5ea99ca23b93b3e6b",
+      "size": 121116
+    },
+    {
+      "contentType": "image/webp",
+      "group": "build",
+      "key": "src/assets/gallery/zellic-validators-landing.webp",
+      "localPath": "src/assets/gallery/zellic-validators-landing.webp",
+      "sha256": "0f67fc760fee527fa321edd7f3fa79d4676ed5a0fb89eee5b9518d75c94e5ac8",
+      "size": 582548
+    },
+    {
       "contentType": "image/svg+xml",
       "group": "build",
       "key": "src/content/blog/actf-2023-gcd-query/assets/2048.svg",
@@ -5360,190 +5768,6 @@
       "localPath": "src/content/blog/smart-eyes-stupid-hands/assets/v0-generation.png",
       "sha256": "d6c0af9f195cdb92d1b8be424537f940b61a28945f751cc8dd3fc86787086ee0",
       "size": 924080
-    },
-    {
-      "contentType": "image/png",
-      "group": "build",
-      "key": "src/content/projects/assets/astro-erudite.png",
-      "localPath": "src/content/projects/assets/astro-erudite.png",
-      "sha256": "d18f90e937141ecabccd913fe8351afe0181fc06d4adc7b98f01c454413f3941",
-      "size": 166855
-    },
-    {
-      "contentType": "image/png",
-      "group": "build",
-      "key": "src/content/projects/assets/bountybench-dark.png",
-      "localPath": "src/content/projects/assets/bountybench-dark.png",
-      "sha256": "5e0f7caeaff4341ce59195d696cec59d340abbf990ae14aaea2e603929484434",
-      "size": 221451
-    },
-    {
-      "contentType": "image/png",
-      "group": "build",
-      "key": "src/content/projects/assets/bountybench-light.png",
-      "localPath": "src/content/projects/assets/bountybench-light.png",
-      "sha256": "39b3010a3835c506990dac7ad264bca6fcf4fc5f84d056bc2e451cb279250c48",
-      "size": 218821
-    },
-    {
-      "contentType": "image/png",
-      "group": "build",
-      "key": "src/content/projects/assets/bountybench.png",
-      "localPath": "src/content/projects/assets/bountybench.png",
-      "sha256": "2f84970687acd4f689bfce359abac0a293e5c2c195ce407cdde5eb23cc06579a",
-      "size": 224554
-    },
-    {
-      "contentType": "image/png",
-      "group": "build",
-      "key": "src/content/projects/assets/evmbench-dark.png",
-      "localPath": "src/content/projects/assets/evmbench-dark.png",
-      "sha256": "c6414fa1632e5d033ab25e4d8767f575d8c1e04403dc496427cd0866ac509d17",
-      "size": 558732
-    },
-    {
-      "contentType": "image/png",
-      "group": "build",
-      "key": "src/content/projects/assets/evmbench-light.png",
-      "localPath": "src/content/projects/assets/evmbench-light.png",
-      "sha256": "56d257a902b9934cca87d6f8254db76733d443ef0fda26c36e9bc1ad7928812c",
-      "size": 410748
-    },
-    {
-      "contentType": "image/png",
-      "group": "build",
-      "key": "src/content/projects/assets/evmbench.png",
-      "localPath": "src/content/projects/assets/evmbench.png",
-      "sha256": "0b8b1f1a518b15a95f3f9e5ab2f642e3f0460fadd7e2524c736472d5915b8c54",
-      "size": 558706
-    },
-    {
-      "contentType": "image/png",
-      "group": "build",
-      "key": "src/content/projects/assets/hacktron-dark.png",
-      "localPath": "src/content/projects/assets/hacktron-dark.png",
-      "sha256": "60e505c1ad3fc9d9a45b6a7869619511b37cb2a73dece66fb90082c3139c4ad8",
-      "size": 1602629
-    },
-    {
-      "contentType": "image/png",
-      "group": "build",
-      "key": "src/content/projects/assets/hacktron-light.png",
-      "localPath": "src/content/projects/assets/hacktron-light.png",
-      "sha256": "2963596c26cc32536999bb4375ccd4ce936f1faab8a906bad4499769898b92b1",
-      "size": 1592422
-    },
-    {
-      "contentType": "image/png",
-      "group": "build",
-      "key": "src/content/projects/assets/hacktron.png",
-      "localPath": "src/content/projects/assets/hacktron.png",
-      "sha256": "20d4e215b33522dacbc48953c55845e0f7ecabc006b673bf8237ba39d58c95fb",
-      "size": 1557034
-    },
-    {
-      "contentType": "image/png",
-      "group": "build",
-      "key": "src/content/projects/assets/malta-ctf.png",
-      "localPath": "src/content/projects/assets/malta-ctf.png",
-      "sha256": "ee4b6a9b6082c4d6e56b48463489a40f0f6a8131d8f8507aa59cfd8032965698",
-      "size": 842819
-    },
-    {
-      "contentType": "image/png",
-      "group": "build",
-      "key": "src/content/projects/assets/maltactf-dark.png",
-      "localPath": "src/content/projects/assets/maltactf-dark.png",
-      "sha256": "b6caff6fb70b10360fd11cadac6eecdda851bd1b3b5e2d3bb3f319368ce80827",
-      "size": 283344
-    },
-    {
-      "contentType": "image/png",
-      "group": "build",
-      "key": "src/content/projects/assets/maltactf-light.png",
-      "localPath": "src/content/projects/assets/maltactf-light.png",
-      "sha256": "9c13dbc7fdfd3c182852073534f01062f5a09ae71fab55369f2c18359bb84bb3",
-      "size": 842523
-    },
-    {
-      "contentType": "image/png",
-      "group": "build",
-      "key": "src/content/projects/assets/osec-io-dark.png",
-      "localPath": "src/content/projects/assets/osec-io-dark.png",
-      "sha256": "7c31ade0e81dfa241ceae69969c1eb4845be054970635018769efc721e63567f",
-      "size": 1220374
-    },
-    {
-      "contentType": "image/png",
-      "group": "build",
-      "key": "src/content/projects/assets/osec-io-light.png",
-      "localPath": "src/content/projects/assets/osec-io-light.png",
-      "sha256": "723e94de5d73316ce5840fe9f70511c5e012017c0baff33f913bd0ad2edb54b7",
-      "size": 1132035
-    },
-    {
-      "contentType": "image/png",
-      "group": "build",
-      "key": "src/content/projects/assets/osec-io.png",
-      "localPath": "src/content/projects/assets/osec-io.png",
-      "sha256": "4e952adb045a16f12e2db193d9eedb06581890c4cf14cbbf23c0ef78d45fe827",
-      "size": 1229535
-    },
-    {
-      "contentType": "image/png",
-      "group": "build",
-      "key": "src/content/projects/assets/project-sekai.png",
-      "localPath": "src/content/projects/assets/project-sekai.png",
-      "sha256": "f93be7bc4375a1a3022661a6d8a138db5aa626828c9a8fc5b10b73639bda69fa",
-      "size": 426841
-    },
-    {
-      "contentType": "image/png",
-      "group": "build",
-      "key": "src/content/projects/assets/rctf-dark.png",
-      "localPath": "src/content/projects/assets/rctf-dark.png",
-      "sha256": "2d780737dbff8ba972ebb4750da8dff01900ce2e4c79eee0c0cab295ceb9bc80",
-      "size": 208419
-    },
-    {
-      "contentType": "image/png",
-      "group": "build",
-      "key": "src/content/projects/assets/rctf-light.png",
-      "localPath": "src/content/projects/assets/rctf-light.png",
-      "sha256": "867b96e20435ea908a9dac463ef42c14eeacf1ac6bc2ce7313b4c5eee38eda6d",
-      "size": 213743
-    },
-    {
-      "contentType": "image/png",
-      "group": "build",
-      "key": "src/content/projects/assets/rctf.png",
-      "localPath": "src/content/projects/assets/rctf.png",
-      "sha256": "bd57680ded9285bdef0b12e9be04155411fdbc2964a1aa576f852310f3188e96",
-      "size": 261926
-    },
-    {
-      "contentType": "image/png",
-      "group": "build",
-      "key": "src/content/projects/assets/v12-dark.png",
-      "localPath": "src/content/projects/assets/v12-dark.png",
-      "sha256": "837a801efbec6ec79aff59a0b2f7ffd3d6062aa133560dc7a68ed24c2f3b68d0",
-      "size": 295533
-    },
-    {
-      "contentType": "image/png",
-      "group": "build",
-      "key": "src/content/projects/assets/v12-light.png",
-      "localPath": "src/content/projects/assets/v12-light.png",
-      "sha256": "1382d0436058a94d3e958d64db66f99351103839f7a31b02635e8d84c2c7684b",
-      "size": 313798
-    },
-    {
-      "contentType": "image/png",
-      "group": "build",
-      "key": "src/content/projects/assets/v12.png",
-      "localPath": "src/content/projects/assets/v12.png",
-      "sha256": "7c2da66b925288390edd45e0f3945ed7d135b4a7ec9292b6f04d2cae71fb31d0",
-      "size": 414842
     }
   ]
 }

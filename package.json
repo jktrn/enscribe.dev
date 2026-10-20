@@ -15,6 +15,8 @@
     "dev": "bun run media:prepare && bun run fonts:prepare && bun run linebreak:build && astro dev",
     "build": "bun run media:prepare && bun run fonts:prepare && bun run favicons:check && bun run linebreak:build && astro check && astro build --force && pagefind --site dist",
     "preview": "astro preview",
+    "gallery:edit": "bun scripts/gallery-editor/server.ts",
+    "gallery:cards": "bun scripts/gallery-editor/render-cards.ts",
     "preview:cloudflare": "bun run build && wrangler dev",
     "deploy:cloudflare": "bun run build && wrangler deploy",
     "content:render": "bun run media:prepare:graphics && bun run fonts:prepare:graphics && bun scripts/assets/render.ts",

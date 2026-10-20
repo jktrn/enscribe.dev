@@ -1,24 +1,24 @@
-:root :is(svg, img)[data-theme-dark] {
+:root :is(svg, img, video)[data-theme-dark] {
   display: none;
 }
 
 :root[data-theme="dark"] {
-  :is(svg, img)[data-theme-light] {
+  :is(svg, img, video)[data-theme-light] {
     display: none;
   }
 
-  :is(svg, img)[data-theme-dark] {
+  :is(svg, img, video)[data-theme-dark] {
     display: block;
   }
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme]) {
-    :is(svg, img)[data-theme-light] {
+    :is(svg, img, video)[data-theme-light] {
       display: none;
     }
 
-    :is(svg, img)[data-theme-dark] {
+    :is(svg, img, video)[data-theme-dark] {
       display: block;
     }
   }

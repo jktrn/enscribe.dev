@@ -78,12 +78,12 @@ code[data-code-path] svg {
   font-family: "MD Lorien SC", var(--font-sans);
 }
 
-prose-content a {
+:is(prose-content, gallery-caption) a {
   --underline: var(--muted-foreground);
   color: var(--foreground);
 }
 
-:is(prose-content, sidenote-body) {
+:is(prose-content, sidenote-body, gallery-caption) {
   [data-parenthetical] {
     color: color-mix(in oklab, var(--foreground) 60%, transparent);
   }
