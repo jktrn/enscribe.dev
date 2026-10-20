@@ -29,6 +29,7 @@ import TabGroups from "@/components/TabGroups.astro"
 import ScrollFade from "@/components/ScrollFade.astro"
 import ScrollGuard from "@/components/ScrollGuard.astro"
 import Search from "@/components/Search.astro"
+import Lightbox from "@/components/Lightbox.astro"
 import Footer from "@/components/Footer.astro"
 import MetaHead from "@/components/MetaHead.astro"
 import Sidebar from "@/components/Sidebar.astro"
@@ -73,6 +74,7 @@ const hasToc = Astro.slots.has("toc") && !wide
     <ScrollFade />
     <ScrollGuard />
     <Search />
+    <Lightbox />
   </body>
 </html>
 

@@ -1,5 +1,9 @@
 import { consoleReporter } from "@enscribe/linebreak"
-import { createTypesetter, type Typesetter } from "@enscribe/linebreak/auto"
+import {
+  createTypesetter,
+  proseBlocks,
+  type Typesetter,
+} from "@enscribe/linebreak/auto"
 import { englishHyphenator } from "@enscribe/linebreak/hyphenation"
 import {
   onJustificationChange,
@@ -69,6 +73,16 @@ class ProseJustificationElement extends HTMLElement {
     for (const typesetter of this.#typesetters) typesetter.rescan()
   }
 
+  typesetWithin(root: Element) {
+    if (!justificationEnabled()) return
+    MEASURES.forEach((measure, index) => {
+      const typesetter = this.#typesetters[index]
+      if (!typesetter || !root.matches(measure.roots)) return
+      typesetter.rescan()
+      typesetter.typeset(proseBlocks(root, { skip: SKIP }))
+    })
+  }
+
   disconnectedCallback() {
     this.#listeners?.abort()
     this.#listeners = null
@@ -85,4 +99,9 @@ export const defineProseJustification = () => {
 export const rescanProse = () => {
   const element = document.querySelector("prose-justification")
   if (element instanceof ProseJustificationElement) element.rescan()
+}
+
+export const typesetNow = (root: Element) => {
+  const element = document.querySelector("prose-justification")
+  if (element instanceof ProseJustificationElement) element.typesetWithin(root)
 }
