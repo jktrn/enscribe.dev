@@ -227,6 +227,39 @@ test("scrolling back to a typeset block does not rewrite it", async ({
   expect(rewrites?.mutations).toBe(0)
 })
 
+test("a block edited while typeset is set again when it scrolls back", async ({
+  page,
+}) => {
+  await settleTypeset(page)
+
+  const edited =
+    "Rewritten by the consumer after the paragraph was typeset, long enough to wrap across several lines of the measure so that it has to be broken into lines again by the typesetter."
+  const marked = await page.evaluate((text) => {
+    const block = [
+      ...document.querySelectorAll<HTMLElement>("[data-linebreak-typeset]"),
+    ].find((candidate) => candidate.getBoundingClientRect().top < innerHeight)
+    if (!block) return false
+    block.dataset.edited = ""
+    block.textContent = text
+    return true
+  }, edited)
+  expect(marked).toBe(true)
+
+  await sweepViewport(page)
+
+  const block = await page.evaluate(() => {
+    const element = document.querySelector<HTMLElement>("[data-edited]")
+    return {
+      typeset: element?.hasAttribute("data-linebreak-typeset") ?? false,
+      lines: element?.querySelectorAll(":scope > [data-linebreak-line]").length,
+      letters: (element?.textContent ?? "").replace(/\s+/gu, ""),
+    }
+  })
+  expect(block.typeset).toBe(true)
+  expect(block.lines).toBeGreaterThan(1)
+  expect(block.letters).toBe(edited.replace(/\s+/gu, ""))
+})
+
 test("hiding and showing a block keeps every block typeset", async ({
   page,
 }) => {

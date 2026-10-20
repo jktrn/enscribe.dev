@@ -1,6 +1,5 @@
 import { handleCopy } from "./dom/clipboard"
 import { proseBlocks } from "./dom/discover"
-import { TYPESET_ATTRIBUTE } from "./dom/render"
 import { createLinebreaker } from "./linebreaker"
 import { engineDefaults } from "./policy"
 import type {
@@ -257,7 +256,7 @@ class BrowserTypesetter<Token> implements Typesetter {
       const block = entry.target as HTMLElement
       if (entry.isIntersecting) {
         this.visible.add(block)
-        if (!block.hasAttribute(TYPESET_ATTRIBUTE)) this.queued.add(block)
+        this.queued.add(block)
       } else {
         this.visible.delete(block)
       }

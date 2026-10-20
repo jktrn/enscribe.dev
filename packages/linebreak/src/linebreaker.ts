@@ -151,6 +151,7 @@ class BrowserLinebreaker implements Linebreaker {
 
   private readonly measurements = new WeakMap<HTMLElement, Measurement>()
   private readonly live = new Set<HTMLElement>()
+  private readonly appliedWidths = new WeakMap<HTMLElement, number>()
   private readonly remembered = new Map<
     HTMLElement,
     ComposeReason | FailureReason
@@ -435,6 +436,16 @@ class BrowserLinebreaker implements Linebreaker {
     return composition
   }
 
+  private unchanged(element: HTMLElement, width: number) {
+    const applied = this.appliedWidths.get(element)
+    return (
+      this.live.has(element) &&
+      applied !== undefined &&
+      Math.abs(applied - width) <= engineDefaults.widthEpsilon &&
+      this.measurements.get(element)?.text === authoredText(element)
+    )
+  }
+
   private composeOne(element: HTMLElement): Composition {
     const already = this.remembered.get(element)
     if (already !== undefined) {
@@ -446,6 +457,9 @@ class BrowserLinebreaker implements Linebreaker {
     if (unsupported) return this.settled(element, "declined", unsupported)
 
     const width = contentWidth(element, style)
+    if (this.unchanged(element, width)) {
+      return this.settled(element, "skipped", "already-typeset", width, false)
+    }
     if (width < this.minimumWidth) {
       return this.settled(element, "skipped", "too-narrow", width, false)
     }
@@ -512,6 +526,7 @@ class BrowserLinebreaker implements Linebreaker {
       if (!written) throw new Error("line content could not be rebuilt")
       draft.written = { elements: written, layout }
       this.live.add(element)
+      this.appliedWidths.set(element, draft.width)
       return true
     } catch (cause) {
       this.revert(composition, "render-failed", results, cause)
