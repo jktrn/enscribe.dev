@@ -32,10 +32,16 @@ const videoVariants = lightVideo
 const poster = async (still: ImageMetadata, width: number) =>
   (await getImage({ src: still, width: Math.min(width, still.width) })).src
 
+const startFragment = item.posterTime ? `#t=${item.posterTime}` : ""
+const fromPosterTime = (source: { src: string; type: string }) => ({
+  ...source,
+  src: `${source.src}${startFragment}`,
+})
+
 const videos = await Promise.all(
   videoVariants.map(async ({ files, still, theme }) => ({
-    card: galleryCardVideo(files[0] as string),
-    full: files.map(galleryVideo),
+    card: fromPosterTime(galleryCardVideo(files[0] as string)),
+    full: files.map(galleryVideo).map(fromPosterTime),
     poster: await poster(still, 960),
     fullPoster: await poster(still, 1920),
     width: still.width,

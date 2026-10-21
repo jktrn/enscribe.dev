@@ -764,6 +764,14 @@
     {
       "contentType": "video/webm",
       "group": "build",
+      "key": "src/assets/gallery/card/falensee-day-cycle.webm",
+      "localPath": "src/assets/gallery/card/falensee-day-cycle.webm",
+      "sha256": "5aa695a487b5baceaee1a935069dfa8ebd21e1a2f347cf800b9fc2696a00ea5e",
+      "size": 1537356
+    },
+    {
+      "contentType": "video/webm",
+      "group": "build",
       "key": "src/assets/gallery/card/maltactf-landing-theme-cycle.webm",
       "localPath": "src/assets/gallery/card/maltactf-landing-theme-cycle.webm",
       "sha256": "a724cae5904772adc8e5d7a1de50c879eac64bc8b7f36bec6414fe66febc5fdb",
@@ -774,16 +782,16 @@
       "group": "build",
       "key": "src/assets/gallery/card/osec-landing-dark.webm",
       "localPath": "src/assets/gallery/card/osec-landing-dark.webm",
-      "sha256": "cc75b790a910d113a8ccc34fd2821aa0a2f38e6bdfda317d8acf3d19e92b7e14",
-      "size": 753938
+      "sha256": "cad6810cdeb7f0dc308a135dddb28a380697a1c0e099d533f37383dce99377d0",
+      "size": 690108
     },
     {
       "contentType": "video/webm",
       "group": "build",
       "key": "src/assets/gallery/card/osec-landing-light.webm",
       "localPath": "src/assets/gallery/card/osec-landing-light.webm",
-      "sha256": "1886027adbfc7687dcb10a60bd206c279d8c4da100b71a312c99ca172c7a6c66",
-      "size": 513731
+      "sha256": "23c6e3630cf741f598a142ef5c15a79dcb87ed452a8fbbe6e916a39c9161447f",
+      "size": 482949
     },
     {
       "contentType": "video/webm",
@@ -848,6 +856,22 @@
       "localPath": "src/assets/gallery/evmbench-reentrancy-light.webp",
       "sha256": "1362115a669ac017a3b98b977a7af719e67a0840cc0b7025134f389355ae2833",
       "size": 204910
+    },
+    {
+      "contentType": "video/webm",
+      "group": "build",
+      "key": "src/assets/gallery/falensee-day-cycle.webm",
+      "localPath": "src/assets/gallery/falensee-day-cycle.webm",
+      "sha256": "bd936cb1903609b9cbb1987a94d02b9e9ec268a36b925e8a92af9f0e23bb58ad",
+      "size": 2837079
+    },
+    {
+      "contentType": "image/webp",
+      "group": "build",
+      "key": "src/assets/gallery/falensee-day-cycle.webp",
+      "localPath": "src/assets/gallery/falensee-day-cycle.webp",
+      "sha256": "54f6cb0f50d13520de8b314bc5e1ccc3e9c9e5d9d7a516acf330ed5159129352",
+      "size": 88508
     },
     {
       "contentType": "image/webp",
@@ -942,32 +966,32 @@
       "group": "build",
       "key": "src/assets/gallery/osec-landing-dark.webm",
       "localPath": "src/assets/gallery/osec-landing-dark.webm",
-      "sha256": "3f1437131b9c6a42136993d6676bc9026979b5a30fbfe3fd0607c154bab96e0a",
-      "size": 3306170
+      "sha256": "737812bfd748574f426d7f0d98eab5f08e417455483442081d09a02f8063b376",
+      "size": 5925086
     },
     {
       "contentType": "image/webp",
       "group": "build",
       "key": "src/assets/gallery/osec-landing-dark.webp",
       "localPath": "src/assets/gallery/osec-landing-dark.webp",
-      "sha256": "63323c46e97cee6fe4a08298913b4ef5683c76f8b789b97113c9460a8b4349fb",
-      "size": 163432
+      "sha256": "38c245f9082dec3413d3971f8e8d47c98b77f8741ad2bacb6df42d5cf2ee794e",
+      "size": 123894
     },
     {
       "contentType": "video/webm",
       "group": "build",
       "key": "src/assets/gallery/osec-landing-light.webm",
       "localPath": "src/assets/gallery/osec-landing-light.webm",
-      "sha256": "f3a938585bb10a167a09f4d711e59cbedadcd7fde54f7cfffe82adc6bc3b2039",
-      "size": 2218247
+      "sha256": "00d3510e632ef3f87dc9dfbc71b65daf759b9278dc08f9e0be61a3bc9c52e0be",
+      "size": 5493356
     },
     {
       "contentType": "image/webp",
       "group": "build",
       "key": "src/assets/gallery/osec-landing-light.webp",
       "localPath": "src/assets/gallery/osec-landing-light.webp",
-      "sha256": "0c08b94332633109e0e78aa880cb0ad36fe7de4d169aad8b1739f49522ec3f4b",
-      "size": 108136
+      "sha256": "4d9f1da8e102a229215267e6e4213b8e44c6ff33e2b9cbe1c89f0499cbc8c5df",
+      "size": 92200
     },
     {
       "contentType": "image/webp",
@@ -1078,8 +1102,8 @@
       "group": "build",
       "key": "src/assets/gallery/v12-landing-dark.webp",
       "localPath": "src/assets/gallery/v12-landing-dark.webp",
-      "sha256": "aa551eeb67094e32ce315e9d94563c87eacd6600c271e695860e97897f731347",
-      "size": 37594
+      "sha256": "b5f3367f94736b412d3df15921f88d22a1cff395b64d2fe0f0b03b754fe033ea",
+      "size": 77038
     },
     {
       "contentType": "video/webm",
@@ -1094,8 +1118,8 @@
       "group": "build",
       "key": "src/assets/gallery/v12-landing-light.webp",
       "localPath": "src/assets/gallery/v12-landing-light.webp",
-      "sha256": "212bafc42b10563d77d2c3e5dba052f38034de55bedfc7f949b48ee1fdd7dfcc",
-      "size": 38300
+      "sha256": "36c374b793c0c61d46087aaac1da19799c4d034403cea46c5e27f9ad9eaedb43",
+      "size": 82256
     },
     {
       "contentType": "image/webp",

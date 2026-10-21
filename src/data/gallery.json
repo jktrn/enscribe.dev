@@ -25,8 +25,21 @@
     "link": "https://2025.ctf.mt"
   },
   {
+    "image": "falensee-day-cycle.webp",
+    "video": ["falensee-day-cycle.webm"],
+    "caption": "Inspired by Hiroshi Yoshida's [time-of-day prints](https://en.wikipedia.org/wiki/Hiroshi_Yoshida#Artistic_style), I made a 24-hour pixel-art timelapse of [Fälensee](https://en.wikipedia.org/wiki/F%C3%A4lensee), a lake in eastern Switzerland. The composition was built and rendered entirely in Godot.",
+    "project": "(misc.)",
+    "year": 2026
+  },
+  {
     "image": "home-office.webp",
     "caption": "A picture of my home office. To emphasize function, I use a [Skådis](https://www.ikea.com/us/en/p/skadis-pegboard-white-10321618/) pegboard to hang high-use items, and have desk-mounted my monitor for more real estate. To emphasize personality, I use corkboard to showcase memorabilia, and the color complements the rubberwood finish I chose for my sit-stand desk. My MFF PC case has bamboo slits on its front panel to also support the natural warm palette.",
+    "project": "(misc.)",
+    "year": 2026
+  },
+  {
+    "image": "ottersec-player-cards.webp",
+    "caption": "As part of OtterSec’s CTF sponsorship program, I worked with [@uarfun](https://twitter.com/uarfun) to design collectible player cards for the teams we support. Players received bespoke pixel art based on their avatars, then chose two special abilities and their social links, plus a card color matching their main CTF category.",
     "project": "(misc.)",
     "year": 2026
   },
@@ -35,16 +48,11 @@
     "imageDark": "v12-landing-dark.webp",
     "video": ["v12-landing-light.webm"],
     "videoDark": ["v12-landing-dark.webm"],
+    "posterTime": 5.1,
     "caption": "The landing I built for V12, an autonomous hacker/security review engine developed by the founders of [Zellic](https://zellic.io). I placed heavy emphasis on showcasing product functionality and took great care in its microanimations.",
     "project": "V12",
     "year": 2026,
     "link": "https://v12.sh"
-  },
-  {
-    "image": "ottersec-player-cards.webp",
-    "caption": "As part of OtterSec’s CTF sponsorship program, I worked with [@uarfun](https://twitter.com/uarfun) to design collectible player cards for the teams we support. Players received bespoke pixel art based on their avatars, then chose two special abilities and their social links, plus a card color matching their main CTF category.",
-    "project": "(misc.)",
-    "year": 2026
   },
   {
     "image": "maltactf-venue-print.webp",
@@ -74,6 +82,7 @@
     "imageDark": "osec-landing-dark.webp",
     "video": ["osec-landing-light.webm"],
     "videoDark": ["osec-landing-dark.webm"],
+    "posterTime": 3.3,
     "caption": "The landing I built for OtterSec, a leading blockchain security auditing firm. The hero section uses a no-dependency, vanilla JS shader.",
     "project": "osec.io",
     "year": 2026,
@@ -149,6 +158,14 @@
     "year": 2026
   },
   {
+    "image": "anchor-v2-logo-docs-light.webp",
+    "imageDark": "anchor-v2-logo-docs-dark.webp",
+    "caption": "I made the logo and docs site for Anchor v2, the leading Rust-based development framework for building secure smart contracts.",
+    "project": "Anchor",
+    "year": 2026,
+    "link": "https://v2.anchor-lang.com"
+  },
+  {
     "image": "japan-retrospective-graphics-light.webp",
     "imageDark": "japan-retrospective-graphics-dark.webp",
     "caption": "Graphics and maps I made for \"[A Retrospective on 14 Nights in Japan](/blog/japan-retrospective)\". The maps represent transit routes and were hand-drawn over screenshots of [Catenary Maps](https://maps.catenarymaps.org).",
@@ -160,13 +177,5 @@
     "caption": "An assortment of merchandise I've made. In clockwise order, we have:<br>\n(1) An \"ACCC\" parody tee (for more context, see [\"Smart Eyes, Stupid Hands\"](https://enscribe.dev/blog/smart-eyes-stupid-hands/)).<br>\n(2) A \"CTF Iceberg\" tee I made for LakeCTF, containing many cultural references and inside jokes.<br>\n(3) An \"Otter University\" collegiate hoodie, a gift for the end of our summer internship program. It has a custom embroidered emblem/crest.<br>\n(4) A gag tee parodying Abbey Road for Breakpoint London 2026.",
     "project": "(misc.)",
     "year": 2026
-  },
-  {
-    "image": "anchor-v2-logo-docs-light.webp",
-    "imageDark": "anchor-v2-logo-docs-dark.webp",
-    "caption": "I made the logo and docs site for Anchor v2, the leading Rust-based development framework for building secure smart contracts.",
-    "project": "Anchor",
-    "year": 2026,
-    "link": "https://v2.anchor-lang.com"
   }
 ]

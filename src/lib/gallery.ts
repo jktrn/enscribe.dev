@@ -6,6 +6,7 @@ export type GalleryItem = {
   imageDark?: string
   video?: string[]
   videoDark?: string[]
+  posterTime?: number
   caption: string
   project: string
   year: number
