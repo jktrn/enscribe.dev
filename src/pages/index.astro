@@ -392,7 +392,7 @@ const twitterHref =
     display: grid;
     gap: var(--bento-gap);
     grid-template-columns: minmax(0, 1fr);
-    grid-template-areas: "a" "b" "e" "d" "g" "f" "j" "i" "k";
+    grid-template-areas: "a" "b" "e" "d" "g" "f" "j" "h" "i" "k";
 
     @media (width < 30rem) {
       bento-cell {
@@ -412,8 +412,7 @@ const twitterHref =
         aspect-ratio: 6 / 5;
       }
 
-      bento-cell:nth-of-type(3),
-      bento-cell:nth-of-type(8) {
+      bento-cell:nth-of-type(3) {
         display: none;
       }
     }
