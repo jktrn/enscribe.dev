@@ -772,6 +772,14 @@
     {
       "contentType": "video/webm",
       "group": "build",
+      "key": "src/assets/gallery/card/glint-rival-highlight.webm",
+      "localPath": "src/assets/gallery/card/glint-rival-highlight.webm",
+      "sha256": "60be990f94d97f3b02b6df2bcd02471e249e1abe9a624e84d7eea5b4af3862af",
+      "size": 6504672
+    },
+    {
+      "contentType": "video/webm",
+      "group": "build",
       "key": "src/assets/gallery/card/maltactf-landing-theme-cycle.webm",
       "localPath": "src/assets/gallery/card/maltactf-landing-theme-cycle.webm",
       "sha256": "a724cae5904772adc8e5d7a1de50c879eac64bc8b7f36bec6414fe66febc5fdb",
@@ -872,6 +880,22 @@
       "localPath": "src/assets/gallery/falensee-day-cycle.webp",
       "sha256": "54f6cb0f50d13520de8b314bc5e1ccc3e9c9e5d9d7a516acf330ed5159129352",
       "size": 88508
+    },
+    {
+      "contentType": "video/webm",
+      "group": "build",
+      "key": "src/assets/gallery/glint-rival-highlight.webm",
+      "localPath": "src/assets/gallery/glint-rival-highlight.webm",
+      "sha256": "c20cd01c24ce1aeb8c1ee62bdaf989d2bb015a1ac0e17a1cba4e51bf93395556",
+      "size": 9688960
+    },
+    {
+      "contentType": "image/webp",
+      "group": "build",
+      "key": "src/assets/gallery/glint-rival-highlight.webp",
+      "localPath": "src/assets/gallery/glint-rival-highlight.webp",
+      "sha256": "3ab844455fe9a7461920a4497e0c1accb3fadcbf284b55af2b53df147966c98c",
+      "size": 177264
     },
     {
       "contentType": "image/webp",

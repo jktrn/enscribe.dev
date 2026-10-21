@@ -1,0 +1,272 @@
+[
+  {
+    "name": "TypeScript",
+    "human": 750.9,
+    "agent": 396.1
+  },
+  {
+    "name": "TeX",
+    "human": 700.8,
+    "agent": 3.4
+  },
+  {
+    "name": "Markdown",
+    "human": 287.8,
+    "agent": 251.3
+  },
+  {
+    "name": "MDX",
+    "human": 255.9,
+    "agent": 30.9
+  },
+  {
+    "name": "Astro",
+    "human": 251.8,
+    "agent": 189.2
+  },
+  {
+    "name": "Python",
+    "human": 155.6,
+    "agent": 57.5
+  },
+  {
+    "name": "JavaScript",
+    "human": 130.6,
+    "agent": 13.6
+  },
+  {
+    "name": "Svelte",
+    "human": 128.7,
+    "agent": 139
+  },
+  {
+    "name": "Image (svg)",
+    "human": 120.8,
+    "agent": 42.8
+  },
+  {
+    "name": "CSS",
+    "human": 71.2,
+    "agent": 60.8
+  },
+  {
+    "name": "Jupyter Notebook",
+    "human": 60.7,
+    "agent": 0
+  },
+  {
+    "name": "SCSS",
+    "human": 52.3,
+    "agent": 0.5
+  },
+  {
+    "name": "C#",
+    "human": 34.8,
+    "agent": 0
+  },
+  {
+    "name": "Text",
+    "human": 31.6,
+    "agent": 8.3
+  },
+  {
+    "name": "Typst",
+    "human": 31.1,
+    "agent": 33.4
+  },
+  {
+    "name": "HTML",
+    "human": 24.7,
+    "agent": 21.2
+  },
+  {
+    "name": "Dart",
+    "human": 14.9,
+    "agent": 0
+  },
+  {
+    "name": "JSON",
+    "human": 13.9,
+    "agent": 19.4
+  },
+  {
+    "name": "EJS",
+    "human": 9.7,
+    "agent": 0
+  },
+  {
+    "name": "Bash",
+    "human": 9.1,
+    "agent": 3.6
+  },
+  {
+    "name": "CSV",
+    "human": 6.1,
+    "agent": 0
+  },
+  {
+    "name": "YAML",
+    "human": 4.7,
+    "agent": 2.2
+  },
+  {
+    "name": "Stylus",
+    "human": 3.7,
+    "agent": 0
+  },
+  {
+    "name": "Groovy",
+    "human": 2.5,
+    "agent": 0
+  },
+  {
+    "name": "TSConfig",
+    "human": 2.3,
+    "agent": 0.3
+  },
+  {
+    "name": "Lua",
+    "human": 1.2,
+    "agent": 15.3
+  },
+  {
+    "name": "SQL",
+    "human": 2.1,
+    "agent": 0
+  },
+  {
+    "name": "Java",
+    "human": 1.8,
+    "agent": 0
+  },
+  {
+    "name": "Io",
+    "human": 1.6,
+    "agent": 1.8
+  },
+  {
+    "name": "XML",
+    "human": 1.3,
+    "agent": 0.5
+  },
+  {
+    "name": "C++",
+    "human": 1.2,
+    "agent": 0
+  },
+  {
+    "name": "jsonc",
+    "human": 0.1,
+    "agent": 0.4
+  },
+  {
+    "name": "shell script",
+    "human": 0,
+    "agent": 0.5
+  },
+  {
+    "name": "Vue.js",
+    "human": 1,
+    "agent": 0
+  },
+  {
+    "name": "Vue",
+    "human": 0,
+    "agent": 0.8
+  },
+  {
+    "name": "Solidity",
+    "human": 0,
+    "agent": 0.2
+  },
+  {
+    "name": "SSH Config",
+    "human": 0,
+    "agent": 0.1
+  },
+  {
+    "name": "GDShader",
+    "human": 0,
+    "agent": 0.9
+  },
+  {
+    "name": "GDScript3",
+    "human": 0,
+    "agent": 2
+  },
+  {
+    "name": "Diff",
+    "human": 0,
+    "agent": 0.3
+  },
+  {
+    "name": "Git Config",
+    "human": 0.9,
+    "agent": 1.5
+  },
+  {
+    "name": "Docker",
+    "human": 0.7,
+    "agent": 0
+  },
+  {
+    "name": "Rust",
+    "human": 0.5,
+    "agent": 3.8
+  },
+  {
+    "name": "C",
+    "human": 0.4,
+    "agent": 2.8
+  },
+  {
+    "name": "TOML",
+    "human": 0.3,
+    "agent": 0
+  },
+  {
+    "name": "RMarkdown",
+    "human": 0.3,
+    "agent": 0
+  },
+  {
+    "name": "Objective-C",
+    "human": 0.1,
+    "agent": 0
+  },
+  {
+    "name": "Git",
+    "human": 0.1,
+    "agent": 0
+  },
+  {
+    "name": "OpenEdge ABL",
+    "human": 0,
+    "agent": 0
+  },
+  {
+    "name": "Makefile",
+    "human": 0,
+    "agent": 0
+  },
+  {
+    "name": "INI",
+    "human": 0,
+    "agent": 0
+  },
+  {
+    "name": "BibTeX",
+    "human": 0,
+    "agent": 0
+  },
+  {
+    "name": "Batchfile",
+    "human": 0,
+    "agent": 0
+  },
+  {
+    "name": "Assembly",
+    "human": 0,
+    "agent": 0.5
+  }
+]

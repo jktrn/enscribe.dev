@@ -32,6 +32,13 @@
     "year": 2026
   },
   {
+    "image": "glint-rival-highlight.webp",
+    "video": ["glint-rival-highlight.webm"],
+    "caption": "A highlight reel of a boss encounter in my isometric pixel-art [Soulslike](https://en.wikipedia.org/wiki/Soulslike), adapted from the deflect-and-posture system of [Sekiro](https://en.wikipedia.org/wiki/Sekiro:_Shadows_Die_Twice). Combat is structured as an exchange of initiative; the boss commits to fixed, telegraphed attack strings, and a successful deflect shifts initiative to the defender, signalled by distinct audiovisual cueing.",
+    "project": "(misc.)",
+    "year": 2026
+  },
+  {
     "image": "home-office.webp",
     "caption": "A picture of my home office. To emphasize function, I use a [Skådis](https://www.ikea.com/us/en/p/skadis-pegboard-white-10321618/) pegboard to hang high-use items, and have desk-mounted my monitor for more real estate. To emphasize personality, I use corkboard to showcase memorabilia, and the color complements the rubberwood finish I chose for my sit-stand desk. My MFF PC case has bamboo slits on its front panel to also support the natural warm palette.",
     "project": "(misc.)",
