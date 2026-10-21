@@ -83,7 +83,7 @@ code[data-code-path] svg {
   color: var(--foreground);
 }
 
-:is(prose-content, sidenote-body, gallery-caption) {
+:is(prose-content, sidenote-body, gallery-caption, gallery-meta) {
   [data-parenthetical] {
     color: color-mix(in oklab, var(--foreground) 60%, transparent);
   }

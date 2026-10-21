@@ -23,5 +23,15 @@ generic external-link icon.
 ## Sources
 
 - `phosphor-*.svg`: Phosphor Icons 2.1.1 Fill (MIT)
-- `simple-*.svg`: Simple Icons 16.26.0 (CC0-1.0; marks belong to their owners)
-- `custom-*.svg`: project-specific or user-supplied assets
+- `simple-*.svg`: Simple Icons 16.26.0 (CC0-1.0; marks belong to their owners),
+  except `simple-openai.svg`, which comes from Simple Icons 13.21.0 because
+  later releases removed it
+- `custom-*.svg`: project-specific or user-supplied assets.
+  `custom-enscribe.svg` is this site's favicon face as one colour, with the
+  features knocked out. The company marks are each site's own icon, flattened
+  to one colour: `custom-zellic.svg`
+  (zellic.io favicon), `custom-v12.svg` (v12.sh favicon, letters knocked out
+  of the square), `custom-hacktron.svg` (the logomark from the hacktron.ai
+  header logo), `custom-verialabs.svg` (the verialabs.com sidebar logo), and
+  `custom-maltactf.svg` (the 2025.ctf.mt pixel-art favicon, redrawn as one
+  colour on its 21×21 grid)

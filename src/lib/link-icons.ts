@@ -5,6 +5,9 @@ export const DEFAULT_LINK_ICON = "custom-external-link.svg"
 
 const LINK_ICONS_BY_DOMAIN: Record<string, string> = {
   "bandcamp.com": "simple-bandcamp.svg",
+  "ctf.mt": "custom-maltactf.svg",
+  "osec.io": "custom-ottersec.svg",
+  "sekai.team": "custom-sekai.svg",
 }
 
 const LINK_ICONS_BY_HOST: Record<string, string> = {
@@ -17,26 +20,32 @@ const LINK_ICONS_BY_HOST: Record<string, string> = {
   "developer.mozilla.org": "simple-mdnwebdocs.svg",
   "docs.unity3d.com": "simple-unity.svg",
   "en.wikipedia.org": "simple-wikipedia.svg",
+  "enscribe.dev": "custom-enscribe.svg",
+  "ethereum.foundation": "simple-ethereum.svg",
   "figma.com": "phosphor-figma-logo.svg",
   "geohints.com": "phosphor-map-pin.svg",
   "github.com": "phosphor-github-logo.svg",
   "google.com": "custom-google-logo.svg",
+  "hacktron.ai": "custom-hacktron.svg",
   "instagram.com": "phosphor-instagram-logo.svg",
   "japan-guide.com": "phosphor-map-trifold.svg",
   "jestjs.io": "simple-jest.svg",
   "lens.google": "simple-googlelens.svg",
-  "osec.io": "custom-ottersec.svg",
+  "openai.com": "simple-openai.svg",
   "reddit.com": "phosphor-reddit-logo.svg",
-  "sekai.team": "custom-sekai.svg",
   "softwareengineering.stackexchange.com": "simple-stackexchange.svg",
+  "solana.org": "simple-solana.svg",
   "somerandomstuff1.wordpress.com": "simple-wordpress.svg",
   "tabelog.com": "phosphor-fork-knife.svg",
   "twitter.com": "phosphor-twitter-logo.svg",
+  "v12.sh": "custom-v12.svg",
+  "verialabs.com": "custom-verialabs.svg",
   "web.archive.org": "simple-internetarchive.svg",
   "youtube.com": "phosphor-youtube-logo.svg",
+  "zellic.io": "custom-zellic.svg",
 }
 
-const normalizeHost = (host: string) =>
+export const normalizeHost = (host: string) =>
   host
     .trim()
     .toLowerCase()
