@@ -34,6 +34,7 @@
   {
     "image": "glint-rival-highlight.webp",
     "video": ["glint-rival-highlight.webm"],
+    "posterTime": 2.71,
     "caption": "A highlight reel of a boss encounter in my isometric pixel-art [Soulslike](https://en.wikipedia.org/wiki/Soulslike), adapted from the deflect-and-posture system of [Sekiro](https://en.wikipedia.org/wiki/Sekiro:_Shadows_Die_Twice). Combat is structured as an exchange of initiative; the boss commits to fixed, telegraphed attack strings, and a successful deflect shifts initiative to the defender, signalled by distinct audiovisual cueing.",
     "project": "(misc.)",
     "year": 2026
