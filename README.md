@@ -1,6 +1,6 @@
 <div align="center">
 
-<picture><source media="(prefers-color-scheme: dark)" srcset="public/static/preview-1-dark.png" /><img alt="enscribe.dev preview" src="public/static/preview-1-light.png" /></picture>
+<picture><source media="(prefers-color-scheme: dark)" srcset="public/static/preview-1-dark.webp" /><img alt="enscribe.dev preview" src="public/static/preview-1-light.webp" /></picture>
 
 ![Stargazers]
 [![Code License]](LICENSE.md)
@@ -25,9 +25,9 @@ You are not allowed to copy this website&rsquo;s source code as your own. Please
 
 ---
 
-| <picture><source media="(prefers-color-scheme: dark)" srcset="public/static/preview-2-dark.png" /><img alt="Preview 2" src="public/static/preview-2-light.png" /></picture> | <picture><source media="(prefers-color-scheme: dark)" srcset="public/static/preview-3-dark.png" /><img alt="Preview 3" src="public/static/preview-3-light.png" /></picture> |
+| <picture><source media="(prefers-color-scheme: dark)" srcset="public/static/preview-2-dark.webp" /><img alt="Preview 2" src="public/static/preview-2-light.webp" /></picture> | <picture><source media="(prefers-color-scheme: dark)" srcset="public/static/preview-3-dark.webp" /><img alt="Preview 3" src="public/static/preview-3-light.webp" /></picture> |
 | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| <picture><source media="(prefers-color-scheme: dark)" srcset="public/static/preview-4-dark.png" /><img alt="Preview 4" src="public/static/preview-4-light.png" /></picture> | <picture><source media="(prefers-color-scheme: dark)" srcset="public/static/preview-5-dark.png" /><img alt="Preview 5" src="public/static/preview-5-light.png" /></picture> |
+| <picture><source media="(prefers-color-scheme: dark)" srcset="public/static/preview-4-dark.webp" /><img alt="Preview 4" src="public/static/preview-4-light.webp" /></picture> | <picture><source media="(prefers-color-scheme: dark)" srcset="public/static/preview-5-dark.webp" /><img alt="Preview 5" src="public/static/preview-5-light.webp" /></picture> |
 
 ---
 
