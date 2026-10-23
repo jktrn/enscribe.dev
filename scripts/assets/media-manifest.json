@@ -766,8 +766,8 @@
       "group": "build",
       "key": "src/assets/gallery/card/falensee-day-cycle.webm",
       "localPath": "src/assets/gallery/card/falensee-day-cycle.webm",
-      "sha256": "5aa695a487b5baceaee1a935069dfa8ebd21e1a2f347cf800b9fc2696a00ea5e",
-      "size": 1537356
+      "sha256": "eae653d2c8867850fbc008d286033a80ef7acbfdcd393e9a0cc0c928ab48edec",
+      "size": 1471672
     },
     {
       "contentType": "video/webm",
@@ -870,16 +870,16 @@
       "group": "build",
       "key": "src/assets/gallery/falensee-day-cycle.webm",
       "localPath": "src/assets/gallery/falensee-day-cycle.webm",
-      "sha256": "bd936cb1903609b9cbb1987a94d02b9e9ec268a36b925e8a92af9f0e23bb58ad",
-      "size": 2837079
+      "sha256": "3e76fc3dee31b441b585a1573e658ae89a95d01fa8e5bb3797e9b10ac6385c82",
+      "size": 2757372
     },
     {
       "contentType": "image/webp",
       "group": "build",
       "key": "src/assets/gallery/falensee-day-cycle.webp",
       "localPath": "src/assets/gallery/falensee-day-cycle.webp",
-      "sha256": "54f6cb0f50d13520de8b314bc5e1ccc3e9c9e5d9d7a516acf330ed5159129352",
-      "size": 88508
+      "sha256": "ecb690cd568ec186efefa8c96be5f29b58081281e602561b85db57f5308af1f3",
+      "size": 74806
     },
     {
       "contentType": "video/webm",
