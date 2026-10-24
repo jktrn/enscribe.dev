@@ -37,22 +37,16 @@ describe("inline link favicons", () => {
       /W<span[^>]+data-favicon-glue="">ikipedia<span[^>]+data-favicon/,
     )
     expect(textLink).toContain('data-favicon-position="after"')
-    expect(textLink).toContain('data-linebreak-atom=""')
-    expect(textLink).toContain('data-linebreak-decoration=""')
   })
 
-  test("decorates trailing inline markup instead of atomizing it", async () => {
+  test("puts the icon inside trailing inline markup", async () => {
     const emphasizedLink = await render(
       "[*Wikipedia*](https://en.wikipedia.org)",
     )
 
     expect(emphasizedLink).not.toContain("data-favicon-glue")
-    expect(emphasizedLink).not.toContain("data-linebreak-atom")
     expect(emphasizedLink).toMatch(
       /<em>Wikipedia<span[^>]+data-favicon[^>]*><\/span><\/em>/,
-    )
-    expect(emphasizedLink).toContain(
-      'data-linebreak-decoration-position="after"',
     )
   })
 

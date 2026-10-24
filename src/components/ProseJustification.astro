@@ -1,8 +1,28 @@
----
-import "@enscribe/linebreak/styles.css"
----
-
 <prose-justification hidden></prose-justification>
+
+<style is:global>
+  :root[data-js]:not([data-text-justification="ragged"]) [data-prose-root] {
+    text-align: justify;
+  }
+
+  :where([data-prose-root])
+    :where(
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6,
+      summary,
+      pre,
+      table,
+      math,
+      .expressive-code,
+      [data-prose-skip]
+    ) {
+    text-align: start;
+  }
+</style>
 
 <script>
   import { defineProseJustification } from "@/lib/typography/prose-justification"
