@@ -35,6 +35,8 @@ class ProseJustificationElement extends HTMLElement {
         }
       })
     }, signal)
+    addEventListener("beforeprint", () => this.#stop(), { signal })
+    addEventListener("afterprint", () => this.rescan(), { signal })
 
     if (justificationEnabled()) this.#relayout(() => this.#start())
   }
