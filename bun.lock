@@ -16,6 +16,7 @@
         "hast-util-select": "^6.0.4",
         "hast-util-to-html": "^9.0.5",
         "hastscript": "^9.0.1",
+        "linaire": "workspace:*",
         "maplibre-gl": "^6.3.0",
         "satteri": "^0.10.5",
         "satteri-expressive-code": "^0.1.24",
@@ -33,6 +34,10 @@
         "typescript": "6.0.3",
         "wrangler": "^4.114.0",
       },
+    },
+    "packages/linaire": {
+      "name": "linaire",
+      "version": "0.2.0",
     },
     "packages/linebreak": {
       "name": "@enscribe/linebreak",
@@ -980,6 +985,8 @@
     "lightningcss-win32-arm64-msvc": ["lightningcss-win32-arm64-msvc@1.33.0", "", { "os": "win32", "cpu": "arm64" }, "sha512-1K+MPfLSFVpphzpdbfkhlWk6wBrTObBzS2T6db10PNOZgR9GoVsAWzwNyuhUYYbTp23j+4RrncfujZ4uAzXvwA=="],
 
     "lightningcss-win32-x64-msvc": ["lightningcss-win32-x64-msvc@1.33.0", "", { "os": "win32", "cpu": "x64" }, "sha512-OlEICDx/Xl0FqSp4bry8zFnCvGpig3Gl4gCquvYwHuqJKEC1+n9NgDniFvqHGmMv1ZkqDJrDqKKSykTDX+ehuA=="],
+
+    "linaire": ["linaire@workspace:packages/linaire"],
 
     "locate-character": ["locate-character@3.0.0", "", {}, "sha512-SW13ws7BjaeJ6p7Q6CO2nchbYEc3X3J6WrmTTDto7yMPqVSZTUyY5Tjbid+Ab8gLnATtygYtiDIJGQRRn2ZOiA=="],
 

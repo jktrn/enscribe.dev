@@ -1,0 +1,9 @@
+export declare const license = "title: Hyphenation patterns for Norwegian\ncopyright: Copyright (C) 2004, 2005 Rune Kleveland, Ole Michael Selberg\nnotice: This file is part of the hyph-utf8 package.\n    See http://www.hyphenation.org/tex for more information.\nlanguage:\n    name: Norwegian, norsk\n    tag: \"no\"\nversion: 2012-05-18\n    Patterns of January 25, 2005, with later additions and changes\nauthors:\n    - name: Rune Kleveland\n    - name: Ole Michael Selberg\nlicence:\n    - text: >\n        Copying and distribution of this file, with or without modification,\n        is permitted in any medium without royalty provided the copyright\n        notice and this notice are preserved.\nhyphenmins:\n    typesetting:\n        left: 2\n        right: 2\ntexlive:\n    use_old_loader: true\n    message: Norwegian hyphenation patterns\n\ntitle: Hyphenation patterns for Norwegian, nynorsk\ncopyright: Copyright (C) 2007 Karl Ove Hufthammer\nnotice: This file is part of the hyph-utf8 package.\n    See http://www.hyphenation.org/tex for more information.\nlanguage:\n    name: Norwegian Nynorsk, nynorsk\n    tag: nn\nauthors:\n    - name: Karl Ove Hufthammer\n    - name: Rune Kleveland\n    - name: Ole Michael Selberg\nversion: 2007-02-10\nlicence:\n    text: >\n        Copying and distribution of this file, with or without modification,\n        are permitted in any medium without royalty, provided the copyright\n        notice and this notice are preserved.\nhyphenmins:\n    typesetting:\n        left: 2\n        right: 2\ntexlive:\n    encoding: ec\n    babelname: nynorsk\n    message: Norwegian Nynorsk hyphenation patterns\n    package: norwegian";
+export declare const data: {
+    leftmin: number;
+    rightmin: number;
+    patterns: string;
+    exceptions: string;
+};
+declare const _default: import("../../types.ts").WordHyphenator;
+export default _default;
