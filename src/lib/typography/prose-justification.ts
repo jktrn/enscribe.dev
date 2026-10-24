@@ -1,92 +1,89 @@
-import { consoleReporter } from "@enscribe/linebreak"
-import {
-  createTypesetter,
-  proseBlocks,
-  type Typesetter,
-} from "@enscribe/linebreak/auto"
-import { englishHyphenator } from "@enscribe/linebreak/hyphenation"
+import { type Controller, justify } from "linaire"
+import en from "linaire/hyphenate/en-us"
 import {
   onJustificationChange,
   onReaderModeChange,
 } from "@/lib/typography/preference-events"
 import {
   captureReadingAnchor,
-  type ReadingAnchor,
   restoreReadingAnchor,
 } from "@/lib/typography/scroll-anchor"
 
-const SKIP = ".expressive-code, h1, h2, h3, h4, h5, h6, summary"
+const ROOTS = "[data-prose-root]"
 
-const MEASURES = [
-  {
-    roots: "[data-linebreak-root]:not([data-linebreak-narrow])",
-    minimumWidth: 240,
-  },
-  {
-    roots: "[data-linebreak-root][data-linebreak-narrow]",
-    minimumWidth: 200,
-    policy: { tolerance: 400 },
-  },
-]
+const WIDE = { hyphenate: en }
+const NARROW = { hyphenate: en, tolerance: 400 }
 
 const justificationEnabled = () =>
   document.documentElement.dataset.textJustification !== "ragged"
 
 class ProseJustificationElement extends HTMLElement {
-  #typesetters: Typesetter[] = []
+  #controllers = new Map<Element, Controller>()
   #listeners: AbortController | null = null
 
   connectedCallback() {
     this.#listeners = new AbortController()
     const { signal } = this.#listeners
 
-    this.#typesetters = MEASURES.map((measure) =>
-      createTypesetter<ReadingAnchor | null>({
-        ...measure,
-        skip: SKIP,
-        hyphenate: englishHyphenator,
-        track: true,
-        preserveImageAttributes: ["data-loaded"],
-        beforeWrite: captureReadingAnchor,
-        afterWrite: restoreReadingAnchor,
-        onOutcome: import.meta.env.DEV ? consoleReporter() : undefined,
-        signal,
-      }),
-    )
-
     onJustificationChange((enabled) => {
-      for (const typesetter of this.#typesetters) {
-        if (enabled) void typesetter.start()
-        else typesetter.stop()
-      }
+      this.#relayout(() => (enabled ? this.#start() : this.#stop()))
     }, signal)
     onReaderModeChange(() => {
-      for (const typesetter of this.#typesetters) typesetter.refresh()
+      this.#relayout(() => {
+        for (const controller of this.#controllers.values()) {
+          controller.refresh()
+        }
+      })
     }, signal)
+    addEventListener("beforeprint", () => this.#stop(), { signal })
+    addEventListener("afterprint", () => this.rescan(), { signal })
 
-    if (justificationEnabled()) {
-      for (const typesetter of this.#typesetters) void typesetter.start()
-    }
+    if (justificationEnabled()) this.#relayout(() => this.#start())
   }
 
   rescan() {
-    for (const typesetter of this.#typesetters) typesetter.rescan()
+    if (!justificationEnabled()) return
+    this.#relayout(() => {
+      this.#stop()
+      this.#start()
+    })
+  }
+
+  restore() {
+    this.#relayout(() => this.#stop())
   }
 
   typesetWithin(root: Element) {
-    if (!justificationEnabled()) return
-    MEASURES.forEach((measure, index) => {
-      const typesetter = this.#typesetters[index]
-      if (!typesetter || !root.matches(measure.roots)) return
-      typesetter.rescan()
-      typesetter.typeset(proseBlocks(root, { skip: SKIP }))
-    })
+    if (!justificationEnabled() || !root.matches(ROOTS)) return
+    this.#relayout(() => this.#justify(root))
   }
 
   disconnectedCallback() {
     this.#listeners?.abort()
     this.#listeners = null
-    this.#typesetters = []
+    this.#stop()
+  }
+
+  #start() {
+    for (const root of document.querySelectorAll(ROOTS)) this.#justify(root)
+  }
+
+  #stop() {
+    for (const controller of this.#controllers.values()) controller.destroy()
+    this.#controllers.clear()
+  }
+
+  #justify(root: Element) {
+    this.#controllers.get(root)?.destroy()
+    const options = root.hasAttribute("data-prose-narrow") ? NARROW : WIDE
+    this.#controllers.set(root, justify(root, options))
+  }
+
+  #relayout(change: () => void) {
+    const anchor = captureReadingAnchor()
+    change()
+    const settled = [...this.#controllers.values()].map(({ ready }) => ready)
+    void Promise.all(settled).then(() => restoreReadingAnchor(anchor))
   }
 }
 
@@ -99,6 +96,11 @@ export const defineProseJustification = () => {
 export const rescanProse = () => {
   const element = document.querySelector("prose-justification")
   if (element instanceof ProseJustificationElement) element.rescan()
+}
+
+export const restoreProse = () => {
+  const element = document.querySelector("prose-justification")
+  if (element instanceof ProseJustificationElement) element.restore()
 }
 
 export const typesetNow = (root: Element) => {

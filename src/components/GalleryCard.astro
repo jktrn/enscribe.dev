@@ -151,7 +151,7 @@ const link = item.link ? describeLink(item.link, Astro.site) : null
   </template>
   <template data-lightbox-caption>
     <gallery-caption><Fragment set:html={captionHtml} /></gallery-caption>
-    <gallery-meta data-linebreak-skip>
+    <gallery-meta data-prose-skip>
       <gallery-project><Fragment set:html={projectHtml} /></gallery-project>
       {link && (
         <a
@@ -168,9 +168,9 @@ const link = item.link ? describeLink(item.link, Astro.site) : null
       <gallery-year>{item.year}</gallery-year>
     </gallery-meta>
   </template>
-  <gallery-placard data-linebreak-root>
+  <gallery-placard data-prose-root>
     <gallery-caption><Fragment set:html={captionHtml} /></gallery-caption>
-    <gallery-meta data-linebreak-skip>
+    <gallery-meta data-prose-skip>
       <gallery-project><Fragment set:html={projectHtml} /></gallery-project>
       {link && (
         <a
