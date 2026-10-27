@@ -1,5 +1,6 @@
-import type { Line, ParagraphState, Session, Token, WordHyphenator } from "../types.ts";
+import type { Line, ParagraphState, Session } from "../types.ts";
+export declare const guessTolerancePx = 0.2;
 export declare function planLines(session: Session, state: ParagraphState): void;
-export declare function hyphenateTokens(tokens: Token[], hyphenate: WordHyphenator): Token[];
 export declare function setLineSpacing(lines: Line[], lastLine: number): void;
-export declare function snapTracking(px: number): number;
+export declare function isLastLineUndecided(line: Line): boolean;
+export declare function floorToLayoutUnit(px: number): number;

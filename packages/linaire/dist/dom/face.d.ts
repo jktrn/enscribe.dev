@@ -1,10 +1,11 @@
 import type { Face } from "../types.ts";
 type Verdict = "confirmed" | "doubted" | "blamed";
+export declare const noTracking = 0;
+export declare const wholeRun: RegExp;
 export declare function faceOf(element: Element): Face;
 export declare function parsePx(value: string): number;
 export declare function formsLigatures(face: Face): boolean;
-export declare function measureCanvas(face: Face, text: string, tracking: number, split: RegExp | undefined): number;
-export declare function splitForCanvas(text: string, split: RegExp | undefined): string[];
+export declare function measureCanvas(face: Face, text: string, tracking: number): number;
 export declare function removeInvisibles(text: string): string;
 export declare function cachedCanvasWidth(face: Face, text: string): number;
 export declare function cachedLetterSlotCount(face: Face, piece: string): number;

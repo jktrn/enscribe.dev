@@ -19,9 +19,11 @@ export type Token = {
     closingEdgePx: number;
     isNowrap: boolean;
     isUntracked: boolean;
+    isUnhyphenated: boolean;
     node?: Text;
     element?: Element;
     face?: Face;
+    atomicInline?: Element;
 };
 export type Part = {
     tokens: Token[];
@@ -53,7 +55,14 @@ export type Item = Box | Glue | Penalty;
 export type LineBreak = {
     end: number;
     ratio: number;
+    badness: number;
+    fitness: number;
     hyphenated: boolean;
+};
+export type BreakPass = "first" | "second" | "emergency" | "rescue";
+export type BrokenParagraph = {
+    pass: BreakPass;
+    lines: LineBreak[];
 };
 export type WidthAt = (line: number) => number;
 export type BreakParameters = {
@@ -74,16 +83,16 @@ export type Face = {
     featureSettings: string;
     ligatures: string;
     fontSizePx: number;
+    canvasScale: number;
     trust: Trust;
     isDoubted: boolean;
-    confirmedLineCount: number;
+    confirmedParagraphCount: number;
     stretchResponse: number;
     canvasWidths: Map<string, number>;
     letterSlotCounts: Map<string, number>;
     domWidths: Map<string, number>;
-    hasChosenSplit: boolean;
-    canvasSplit: RegExp | undefined;
-    probeTrackingGain?: number;
+    canvasSplit?: RegExp;
+    formsLigatures?: boolean;
     lettersAbsorbed?: Map<string, number>;
 };
 export type Trust = "learning" | "blamed" | "untrusted";
@@ -134,12 +143,13 @@ export type LineSpacing = {
 };
 export type LineRendering = {
     width: number;
-    wrappers: Element[];
-    lastText?: Text;
+    wrappers: HTMLElement[];
+    firstNode: Text | Element | undefined;
+    lastNode: Text | Element | undefined;
 };
 export type ParagraphState = Paragraph & Reading & {
     isExact: boolean;
-    isProbed: boolean;
+    probedLines: Line[];
 };
 export type Session = {
     parameters: BreakParameters;
