@@ -1,0 +1,19 @@
+{
+  "name": "linaire",
+  "version": "0.2.0",
+  "type": "module",
+  "sideEffects": false,
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/linaire.js"
+    },
+    "./hyphenate/*": {
+      "types": "./dist/core/hyphenate/*.d.ts",
+      "default": "./dist/hyphenate/*.js"
+    }
+  }
+}

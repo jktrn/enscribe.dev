@@ -3,13 +3,16 @@
 
 <sidenote-layer
   aria-hidden="true"
-  data-linebreak-root
-  data-linebreak-narrow
+  data-prose-root
+  data-prose-narrow
 ></sidenote-layer>
 
 <script>
   import { onReaderModeChange } from "@/lib/typography/preference-events"
-  import { rescanProse } from "@/lib/typography/prose-justification"
+  import {
+    rescanProse,
+    restoreProse,
+  } from "@/lib/typography/prose-justification"
   import { hashId, pixels, queryId } from "@/lib/utils"
 
   type Sidenote = {
@@ -75,9 +78,10 @@
     if (!layer) return
     layer.replaceChildren()
 
+    restoreProse()
     const { notes, lists } = build(layer)
     const first = notes[0]
-    if (!first) return
+    if (!first) return rescanProse()
 
     const root = document.documentElement
     const controller = new AbortController()
@@ -85,7 +89,7 @@
     const byId = new Map(notes.map((note) => [note.id, note]))
 
     let frame: number | undefined
-    let active = false
+    let active: boolean | undefined
     let pad = 0
     let lead = 0
     let step = 0
@@ -230,7 +234,8 @@
       if (on === active) return
       active = on
       root.toggleAttribute("data-sidenotes", on)
-      for (const list of lists) list.toggleAttribute("data-linebreak-skip", on)
+      for (const list of lists) list.toggleAttribute("data-prose-skip", on)
+      rescanProse()
       if (on) return schedule()
       hover(undefined)
       focus(undefined)
@@ -303,7 +308,7 @@
       noteResize.disconnect()
       if (frame !== undefined) cancelAnimationFrame(frame)
       root.removeAttribute("data-sidenotes")
-      for (const list of lists) list.removeAttribute("data-linebreak-skip")
+      for (const list of lists) list.removeAttribute("data-prose-skip")
     }
 
     layer.addEventListener(
@@ -328,7 +333,6 @@
     onReaderModeChange(apply, signal)
 
     apply()
-    rescanProse()
   }
 
   document.addEventListener("astro:page-load", setup)

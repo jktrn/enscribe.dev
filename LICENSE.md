@@ -25,8 +25,7 @@ For permission requests, contact [jason@enscribe.dev](mailto:jason@enscribe.dev)
 
 Software identified by a separate license remains governed by that license. This includes:
 
-- [jktrn/astro-erudite](https://github.com/jktrn/astro-erudite), available under the MIT license; and
-- [@enscribe/linebreak](./packages/linebreak/LICENSE), available under the MIT license.
+- [jktrn/astro-erudite](https://github.com/jktrn/astro-erudite), available under the MIT license.
 
 Those licenses apply only to their respective software and do not extend to the site-specific code or visual design covered above.
 
