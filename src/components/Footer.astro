@@ -4,10 +4,26 @@ import { SITE, SOCIALS } from "@/consts"
 ---
 
 <footer>
-  <p>
-    &copy; {new Date().getFullYear()}
-    {SITE.title}
-  </p>
+  <div class="attribution">
+    <img
+      src="/88x31-light.png"
+      alt={`${SITE.title} 88×31 button`}
+      width="88"
+      height="31"
+      data-theme-light
+    />
+    <img
+      src="/88x31-dark.png"
+      alt={`${SITE.title} 88×31 button`}
+      width="88"
+      height="31"
+      data-theme-dark
+    />
+    <p>
+      &copy; {new Date().getFullYear()}
+      {SITE.title}
+    </p>
+  </div>
   <SocialIcons links={SOCIALS} />
 </footer>
 
@@ -26,6 +42,16 @@ import { SITE, SOCIALS } from "@/consts"
     p {
       font-size: var(--step--1);
       color: var(--muted-foreground);
+    }
+  }
+
+  .attribution {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+
+    img {
+      image-rendering: pixelated;
     }
   }
 </style>

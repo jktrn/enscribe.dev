@@ -49,6 +49,7 @@
 }
 
 html {
+  font-size: clamp(100%, 77.78% + 0.2778vw, 122.22%);
   scrollbar-gutter: stable;
 
   @media (width < 64rem) {

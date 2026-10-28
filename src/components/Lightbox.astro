@@ -165,7 +165,9 @@ import ArrowRight from "@/assets/icons/arrow-right.svg"
   }
 
   :global(
-    :root[data-js] prose-content :is(img:not([data-favicon]), svg[role="img"])
+    :root[data-js]
+      prose-content
+      :is(img:not([data-favicon], copy-command img), svg[role="img"])
   ) {
     cursor: zoom-in;
   }
@@ -176,7 +178,8 @@ import ArrowRight from "@/assets/icons/arrow-right.svg"
 
   type Group = { items: Element[]; index: number }
 
-  const PROSE_MEDIA = 'img:not([data-favicon]), svg[role="img"]'
+  const PROSE_MEDIA =
+    'img:not([data-favicon], copy-command img), svg[role="img"]'
   const CARD = "[data-gallery] > li"
 
   const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)")

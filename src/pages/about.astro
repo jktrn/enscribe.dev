@@ -14,6 +14,54 @@ import { Content } from "./_about.md"
 </Layout>
 
 <style>
+  :global(.buttons-88x31) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2xs);
+
+    :global(copy-command) {
+      position: relative;
+      display: block;
+      cursor: copy;
+
+      &::after {
+        content: "Copied!";
+        position: absolute;
+        inset-block-end: calc(100% + var(--space-3xs));
+        inset-inline-start: 50%;
+        translate: -50% var(--space-3xs);
+        padding: var(--space-3xs) var(--space-2xs);
+        border-radius: var(--radius-sm);
+        background-color: var(--primary);
+        color: var(--primary-foreground);
+        font-size: var(--step--1);
+        line-height: 1;
+        white-space: nowrap;
+        pointer-events: none;
+        opacity: 0;
+        transition:
+          opacity 0.15s ease,
+          translate 0.15s ease;
+      }
+
+      &:global([data-copied])::after {
+        translate: -50% 0;
+        opacity: 1;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        &::after {
+          translate: -50% 0;
+        }
+      }
+    }
+
+    :global(img) {
+      margin-inline: 0;
+      image-rendering: pixelated;
+    }
+  }
+
   :global(.awesome-colors) {
     --awesome-from: light-dark(#b21e59, #ff9592);
     --awesome-to: light-dark(#825000, #f5e147);
