@@ -8,6 +8,10 @@ Outside of my profession, music is everything to me. I love discovering [new alb
 
 If we happen to be in the same place, I'm always down to grab coffee or say hi. Although I was born and raised in Los Angeles (and you're most likely to find me there), I'm occasionally around San Diego, San Francisco, and New York City. I also try to attend [SECCON](https://www.seccon.jp/) in Tokyo and (begrudgingly) [DEF CON](https://defcon.org/) in Las Vegas every year. Feel free to message me!
 
-Here are my 88×31 buttons. They're available in both light and dark mode!
+Here are my 88×31 buttons. They're available in both light and dark mode:
 
 <span class="buttons-88x31"><copy-command role="button" tabindex="0" title="Copy light mode 88×31 HTML" aria-label="Copy light mode 88×31 HTML" data-copy="&lt;a href=&quot;https://enscribe.dev&quot; target=&quot;_blank&quot;&gt;&lt;img src=&quot;https://enscribe.dev/88x31-light.png&quot; width=&quot;88&quot; height=&quot;31&quot; alt=&quot;enscribe&quot;&gt;&lt;/a&gt;"><img src="/88x31-light.png" alt="enscribe 88×31 button, light mode" width="88" height="31" /></copy-command><copy-command role="button" tabindex="0" title="Copy dark mode 88×31 HTML" aria-label="Copy dark mode 88×31 HTML" data-copy="&lt;a href=&quot;https://enscribe.dev&quot; target=&quot;_blank&quot;&gt;&lt;img src=&quot;https://enscribe.dev/88x31-dark.png&quot; width=&quot;88&quot; height=&quot;31&quot; alt=&quot;enscribe&quot;&gt;&lt;/a&gt;"><img src="/88x31-dark.png" alt="enscribe 88×31 button, dark mode" width="88" height="31" /></copy-command></span>
+
+Here are my lovely friends. Please go visit them:
+
+<span class="buttons-88x31"><a href="https://es3n1n.eu/" target="_blank"><img src="https://cdn.es3n1n.io/web-assets/88x31-alt.png" alt="es3n1n" width="88" height="31" /></a><a href="https://mixy.one/" target="_blank"><img src="https://cdn.es3n1n.io/web-assets/mixy1.gif" alt="mixy" width="88" height="31" /></a><a href="https://nullablevo.id.au/" target="_blank"><img src="https://nullablevo.id.au/images/button.png" alt="nullablevo.id.au" width="88" height="31" /></a><a href="https://str.lc/" target="_blank"><img src="https://str.lc/assets/img/button.gif" alt="str.lc" width="88" height="31" /></a><a href="https://zelda.li/" target="_blank"><img src="https://zelda.li/banner_v2.gif" alt="zelda.li" width="88" height="31" /></a></span>
