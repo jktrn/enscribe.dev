@@ -1,24 +1,30 @@
 ---
-import SocialIcons from "@/components/SocialIcons.astro"
-import { SITE, SOCIALS } from "@/consts"
+import SocialIcons from "@/components/SocialIcons.astro";
+import { SITE, SOCIALS } from "@/consts";
+
+const showButton = !/^\/about\/?$/.test(Astro.url.pathname);
 ---
 
 <footer>
   <div class="attribution">
-    <img
-      src="/88x31-light.png"
-      alt={`${SITE.title} 88×31 button`}
-      width="88"
-      height="31"
-      data-theme-light
-    />
-    <img
-      src="/88x31-dark.png"
-      alt={`${SITE.title} 88×31 button`}
-      width="88"
-      height="31"
-      data-theme-dark
-    />
+    {showButton && (
+      <>
+        <img
+          src="/88x31-light.gif"
+          alt={`${SITE.title} 88×31 button`}
+          width="88"
+          height="31"
+          data-theme-light
+        />
+        <img
+          src="/88x31-dark.gif"
+          alt={`${SITE.title} 88×31 button`}
+          width="88"
+          height="31"
+          data-theme-dark
+        />
+      </>
+    )}
     <p>
       &copy; {new Date().getFullYear()}
       {SITE.title}
