@@ -25,17 +25,20 @@
     "link": "https://2025.ctf.mt"
   },
   {
+    "image": "hacktron-landing-light.webp",
+    "imageDark": "hacktron-landing-dark.webp",
+    "video": ["hacktron-landing-light.webm"],
+    "videoDark": ["hacktron-landing-dark.webm"],
+    "posterTime": 6.3,
+    "caption": "A compilation of Three.js-based graphics I built for the landing page of Hacktron, an AI-native security platform for code reviews and penetration tests.",
+    "project": "Hacktron",
+    "year": 2026,
+    "link": "https://hacktron.ai"
+  },
+  {
     "image": "falensee-day-cycle.webp",
     "video": ["falensee-day-cycle.webm"],
     "caption": "Inspired by Hiroshi Yoshida's [time-of-day prints](https://en.wikipedia.org/wiki/Hiroshi_Yoshida#Artistic_style), I made a 24-hour pixel-art timelapse of [Fälensee](https://en.wikipedia.org/wiki/F%C3%A4lensee), a lake in eastern Switzerland. The composition was built and rendered entirely in Godot.",
-    "project": "(misc.)",
-    "year": 2026
-  },
-  {
-    "image": "glint-rival-highlight.webp",
-    "video": ["glint-rival-highlight.webm"],
-    "posterTime": 2.71,
-    "caption": "A highlight reel of a boss encounter in my isometric pixel-art [Soulslike](https://en.wikipedia.org/wiki/Soulslike), adapted from the deflect-and-posture system of [Sekiro](https://en.wikipedia.org/wiki/Sekiro:_Shadows_Die_Twice). Combat is structured as an exchange of initiative; the boss commits to fixed, telegraphed attack strings, and a successful deflect shifts initiative to the defender, signalled by distinct audiovisual cueing.",
     "project": "(misc.)",
     "year": 2026
   },
@@ -78,6 +81,14 @@
     "link": "https://v12.sh"
   },
   {
+    "image": "glint-rival-highlight.webp",
+    "video": ["glint-rival-highlight.webm"],
+    "posterTime": 2.71,
+    "caption": "A highlight reel of a boss encounter in my isometric pixel-art [Soulslike](https://en.wikipedia.org/wiki/Soulslike), adapted from the deflect-and-posture system of [Sekiro](https://en.wikipedia.org/wiki/Sekiro:_Shadows_Die_Twice). Combat is structured as an exchange of initiative; the boss commits to fixed, telegraphed attack strings, and a successful deflect shifts initiative to the defender, signalled by distinct audiovisual cueing.",
+    "project": "(misc.)",
+    "year": 2026
+  },
+  {
     "image": "evmbench-reentrancy-light.webp",
     "imageDark": "evmbench-reentrancy-dark.webp",
     "caption": "I worked with OpenAI and Paradigm on \"EVM&#8203;bench\", their state-of-the-art smart contract benchmark.",
@@ -109,13 +120,6 @@
     "caption": "The landing I designed for Zellic's (sunset) validators program. The artwork itself is true 1-bit (2-color), but a dimming layer was placed on top to emphasize light within the composition. Yes, I know it looks exactly like [Return of the Obra Dinn](https://obradinn.com/); this was a happy coincidence!",
     "project": "Zellic",
     "year": 2026
-  },
-  {
-    "image": "hacktron-landing-light.webp",
-    "imageDark": "hacktron-landing-dark.webp",
-    "caption": "The landing I built for Hacktron, an AI-native security platform for code reviews and penetration tests.",
-    "project": "Hacktron",
-    "year": 2025
   },
   {
     "image": "maltactf-shirt.webp",

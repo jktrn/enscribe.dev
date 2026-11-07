@@ -780,6 +780,22 @@
     {
       "contentType": "video/webm",
       "group": "build",
+      "key": "src/assets/gallery/card/hacktron-landing-dark.webm",
+      "localPath": "src/assets/gallery/card/hacktron-landing-dark.webm",
+      "sha256": "64c52d3eef4ebbe2b70f3d7b666e601ae33ceea5008ae0ed4c3b26fa66f3d271",
+      "size": 7327275
+    },
+    {
+      "contentType": "video/webm",
+      "group": "build",
+      "key": "src/assets/gallery/card/hacktron-landing-light.webm",
+      "localPath": "src/assets/gallery/card/hacktron-landing-light.webm",
+      "sha256": "4c0930b14eda76d67f6499ed290a3be24c95e76e36a5bde00cb4f87459693fa6",
+      "size": 7245214
+    },
+    {
+      "contentType": "video/webm",
+      "group": "build",
       "key": "src/assets/gallery/card/maltactf-landing-theme-cycle.webm",
       "localPath": "src/assets/gallery/card/maltactf-landing-theme-cycle.webm",
       "sha256": "a724cae5904772adc8e5d7a1de50c879eac64bc8b7f36bec6414fe66febc5fdb",
@@ -898,20 +914,36 @@
       "size": 168238
     },
     {
+      "contentType": "video/webm",
+      "group": "build",
+      "key": "src/assets/gallery/hacktron-landing-dark.webm",
+      "localPath": "src/assets/gallery/hacktron-landing-dark.webm",
+      "sha256": "a8dca1cec26f9a0c5bfd7c33d6d180a090dc5aca023b6fb66425e2ac559f93ee",
+      "size": 14388726
+    },
+    {
       "contentType": "image/webp",
       "group": "build",
       "key": "src/assets/gallery/hacktron-landing-dark.webp",
       "localPath": "src/assets/gallery/hacktron-landing-dark.webp",
-      "sha256": "dd18aa6238fbd1678f65448113e17b5c597f201046c09426eca12e25fe73cdd0",
-      "size": 221404
+      "sha256": "90f9cfa5ffd48d81cad146834b840f6af889ffe4cfd61576412bacd270780f10",
+      "size": 319404
+    },
+    {
+      "contentType": "video/webm",
+      "group": "build",
+      "key": "src/assets/gallery/hacktron-landing-light.webm",
+      "localPath": "src/assets/gallery/hacktron-landing-light.webm",
+      "sha256": "a5b43ef8425792c26f61ac31a0bc0b130020330ba46605f17f5a75887aa26bef",
+      "size": 14163837
     },
     {
       "contentType": "image/webp",
       "group": "build",
       "key": "src/assets/gallery/hacktron-landing-light.webp",
       "localPath": "src/assets/gallery/hacktron-landing-light.webp",
-      "sha256": "51be27e8dddd5444162007d4e8b9da40dedf179c335b470dc296997c89f7139d",
-      "size": 251998
+      "sha256": "3047e2024c9a77cc9e4fc2cb641532ce37d3916d585ca37620443f63a7ed783f",
+      "size": 317976
     },
     {
       "contentType": "image/webp",

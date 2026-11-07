@@ -12,6 +12,7 @@ pnpm-debug.log*
 .DS_Store
 .idea/
 dist/pagefind/
+.wrangler/
 
 public/favicons/
 
@@ -45,3 +46,5 @@ graphics/blog/
 
 
 public/fonts/
+tests/linebreak/e2e/test-results/
+packages/linebreak/
