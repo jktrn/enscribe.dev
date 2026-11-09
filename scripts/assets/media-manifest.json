@@ -822,16 +822,16 @@
       "group": "build",
       "key": "src/assets/gallery/card/rctf-scoreboard-dark.webm",
       "localPath": "src/assets/gallery/card/rctf-scoreboard-dark.webm",
-      "sha256": "159fa7b6803992deeabbc29eac2346f9b631bfd4cd74ba40e7db085870f303fb",
-      "size": 794008
+      "sha256": "628c7f36c072595e0d97936833d19edab9e882ef306ead0214b3430abd1cda00",
+      "size": 2886639
     },
     {
       "contentType": "video/webm",
       "group": "build",
       "key": "src/assets/gallery/card/rctf-scoreboard-light.webm",
       "localPath": "src/assets/gallery/card/rctf-scoreboard-light.webm",
-      "sha256": "0e27a29f91848db490c88b3891527ebe59bfa8122541ad3b5ad93e2fbb85a3c9",
-      "size": 783720
+      "sha256": "e501a573d5ebf8e23fd1c321a7491e6b9092eb9e7004e90a0e08915df22a0ab8",
+      "size": 2788002
     },
     {
       "contentType": "video/webm",
@@ -1078,32 +1078,32 @@
       "group": "build",
       "key": "src/assets/gallery/rctf-scoreboard-dark.webm",
       "localPath": "src/assets/gallery/rctf-scoreboard-dark.webm",
-      "sha256": "2af56134c47ba9243406230bff3a7f6f5da6f0f7dc5674a4cc9b10dd98049a32",
-      "size": 2296261
+      "sha256": "cfc3bc6ffed92c36018fe74a3ee7d2b68d52a85f7e5e6b78bbc83e85d359149a",
+      "size": 4394516
     },
     {
       "contentType": "image/webp",
       "group": "build",
       "key": "src/assets/gallery/rctf-scoreboard-dark.webp",
       "localPath": "src/assets/gallery/rctf-scoreboard-dark.webp",
-      "sha256": "371e859eb454958652f6abdd4e01ce4ea78a6158b7d8e3dfcff5ade77451f499",
-      "size": 125102
+      "sha256": "dfb71e6dec0a07ba99f72216521d2fe32aafa0ec7c55e0a288b28c5ae669ff77",
+      "size": 143204
     },
     {
       "contentType": "video/webm",
       "group": "build",
       "key": "src/assets/gallery/rctf-scoreboard-light.webm",
       "localPath": "src/assets/gallery/rctf-scoreboard-light.webm",
-      "sha256": "679306831f890715150f33a080d9e11a3c863e9028f8a52f0849a08cfc72c4b7",
-      "size": 2296956
+      "sha256": "44ac37478e4f58b15588e84ed5fb75c80bea82fe73d64a4dfeb9ce1bee2195ec",
+      "size": 4102223
     },
     {
       "contentType": "image/webp",
       "group": "build",
       "key": "src/assets/gallery/rctf-scoreboard-light.webp",
       "localPath": "src/assets/gallery/rctf-scoreboard-light.webp",
-      "sha256": "e59a4fc425cb83e0249df2d43e3c16157cbd0aeb64cf62c7dec4ecc3a68b948c",
-      "size": 123974
+      "sha256": "070f47ebbccf7d38fbc5f04f34ef107d19a5ba1b107f53d0da71d40a117b734a",
+      "size": 140462
     },
     {
       "contentType": "video/webm",

@@ -4,6 +4,7 @@
     "imageDark": "rctf-scoreboard-dark.webp",
     "video": ["rctf-scoreboard-light.webm"],
     "videoDark": ["rctf-scoreboard-dark.webm"],
+    "posterTime": 0.2,
     "caption": "[@es3n1n](https://twitter.com/es3n1n) and I developed rCTF v2, an open-source platform for hosting cybersecurity capture-the-flag competitions. It is, objectively, the best work I have ever done, and is state-of-the-art in its capabilities.",
     "project": "rCTF",
     "year": 2026,
