@@ -7,6 +7,7 @@ export default defineConfig({
   site: "https://enscribe.dev",
   server: { port: 4321 },
   compressHTML: true,
+  trailingSlash: "never",
   redirects: { "/work": "/gallery" },
   prefetch: { prefetchAll: true },
   vite: {

@@ -8,16 +8,11 @@ import { SITE } from "@/consts"
 
 <head>
   <meta charset="utf-8">
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0, user-scalable=yes"
-  >
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="generator" content={Astro.generator}>
+  <meta name="color-scheme" content="light dark">
 
-  <meta name="HandheldFriendly" content="True">
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content={SITE.title}>
   <meta
     name="format-detection"
@@ -28,16 +23,55 @@ import { SITE } from "@/consts"
     name="theme-color"
     content="#11100e"
     media="(prefers-color-scheme: dark)"
+    data-scheme="dark"
   >
   <meta
     name="theme-color"
     content="#faf4ed"
     media="(prefers-color-scheme: light)"
+    data-scheme="light"
   >
+
+  <script is:inline>
+    const THEME_COLORS = { light: "#faf4ed", dark: "#11100e" }
+
+    const applyTheme = (doc, theme) => {
+      const override = theme === "light" || theme === "dark" ? theme : null
+      if (override) doc.documentElement.dataset.theme = override
+      else delete doc.documentElement.dataset.theme
+      doc.querySelector('meta[name="color-scheme"]').content =
+        override ?? "light dark"
+      for (const meta of doc.querySelectorAll('meta[name="theme-color"]')) {
+        meta.content = THEME_COLORS[override ?? meta.dataset.scheme]
+      }
+    }
+
+    const applyPreferences = (doc) => {
+      const root = doc.documentElement
+      root.dataset.js = ""
+      let theme
+      let textJustification
+      let readerMode
+      try {
+        theme = localStorage.theme
+        textJustification = localStorage.textJustification
+        readerMode = localStorage.readerMode
+      } catch {}
+      applyTheme(doc, theme)
+      root.dataset.textJustification =
+        textJustification === "ragged" ? "ragged" : "justified"
+      if (readerMode === "on") root.dataset.readerMode = ""
+      else delete root.dataset.readerMode
+    }
+    applyPreferences(document)
+    document.addEventListener("astro:before-swap", (event) => {
+      applyPreferences(event.newDocument)
+    })
+  </script>
 
   <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96">
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-  <link rel="shortcut icon" href="/favicon.ico">
+  <link rel="icon" href="/favicon.ico" sizes="32x32">
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
   <link rel="manifest" href="/site.webmanifest">
 
@@ -53,7 +87,7 @@ import { SITE } from "@/consts"
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
     rel="stylesheet"
-    href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@400;500;600&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@400;600&display=swap"
   >
 
   <link rel="preload" href={sansWoff2} as="font" type="font/woff2" crossorigin>
@@ -71,29 +105,6 @@ import { SITE } from "@/consts"
     type="font/woff2"
     crossorigin
   >
-  <script is:inline>
-    const applyPreferences = (root) => {
-      root.dataset.js = ""
-      let theme
-      let textJustification
-      let readerMode
-      try {
-        theme = localStorage.theme
-        textJustification = localStorage.textJustification
-        readerMode = localStorage.readerMode
-      } catch {}
-      if (theme === "light" || theme === "dark") root.dataset.theme = theme
-      root.dataset.textJustification =
-        textJustification === "ragged" ? "ragged" : "justified"
-      if (readerMode === "on") root.dataset.readerMode = ""
-      else delete root.dataset.readerMode
-    }
-    applyPreferences(document.documentElement)
-    document.addEventListener("astro:before-swap", (event) => {
-      applyPreferences(event.newDocument.documentElement)
-    })
-  </script>
-
   <script is:inline>
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)")
 

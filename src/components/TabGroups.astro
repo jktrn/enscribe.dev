@@ -26,9 +26,10 @@
       tab.setAttribute("aria-selected", String(i === index))
       tab.tabIndex = i === index ? 0 : -1
     })
-    panelsOf(group).forEach((panel, i) =>
-      panel.toggleAttribute("hidden", i !== index),
-    )
+    panelsOf(group).forEach((panel, i) => {
+      if (i === index) panel.removeAttribute("hidden")
+      else panel.setAttribute("hidden", "until-found")
+    })
     if (focus) tabs[index].focus()
 
     const sync = group.dataset.sync
@@ -69,6 +70,15 @@
     if (!(event.key in next)) return
     event.preventDefault()
     activate(group, next[event.key], { focus: true })
+  })
+
+  document.addEventListener("beforematch", (event) => {
+    const panel = (event.target as Element).closest?.("[role='tabpanel']")
+    const group = panel?.parentElement
+    if (!(panel instanceof HTMLElement) || !(group instanceof HTMLElement)) {
+      return
+    }
+    activate(group, panelsOf(group).indexOf(panel))
   })
 
   document.addEventListener("astro:page-load", () => {

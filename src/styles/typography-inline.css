@@ -99,7 +99,6 @@ code[data-code-path] svg {
     vertical-align: 0.25em;
     margin-inline-start: 0.25ch;
     background-color: currentColor;
-    -webkit-mask: var(--favicon-mask) center / contain no-repeat;
     mask: var(--favicon-mask) center / contain no-repeat;
   }
 
@@ -153,6 +152,14 @@ code[data-code-path] svg {
 
       &::before {
         content: "✓";
+      }
+    }
+
+    &[data-failed] .shell-prompt {
+      color: var(--tone-red);
+
+      &::before {
+        content: "✗";
       }
     }
   }

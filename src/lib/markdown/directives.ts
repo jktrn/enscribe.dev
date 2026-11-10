@@ -301,7 +301,7 @@ export function contentDirectives() {
                 id: `${prefix}-panel-${i}`,
                 ariaLabelledby: `${prefix}-tab-${i}`,
                 tabIndex: 0,
-                ...(i > 0 ? { hidden: true } : {}),
+                ...(i > 0 ? { hidden: "until-found" } : {}),
               },
             })
           })

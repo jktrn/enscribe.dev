@@ -66,6 +66,9 @@ const hasToc =
   sections.length > 1 || sections.some(({ headings }) => headings.length > 0)
 const rail = chainSidenotes(chain) > TOC_RAIL_SIDENOTES
 
+const current = rendered.find(({ entry }) => entry.id === post.id)
+const preloadBanner = current?.banner ? null : current?.raster
+
 const crumbs = [
   { label: entryInline(parent, "title"), href: `/blog/${parent.id}` },
 ]
@@ -79,6 +82,7 @@ if (isSubpost(post.id)) {
     slot="head"
     post={post}
     canonical={isSubpost(post.id) ? `/blog/${parent.id}` : undefined}
+    preloadBanner={preloadBanner}
   />
   {hasToc && (
       <TableOfContents
@@ -146,15 +150,11 @@ if (isSubpost(post.id)) {
         </header>
         {banner ? (
           <post-banner>
-            <Fragment set:html={banner.light} />
-            <Fragment set:html={banner.dark} />
+            <Fragment set:html={banner} />
           </post-banner>
         ) : raster ? (
           <post-banner>
-            <ThemedBannerImage
-              raster={raster}
-              priority={entry.id === post.id}
-            />
+            <ThemedBannerImage raster={raster} />
           </post-banner>
         ) : entry.data.image && (
           <post-banner>

@@ -115,6 +115,9 @@ import "@/styles/marquee.css"
         display: block;
         height: 100%;
         background-color: var(--primary);
+        transform-origin: 0 50%;
+        scale: 0 1;
+        transition: scale 0.25s linear;
       }
 
       spotify-times {
@@ -153,6 +156,10 @@ import "@/styles/marquee.css"
         border-block-start-color: var(--primary);
         border-radius: var(--radius-full);
         animation: spotify-spin 0.8s linear infinite;
+
+        @media (prefers-reduced-motion: reduce) {
+          animation-duration: 4s;
+        }
       }
     }
 
@@ -186,11 +193,14 @@ import "@/styles/marquee.css"
       svg {
         width: 1rem;
         height: 1rem;
-        transition: transform 0.3s ease;
+
+        @media (prefers-reduced-motion: no-preference) {
+          transition: rotate 0.3s ease;
+        }
       }
 
       &:hover svg {
-        transform: rotate(12deg);
+        rotate: 12deg;
       }
     }
   }
@@ -238,6 +248,8 @@ import "@/styles/marquee.css"
     return `${Math.floor(totalSeconds / 60)}:${(totalSeconds % 60).toString().padStart(2, "0")}`
   }
 
+  const TICK_MS = 250
+
   class SpotifyPresence extends HTMLElement {
     playback: Playback | null = null
     lyrics: LyricLine[] = []
@@ -245,7 +257,7 @@ import "@/styles/marquee.css"
     baseTimestampMs = 0
     eventSource: EventSource | null = null
     resizeObserver: ResizeObserver | null = null
-    rafId = 0
+    tickerId = 0
     marqueeFrameId = 0
     reconnectId = 0
 
@@ -287,7 +299,7 @@ import "@/styles/marquee.css"
     disconnectedCallback() {
       this.eventSource?.close()
       this.resizeObserver?.disconnect()
-      cancelAnimationFrame(this.rafId)
+      clearInterval(this.tickerId)
       cancelAnimationFrame(this.marqueeFrameId)
       clearTimeout(this.reconnectId)
     }
@@ -363,7 +375,7 @@ import "@/styles/marquee.css"
     }
 
     render({ fade = true } = {}) {
-      cancelAnimationFrame(this.rafId)
+      clearInterval(this.tickerId)
 
       const playback = this.playback
       if (!playback) {
@@ -450,14 +462,15 @@ import "@/styles/marquee.css"
       if (playback.is_playing) {
         const tick = () => {
           const progressMs = this.progressMs
-          bar.style.width = `${Math.min((progressMs / track.duration_ms) * 100, 100)}%`
-          elapsed.textContent = formatMs(progressMs)
-          const line = this.currentLyric
-          lyric.textContent = line ?? ""
+          bar.style.scale = `${Math.min(progressMs / track.duration_ms, 1)} 1`
+          const time = formatMs(progressMs)
+          if (elapsed.textContent !== time) elapsed.textContent = time
+          const line = this.currentLyric ?? ""
+          if (lyric.textContent !== line) lyric.textContent = line
           lyric.hidden = !line
-          this.rafId = requestAnimationFrame(tick)
         }
         tick()
+        this.tickerId = window.setInterval(tick, TICK_MS)
       }
     }
   }

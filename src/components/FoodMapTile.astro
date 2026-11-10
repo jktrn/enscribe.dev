@@ -44,6 +44,7 @@ const payload = JSON.stringify(points).replaceAll("<", "\\u003c")
 <script>
   import { CITIES, DEFAULT_CITY_ID, cityById } from "@/lib/food-cities"
   import { createColorResolver, TILE_ZOOM_RANGE } from "@/lib/map-style"
+  import { onSchemeChange } from "@/lib/theme"
 
   type Row = [number, number, number, number]
 
@@ -359,13 +360,7 @@ const payload = JSON.stringify(points).replaceAll("<", "\\u003c")
     }
     select?.addEventListener("change", showCity)
 
-    const scheme = matchMedia("(prefers-color-scheme: dark)")
-    scheme.addEventListener("change", theme)
-    const observer = new MutationObserver(theme)
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["data-theme"],
-    })
+    const stopSchemeSync = onSchemeChange(theme)
 
     lifecycle.initialized(() => {
       disposed = true
@@ -378,8 +373,7 @@ const payload = JSON.stringify(points).replaceAll("<", "\\u003c")
       if (cityIdleListener) map.off("idle", cityIdleListener)
       densityQuery?.removeEventListener("change", syncPixelRatio)
       select?.removeEventListener("change", showCity)
-      scheme.removeEventListener("change", theme)
-      observer.disconnect()
+      stopSchemeSync()
       color.dispose()
       map.remove()
       delete root.dataset.ready

@@ -34,6 +34,10 @@ prose-content tab-group {
   > [role="tabpanel"] {
     padding-block-start: var(--space-xs);
 
+    &[hidden] {
+      padding-block-start: 0;
+    }
+
     > :last-child {
       margin-block-end: 0;
     }

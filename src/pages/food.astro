@@ -242,7 +242,7 @@ const categoryCounts = Object.entries(data.metadata.categories).filter(
           </select>
         </div>
 
-        <ol id="place-list" class="place-list"></ol>
+        <ol id="place-list" class="place-list" data-scroll-fade></ol>
         <p id="empty-state" class="empty-state" hidden>
           No places match those filters.
         </p>
@@ -280,6 +280,7 @@ const categoryCounts = Object.entries(data.metadata.categories).filter(
     loadMapStyle,
     toneForScore,
   } from "@/lib/map-style"
+  import { onSchemeChange } from "@/lib/theme"
 
   setWorkerUrl(mapLibreWorkerUrl)
 
@@ -347,14 +348,9 @@ const categoryCounts = Object.entries(data.metadata.categories).filter(
       attributionNode?.classList.remove("maplibregl-compact-show")
       attributionNode?.setAttribute("open", "")
     })
-    const preferredTheme = matchMedia("(prefers-color-scheme: dark)")
-    const refreshMapTheme = () => applyMapTheme(map, mapColor.resolve)
-    preferredTheme.addEventListener("change", refreshMapTheme)
-    const themeObserver = new MutationObserver(refreshMapTheme)
-    themeObserver.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["data-theme"],
-    })
+    const stopSchemeSync = onSchemeChange(() =>
+      applyMapTheme(map, mapColor.resolve),
+    )
 
     const markers = new Map<string, Marker>()
     const searchTextById = new Map(
@@ -482,27 +478,6 @@ const categoryCounts = Object.entries(data.metadata.categories).filter(
       markers.set(place.id, marker)
     }
 
-    let scrollFadeFrame: number | null = null
-    const updateScrollFades = () => {
-      if (!list) return
-      list.dataset.canScrollUp = String(list.scrollTop > 1)
-      list.dataset.canScrollDown = String(
-        list.scrollTop + list.clientHeight < list.scrollHeight - 1,
-      )
-    }
-    const scheduleScrollFades = () => {
-      if (scrollFadeFrame !== null) return
-      scrollFadeFrame = requestAnimationFrame(() => {
-        scrollFadeFrame = null
-        updateScrollFades()
-      })
-    }
-    const listResizeObserver = new ResizeObserver(scheduleScrollFades)
-    if (list) {
-      list.addEventListener("scroll", scheduleScrollFades, { passive: true })
-      listResizeObserver.observe(list)
-    }
-
     const renderList = () => {
       if (!list || !emptyState) return
       list.scrollTop = 0
@@ -551,7 +526,6 @@ const categoryCounts = Object.entries(data.metadata.categories).filter(
 
       list.append(fragment)
       emptyState.hidden = visiblePlaces.length > 0
-      scheduleScrollFades()
     }
 
     const fitVisible = () => {
@@ -616,12 +590,8 @@ const categoryCounts = Object.entries(data.metadata.categories).filter(
 
     cleanupMap = () => {
       if (pendingFilterFrame !== null) cancelAnimationFrame(pendingFilterFrame)
-      if (scrollFadeFrame !== null) cancelAnimationFrame(scrollFadeFrame)
       document.removeEventListener("keydown", focusSearch)
-      list?.removeEventListener("scroll", scheduleScrollFades)
-      listResizeObserver.disconnect()
-      preferredTheme.removeEventListener("change", refreshMapTheme)
-      themeObserver.disconnect()
+      stopSchemeSync()
       mapColor.dispose()
       markers.forEach((marker) => marker.remove())
       map.remove()
@@ -737,38 +707,13 @@ const categoryCounts = Object.entries(data.metadata.categories).filter(
   }
 
   .place-list {
-    --scroll-fade-start: #000;
-    --scroll-fade-end: #000;
+    --scroll-fade-size: 2rem;
     min-height: 0;
     margin: 0;
     padding: 0;
     overflow-y: auto;
     list-style: none;
-    mask-image: linear-gradient(
-      to bottom,
-      var(--scroll-fade-start) 0,
-      #000 2rem,
-      #000 calc(100% - 2rem),
-      var(--scroll-fade-end) 100%
-    );
-    -webkit-mask-image: linear-gradient(
-      to bottom,
-      var(--scroll-fade-start) 0,
-      #000 2rem,
-      #000 calc(100% - 2rem),
-      var(--scroll-fade-end) 100%
-    );
-    mask-repeat: no-repeat;
-    -webkit-mask-repeat: no-repeat;
     scrollbar-color: var(--background-l4) transparent;
-  }
-
-  .place-list[data-can-scroll-up="true"] {
-    --scroll-fade-start: transparent;
-  }
-
-  .place-list[data-can-scroll-down="true"] {
-    --scroll-fade-end: transparent;
   }
 
   :global(.place-list li:nth-child(odd) .place-card) {
@@ -896,12 +841,15 @@ const categoryCounts = Object.entries(data.metadata.categories).filter(
     font-weight: var(--font-weight-normal);
     font-variant-numeric: tabular-nums;
     line-height: 1;
-    transition: transform 120ms ease;
+
+    @media (prefers-reduced-motion: no-preference) {
+      transition: scale 120ms ease;
+    }
   }
 
   :global(.rating-marker:hover .rating-marker-bubble),
   :global(.rating-marker:focus .rating-marker-bubble) {
-    transform: scale(1.1);
+    scale: 1.1;
   }
 
   :global(.maplibregl-ctrl.maplibregl-ctrl-attrib) {
@@ -1129,15 +1077,6 @@ const categoryCounts = Object.entries(data.metadata.categories).filter(
     }
     :global(.place-card) {
       padding: 0.68rem 0.75rem;
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    *,
-    *::before,
-    *::after {
-      scroll-behavior: auto !important;
-      transition-duration: 0.01ms !important;
     }
   }
 </style>

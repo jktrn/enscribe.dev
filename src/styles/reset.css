@@ -1,16 +1,14 @@
 *,
 ::after,
 ::before,
-::backdrop,
-::file-selector-button {
+::backdrop {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
   border: 0 solid;
 }
 
-html,
-:host {
+html {
   line-height: 1.5;
   -webkit-text-size-adjust: 100%;
   tab-size: 4;
@@ -24,7 +22,6 @@ hr {
 }
 
 abbr:where([title]) {
-  -webkit-text-decoration: underline dotted;
   text-decoration: underline dotted;
 }
 
@@ -40,7 +37,6 @@ h6 {
 
 a {
   color: inherit;
-  -webkit-text-decoration: inherit;
   text-decoration: inherit;
 }
 
@@ -79,14 +75,6 @@ table {
   border-collapse: collapse;
 }
 
-:-moz-focusring {
-  outline: auto;
-}
-
-progress {
-  vertical-align: baseline;
-}
-
 summary {
   display: list-item;
 }
@@ -117,10 +105,7 @@ video {
 
 button,
 input,
-select,
-optgroup,
-textarea,
-::file-selector-button {
+select {
   font: inherit;
   font-feature-settings: inherit;
   font-variation-settings: inherit;
@@ -131,92 +116,19 @@ textarea,
   opacity: 1;
 }
 
-:where(select:is([multiple], [size])) optgroup {
-  font-weight: bolder;
-}
-
-:where(select:is([multiple], [size])) optgroup option {
-  padding-inline-start: 20px;
-}
-
-::file-selector-button {
-  margin-inline-end: 4px;
-}
-
 ::placeholder {
   opacity: 1;
-}
-
-@supports (not (-webkit-appearance: -apple-pay-button)) or
-  (contain-intrinsic-size: 1px) {
-  ::placeholder {
-    color: color-mix(in oklab, currentcolor 50%, transparent);
-  }
-}
-
-textarea {
-  resize: vertical;
+  color: color-mix(in oklab, currentcolor 50%, transparent);
 }
 
 ::-webkit-search-decoration {
   -webkit-appearance: none;
 }
 
-::-webkit-date-and-time-value {
-  min-height: 1lh;
-  text-align: inherit;
-}
-
-::-webkit-datetime-edit {
-  display: inline-flex;
-}
-
-::-webkit-datetime-edit-fields-wrapper {
-  padding: 0;
-}
-
-::-webkit-datetime-edit,
-::-webkit-datetime-edit-year-field,
-::-webkit-datetime-edit-month-field,
-::-webkit-datetime-edit-day-field,
-::-webkit-datetime-edit-hour-field,
-::-webkit-datetime-edit-minute-field,
-::-webkit-datetime-edit-second-field,
-::-webkit-datetime-edit-millisecond-field,
-::-webkit-datetime-edit-meridiem-field {
-  padding-block: 0;
-}
-
-::-webkit-calendar-picker-indicator {
-  line-height: 1;
-}
-
-:-moz-ui-invalid {
-  box-shadow: none;
-}
-
-button,
-input:where([type="button"], [type="reset"], [type="submit"]),
-::file-selector-button {
+button {
   appearance: button;
-}
-
-::-webkit-inner-spin-button,
-::-webkit-outer-spin-button {
-  height: auto;
 }
 
 [hidden]:where(:not([hidden="until-found"])) {
   display: none !important;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  *,
-  ::before,
-  ::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
 }

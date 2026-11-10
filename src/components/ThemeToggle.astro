@@ -45,18 +45,10 @@ import SunIcon from "@/assets/icons/sun.svg"
 </style>
 
 <script>
-  const toggleTheme = () => {
-    const root = document.documentElement
-    const dark =
-      root.dataset.theme === "dark" ||
-      (!root.dataset.theme &&
-        matchMedia("(prefers-color-scheme: dark)").matches)
-    const theme = dark ? "light" : "dark"
-    root.dataset.theme = theme
-    localStorage.theme = theme
-  }
+  import { syncSchemeAcrossTabs, toggleScheme } from "@/lib/theme"
 
   document.addEventListener("click", (event) => {
-    if ((event.target as Element).closest?.("#theme-toggle")) toggleTheme()
+    if ((event.target as Element).closest?.("#theme-toggle")) toggleScheme()
   })
+  syncSchemeAcrossTabs()
 </script>

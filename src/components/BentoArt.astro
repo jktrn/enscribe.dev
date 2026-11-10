@@ -1,0 +1,33 @@
+---
+import { mergeThemedSvg } from "@/lib/assets/themed-svg"
+
+type Props = { name: string; preserveAspectRatio?: string }
+
+const { name, preserveAspectRatio } = Astro.props
+
+const sources = import.meta.glob<string>("/src/assets/bento/*.svg", {
+  query: "?raw",
+  import: "default",
+  eager: true,
+})
+
+const sourceOf = (mode: "light" | "dark") => {
+  const source = sources[`/src/assets/bento/${name}-${mode}.svg`]
+  if (!source) throw new Error(`Missing bento art: ${name}-${mode}.svg`)
+  return source.trim().replace(' xmlns="http://www.w3.org/2000/svg"', "")
+}
+
+const aspect = preserveAspectRatio
+  ? ` preserveAspectRatio="${preserveAspectRatio}"`
+  : ""
+const withRoot = (svg: string, attributes: string) =>
+  svg.replace(/^<svg\b/, `<svg${attributes}`)
+
+const merged = mergeThemedSvg(sourceOf("light"), sourceOf("dark"))
+const html = merged
+  ? withRoot(merged, aspect)
+  : withRoot(sourceOf("dark"), ` data-theme-dark${aspect}`) +
+    withRoot(sourceOf("light"), ` data-theme-light${aspect}`)
+---
+
+<Fragment set:html={html} />

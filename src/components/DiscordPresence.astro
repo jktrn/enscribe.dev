@@ -16,7 +16,7 @@ import "@/styles/marquee.css"
     <b>enscribe</b>
     <span>@enscribe</span>
   </discord-user>
-  <discord-activity aria-live="polite">
+  <discord-activity>
     <discord-spinner role="status" aria-label="Loading"></discord-spinner>
   </discord-activity>
 </discord-presence>
@@ -251,6 +251,10 @@ import "@/styles/marquee.css"
         border-block-start-color: var(--primary);
         border-radius: var(--radius-full);
         animation: discord-spin 0.8s linear infinite;
+
+        @media (prefers-reduced-motion: reduce) {
+          animation-duration: 4s;
+        }
       }
     }
 
