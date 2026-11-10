@@ -2,7 +2,12 @@
 import SearchIcon from "@/assets/icons/search.svg"
 ---
 
-<dialog id="search-dialog" aria-label="Search" transition:persist="search">
+<dialog
+  id="search-dialog"
+  aria-label="Search"
+  closedby="any"
+  transition:persist="search"
+>
   <search>
     <form role="search">
       <SearchIcon aria-hidden="true" />
@@ -173,7 +178,7 @@ import SearchIcon from "@/assets/icons/search.svg"
     list.innerHTML = pages
       .map(
         (page) =>
-          `<li><a href="${page.url}"><strong>${escapeHtml(
+          `<li><a href="${page.url.replace(/(.)\/$/, "$1")}"><strong>${escapeHtml(
             page.meta.title ?? page.url,
           )}</strong><p>${page.excerpt}</p></a></li>`,
       )
@@ -187,11 +192,19 @@ import SearchIcon from "@/assets/icons/search.svg"
     input?.select()
   }
 
+  const supportsInvokers = "commandForElement" in HTMLButtonElement.prototype
+  const supportsLightDismiss = "closedBy" in HTMLDialogElement.prototype
+
+  dialog?.addEventListener("command", () => {
+    load()
+    input?.select()
+  })
+
   document.addEventListener("click", (event) => {
     const target = event.target as Element
-    if (target.closest?.("#search-trigger")) open()
+    if (!supportsInvokers && target.closest?.("#search-trigger")) open()
     if (target.closest?.("#search-dialog a")) dialog?.close()
-    if (event.target === dialog) dialog?.close()
+    if (!supportsLightDismiss && event.target === dialog) dialog?.close()
   })
 
   document.addEventListener("keydown", (event) => {

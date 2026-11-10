@@ -98,7 +98,10 @@ prose-content .footnotes {
   img[loading="lazy"]:not([data-loaded]):not([data-favicon]) {
   color: transparent;
   background-color: color-mix(in oklab, var(--muted) 60%, transparent);
-  animation: image-skeleton 2s ease-in-out infinite;
+
+  @media (prefers-reduced-motion: no-preference) {
+    animation: image-skeleton 2s ease-in-out infinite;
+  }
 }
 
 @keyframes image-skeleton {

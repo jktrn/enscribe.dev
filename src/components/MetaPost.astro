@@ -1,15 +1,17 @@
 ---
 import { getEntries, type CollectionEntry } from "astro:content"
 import { SITE } from "@/consts"
-import { bannerOgImage } from "@/lib/assets/banner"
+import { bannerOgImage, type BannerRaster } from "@/lib/assets/banner"
 import { pageTitle } from "@/lib/content"
+import { getImage } from "astro:assets"
 
 type Props = {
   post: CollectionEntry<"blog">
   canonical?: string
+  preloadBanner?: BannerRaster | null
 }
 
-const { post, canonical: canonicalPath } = Astro.props
+const { post, canonical: canonicalPath, preloadBanner } = Astro.props
 const { title, description, date, image } = post.data
 
 const base = Astro.site ?? new URL(Astro.url.origin)
@@ -21,11 +23,35 @@ const card = image ?? bannerOgImage(post)
 const ogImage = card
   ? new URL(card.src, base)
   : new URL(SITE.defaultPostImage, base)
+
+const bannerPreloads = preloadBanner
+  ? await Promise.all(
+      (["light", "dark"] as const).map(async (scheme) => ({
+        scheme,
+        image: await getImage({
+          src: preloadBanner[scheme],
+          width: preloadBanner[scheme].width / 2,
+          densities: [1, 2],
+        }),
+      })),
+    )
+  : []
 ---
 
 <title>{pageTitle(title)}</title>
 <meta name="description" content={description}>
 <link rel="canonical" href={canonical}>
+
+{bannerPreloads.map(({ scheme, image }) => (
+    <link
+      rel="preload"
+      as="image"
+      href={image.src}
+      imagesrcset={image.srcSet.attribute}
+      media={`(prefers-color-scheme: ${scheme})`}
+      fetchpriority="high"
+    />
+  ))}
 
 <meta property="og:title" content={title}>
 <meta property="og:description" content={description}>

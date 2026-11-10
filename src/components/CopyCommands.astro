@@ -1,19 +1,40 @@
+<copy-status class="sr-only" role="status"></copy-status>
+
 <script>
+  const FEEDBACK_MS = 1500
   const timers = new WeakMap<HTMLElement, ReturnType<typeof setTimeout>>()
+
+  const announce = (message: string) => {
+    const status = document.querySelector("copy-status")
+    if (!status) return
+    status.textContent = ""
+    requestAnimationFrame(() => {
+      status.textContent = message
+    })
+  }
+
+  const write = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text)
+      announce("Copied")
+      return true
+    } catch {
+      announce("Copy failed")
+      return false
+    }
+  }
 
   const copy = async (pill: HTMLElement) => {
     const text = pill.dataset.copy
     if (!text) return
-    try {
-      await navigator.clipboard.writeText(text)
-    } catch {
-      return
-    }
-    pill.toggleAttribute("data-copied", true)
+    const outcome = (await write(text)) ? "data-copied" : "data-failed"
+    pill.removeAttribute("data-copied")
+    pill.removeAttribute("data-failed")
+    pill.setAttribute(outcome, "")
     clearTimeout(timers.get(pill))
     timers.set(
       pill,
-      setTimeout(() => pill.removeAttribute("data-copied"), 1500),
+      setTimeout(() => pill.removeAttribute(outcome), FEEDBACK_MS),
     )
   }
 
@@ -34,16 +55,16 @@
   document.addEventListener("click", async (event) => {
     const button = (event.target as Element).closest?.("[data-copy-page]")
     if (!(button instanceof HTMLElement) || !button.dataset.href) return
+    let copied = false
     try {
-      const text = await (await fetch(button.dataset.href)).text()
-      await navigator.clipboard.writeText(text)
+      copied = await write(await (await fetch(button.dataset.href)).text())
     } catch {
-      return
+      announce("Copy failed")
     }
     const original = button.textContent
-    button.textContent = "Copied"
+    button.textContent = copied ? "Copied" : "Copy failed"
     setTimeout(() => {
       button.textContent = original
-    }, 1500)
+    }, FEEDBACK_MS)
   })
 </script>

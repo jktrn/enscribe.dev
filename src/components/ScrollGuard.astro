@@ -6,18 +6,20 @@
 
 <script>
   const SETTLE_MS = 200
+  const root = document.documentElement
+  const settle = () => root.removeAttribute("data-page-scrolling")
 
   let timer: ReturnType<typeof setTimeout> | undefined
 
   addEventListener(
     "scroll",
     () => {
-      document.documentElement.setAttribute("data-page-scrolling", "")
+      root.setAttribute("data-page-scrolling", "")
+      if ("onscrollend" in window) return
       clearTimeout(timer)
-      timer = setTimeout(() => {
-        document.documentElement.removeAttribute("data-page-scrolling")
-      }, SETTLE_MS)
+      timer = setTimeout(settle, SETTLE_MS)
     },
     { passive: true },
   )
+  addEventListener("scrollend", settle)
 </script>

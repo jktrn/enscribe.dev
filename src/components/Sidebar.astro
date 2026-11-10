@@ -27,7 +27,7 @@ const section = NAVIGATION.find(
     <LogoLight data-theme-light />
     <span>{SITE.title}</span>
   </a>
-  <nav data-scroll-fade>
+  <nav id="site-nav" data-scroll-fade>
     <ul>
       {NAVIGATION.map((item) => (
           <li>
@@ -78,6 +78,9 @@ const section = NAVIGATION.find(
     <sidebar-site-actions>
       <button
         id="search-trigger"
+        type="button"
+        command="show-modal"
+        commandfor="search-dialog"
         data-icon-button
         aria-label="Search"
         title="Search (⌘K)"
@@ -86,10 +89,16 @@ const section = NAVIGATION.find(
       </button>
       <ThemeToggle />
     </sidebar-site-actions>
-    <label class="menu-toggle" data-icon-button>
-      <input type="checkbox" aria-label="Toggle navigation menu">
+    <button
+      type="button"
+      class="menu-toggle"
+      data-icon-button
+      aria-expanded="false"
+      aria-controls="site-nav"
+      aria-label="Navigation menu"
+    >
       <ListIcon aria-hidden="true" />
-    </label>
+    </button>
   </sidebar-toggle>
 </aside>
 
@@ -151,10 +160,6 @@ const section = NAVIGATION.find(
       overflow-y: auto;
       overscroll-behavior: contain;
       scrollbar-width: none;
-
-      &::-webkit-scrollbar {
-        display: none;
-      }
     }
 
     @media (width < 48rem) {
@@ -165,14 +170,10 @@ const section = NAVIGATION.find(
       overflow-y: auto;
       overscroll-behavior: contain;
       scrollbar-width: none;
-
-      &::-webkit-scrollbar {
-        display: none;
-      }
     }
   }
 
-  aside:has(.menu-toggle input:checked) nav {
+  aside:has(.menu-toggle[aria-expanded="true"]) nav {
     @media (width < 48rem) {
       display: block;
     }
@@ -240,33 +241,34 @@ const section = NAVIGATION.find(
 
     @media (width < 48rem) {
       display: inline-flex;
-
-      input {
-        position: absolute;
-        opacity: 0;
-        pointer-events: none;
-      }
     }
-  }
 
-  aside:has(.menu-toggle input:focus-visible) .menu-toggle {
-    outline: 2px solid var(--ring);
-    outline-offset: -2px;
-  }
+    &:focus-visible {
+      outline-offset: -2px;
+    }
 
-  aside:has(.menu-toggle input:checked) .menu-toggle {
-    background-color: color-mix(in oklab, var(--muted) 50%, transparent);
+    &[aria-expanded="true"] {
+      background-color: color-mix(in oklab, var(--muted) 50%, transparent);
+    }
   }
 </style>
 
 <script>
-  document.addEventListener("astro:page-load", () => {
-    const toggle =
-      document.querySelector<HTMLInputElement>(".menu-toggle input")
-    document.querySelector("aside nav")?.addEventListener("click", (event) => {
-      if (toggle && (event.target as Element).closest?.("a")) {
-        toggle.checked = false
-      }
-    })
+  const menuToggle = () =>
+    document.querySelector<HTMLButtonElement>(".menu-toggle")
+  const menuOpen = () => menuToggle()?.getAttribute("aria-expanded") === "true"
+  const setMenuOpen = (open: boolean) =>
+    menuToggle()?.setAttribute("aria-expanded", String(open))
+
+  document.addEventListener("click", (event) => {
+    const target = event.target as Element
+    if (target.closest?.(".menu-toggle")) setMenuOpen(!menuOpen())
+    else if (target.closest?.("#site-nav a")) setMenuOpen(false)
+  })
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key !== "Escape" || !menuOpen()) return
+    setMenuOpen(false)
+    menuToggle()?.focus()
   })
 </script>

@@ -2,45 +2,8 @@
 import ArrowUpRight from "@/assets/icons/arrow-up-right.svg"
 import GitHubIcon from "@/assets/icons/github.svg"
 import TwitterIcon from "@/assets/icons/twitter.svg"
-import ABackgroundMobileDark from "@/assets/bento/a-background-mobile-dark.svg"
-import ABackgroundMobileLight from "@/assets/bento/a-background-mobile-light.svg"
-import ABackgroundDark from "@/assets/bento/a-background-dark.svg"
-import ABackgroundLight from "@/assets/bento/a-background-light.svg"
-import AForegroundMobileDark from "@/assets/bento/a-foreground-mobile-dark.svg"
-import AForegroundMobileLight from "@/assets/bento/a-foreground-mobile-light.svg"
-import AForegroundDark from "@/assets/bento/a-foreground-dark.svg"
-import AForegroundLight from "@/assets/bento/a-foreground-light.svg"
-import BBackgroundDark from "@/assets/bento/b-background-dark.svg"
-import BBackgroundLight from "@/assets/bento/b-background-light.svg"
-import BForegroundDark from "@/assets/bento/b-foreground-dark.svg"
-import BForegroundLight from "@/assets/bento/b-foreground-light.svg"
-import CImageDark from "@/assets/bento/c-dark.svg"
-import CImageLight from "@/assets/bento/c-light.svg"
-import EBackgroundMobileDark from "@/assets/bento/e-background-mobile-dark.svg"
-import EBackgroundMobileLight from "@/assets/bento/e-background-mobile-light.svg"
-import EBackgroundDark from "@/assets/bento/e-background-dark.svg"
-import EBackgroundLight from "@/assets/bento/e-background-light.svg"
-import EForegroundMobileDark from "@/assets/bento/e-foreground-mobile-dark.svg"
-import EForegroundMobileLight from "@/assets/bento/e-foreground-mobile-light.svg"
-import EForegroundDark from "@/assets/bento/e-foreground-dark.svg"
-import EForegroundLight from "@/assets/bento/e-foreground-light.svg"
-import FBackgroundDark from "@/assets/bento/f-background-dark.svg"
-import FBackgroundLight from "@/assets/bento/f-background-light.svg"
-import FForegroundDark from "@/assets/bento/f-foreground-dark.svg"
-import FForegroundLight from "@/assets/bento/f-foreground-light.svg"
-import GBackgroundDark from "@/assets/bento/g-background-dark.svg"
-import GBackgroundLight from "@/assets/bento/g-background-light.svg"
-import GForegroundDark from "@/assets/bento/g-foreground-dark.svg"
-import GForegroundLight from "@/assets/bento/g-foreground-light.svg"
+import BentoArt from "@/components/BentoArt.astro"
 import FoodMapTile from "@/components/FoodMapTile.astro"
-import IBackgroundDark from "@/assets/bento/i-background-dark.svg"
-import IBackgroundLight from "@/assets/bento/i-background-light.svg"
-import IForegroundDark from "@/assets/bento/i-foreground-dark.svg"
-import IForegroundLight from "@/assets/bento/i-foreground-light.svg"
-import KBackgroundDark from "@/assets/bento/k-background-dark.svg"
-import KBackgroundLight from "@/assets/bento/k-background-light.svg"
-import KForegroundDark from "@/assets/bento/k-foreground-dark.svg"
-import KForegroundLight from "@/assets/bento/k-foreground-light.svg"
 import DiscordPresence from "@/components/DiscordPresence.astro"
 import GithubCalendar from "@/components/GithubCalendar.astro"
 import MetaPage from "@/components/MetaPage.astro"
@@ -66,34 +29,16 @@ const twitterHref =
     <bento-grid>
       <bento-cell style="grid-area: a">
         <bento-layer data-desktop>
-          <ABackgroundDark
-            data-theme-dark
-            preserveAspectRatio="xMidYMid slice"
-          />
-          <ABackgroundLight
-            data-theme-light
-            preserveAspectRatio="xMidYMid slice"
-          />
+          <BentoArt name="a-background" preserveAspectRatio="xMidYMid slice" />
         </bento-layer>
         <bento-layer data-mobile>
-          <ABackgroundMobileDark
-            data-theme-dark
-            preserveAspectRatio="xMidYMid slice"
-          />
-          <ABackgroundMobileLight
-            data-theme-light
+          <BentoArt
+            name="a-background-mobile"
             preserveAspectRatio="xMidYMid slice"
           />
         </bento-layer>
         <bento-layer data-desktop data-overlay>
-          <AForegroundDark
-            data-theme-dark
-            preserveAspectRatio="xMidYMid slice"
-          />
-          <AForegroundLight
-            data-theme-light
-            preserveAspectRatio="xMidYMid slice"
-          />
+          <BentoArt name="a-foreground" preserveAspectRatio="xMidYMid slice" />
           <bento-note-stack data-note="about" data-prose-root>
             <bento-note>
               Hey, I&rsquo;m Jason! I&rsquo;m a design engineer based in Los
@@ -129,12 +74,8 @@ const twitterHref =
           </bento-note-stack>
         </bento-layer>
         <bento-layer data-mobile data-overlay>
-          <AForegroundMobileDark
-            data-theme-dark
-            preserveAspectRatio="xMidYMid slice"
-          />
-          <AForegroundMobileLight
-            data-theme-light
+          <BentoArt
+            name="a-foreground-mobile"
             preserveAspectRatio="xMidYMid slice"
           />
           <bento-note-stack data-note="about" data-prose-root>
@@ -168,12 +109,10 @@ const twitterHref =
       </bento-cell>
       <bento-cell style="grid-area: b" data-trigger>
         <bento-layer>
-          <BBackgroundDark data-theme-dark />
-          <BBackgroundLight data-theme-light />
+          <BentoArt name="b-background" />
         </bento-layer>
         <bento-layer data-reveal>
-          <BForegroundDark data-theme-dark />
-          <BForegroundLight data-theme-light />
+          <BentoArt name="b-foreground" />
           <bento-note data-note="details" data-tail="right">
             I hope you enjoy reading my blog!
           </bento-note>
@@ -181,29 +120,17 @@ const twitterHref =
       </bento-cell>
       <bento-cell style="grid-area: c" data-cover>
         <bento-layer>
-          <CImageDark data-theme-dark preserveAspectRatio="xMidYMid slice" />
-          <CImageLight data-theme-light preserveAspectRatio="xMidYMid slice" />
+          <BentoArt name="c" preserveAspectRatio="xMidYMid slice" />
         </bento-layer>
       </bento-cell>
       <bento-cell style="grid-area: d"><DiscordPresence /></bento-cell>
       <bento-cell style="grid-area: e" data-trigger>
         <bento-layer data-desktop>
-          <EBackgroundDark
-            data-theme-dark
-            preserveAspectRatio="xMidYMax slice"
-          />
-          <EBackgroundLight
-            data-theme-light
-            preserveAspectRatio="xMidYMax slice"
-          />
+          <BentoArt name="e-background" preserveAspectRatio="xMidYMax slice" />
         </bento-layer>
         <bento-layer data-mobile>
-          <EBackgroundMobileDark
-            data-theme-dark
-            preserveAspectRatio="xMidYMax slice"
-          />
-          <EBackgroundMobileLight
-            data-theme-light
+          <BentoArt
+            name="e-background-mobile"
             preserveAspectRatio="xMidYMax slice"
           />
         </bento-layer>
@@ -244,25 +171,14 @@ const twitterHref =
             </bento-layer>
           )}
         <bento-layer data-desktop data-reveal>
-          <EForegroundDark
-            data-theme-dark
-            preserveAspectRatio="xMidYMax slice"
-          />
-          <EForegroundLight
-            data-theme-light
-            preserveAspectRatio="xMidYMax slice"
-          />
+          <BentoArt name="e-foreground" preserveAspectRatio="xMidYMax slice" />
           <bento-note data-note="blog" data-tail="up"
             >Read my<br>latest post!</bento-note
           >
         </bento-layer>
         <bento-layer data-mobile data-reveal>
-          <EForegroundMobileDark
-            data-theme-dark
-            preserveAspectRatio="xMidYMax slice"
-          />
-          <EForegroundMobileLight
-            data-theme-light
+          <BentoArt
+            name="e-foreground-mobile"
             preserveAspectRatio="xMidYMax slice"
           />
           <bento-note data-note="blog" data-tail="left"
@@ -276,24 +192,10 @@ const twitterHref =
           <GithubCalendar />
         </bento-layer>
         <bento-layer>
-          <FBackgroundDark
-            data-theme-dark
-            preserveAspectRatio="xMinYMid slice"
-          />
-          <FBackgroundLight
-            data-theme-light
-            preserveAspectRatio="xMinYMid slice"
-          />
+          <BentoArt name="f-background" preserveAspectRatio="xMinYMid slice" />
         </bento-layer>
         <bento-layer data-reveal>
-          <FForegroundDark
-            data-theme-dark
-            preserveAspectRatio="xMinYMid slice"
-          />
-          <FForegroundLight
-            data-theme-light
-            preserveAspectRatio="xMinYMid slice"
-          />
+          <BentoArt name="f-foreground" preserveAspectRatio="xMinYMid slice" />
           <bento-note data-note="calendar" data-tail="down">
             Check out my<br>
             GitHub calendar!
@@ -302,12 +204,10 @@ const twitterHref =
       </bento-cell>
       <bento-cell style="grid-area: g" data-trigger>
         <bento-layer>
-          <GBackgroundDark data-theme-dark />
-          <GBackgroundLight data-theme-light />
+          <BentoArt name="g-background" />
         </bento-layer>
         <bento-layer data-reveal>
-          <GForegroundDark data-theme-dark />
-          <GForegroundLight data-theme-light />
+          <BentoArt name="g-foreground" />
         </bento-layer>
         <bento-layer data-content>
           <SpotifyPresence />
@@ -331,12 +231,10 @@ const twitterHref =
       </bento-cell>
       <bento-cell style="grid-area: i" data-trigger>
         <bento-layer>
-          <IBackgroundDark data-theme-dark />
-          <IBackgroundLight data-theme-light />
+          <BentoArt name="i-background" />
         </bento-layer>
         <bento-layer data-reveal>
-          <IForegroundDark data-theme-dark />
-          <IForegroundLight data-theme-light />
+          <BentoArt name="i-foreground" />
         </bento-layer>
         <bento-layer data-content>
           <bento-mark><GitHubIcon aria-hidden="true" /></bento-mark>
@@ -355,12 +253,10 @@ const twitterHref =
       <bento-cell style="grid-area: j"><WakatimeGraph /></bento-cell>
       <bento-cell style="grid-area: k" data-trigger>
         <bento-layer>
-          <KBackgroundDark data-theme-dark />
-          <KBackgroundLight data-theme-light />
+          <BentoArt name="k-background" />
         </bento-layer>
         <bento-layer data-reveal>
-          <KForegroundDark data-theme-dark />
-          <KForegroundLight data-theme-light />
+          <BentoArt name="k-foreground" />
         </bento-layer>
         <bento-layer data-content>
           <bento-mark><TwitterIcon aria-hidden="true" /></bento-mark>
@@ -721,11 +617,14 @@ const twitterHref =
     :global(svg) {
       width: 1rem;
       height: 1rem;
-      transition: transform 0.3s ease;
+
+      @media (prefers-reduced-motion: no-preference) {
+        transition: rotate 0.3s ease;
+      }
     }
 
     &:hover :global(svg) {
-      transform: rotate(12deg);
+      rotate: 12deg;
     }
   }
 </style>

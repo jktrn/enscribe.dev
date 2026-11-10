@@ -38,9 +38,5 @@
     overflow-y: auto;
     overscroll-behavior: contain;
     scrollbar-width: none;
-
-    &::-webkit-scrollbar {
-      display: none;
-    }
   }
 }

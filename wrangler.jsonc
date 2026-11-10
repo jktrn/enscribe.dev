@@ -7,6 +7,7 @@
     "directory": "./dist",
     "binding": "ASSETS",
     "run_worker_first": ["/banner", "/banner.webp"],
+    "html_handling": "drop-trailing-slash",
     "not_found_handling": "404-page"
   }
 }

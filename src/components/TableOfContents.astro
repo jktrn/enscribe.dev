@@ -19,16 +19,21 @@ const title = asInline(titleLabel)
   <toc-title aria-hidden="true"
     ><span><Fragment set:html={title.html} /></span></toc-title
   >
-  <label data-bar>
-    <input type="checkbox" aria-label="Toggle table of contents">
+  <button
+    type="button"
+    data-bar
+    aria-expanded="false"
+    aria-controls="toc-panel"
+  >
     <svg viewBox="0 0 16 16" aria-hidden="true">
       <circle cx="8" cy="8" r="6.5" />
       <circle cx="8" cy="8" r="6.5" transform="rotate(-90 8 8)" />
     </svg>
+    <span class="sr-only">Table of contents:</span>
     <toc-current><Fragment set:html={title.html} /></toc-current>
     <ChevronIcon aria-hidden="true" />
-  </label>
-  <toc-panel data-bar>
+  </button>
+  <toc-panel id="toc-panel" data-bar>
     <ul data-scroll-fade>
       {sections.map(({ id, href, label, open, headings }) => {
         const items = headings.map(({ depth, slug, text, html }) => (
@@ -122,19 +127,24 @@ const title = asInline(titleLabel)
     }
   }
 
-  label {
+  button[data-bar] {
     display: none;
 
     @media (width < 64rem) {
       display: flex;
       align-items: center;
       gap: var(--space-2xs);
+      inline-size: 100%;
+      text-align: start;
       cursor: pointer;
 
-      input {
-        position: absolute;
-        opacity: 0;
-        pointer-events: none;
+      &:focus-visible {
+        outline-offset: -2px;
+        border-radius: 0;
+      }
+
+      &[aria-expanded="true"] > svg:last-of-type {
+        rotate: 180deg;
       }
 
       > svg:first-of-type {
@@ -156,6 +166,13 @@ const title = asInline(titleLabel)
               var(--circumference) *
               (1 - var(--progress, 0))
             );
+
+            @supports (animation-timeline: scroll()) {
+              animation-name: toc-progress;
+              animation-timing-function: linear;
+              animation-fill-mode: both;
+              animation-timeline: scroll(root);
+            }
           }
         }
       }
@@ -178,16 +195,13 @@ const title = asInline(titleLabel)
     }
   }
 
-  nav:has(input:focus-visible) label {
-    @media (width < 64rem) {
-      outline: 2px solid var(--ring);
-      outline-offset: -2px;
+  @keyframes toc-progress {
+    from {
+      stroke-dashoffset: var(--circumference);
     }
-  }
 
-  nav:has(input:checked) label > svg:last-of-type {
-    @media (width < 64rem) {
-      rotate: 180deg;
+    to {
+      stroke-dashoffset: 0;
     }
   }
 
@@ -202,7 +216,7 @@ const title = asInline(titleLabel)
     }
   }
 
-  nav:has(input:checked) toc-panel {
+  button[aria-expanded="true"] + toc-panel {
     @media (width < 64rem) {
       display: block;
     }
@@ -214,10 +228,6 @@ const title = asInline(titleLabel)
     overflow-y: auto;
     overscroll-behavior: contain;
     scrollbar-width: none;
-
-    &::-webkit-scrollbar {
-      display: none;
-    }
 
     @media (width < 64rem) {
       max-block-size: 30svh;
@@ -444,8 +454,21 @@ const title = asInline(titleLabel)
   }
 
   @media (prefers-reduced-motion: reduce) {
-    nav[data-rail] :is(toc-panel > ul, a, toc-label) {
-      transition-duration: 0.01ms;
+    toc-title {
+      transition: none;
+    }
+
+    toc-title > span,
+    toc-title[data-visible] > span {
+      transition-property: opacity;
+    }
+
+    nav[data-rail] toc-panel > ul {
+      transition-property: background-color, border-color, box-shadow;
+    }
+
+    nav[data-rail] a {
+      transition-property: color;
     }
   }
 </style>
@@ -465,7 +488,7 @@ const title = asInline(titleLabel)
     const controller = new AbortController()
     const { signal } = controller
 
-    const ring = nav.querySelector<SVGElement>("label svg")
+    const ring = nav.querySelector<SVGElement>("button svg")
     const mobile = matchMedia("(width < 64rem)")
     const progress = () => {
       if (!ring || !mobile.matches) return
@@ -475,9 +498,11 @@ const title = asInline(titleLabel)
         String(max > 0 ? Math.min(scrollY / max, 1) : 0),
       )
     }
-    addEventListener("scroll", progress, { passive: true, signal })
-    mobile.addEventListener("change", progress, { signal })
-    progress()
+    if (!CSS.supports("animation-timeline: scroll()")) {
+      addEventListener("scroll", progress, { passive: true, signal })
+      mobile.addEventListener("change", progress, { signal })
+      progress()
+    }
 
     let observer: IntersectionObserver | undefined
     let railLayoutObserver: ResizeObserver | undefined
@@ -515,7 +540,7 @@ const title = asInline(titleLabel)
     const list = nav.querySelector("toc-panel > ul")
     const title = nav.querySelector("toc-title")
     const currentLabel = nav.querySelector("toc-current")
-    const toggle = nav.querySelector<HTMLInputElement>("input")
+    const toggle = nav.querySelector<HTMLButtonElement>("button[data-bar]")
     const heading = document.querySelector("article > header h1")
     if (articles.length === 0 || !list || links.size === 0) return
 
@@ -590,13 +615,22 @@ const title = asInline(titleLabel)
       })
     }
 
-    toggle?.addEventListener("change", () => {
-      if (toggle.checked) center()
+    const setOpen = (open: boolean) =>
+      toggle?.setAttribute("aria-expanded", String(open))
+
+    toggle?.addEventListener("click", () => {
+      const open = toggle.getAttribute("aria-expanded") !== "true"
+      setOpen(open)
+      if (open) center()
     })
     list.addEventListener("click", (event) => {
-      if (toggle && (event.target as Element).closest?.("a")) {
-        toggle.checked = false
-      }
+      if ((event.target as Element).closest?.("a")) setOpen(false)
+    })
+    nav.addEventListener("keydown", (event) => {
+      if (event.key !== "Escape") return
+      if (toggle?.getAttribute("aria-expanded") !== "true") return
+      setOpen(false)
+      toggle.focus()
     })
 
     const updateActive = (entries: IntersectionObserverEntry[]) => {

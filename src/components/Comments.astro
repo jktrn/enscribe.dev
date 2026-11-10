@@ -79,11 +79,11 @@ const theme = import.meta.env.DEV
 </style>
 
 <script>
+  import { currentScheme, onSchemeChange } from "@/lib/theme"
+
   const ORIGIN = "https://giscus.app"
   const SESSION_KEY = "giscus-session"
   const THEME_PREFIX = "data:text/css;base64,"
-  const root = document.documentElement
-
   let teardown: (() => void) | undefined
 
   const readSession = () => {
@@ -138,14 +138,7 @@ const theme = import.meta.env.DEV
       dark: themeUrl("dark", themeDark),
     }
 
-    const currentTheme = () =>
-      themes[
-        root.dataset.theme === "dark" ||
-        (!root.dataset.theme &&
-          matchMedia("(prefers-color-scheme: dark)").matches)
-          ? "dark"
-          : "light"
-      ]
+    const currentTheme = () => themes[currentScheme()]
 
     const url = new URL(location.href)
     let session = url.searchParams.get("giscus") ?? ""
@@ -227,18 +220,11 @@ const theme = import.meta.env.DEV
       frame.src = `${ORIGIN}/en/widget?${params}`
     }
 
-    const observer = new MutationObserver(syncTheme)
+    const stopSchemeSync = onSchemeChange(syncTheme)
     teardown = () => {
       controller.abort()
-      observer.disconnect()
+      stopSchemeSync()
     }
-
-    observer.observe(root, { attributeFilter: ["data-theme"] })
-    matchMedia("(prefers-color-scheme: dark)").addEventListener(
-      "change",
-      syncTheme,
-      { signal },
-    )
 
     addEventListener(
       "message",

@@ -6,7 +6,7 @@ import { defineMdastPlugin } from "satteri"
 import {
   escapeAttribute,
   readSvgSource,
-  themeSvgSource,
+  themedSvgPair,
   type ThemeMode,
 } from "../assets/themed-svg"
 
@@ -65,9 +65,7 @@ export const inlineSvg = defineMdastPlugin({
       const prefix = `themed-${createHash("sha256").update(resolve(dir, base)).digest("hex").slice(0, 8)}`
       ctx.replaceNode(node, {
         type: "html",
-        value:
-          themeSvgSource(lightSource, "light", prefix, label) +
-          themeSvgSource(darkSource, "dark", prefix, label),
+        value: themedSvgPair(lightSource, darkSource, prefix, label),
       })
       return
     }

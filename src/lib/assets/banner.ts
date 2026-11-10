@@ -1,11 +1,9 @@
 import { dirname, resolve } from "node:path"
 import type { ImageMetadata } from "astro"
 import type { CollectionEntry } from "astro:content"
-import { readSvgSource, themeSvgSource } from "./themed-svg"
+import { readSvgSource, themedSvgPair } from "./themed-svg"
 
-export function themedBanner(
-  entry: CollectionEntry<"blog">,
-): { light: string; dark: string } | null {
+export function themedBanner(entry: CollectionEntry<"blog">): string | null {
   const banner = entry.data.banner
   if (!banner || !entry.filePath) return null
   if (!banner.light.endsWith(".svg") || !banner.dark.endsWith(".svg")) {
@@ -24,10 +22,7 @@ export function themedBanner(
   }
 
   const prefix = `banner-${entry.id.replace(/[^a-zA-Z0-9-]/g, "-")}`
-  return {
-    light: themeSvgSource(light, "light", prefix),
-    dark: themeSvgSource(dark, "dark", prefix),
-  }
+  return themedSvgPair(light, dark, prefix)
 }
 
 const rasters = import.meta.glob<{ default: ImageMetadata }>(

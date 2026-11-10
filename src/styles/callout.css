@@ -40,7 +40,10 @@ prose-content {
 
       svg:last-child {
         margin-inline-start: auto;
-        transition: rotate 0.2s ease;
+
+        @media (prefers-reduced-motion: no-preference) {
+          transition: rotate 0.2s ease;
+        }
       }
 
       > span {

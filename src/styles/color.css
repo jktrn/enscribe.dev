@@ -44,8 +44,7 @@
 *,
 ::before,
 ::after,
-::backdrop,
-::file-selector-button {
+::backdrop {
   border-color: var(--border);
 
   &:focus-visible {
